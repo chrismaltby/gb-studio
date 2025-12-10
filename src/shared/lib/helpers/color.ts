@@ -1,4 +1,7 @@
-import { ColorCorrectionSetting, ObjPalette } from "shared/lib/resources/types";
+import {
+  ColorCorrectionSetting,
+  MonoOBJPalette,
+} from "shared/lib/resources/types";
 
 /* eslint-disable no-param-reassign */
 const hexStringToDecimal = (str: string) => {
@@ -76,32 +79,22 @@ export const rgb5BitToGBCHex = (
     .padStart(6, "0");
 };
 
-const indexSpriteColour = (g: number, objPalette: ObjPalette) => {
-  if (g < 65) {
-    return 3;
-  }
-  if (g < 130) {
-    return objPalette === "OBP1" ? 2 : 3;
-  }
-  if (g < 205) {
-    return objPalette === "OBP1" ? 2 : 1;
-  }
-  return 0;
+const indexSpriteColour = (g: number, objPalette: MonoOBJPalette) => {
+  if (g < 130) return objPalette[2];
+  if (g < 205) return objPalette[1];
+  return objPalette[0];
 };
 
 export const colorizeSpriteData = (
   mutData: Uint8ClampedArray,
-  objPalette: ObjPalette | null,
+  objPalette: MonoOBJPalette,
   palette: string[],
   colorCorrection: ColorCorrectionSetting,
 ) => {
   const colorCorrectionFn = hex2GBCrgb(colorCorrection);
   const paletteRGB = palette.map(colorCorrectionFn);
   for (let index = 0; index < mutData.length; index += 4) {
-    const colorIndex = indexSpriteColour(
-      mutData[index + 1],
-      objPalette || "OBP0",
-    );
+    const colorIndex = indexSpriteColour(mutData[index + 1], objPalette);
     const color = paletteRGB[colorIndex];
     const r = mutData[index];
     const g = mutData[index + 1];

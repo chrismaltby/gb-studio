@@ -80,6 +80,32 @@ export const ColorModeOverrideSetting = Type.Union([
 
 export type ColorModeOverrideSetting = Static<typeof ColorModeOverrideSetting>;
 
+export const MonoColorIndex = Type.Union([
+  Type.Literal(0),
+  Type.Literal(1),
+  Type.Literal(2),
+  Type.Literal(3),
+]);
+
+export type MonoColorIndex = Static<typeof MonoColorIndex>;
+
+export const MonoBGPPalette = Type.Tuple([
+  MonoColorIndex,
+  MonoColorIndex,
+  MonoColorIndex,
+  MonoColorIndex,
+]);
+
+export type MonoBGPPalette = Static<typeof MonoBGPPalette>;
+
+export const MonoOBJPalette = Type.Tuple([
+  MonoColorIndex,
+  MonoColorIndex,
+  MonoColorIndex,
+]);
+
+export type MonoOBJPalette = Static<typeof MonoOBJPalette>;
+
 export const MinimalResource = Type.Object({
   _resourceType: Type.String(),
 });
@@ -243,6 +269,9 @@ export const CompressedSceneResource = Type.Object({
   colorModeOverride: ColorModeOverrideSetting,
   paletteIds: Type.Array(Type.String()),
   spritePaletteIds: Type.Array(Type.String()),
+  monoBGP: Type.Optional(MonoBGPPalette),
+  monoOBP0: Type.Optional(MonoOBJPalette),
+  monoOBP1: Type.Optional(MonoOBJPalette),
   spriteMode: Type.Optional(SpriteModeSetting),
   autoFadeSpeed: Type.Union([Type.Number(), Type.Null()], { default: 1 }),
   autoFadeEventCollapse: Type.Optional(Type.Boolean()),
@@ -794,6 +823,9 @@ export const SettingsResource = Type.Object({
   defaultSpritePaletteId: Type.String(),
   defaultUIPaletteId: Type.String(),
   playerPaletteId: Type.String(),
+  defaultMonoBGP: MonoBGPPalette,
+  defaultMonoOBP0: MonoOBJPalette,
+  defaultMonoOBP1: MonoOBJPalette,
   navigatorSplitSizes: Type.Array(Type.Number()),
   showNavigator: Type.Boolean(),
   defaultFontId: Type.String(),

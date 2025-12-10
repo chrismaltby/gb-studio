@@ -7,7 +7,7 @@ import SpriteSliceCanvasWorker, {
 } from "./SpriteSliceCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 import { getSettings } from "store/features/settings/settingsState";
-import { ObjPalette, Palette } from "shared/lib/resources/types";
+import { MonoOBJPalette, Palette } from "shared/lib/resources/types";
 
 interface SpriteSliceCanvasProps {
   spriteSheetId: string;
@@ -17,7 +17,7 @@ interface SpriteSliceCanvasProps {
   height: number;
   flipX?: boolean;
   flipY?: boolean;
-  objPalette: ObjPalette;
+  objPalette: MonoOBJPalette;
   palette?: Palette;
 }
 
@@ -89,7 +89,7 @@ export const SpriteSliceCanvas = ({
       height,
       flipX,
       flipY,
-      objPalette: palette ? "OBP0" : objPalette,
+      objPalette: palette ? [0, 1, 3] : objPalette,
       palette: (palette || DMG_PALETTE).colors,
       colorCorrection,
     });

@@ -27,8 +27,18 @@ workerCtx.onmessage = async (evt) => {
   const palette = evt.data.palette;
   const palettes: [string, string, string, string][] = evt.data.palettes;
   const previewAsMono = evt.data.previewAsMono;
+  const monoPalettes = evt.data.monoPalettes ?? [
+    [0, 1, 3],
+    [0, 2, 3],
+  ];
   const colorCorrection = evt.data.colorCorrection;
-  const key = JSON.stringify({ src, palettes, previewAsMono, colorCorrection });
+  const key = JSON.stringify({
+    src,
+    palettes,
+    previewAsMono,
+    monoPalettes,
+    colorCorrection,
+  });
   const spriteMode = evt.data.spriteMode ?? "8x16";
 
   let img: ImageBitmap;
@@ -62,7 +72,7 @@ workerCtx.onmessage = async (evt) => {
       OBP1: new OffscreenCanvas(img.width, img.height),
     };
 
-    (["OBP0", "OBP1"] as ObjPalette[]).forEach((objPalette) => {
+    (["OBP0", "OBP1"] as ObjPalette[]).forEach((objPalette, objIndex) => {
       const canvas = tilesCanvases[objPalette];
       const ctx = canvas.getContext("2d");
       if (!ctx) {
@@ -75,19 +85,17 @@ workerCtx.onmessage = async (evt) => {
       );
       colorizeSpriteData(
         imageDataCopy.data,
-        objPalette,
+        monoPalettes[objIndex],
         palette,
         colorCorrection,
       );
       ctx.putImageData(imageDataCopy, 0, 0);
     });
 
-    if (palettes) {
+    if (palettes && !previewAsMono) {
       [0, 1, 2, 3, 4, 5, 6, 7].forEach((i) => {
         tilesCanvases[i] = new OffscreenCanvas(img.width, img.height);
-        const colors = previewAsMono
-          ? DMG_PALETTE.colors
-          : palettes[i] || DMG_PALETTE.colors;
+        const colors = palettes[i] || DMG_PALETTE.colors;
         const canvas = tilesCanvases[i];
         const ctx = canvas.getContext("2d");
         if (!ctx) {
@@ -98,7 +106,12 @@ workerCtx.onmessage = async (evt) => {
           tileImageData.width,
           tileImageData.height,
         );
-        colorizeSpriteData(imageDataCopy.data, null, colors, colorCorrection);
+        colorizeSpriteData(
+          imageDataCopy.data,
+          [0, 1, 3],
+          colors,
+          colorCorrection,
+        );
         ctx.putImageData(imageDataCopy, 0, 0);
       });
     }

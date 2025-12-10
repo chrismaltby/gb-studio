@@ -1,5 +1,5 @@
 import PaletteBlock from "components/forms/PaletteBlock";
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import {
   OptionLabelWithPreview,
   Select,
@@ -7,12 +7,14 @@ import {
 } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import { SingleValue } from "react-select";
-import { ObjPalette } from "shared/lib/resources/types";
+import { MonoOBJPalette, ObjPalette } from "shared/lib/resources/types";
+import { DMG_PALETTE } from "consts";
 
 interface ObjPaletteSelectProps {
   name: string;
   value?: ObjPalette;
   onChange?: (newValue: ObjPalette) => void;
+  monoPalettes: [MonoOBJPalette, MonoOBJPalette];
 }
 
 interface ObjPaletteOption {
@@ -21,24 +23,37 @@ interface ObjPaletteOption {
   colors: string[];
 }
 
-const options: ObjPaletteOption[] = [
-  {
-    value: "OBP0",
-    label: "0: OBP0",
-    colors: ["E8F8E0", "B0F088", "", "202850"],
-  },
-  {
-    value: "OBP1",
-    label: "1: OBP1",
-    colors: ["E8F8E0", "509878", "", "202850"],
-  },
-];
-
 export const ObjPaletteSelect: FC<ObjPaletteSelectProps> = ({
   name,
   value = "OBP0",
+  monoPalettes,
   onChange,
 }) => {
+  const options: ObjPaletteOption[] = useMemo(() => {
+    return [
+      {
+        value: "OBP0",
+        label: "0: OBP0",
+        colors: [
+          DMG_PALETTE.colors[monoPalettes[0][0]],
+          DMG_PALETTE.colors[monoPalettes[0][1]],
+          "",
+          DMG_PALETTE.colors[monoPalettes[0][2]],
+        ],
+      },
+      {
+        value: "OBP1",
+        label: "1: OBP1",
+        colors: [
+          DMG_PALETTE.colors[monoPalettes[1][0]],
+          DMG_PALETTE.colors[monoPalettes[1][1]],
+          "",
+          DMG_PALETTE.colors[monoPalettes[1][2]],
+        ],
+      },
+    ];
+  }, [monoPalettes]);
+
   const currentValue = options.find((o) => o.value === value);
   return (
     <Select

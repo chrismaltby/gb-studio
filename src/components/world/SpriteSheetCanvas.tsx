@@ -8,7 +8,11 @@ import {
 } from "store/features/entities/entitiesState";
 import { MetaspriteCanvas } from "components/sprites/preview/MetaspriteCanvas";
 import { SceneContext } from "components/script/SceneContext";
-import { ActorDirection, Palette } from "shared/lib/resources/types";
+import {
+  ActorDirection,
+  MonoOBJPalette,
+  Palette,
+} from "shared/lib/resources/types";
 
 interface SpriteSheetCanvasProps {
   spriteSheetId: string;
@@ -16,6 +20,7 @@ interface SpriteSheetCanvasProps {
   frame?: number;
   palettes?: Palette[];
   previewAsMono?: boolean;
+  monoPalettes?: [MonoOBJPalette, MonoOBJPalette];
   offsetPosition?: boolean;
 }
 
@@ -34,6 +39,7 @@ const SpriteSheetCanvas = ({
   frame = 0,
   palettes,
   previewAsMono,
+  monoPalettes,
   offsetPosition,
 }: SpriteSheetCanvasProps) => {
   const sprite = useAppSelector((state) =>
@@ -98,6 +104,7 @@ const SpriteSheetCanvas = ({
         palettes={palettes}
         flipX={flipX}
         previewAsMono={previewAsMono}
+        monoPalettes={monoPalettes}
         spriteMode={context.spriteMode}
       />
     </Wrapper>

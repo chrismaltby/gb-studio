@@ -79,6 +79,8 @@ import { ColorModeOverrideSelect } from "components/forms/ColorModeOverrideSelec
 import {
   ActorDirection,
   ColorModeOverrideSetting,
+  MonoBGPPalette,
+  MonoOBJPalette,
   SceneBoundsRect,
   SceneParallaxLayer,
 } from "shared/lib/resources/types";
@@ -91,6 +93,7 @@ import { AutoPaletteSwatch } from "components/forms/AutoPaletteSwatch";
 import navigationActions from "store/features/navigation/navigationActions";
 import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeIds";
 import { AutoTileFlipSelect } from "components/forms/AutoTileFlipSelect";
+import { DMGPaletteSelectButton } from "components/forms/DMGPaletteSelectButton";
 
 interface SceneEditorProps {
   id: string;
@@ -215,6 +218,15 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
   const defaultAutoTileFlip = useAppSelector(
     (state) => state.project.present.settings.autoTileFlipEnabled,
+  );
+  const defaultMonoBGP = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoBGP,
+  );
+  const defaultMonoOBP0 = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoOBP0,
+  );
+  const defaultMonoOBP1 = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoOBP1,
   );
   const sceneSpriteMode = scene?.spriteMode ?? defaultSpriteMode;
 
@@ -360,6 +372,21 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   const onChangeScrollBounds = useCallback(
     (value: SceneBoundsRect | undefined) =>
       onChangeSceneProp("scrollBounds", value),
+    [onChangeSceneProp],
+  );
+
+  const onChangeMonoBGP = useCallback(
+    (value: MonoBGPPalette | undefined) => onChangeSceneProp("monoBGP", value),
+    [onChangeSceneProp],
+  );
+
+  const onChangeMonoOBP0 = useCallback(
+    (value: MonoOBJPalette | undefined) => onChangeSceneProp("monoOBP0", value),
+    [onChangeSceneProp],
+  );
+
+  const onChangeMonoOBP1 = useCallback(
+    (value: MonoOBJPalette | undefined) => onChangeSceneProp("monoOBP1", value),
     [onChangeSceneProp],
   );
 
@@ -1047,6 +1074,44 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                     </FormContainer>
                   </SidebarColumn>
                 )}
+
+                <SidebarColumn>
+                  <FormRow>
+                    <FormField
+                      name="monoBGPPalette"
+                      label={l10n("FIELD_MONOCHROME_PALETTES")}
+                    >
+                      <PaletteButtons>
+                        <DMGPaletteSelectButton
+                          name="monoBGPPalette"
+                          label="BGP"
+                          value={scene.monoBGP || defaultMonoBGP}
+                          onChange={onChangeMonoBGP}
+                          showName
+                          isOptional
+                        />
+                        <DMGPaletteSelectButton
+                          name="monoOBP1Palette"
+                          label="OBP0"
+                          isSpritePalette
+                          value={scene.monoOBP0 || defaultMonoOBP0}
+                          onChange={onChangeMonoOBP0}
+                          showName
+                          isOptional
+                        />
+                        <DMGPaletteSelectButton
+                          name="monoOBP1Palette"
+                          label="OBP1"
+                          isSpritePalette
+                          value={scene.monoOBP1 || defaultMonoOBP1}
+                          onChange={onChangeMonoOBP1}
+                          showName
+                          isOptional
+                        />
+                      </PaletteButtons>
+                    </FormField>
+                  </FormRow>
+                </SidebarColumn>
 
                 {colorsEnabled && (
                   <SidebarColumn>

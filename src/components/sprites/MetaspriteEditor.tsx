@@ -25,7 +25,11 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Selection } from "ui/document/Selection";
 import renderMetaspriteTileContextMenu from "components/world/renderMetaspriteTileContextMenu";
 import { ContextMenu } from "ui/menu/ContextMenu";
-import { MetaspriteTile, SpriteModeSetting } from "shared/lib/resources/types";
+import {
+  MetaspriteTile,
+  MonoOBJPalette,
+  SpriteModeSetting,
+} from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
 
 interface MetaspriteEditorProps {
@@ -769,6 +773,20 @@ const MetaspriteEditor = ({
     [scene, defaultSpritePaletteIds, palettesLookup, colorsEnabled],
   );
 
+  const defaultMonoOBP0 = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoOBP0,
+  );
+  const defaultMonoOBP1 = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoOBP1,
+  );
+
+  const monoOBJPalettes = useMemo(() => {
+    return [
+      scene?.monoOBP0 || defaultMonoOBP0,
+      scene?.monoOBP1 || defaultMonoOBP1,
+    ] as [MonoOBJPalette, MonoOBJPalette];
+  }, [scene?.monoOBP0, defaultMonoOBP0, scene?.monoOBP1, defaultMonoOBP1]);
+
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
@@ -866,7 +884,11 @@ const MetaspriteEditor = ({
                   height={spriteMode === "8x8" ? 8 : 16}
                   flipX={metaspriteTile.flipX}
                   flipY={metaspriteTile.flipY}
-                  objPalette={metaspriteTile.objPalette}
+                  objPalette={
+                    metaspriteTile.objPalette === "OBP1"
+                      ? monoOBJPalettes[1]
+                      : monoOBJPalettes[0]
+                  }
                   palette={getTilePalette(metaspriteTile)}
                 />
               </MetaspriteDraggableTile>
@@ -886,7 +908,7 @@ const MetaspriteEditor = ({
                   height={newTiles.height * (spriteMode === "8x8" ? 8 : 16)}
                   flipX={false}
                   flipY={false}
-                  objPalette="OBP0"
+                  objPalette={monoOBJPalettes[0]}
                 />
               </StampTilesWrapper>
             )}

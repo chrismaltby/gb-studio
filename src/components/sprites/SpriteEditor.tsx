@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import {
@@ -21,6 +21,7 @@ import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Label } from "ui/form/Label";
 import {
   metaspriteTileSelectors,
+  sceneSelectors,
   spriteAnimationSelectors,
   spriteSheetSelectors,
   spriteStateSelectors,
@@ -59,6 +60,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 import {
   MetaspriteTile,
+  MonoOBJPalette,
   ObjPalette,
   SpriteAnimationType,
   SpriteModeSetting,
@@ -114,6 +116,27 @@ export const SpriteEditor = ({
     sprite?.spriteMode !== undefined,
   );
   const showSpriteModeOverride = sprite?.spriteMode || spriteModeOverrideOpen;
+
+  const previewAsSceneId = useAppSelector(
+    (state) => state.editor.previewAsSceneId,
+  );
+  const scene = useAppSelector((state) =>
+    sceneSelectors.selectById(state, previewAsSceneId),
+  );
+
+  const defaultMonoOBP0 = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoOBP0,
+  );
+  const defaultMonoOBP1 = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoOBP1,
+  );
+
+  const monoOBJPalettes = useMemo(() => {
+    return [
+      scene?.monoOBP0 || defaultMonoOBP0,
+      scene?.monoOBP1 || defaultMonoOBP1,
+    ] as [MonoOBJPalette, MonoOBJPalette];
+  }, [scene?.monoOBP0, defaultMonoOBP0, scene?.monoOBP1, defaultMonoOBP1]);
 
   const dispatch = useAppDispatch();
 
@@ -667,6 +690,7 @@ export const SpriteEditor = ({
                       name="objPalette"
                       value={metaspriteTile.objPalette}
                       onChange={onChangeTilesObjPalette}
+                      monoPalettes={monoOBJPalettes}
                     />
                     <InputGroupAppend>
                       <Button

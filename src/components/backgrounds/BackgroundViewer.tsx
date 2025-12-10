@@ -80,9 +80,20 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
   const defaultPaletteIds = useAppSelector(
     (state) => state.project.present.settings.defaultBackgroundPaletteIds,
   );
-  const gbcEnabled = useAppSelector(
+  const colorsEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono",
   );
+  const previewAsMono = useAppSelector(
+    (state) =>
+      state.project.present.settings.colorMode === "mono" ||
+      (state.project.present.settings.colorMode === "mixed" &&
+        state.project.present.settings.previewAsMono),
+  );
+  const defaultMonoBGP = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoBGP,
+  );
+  const monoBGP = scene?.monoBGP || defaultMonoBGP;
+
   const [palettes, setPalettes] = useState<Palette[]>(emptyPalettes);
 
   useEffect(() => {
@@ -115,7 +126,7 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
                 transform: `translate3d(0px, 0px, 0px) scale(${zoom})`,
               }}
             >
-              {gbcEnabled && background.autoColor ? (
+              {colorsEnabled && background.autoColor ? (
                 <AutoColorizedImage
                   width={background.width * TILE_SIZE}
                   height={background.height * TILE_SIZE}
@@ -123,6 +134,8 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
                   uiPalette={
                     scene?.paletteIds?.[7] === "auto" ? undefined : palettes[7]
                   }
+                  previewAsMono={previewAsMono}
+                  monoBGP={monoBGP}
                 />
               ) : (
                 <ColorizedImage
@@ -131,6 +144,8 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
                   src={assetURL("backgrounds", background)}
                   tiles={background.tileColors}
                   palettes={palettes}
+                  previewAsMono={previewAsMono}
+                  monoBGP={monoBGP}
                 />
               )}
             </ImageScale>

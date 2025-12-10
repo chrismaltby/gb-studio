@@ -35,19 +35,6 @@ const Wrapper = styled.div`
   font-size: ${(props) => props.theme.typography.fontSize};
 `;
 
-const Pill = styled.button`
-  color: ${(props) => props.theme.colors.button.text};
-  background: ${(props) => props.theme.colors.list.activeBackground};
-  border: 0px;
-  border-radius: 16px;
-  padding: 3px 10px;
-  font-size: ${(props) => props.theme.typography.fontSize};
-
-  &:active {
-    background: ${(props) => props.theme.colors.list.selectedBackground};
-  }
-`;
-
 const Info = styled.div`
   color: ${(props) => props.theme.colors.secondaryText};
   padding: 0 5px;
@@ -185,41 +172,39 @@ const MetaspriteEditorPreviewSettings = ({
   return (
     <Wrapper>
       {isOpen && <ButtonCover onMouseDown={delayedButtonFocus} />}
-      {colorsEnabled && (
-        <>
-          <RelativePortal pin="bottom-left" offsetY={-10}>
-            {isOpen && (
-              <SelectMenu>
-                <SceneSelect
-                  name="previewAs"
-                  value={value}
-                  onChange={onSelectChange}
-                  onBlur={closeMenu}
-                  maxMenuHeight={200}
-                  optional
-                  optionalLabel={l10n("FIELD_DEFAULT_COLORS")}
-                  {...selectMenuStyleProps}
-                />
-              </SelectMenu>
-            )}
-          </RelativePortal>
-          <PillButton
-            ref={buttonRef}
-            onClick={openMenu}
-            onFocus={onButtonFocus}
-            onBlur={onButtonBlur}
-            variant={scene && !previewAsMono ? "primary" : "normal"}
-          >
-            ▲{" "}
-            {scene
-              ? l10n("FIELD_PREVIEW_AS_SCENE", {
-                  sceneName: sceneName(scene, sceneIndex),
-                })
-              : l10n("FIELD_PREVIEW_AS_DEFAULT")}
-          </PillButton>
-          <FixedSpacer width={5} />
-        </>
-      )}
+
+      <RelativePortal pin="bottom-left" offsetY={-10}>
+        {isOpen && (
+          <SelectMenu>
+            <SceneSelect
+              name="previewAs"
+              value={value}
+              onChange={onSelectChange}
+              onBlur={closeMenu}
+              maxMenuHeight={200}
+              optional
+              optionalLabel={l10n("FIELD_DEFAULT_COLORS")}
+              {...selectMenuStyleProps}
+            />
+          </SelectMenu>
+        )}
+      </RelativePortal>
+      <PillButton
+        ref={buttonRef}
+        onClick={openMenu}
+        onFocus={onButtonFocus}
+        onBlur={onButtonBlur}
+        variant={scene && !previewAsMono ? "primary" : "normal"}
+      >
+        ▲{" "}
+        {scene
+          ? l10n("FIELD_PREVIEW_AS_SCENE", {
+              sceneName: sceneName(scene, sceneIndex),
+            })
+          : l10n("FIELD_PREVIEW_AS_DEFAULT")}
+      </PillButton>
+      <FixedSpacer width={5} />
+
       {canPreviewAsMono && (
         <PillButton
           variant={previewAsMono ? "primary" : "normal"}

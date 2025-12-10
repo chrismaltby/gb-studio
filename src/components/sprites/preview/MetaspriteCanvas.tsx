@@ -13,6 +13,7 @@ import { assetURL } from "shared/lib/helpers/assets";
 import { getSettings } from "store/features/settings/settingsState";
 import {
   MetaspriteTile,
+  MonoOBJPalette,
   Palette,
   SpriteModeSetting,
 } from "shared/lib/resources/types";
@@ -23,6 +24,7 @@ interface MetaspriteCanvasProps {
   flipX?: boolean;
   palettes?: Palette[];
   previewAsMono?: boolean;
+  monoPalettes?: [MonoOBJPalette, MonoOBJPalette];
   spriteMode?: SpriteModeSetting;
 }
 
@@ -35,6 +37,7 @@ export const MetaspriteCanvas = memo(
     flipX = false,
     palettes,
     previewAsMono,
+    monoPalettes,
     spriteMode,
   }: MetaspriteCanvasProps) => {
     const [workerId] = useState(Math.random());
@@ -125,6 +128,7 @@ export const MetaspriteCanvas = memo(
         palette: DMG_PALETTE.colors,
         palettes: paletteColors,
         previewAsMono,
+        monoPalettes,
         colorCorrection,
         spriteMode:
           spriteMode ?? spriteSheet.spriteMode ?? defaultSpriteMode ?? "8x16",
@@ -139,6 +143,7 @@ export const MetaspriteCanvas = memo(
       flipX,
       workerId,
       previewAsMono,
+      monoPalettes,
       colorCorrection,
       spriteMode,
       defaultSpriteMode,

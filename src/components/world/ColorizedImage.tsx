@@ -4,7 +4,7 @@ import ColorizedImageWorker, {
 } from "./ColorizedImage.worker";
 import { getSettings } from "store/features/settings/settingsState";
 import { useAppSelector } from "store/hooks";
-import { Palette } from "shared/lib/resources/types";
+import { MonoBGPPalette, Palette } from "shared/lib/resources/types";
 
 const workerPool: ColorizedImageWorker[] = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {
@@ -18,6 +18,7 @@ interface ColorizedImageProps {
   tiles: number[];
   palettes: Palette[];
   previewAsMono?: boolean;
+  monoBGP?: MonoBGPPalette;
 }
 
 const ColorizedImage = ({
@@ -27,6 +28,7 @@ const ColorizedImage = ({
   tiles,
   palettes,
   previewAsMono,
+  monoBGP,
 }: ColorizedImageProps) => {
   const colorCorrection = useAppSelector(
     (state) => getSettings(state).colorCorrection,
@@ -75,11 +77,21 @@ const ColorizedImage = ({
         width,
         height,
         previewAsMono,
+        monoBGP,
         colorCorrection,
         id: workerId.current,
       });
     }
-  }, [height, palettes, previewAsMono, colorCorrection, src, tiles, width]);
+  }, [
+    height,
+    palettes,
+    previewAsMono,
+    monoBGP,
+    colorCorrection,
+    src,
+    tiles,
+    width,
+  ]);
 
   return <canvas ref={canvasRef} width={width} height={height} />;
 };
