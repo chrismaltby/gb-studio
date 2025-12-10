@@ -874,16 +874,16 @@ export const VariablesResource = Type.Object({
 
 export type VariablesResource = Static<typeof VariablesResource>;
 
-export const EngineFieldValueData = Type.Object({
+export const EngineFieldValue = Type.Object({
   id: Type.String(),
   value: Type.Optional(Type.Union([Type.String(), Type.Number()])),
 });
 
-export type EngineFieldValueData = Static<typeof EngineFieldValueData>;
+export type EngineFieldValue = Static<typeof EngineFieldValue>;
 
 export const EngineFieldValuesResource = Type.Object({
   _resourceType: Type.Literal("engineFieldValues"),
-  engineFieldValues: Type.Array(EngineFieldValueData),
+  engineFieldValues: Type.Array(EngineFieldValue),
 });
 
 export type EngineFieldValuesResource = Static<

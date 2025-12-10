@@ -26,7 +26,7 @@ import {
   SettingsResource,
   VariableData,
   VariablesResource,
-  EngineFieldValueData,
+  EngineFieldValue,
   EngineFieldValuesResource,
   isProjectMetadataResource,
 } from "shared/lib/resources/types";
@@ -759,8 +759,8 @@ describe("TypeBox Schemas", () => {
     const validField = { id: "field1", value: "someValue" };
     const invalidField = { id: "field1", value: [] };
 
-    expect(() => Value.Decode(EngineFieldValueData, validField)).not.toThrow();
-    expect(() => Value.Decode(EngineFieldValueData, invalidField)).toThrow();
+    expect(() => Value.Decode(EngineFieldValue, validField)).not.toThrow();
+    expect(() => Value.Decode(EngineFieldValue, invalidField)).toThrow();
   });
 
   it("should validate EngineFieldValuesResource", () => {

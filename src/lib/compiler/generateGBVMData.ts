@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import flatten from "lodash/flatten";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
-import type { EngineFieldValue } from "shared/lib/entities/entitiesTypes";
 import { CompiledFontData } from "lib/fonts/fontData";
 import {
   decHex32Val,
@@ -20,6 +19,7 @@ import {
   CollisionExtraFlag,
   ColorModeSetting,
   Constant,
+  EngineFieldValue,
   Palette,
   Scene,
   SceneBoundsRect,

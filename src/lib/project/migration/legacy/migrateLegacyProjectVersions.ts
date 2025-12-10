@@ -28,7 +28,6 @@ import type { ProjectData } from "store/features/project/projectActions";
 import {
   CustomEvent,
   CustomEventVariable,
-  EngineFieldValue,
   ScriptEventArgs,
   ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
@@ -47,6 +46,7 @@ import {
   Actor,
   Avatar,
   Emote,
+  EngineFieldValue,
   Font,
   Scene,
   Sprite,

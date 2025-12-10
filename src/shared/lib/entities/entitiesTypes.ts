@@ -26,6 +26,7 @@ import type {
   SoundAsset,
   AvatarAsset,
   Avatar,
+  EngineFieldValue,
 } from "shared/lib/resources/types";
 
 export type UnionVariableValue = {
@@ -186,11 +187,6 @@ export type CustomEvent = {
 
 export type CustomEventNormalized = Omit<CustomEvent, "script"> & {
   script: string[];
-};
-
-export type EngineFieldValue = {
-  id: string;
-  value?: number | string | undefined;
 };
 
 export type MetaspriteNormalized = Omit<Metasprite, "tiles"> & {

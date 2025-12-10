@@ -13,7 +13,6 @@ import type {
   ScriptEvent,
   CustomEvent,
   TimeUnitType,
-  EngineFieldValue,
 } from "shared/lib/entities/entitiesTypes";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
@@ -60,6 +59,7 @@ import { defaultVariableForContext } from "shared/lib/scripts/context";
 import type {
   ActorDirection,
   Constant,
+  EngineFieldValue,
   Palette,
   ScriptEditorCtxType,
   Sound,
