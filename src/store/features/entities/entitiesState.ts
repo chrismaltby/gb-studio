@@ -58,8 +58,6 @@ import {
   ScriptEventParentType,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
-  ScriptEventArgsOverride,
-  ScriptEventArgs,
 } from "shared/lib/entities/entitiesTypes";
 import {
   sortByFilename,
@@ -108,6 +106,8 @@ import {
   MusicSettings,
   ObjPalette,
   Palette,
+  ScriptEventArgs,
+  ScriptEventArgsOverride,
   SoundAsset,
   SoundResourceAsset,
   SpriteResourceAsset,

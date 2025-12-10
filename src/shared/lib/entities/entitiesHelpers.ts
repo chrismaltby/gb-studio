@@ -15,8 +15,6 @@ import {
   UnionVariableValue,
   SpriteStateNormalized,
   ScriptEventNormalized,
-  CustomEventVariable,
-  CustomEventActor,
   CustomEvent,
   ActorPrefab,
   ActorPrefabNormalized,
@@ -24,7 +22,6 @@ import {
   TriggerPrefab,
   TriggerPrefabNormalized,
   TriggerScriptKey,
-  ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
 import { EntityAdapter, EntityId, EntityState } from "@reduxjs/toolkit";
 import { genSymbol, toValidSymbol } from "shared/lib/helpers/symbols";
@@ -65,6 +62,9 @@ import {
   Palette,
   ProjectEntityResources,
   Scene,
+  ScriptActor,
+  ScriptEvent,
+  ScriptVariable,
   SoundAsset,
   Sprite,
   TilesetAsset,
@@ -912,8 +912,8 @@ export const updateCustomEventArgs = (
   scriptEventLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs,
 ) => {
-  const variables = {} as Record<string, CustomEventVariable>;
-  const actors = {} as Record<string, CustomEventActor>;
+  const variables = {} as Record<string, ScriptVariable>;
+  const actors = {} as Record<string, ScriptActor>;
   const oldVariables = customEvent.variables;
   const oldActors = customEvent.actors;
 

@@ -108,7 +108,7 @@ export const ScriptEventArgs = Type.Record(Type.String(), Type.Unknown());
 
 export type ScriptEventArgs = Static<typeof ScriptEventArgs>;
 
-const ScriptEvent = Type.Recursive((This) =>
+export const ScriptEvent = Type.Recursive((This) =>
   Type.Object({
     id: Type.String(),
     command: Type.String(),
@@ -121,14 +121,14 @@ const ScriptEvent = Type.Recursive((This) =>
     ),
   }),
 );
-type ScriptEvent = Static<typeof ScriptEvent>;
+export type ScriptEvent = Static<typeof ScriptEvent>;
 
 const ScriptEventArgsOverride = Type.Object({
   id: Type.String(),
   args: Type.Record(Type.String(), Type.Unknown()),
 });
 
-type ScriptEventArgsOverride = Static<typeof ScriptEventArgsOverride>;
+export type ScriptEventArgsOverride = Static<typeof ScriptEventArgsOverride>;
 
 export const ActorResource = Type.Object({
   _resourceType: Type.Literal("actor"),

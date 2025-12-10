@@ -28,6 +28,9 @@ import type {
   Avatar,
   EngineFieldValue,
   Variable,
+  ScriptVariable,
+  ScriptActor,
+  ScriptEvent,
 } from "shared/lib/resources/types";
 
 export type UnionVariableValue = {
@@ -65,22 +68,8 @@ export type ScriptEventParentType =
   | "actorPrefab"
   | "triggerPrefab";
 
-export type ScriptEventArgs = Record<string, unknown>;
-
-export type ScriptEvent = {
-  id: string;
-  command: string;
-  args?: ScriptEventArgs | undefined;
-  children?: Record<string, ScriptEvent[] | undefined> | undefined;
-};
-
 export type ScriptEventNormalized = Omit<ScriptEvent, "children"> & {
   children?: Record<string, string[]>;
-};
-
-export type ScriptEventArgsOverride = {
-  id: string;
-  args: ScriptEventArgs;
 };
 
 export type ScriptEventsRef = {
@@ -158,24 +147,13 @@ export type TriggerPrefabNormalized = Omit<
   TriggerFieldsOmittedFromPrefab
 >;
 
-export type CustomEventVariable = {
-  id: string;
-  name: string;
-  passByReference: boolean;
-};
-
-export type CustomEventActor = {
-  id: string;
-  name: string;
-};
-
 export type CustomEvent = {
   id: string;
   name: string;
   symbol: string;
   description: string;
-  variables: Record<string, CustomEventVariable>;
-  actors: Record<string, CustomEventActor>;
+  variables: Record<string, ScriptVariable>;
+  actors: Record<string, ScriptActor>;
   script: ScriptEvent[];
 };
 

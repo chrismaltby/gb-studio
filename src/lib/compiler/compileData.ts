@@ -108,7 +108,7 @@ import {
 import { compileSound } from "./sounds/compileSound";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
 import l10n from "shared/lib/lang/l10n";
-import { CustomEvent, ScriptEvent } from "shared/lib/entities/entitiesTypes";
+import { CustomEvent } from "shared/lib/entities/entitiesTypes";
 import type { Reference } from "components/forms/ReferencesSelect";
 import type {
   MusicDriverSetting,
@@ -127,6 +127,7 @@ import {
   Palette,
   ProjectResources,
   Scene,
+  ScriptEvent,
   SpriteModeSetting,
   Tileset,
 } from "shared/lib/resources/types";

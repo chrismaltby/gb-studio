@@ -7,7 +7,6 @@ import {
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
   ScriptEventNormalized,
-  ScriptEvent,
 } from "../src/shared/lib/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
@@ -57,6 +56,7 @@ import {
   ProjectResources,
   Scene,
   SceneResource,
+  ScriptEvent,
   ScriptResource,
   SettingsResource,
   SoundResource,

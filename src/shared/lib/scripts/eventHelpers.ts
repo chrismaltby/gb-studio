@@ -4,8 +4,8 @@ import type {
   CustomEvent,
   ScriptEventNormalized,
   CustomEventNormalized,
-  ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
+import { ScriptEvent } from "shared/lib/resources/types";
 import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
 
 export type ScriptEventDefs = Record<string, ScriptEventDef>;

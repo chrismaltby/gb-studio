@@ -9,7 +9,6 @@ import {
 } from "shared/lib/variables/variableNames";
 import type {
   DistanceUnitType,
-  ScriptEvent,
   CustomEvent,
   TimeUnitType,
 } from "shared/lib/entities/entitiesTypes";
@@ -61,6 +60,7 @@ import type {
   EngineFieldValue,
   Palette,
   ScriptEditorCtxType,
+  ScriptEvent,
   Sound,
   SpriteModeSetting,
   Variable,

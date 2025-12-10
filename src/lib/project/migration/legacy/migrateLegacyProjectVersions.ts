@@ -25,12 +25,7 @@ import {
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import type { ProjectData } from "store/features/project/projectActions";
-import {
-  CustomEvent,
-  CustomEventVariable,
-  ScriptEventArgs,
-  ScriptEvent,
-} from "shared/lib/entities/entitiesTypes";
+import { CustomEvent } from "shared/lib/entities/entitiesTypes";
 import {
   customEventName,
   isUnionValue,
@@ -49,6 +44,9 @@ import {
   EngineFieldValue,
   Font,
   Scene,
+  ScriptEvent,
+  ScriptEventArgs,
+  ScriptVariable,
   Sprite,
   SpriteAnimation,
   SpriteAnimationType,
@@ -1821,7 +1819,7 @@ export const migrateFrom300r3To310r1 = (
             };
             return memo;
           },
-          {} as Record<string, CustomEventVariable>,
+          {} as Record<string, ScriptVariable>,
         ),
         script: mapScript(customEvent.script, (e) =>
           migrateFrom300r3To310r1Event(

@@ -6,7 +6,7 @@ import {
   migrateTriggerPrefabsTestProject,
   migrateTriggerPrefabsTestProject2,
 } from "./data/migrationTestProject";
-import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
+import { ScriptEvent } from "shared/lib/resources/types";
 
 const testEventMigration = (e: ScriptEvent) => {
   if (e.command !== "EVENT_TEST") {

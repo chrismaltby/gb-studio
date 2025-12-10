@@ -11,10 +11,10 @@ import {
   migrateFrom420r6To420r7Event,
   migrateFrom420r7To420r8Scenes,
 } from "lib/project/migration/versions/410to420";
-import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import {
   CompressedProjectResources,
   EngineFieldValue,
+  ScriptEvent,
   SpriteResource,
 } from "shared/lib/resources/types";
 import {

@@ -3,10 +3,7 @@ import { PrecompiledScene } from "../../src/lib/compiler/generateGBVMData";
 import ScriptBuilder, {
   ScriptBuilderOptions,
 } from "../../src/lib/compiler/scriptBuilder";
-import {
-  CustomEvent,
-  ScriptEvent,
-} from "../../src/shared/lib/entities/entitiesTypes";
+import { CustomEvent } from "../../src/shared/lib/entities/entitiesTypes";
 import {
   dummyActorNormalized,
   dummyEngineFieldSchema,
@@ -15,6 +12,7 @@ import {
   getDummyCompiledFont,
 } from "../dummydata";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
+import { ScriptEvent } from "shared/lib/resources/types";
 
 const createTestScriptBuilder = async (
   sceneOverrides: Record<string, unknown> = {},

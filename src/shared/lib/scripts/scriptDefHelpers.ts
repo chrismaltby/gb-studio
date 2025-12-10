@@ -1,12 +1,10 @@
 import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
-import type {
-  ScriptEventArgs,
-  ScriptEventFieldSchema,
-} from "shared/lib/entities/entitiesTypes";
+import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
 import {
   isUnionPropertyValue,
   isUnionVariableValue,
 } from "shared/lib/entities/entitiesHelpers";
+import { ScriptEventArgs } from "shared/lib/resources/types";
 
 export type ScriptEventDefs = Record<string, ScriptEventDef>;
 

@@ -7,7 +7,6 @@ import {
   SceneNormalized,
   SceneScriptKey,
   ScriptEventNormalized,
-  ScriptEvent,
   TriggerNormalized,
   TriggerScriptKey,
   triggerScriptKeys,
@@ -17,13 +16,14 @@ import {
   TriggerPrefabNormalized,
   ActorPrefab,
   TriggerPrefab,
-  ScriptEventArgsOverride,
 } from "shared/lib/entities/entitiesTypes";
 import type {
   Actor,
   CompressedSceneResourceWithChildren,
   Scene,
   SceneResource,
+  ScriptEvent,
+  ScriptEventArgsOverride,
   ScriptResource,
   Trigger,
 } from "shared/lib/resources/types";
