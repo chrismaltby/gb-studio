@@ -542,7 +542,11 @@ export const FontResource = Type.Object({
 
 export type FontResource = Static<typeof FontResource>;
 
+export type Font = Omit<ExtractResource<FontResource>, "mapping">;
+
 export type FontResourceAsset = FontResource & AssetMetadata;
+
+export type FontAsset = ExtractResource<FontResourceAsset>;
 
 export const SoundType = Type.Union([
   Type.Literal("wav"),

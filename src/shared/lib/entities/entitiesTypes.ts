@@ -18,6 +18,8 @@ import type {
   BackgroundAsset,
   TilesetAsset,
   Tileset,
+  Font,
+  FontAsset,
 } from "shared/lib/resources/types";
 
 export type UnionVariableValue = {
@@ -147,21 +149,6 @@ export type TriggerPrefabNormalized = Omit<
   TriggerNormalized,
   TriggerFieldsOmittedFromPrefab
 >;
-
-export type Font = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  width: number;
-  height: number;
-  plugin?: string;
-  inode: string;
-  mapping: Record<string, number | number[]>;
-  _v: number;
-};
-
-export type FontData = Omit<Font, "mapping" | "_v" | "inode">;
 
 export type Avatar = {
   id: string;
@@ -299,7 +286,7 @@ export type ProjectEntitiesData = {
   customEvents: CustomEvent[];
   music: MusicData[];
   sounds: SoundData[];
-  fonts: FontData[];
+  fonts: Font[];
   avatars: AvatarData[];
   emotes: Emote[];
   tilesets: Tileset[];
@@ -325,7 +312,7 @@ export interface EntitiesState {
   customEvents: EntityState<CustomEventNormalized, string>;
   music: EntityState<Music, string>;
   sounds: EntityState<Sound, string>;
-  fonts: EntityState<Font, string>;
+  fonts: EntityState<FontAsset, string>;
   avatars: EntityState<Avatar, string>;
   emotes: EntityState<EmoteAsset, string>;
   tilesets: EntityState<TilesetAsset, string>;

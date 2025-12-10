@@ -57,7 +57,6 @@ import {
   EngineFieldValue,
   MetaspriteNormalized,
   SpriteAnimationNormalized,
-  Font,
   Avatar,
   SpriteStateNormalized,
   ScriptEventsRef,
@@ -105,6 +104,7 @@ import {
   Constant,
   EmoteAsset,
   EmoteResourceAsset,
+  FontAsset,
   FontResourceAsset,
   MetaspriteTile,
   MusicResourceAsset,
@@ -156,7 +156,7 @@ const musicAdapter = createEntityAdapter<Music>({
 const soundsAdapter = createEntityAdapter<Sound>({
   sortComparer: sortByFilename,
 });
-const fontsAdapter = createEntityAdapter<Font>({
+const fontsAdapter = createEntityAdapter<FontAsset>({
   sortComparer: sortByFilename,
 });
 const avatarsAdapter = createEntityAdapter<Avatar>({

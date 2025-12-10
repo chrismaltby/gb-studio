@@ -3,7 +3,6 @@ import { DMG_PALETTE, MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import { eventHasArg } from "lib/helpers/eventSystem";
 import type {
   CustomEvent,
-  FontData,
   SoundData,
   Variable,
 } from "shared/lib/entities/entitiesTypes";
@@ -14,6 +13,7 @@ import {
   Background,
   ColorModeSetting,
   Emote,
+  Font,
   ProjectResources,
   Scene,
   Sprite,
@@ -65,7 +65,7 @@ export const determineUsedAssets = ({
 
   const usedVariablesLookup: Record<string, Variable> = {};
   const usedSoundsLookup: Record<string, SoundData> = {};
-  const usedFontsLookup: Record<string, FontData> = {};
+  const usedFontsLookup: Record<string, Font> = {};
   const usedBackgroundsLookup: Record<string, ReferencedBackground> = {};
   const usedSpritesLookup: Record<string, ReferencedSprite> = {};
   const usedEmotesLookup: Record<string, ReferencedEmote> = {};

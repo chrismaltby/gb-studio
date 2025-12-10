@@ -26,7 +26,6 @@ import {
 } from "store/features/entities/entitiesState";
 import {
   CustomEventNormalized,
-  Font,
   Music,
   SceneNormalized,
   Sound,
@@ -47,6 +46,7 @@ import { StyledMenu } from "ui/menu/style";
 import {
   BackgroundAsset,
   EmoteAsset,
+  FontAsset,
   TilesetAsset,
 } from "shared/lib/resources/types";
 
@@ -92,7 +92,7 @@ const spriteToOption = (sprite: SpriteSheetNormalized): EventOption => {
   };
 };
 
-const fontToOption = (font: Font): EventOption => {
+const fontToOption = (font: FontAsset): EventOption => {
   return {
     label: font.name,
     value: font.id,

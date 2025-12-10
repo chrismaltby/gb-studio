@@ -30,7 +30,6 @@ import {
   CustomEvent,
   CustomEventVariable,
   EngineFieldValue,
-  FontData,
   ScriptEventArgs,
   ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
@@ -48,6 +47,7 @@ import { ensureNumber } from "shared/types";
 import {
   Actor,
   Emote,
+  Font,
   Scene,
   Sprite,
   SpriteAnimation,
@@ -1611,7 +1611,7 @@ const migrateFrom200r16Tor17Fonts = (
     id: uuid(),
     name,
     filename: `${name}.png`,
-  })) as FontData[];
+  })) as Font[];
 
   for (let i = 0; i < fontsData.length; i++) {
     const fontData = fontsData[i];

@@ -10,7 +10,6 @@ import styled from "styled-components";
 import { MentionsInput, SuggestionDataItem } from "react-mentions";
 import { NamedVariable } from "renderer/lib/variables";
 import keyBy from "lodash/keyBy";
-import { Font } from "shared/lib/entities/entitiesTypes";
 import CustomMention from "./CustomMention";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { FontSelect } from "components/forms/FontSelect";
@@ -28,6 +27,7 @@ import {
   parseWaitCodeUnits,
 } from "shared/lib/text/textCodes";
 import { TextWaitTimeSelect } from "components/forms/TextWaitTimeSelect";
+import { FontAsset } from "shared/lib/resources/types";
 
 const varRegex = /\$([VLT0-9][0-9]*)\$/g;
 const charRegex = /#([VLT0-9][0-9]*)#/g;
@@ -229,7 +229,7 @@ interface DialogueTextareaProps {
   placeholder?: string;
   variables: NamedVariable[];
   entityId: string;
-  fonts: Font[];
+  fonts: FontAsset[];
   maxlength?: number;
   singleLine?: boolean;
   onChange: (newValue: string) => void;

@@ -111,7 +111,6 @@ import l10n from "shared/lib/lang/l10n";
 import {
   AvatarData,
   CustomEvent,
-  FontData,
   MusicData,
   ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
@@ -127,6 +126,7 @@ import { EntityType } from "shared/lib/scripts/context";
 import compileTilesets from "lib/compiler/compileTilesets";
 import {
   ColorCorrectionSetting,
+  Font,
   Palette,
   ProjectResources,
   Scene,
@@ -807,7 +807,7 @@ const precompileMusic = (
 };
 
 const precompileFonts = async (
-  usedFonts: FontData[],
+  usedFonts: Font[],
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
   defaultFontId: string,

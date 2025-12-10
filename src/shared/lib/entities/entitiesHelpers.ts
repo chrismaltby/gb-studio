@@ -10,7 +10,6 @@ import {
   ActorNormalized,
   TriggerNormalized,
   Music,
-  Font,
   Avatar,
   CustomEventNormalized,
   Variable,
@@ -63,6 +62,7 @@ import {
   BackgroundAsset,
   Constant,
   EmoteAsset,
+  FontAsset,
   MetaspriteTile,
   Palette,
   ProjectEntityResources,
@@ -87,7 +87,7 @@ interface NormalizedEntities {
   palettes: Record<EntityId, Palette>;
   music: Record<EntityId, Music>;
   sounds: Record<EntityId, Sound>;
-  fonts: Record<EntityId, Font>;
+  fonts: Record<EntityId, FontAsset>;
   avatars: Record<EntityId, Avatar>;
   emotes: Record<EntityId, EmoteAsset>;
   tilesets: Record<EntityId, TilesetAsset>;
@@ -133,7 +133,7 @@ interface DenormalizedEntities {
   engineFieldValues: {
     engineFieldValues: EngineFieldValue[];
   };
-  fonts: Font[];
+  fonts: FontAsset[];
   music: Music[];
   palettes: Palette[];
   scenes: Scene[];
@@ -325,7 +325,7 @@ export const denormalizeEntities = (
     >,
     music: state.music.entities as Record<EntityId, Music>,
     sounds: state.sounds.entities as Record<EntityId, Sound>,
-    fonts: state.fonts.entities as Record<EntityId, Font>,
+    fonts: state.fonts.entities as Record<EntityId, FontAsset>,
     avatars: state.avatars.entities as Record<EntityId, Avatar>,
     emotes: state.emotes.entities as Record<EntityId, EmoteAsset>,
     tilesets: state.tilesets.entities as Record<EntityId, TilesetAsset>,

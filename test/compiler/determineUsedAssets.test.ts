@@ -1,8 +1,9 @@
 import { determineUsedAssets } from "lib/compiler/precompile/determineUsedAssets";
-import { CustomEvent, FontData } from "shared/lib/entities/entitiesTypes";
+import { CustomEvent } from "shared/lib/entities/entitiesTypes";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
 import { dummyProjectResources, dummySceneResource } from "../dummydata";
 import {
+  Font,
   FontResource,
   ProjectResources,
   SceneResource,
@@ -22,7 +23,7 @@ test("should include default font when provided", async () => {
       {
         id: "font3",
       },
-    ] as FontData[],
+    ] as Font[],
     settings: {
       ...dummyProjectResources.settings,
       defaultFontId: "font2",
@@ -53,7 +54,7 @@ test("should include first font when default not provided", async () => {
       {
         id: "font3",
       },
-    ] as FontData[],
+    ] as Font[],
   } as ProjectResources;
   const customEventsLookup = {} as Record<string, CustomEvent>;
   const scriptEventHandlers = await getTestScriptHandlers();
@@ -80,7 +81,7 @@ test("should include fonts referenced in gbvm script blocks", async () => {
       {
         id: "font3",
       },
-    ] as FontData[],
+    ] as Font[],
     scenes: [
       {
         ...dummySceneResource,
