@@ -495,7 +495,11 @@ export const EmoteResource = Type.Object({
 
 export type EmoteResource = Static<typeof EmoteResource>;
 
+export type Emote = ExtractResource<EmoteResource>;
+
 export type EmoteResourceAsset = EmoteResource & AssetMetadata;
+
+export type EmoteAsset = ExtractResource<EmoteResourceAsset>;
 
 export const AvatarResource = Type.Object({
   _resourceType: Type.Literal("avatar"),

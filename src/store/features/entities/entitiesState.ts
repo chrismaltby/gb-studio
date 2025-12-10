@@ -62,7 +62,6 @@ import {
   Font,
   ObjPalette,
   Avatar,
-  Emote,
   SpriteStateNormalized,
   ScriptEventsRef,
   ScriptEventParentType,
@@ -107,6 +106,7 @@ import {
   AvatarResourceAsset,
   CompressedBackgroundResourceAsset,
   Constant,
+  EmoteAsset,
   EmoteResourceAsset,
   FontResourceAsset,
   MetaspriteTile,
@@ -162,7 +162,7 @@ const fontsAdapter = createEntityAdapter<Font>({
 const avatarsAdapter = createEntityAdapter<Avatar>({
   sortComparer: sortByFilename,
 });
-const emotesAdapter = createEntityAdapter<Emote>({
+const emotesAdapter = createEntityAdapter<EmoteAsset>({
   sortComparer: sortByFilename,
 });
 const variablesAdapter = createEntityAdapter<Variable>();

@@ -11,6 +11,8 @@ import type {
   SpriteAnimation,
   Sprite,
   SpriteAsset,
+  Emote,
+  EmoteAsset,
 } from "shared/lib/resources/types";
 
 export type ObjPalette = "OBP0" | "OBP1";
@@ -191,20 +193,6 @@ export type Avatar = {
 
 export type AvatarData = Omit<Avatar, "_v" | "inode">;
 
-export type Emote = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  width: number;
-  height: number;
-  plugin?: string;
-  inode: string;
-  _v: number;
-};
-
-export type EmoteData = Omit<Emote, "_v" | "inode">;
-
 export type MusicSettings = {
   disableSpeedConversion?: boolean;
 };
@@ -354,7 +342,7 @@ export type ProjectEntitiesData = {
   sounds: SoundData[];
   fonts: FontData[];
   avatars: AvatarData[];
-  emotes: EmoteData[];
+  emotes: Emote[];
   tilesets: TilesetData[];
   variables: Variable[];
   constants: Constant[];
@@ -380,7 +368,7 @@ export interface EntitiesState {
   sounds: EntityState<Sound, string>;
   fonts: EntityState<Font, string>;
   avatars: EntityState<Avatar, string>;
-  emotes: EntityState<Emote, string>;
+  emotes: EntityState<EmoteAsset, string>;
   tilesets: EntityState<Tileset, string>;
   variables: EntityState<Variable, string>;
   constants: EntityState<Constant, string>;

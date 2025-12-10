@@ -29,7 +29,6 @@ import {
   AvatarData,
   CustomEvent,
   CustomEventVariable,
-  EmoteData,
   EngineFieldValue,
   FontData,
   ScriptEventArgs,
@@ -48,6 +47,7 @@ import {
 import { ensureNumber } from "shared/types";
 import {
   Actor,
+  Emote,
   Scene,
   Sprite,
   SpriteAnimation,
@@ -1425,7 +1425,7 @@ const migrateFrom200r13To200r14Events = (data: ProjectData): ProjectData => {
 /* Version 2.0.0 r15 migrates old emote events to new emotes format (and creates default emote pngs if missing)
  */
 const migrateFrom200r14To200r15Event =
-  (emotesData: EmoteData[]) =>
+  (emotesData: Emote[]) =>
   (event: ScriptEvent): ScriptEvent => {
     const migrateMeta = generateMigrateMeta(event);
 
@@ -1467,7 +1467,7 @@ const migrateFrom200r14Tor15Emotes = (
     width: 16,
     height: 16,
     filename: `${name}.png`,
-  })) as EmoteData[];
+  })) as Emote[];
 
   for (let i = 0; i < emotesData.length; i++) {
     const emoteData = emotesData[i];

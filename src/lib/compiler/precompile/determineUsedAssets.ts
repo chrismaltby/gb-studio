@@ -4,7 +4,6 @@ import { eventHasArg } from "lib/helpers/eventSystem";
 import type {
   BackgroundData,
   CustomEvent,
-  EmoteData,
   FontData,
   SoundData,
   TilesetData,
@@ -15,6 +14,7 @@ import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import keyBy from "lodash/keyBy";
 import {
   ColorModeSetting,
+  Emote,
   ProjectResources,
   Scene,
   Sprite,
@@ -36,7 +36,7 @@ export type ReferencedSprite = Sprite & {
   colorMode: ColorModeSetting;
 };
 
-export type ReferencedEmote = EmoteData;
+export type ReferencedEmote = Emote;
 
 export type ReferencedTileset = TilesetData;
 

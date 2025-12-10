@@ -27,7 +27,6 @@ import {
 import {
   Background,
   CustomEventNormalized,
-  Emote,
   Font,
   Music,
   SceneNormalized,
@@ -47,6 +46,7 @@ import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 import l10n from "shared/lib/lang/l10n";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { StyledMenu } from "ui/menu/style";
+import { EmoteAsset } from "shared/lib/resources/types";
 
 interface AddReferenceMenuProps {
   onBlur?: () => void;
@@ -135,7 +135,7 @@ const soundToOption = (sound: Sound): EventOption => {
   };
 };
 
-const emoteToOption = (emote: Emote): EventOption => {
+const emoteToOption = (emote: EmoteAsset): EventOption => {
   return {
     label: emote.name,
     value: emote.id,

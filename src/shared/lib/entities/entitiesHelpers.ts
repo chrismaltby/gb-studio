@@ -14,7 +14,6 @@ import {
   Music,
   Font,
   Avatar,
-  Emote,
   CustomEventNormalized,
   Variable,
   EngineFieldValue,
@@ -65,6 +64,7 @@ import { sortByKey } from "shared/lib/helpers/sortByKey";
 import {
   Actor,
   Constant,
+  EmoteAsset,
   MetaspriteTile,
   ProjectEntityResources,
   Scene,
@@ -89,7 +89,7 @@ interface NormalizedEntities {
   sounds: Record<EntityId, Sound>;
   fonts: Record<EntityId, Font>;
   avatars: Record<EntityId, Avatar>;
-  emotes: Record<EntityId, Emote>;
+  emotes: Record<EntityId, EmoteAsset>;
   tilesets: Record<EntityId, Tileset>;
   actorPrefabs: Record<EntityId, ActorPrefabNormalized>;
   triggerPrefabs: Record<EntityId, TriggerPrefabNormalized>;
@@ -129,7 +129,7 @@ interface DenormalizedEntities {
   actors: Actor[];
   avatars: Avatar[];
   backgrounds: Background[];
-  emotes: Emote[];
+  emotes: EmoteAsset[];
   engineFieldValues: {
     engineFieldValues: EngineFieldValue[];
   };
@@ -324,7 +324,7 @@ export const denormalizeEntities = (
     sounds: state.sounds.entities as Record<EntityId, Sound>,
     fonts: state.fonts.entities as Record<EntityId, Font>,
     avatars: state.avatars.entities as Record<EntityId, Avatar>,
-    emotes: state.emotes.entities as Record<EntityId, Emote>,
+    emotes: state.emotes.entities as Record<EntityId, EmoteAsset>,
     tilesets: state.tilesets.entities as Record<EntityId, Tileset>,
     variableResources: {
       variables: {
