@@ -581,6 +581,8 @@ export const MusicSettings = Type.Object({
   disableSpeedConversion: Type.Optional(Type.Boolean()),
 });
 
+export type MusicSettings = Static<typeof MusicSettings>;
+
 export const MusicResource = Type.Object({
   _resourceType: Type.Literal("music"),
   id: Type.String(),

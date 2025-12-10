@@ -156,10 +156,6 @@ export type TriggerPrefabNormalized = Omit<
   TriggerFieldsOmittedFromPrefab
 >;
 
-export type MusicSettings = {
-  disableSpeedConversion?: boolean;
-};
-
 export type Variable = {
   id: string;
   name: string;
