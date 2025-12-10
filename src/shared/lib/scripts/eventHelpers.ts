@@ -1,11 +1,10 @@
 import { EVENT_FADE_IN } from "consts";
 import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
 import type {
-  CustomEvent,
   ScriptEventNormalized,
-  CustomEventNormalized,
+  ScriptNormalized,
 } from "shared/lib/entities/entitiesTypes";
-import { ScriptEvent } from "shared/lib/resources/types";
+import { Script, ScriptEvent } from "shared/lib/resources/types";
 import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
 
 export type ScriptEventDefs = Record<string, ScriptEventDef>;
@@ -56,7 +55,7 @@ export const patchEventArgs = (
 export const calculateAutoFadeEventIdNormalized = (
   script: string[],
   scriptEventsLookup: Record<string, ScriptEventNormalized>,
-  customEventsLookup: Record<string, CustomEventNormalized>,
+  customEventsLookup: Record<string, ScriptNormalized>,
   scriptEventDefs: ScriptEventDefs,
 ) => {
   const events = scriptEventDefs;
@@ -109,7 +108,7 @@ export const calculateAutoFadeEventIdNormalized = (
 
 export const calculateAutoFadeEventId = (
   script: ScriptEvent[],
-  customEventsLookup: Record<string, CustomEvent>,
+  customEventsLookup: Record<string, Script>,
   scriptEventDefs: ScriptEventDefs,
 ) => {
   const events = scriptEventDefs;

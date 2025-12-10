@@ -1,4 +1,4 @@
-import type { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
+import type { ScriptNormalized } from "shared/lib/entities/entitiesTypes";
 import { Variable } from "shared/lib/resources/types";
 
 type VariablesLookup = { [name: string]: Variable | undefined };
@@ -9,7 +9,7 @@ type VariablesLookup = { [name: string]: Variable | undefined };
 
 export const customEventVariableName = (
   variable: string,
-  customEvent: CustomEventNormalized,
+  customEvent: ScriptNormalized,
 ): string => {
   const customEventVariable = customEvent.variables[`V${variable}`];
   if (customEventVariable) {

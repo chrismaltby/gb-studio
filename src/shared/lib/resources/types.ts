@@ -333,6 +333,8 @@ export const ScriptResource = Type.Object({
 
 export type ScriptResource = Static<typeof ScriptResource>;
 
+export type Script = ExtractResource<ScriptResource>;
+
 export const CompressedBackgroundResource = Type.Object({
   _resourceType: Type.Literal("background"),
   id: Type.String(),

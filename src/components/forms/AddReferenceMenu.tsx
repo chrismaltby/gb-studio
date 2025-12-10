@@ -25,7 +25,7 @@ import {
   variableSelectors,
 } from "store/features/entities/entitiesState";
 import {
-  CustomEventNormalized,
+  ScriptNormalized,
   SceneNormalized,
   SpriteSheetNormalized,
 } from "shared/lib/entities/entitiesTypes";
@@ -154,7 +154,7 @@ const tilesetToOption = (tileset: TilesetAsset): EventOption => {
 };
 
 const customEventToOption = (
-  customEvent: CustomEventNormalized,
+  customEvent: ScriptNormalized,
   index: number,
 ): EventOption => {
   return {

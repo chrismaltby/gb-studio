@@ -108,7 +108,6 @@ import {
 import { compileSound } from "./sounds/compileSound";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
 import l10n from "shared/lib/lang/l10n";
-import { CustomEvent } from "shared/lib/entities/entitiesTypes";
 import type { Reference } from "components/forms/ReferencesSelect";
 import type {
   MusicDriverSetting,
@@ -127,6 +126,7 @@ import {
   Palette,
   ProjectResources,
   Scene,
+  Script,
   ScriptEvent,
   SpriteModeSetting,
   Tileset,
@@ -662,7 +662,7 @@ const precompileSprites = async (
 const precompileAvatars = async (
   avatars: Avatar[],
   scenes: Scene[],
-  customEventsLookup: Record<string, CustomEvent>,
+  customEventsLookup: Record<string, Script>,
   projectRoot: string,
   {
     warnings,
@@ -740,7 +740,7 @@ const precompileTilesets = async (
 
 const precompileMusic = (
   scenes: Scene[],
-  customEventsLookup: Record<string, CustomEvent>,
+  customEventsLookup: Record<string, Script>,
   music: Music[],
   musicDriver: MusicDriverSetting,
 ) => {
@@ -807,7 +807,7 @@ const precompileMusic = (
 const precompileFonts = async (
   usedFonts: Font[],
   scenes: Scene[],
-  customEventsLookup: Record<string, CustomEvent>,
+  customEventsLookup: Record<string, Script>,
   defaultFontId: string,
   projectRoot: string,
   {
@@ -835,7 +835,7 @@ const precompileFonts = async (
 
 export const precompileScenes = (
   scenes: Scene[],
-  customEventsLookup: Record<string, CustomEvent>,
+  customEventsLookup: Record<string, Script>,
   defaultPlayerSprites: Record<string, string>,
   defaultSpriteMode: SpriteModeSetting,
   usedBackgrounds: PrecompiledBackground[],

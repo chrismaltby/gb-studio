@@ -9,13 +9,12 @@ import {
   SceneNormalized,
   ActorNormalized,
   TriggerNormalized,
-  CustomEventNormalized,
+  ScriptNormalized,
   UnionValue,
   UnionPropertyValue,
   UnionVariableValue,
   SpriteStateNormalized,
   ScriptEventNormalized,
-  CustomEvent,
   ActorPrefab,
   ActorPrefabNormalized,
   ActorScriptKey,
@@ -62,6 +61,7 @@ import {
   Palette,
   ProjectEntityResources,
   Scene,
+  Script,
   ScriptActor,
   ScriptEvent,
   ScriptVariable,
@@ -93,7 +93,7 @@ interface NormalizedEntities {
   tilesets: Record<EntityId, TilesetAsset>;
   actorPrefabs: Record<EntityId, ActorPrefabNormalized>;
   triggerPrefabs: Record<EntityId, TriggerPrefabNormalized>;
-  scripts: Record<EntityId, CustomEventNormalized>;
+  scripts: Record<EntityId, ScriptNormalized>;
   variables: Record<EntityId, Variable>;
   constants: Record<EntityId, Constant>;
   engineFieldValues: Record<EntityId, EngineFieldValue>;
@@ -137,7 +137,7 @@ interface DenormalizedEntities {
   music: MusicAsset[];
   palettes: Palette[];
   scenes: Scene[];
-  scripts: CustomEvent[];
+  scripts: Script[];
   sounds: SoundAsset[];
   sprites: Sprite[];
   tilesets: TilesetAsset[];
@@ -319,10 +319,7 @@ export const denormalizeEntities = (
       SpriteStateNormalized
     >,
     palettes: state.palettes.entities as Record<EntityId, Palette>,
-    scripts: state.customEvents.entities as Record<
-      EntityId,
-      CustomEventNormalized
-    >,
+    scripts: state.customEvents.entities as Record<EntityId, ScriptNormalized>,
     music: state.music.entities as Record<EntityId, MusicAsset>,
     sounds: state.sounds.entities as Record<EntityId, SoundAsset>,
     fonts: state.fonts.entities as Record<EntityId, FontAsset>,
@@ -509,9 +506,9 @@ export const isVariableCustomEvent = (variable: string) => {
 };
 
 export const isCustomEventEqual = (
-  customEventA: CustomEventNormalized,
+  customEventA: ScriptNormalized,
   lookupA: Record<string, ScriptEventNormalized>,
-  customEventB: CustomEventNormalized,
+  customEventB: ScriptNormalized,
   lookupB: Record<string, ScriptEventNormalized>,
 ) => {
   const compareA = {
@@ -908,7 +905,7 @@ export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
 };
 
 export const updateCustomEventArgs = (
-  customEvent: CustomEventNormalized,
+  customEvent: ScriptNormalized,
   scriptEventLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs,
 ) => {
@@ -1044,7 +1041,7 @@ export const updateCustomEventArgs = (
 };
 
 export const updateAllCustomEventsArgs = (
-  customEvents: CustomEventNormalized[],
+  customEvents: ScriptNormalized[],
   scriptEventLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs,
 ) => {
@@ -1081,7 +1078,7 @@ const triggerFixNulls = <T extends Trigger | TriggerPrefab>(trigger: T): T => {
   return newTrigger;
 };
 
-const scriptFixNulls = (script: CustomEvent): CustomEvent => {
+const scriptFixNulls = (script: Script): Script => {
   return { ...script, script: filterEvents(script.script, validScriptEvent) };
 };
 

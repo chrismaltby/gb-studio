@@ -1,5 +1,4 @@
 import { determineUsedAssets } from "lib/compiler/precompile/determineUsedAssets";
-import { CustomEvent } from "shared/lib/entities/entitiesTypes";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
 import { dummyProjectResources, dummySceneResource } from "../dummydata";
 import {
@@ -7,6 +6,7 @@ import {
   FontResource,
   ProjectResources,
   SceneResource,
+  Script,
   SoundResource,
 } from "shared/lib/resources/types";
 
@@ -29,7 +29,7 @@ test("should include default font when provided", async () => {
       defaultFontId: "font2",
     },
   } as ProjectResources;
-  const customEventsLookup = {} as Record<string, CustomEvent>;
+  const customEventsLookup = {} as Record<string, Script>;
   const scriptEventHandlers = await getTestScriptHandlers();
   const usedAssets = determineUsedAssets({
     projectData,
@@ -56,7 +56,7 @@ test("should include first font when default not provided", async () => {
       },
     ] as Font[],
   } as ProjectResources;
-  const customEventsLookup = {} as Record<string, CustomEvent>;
+  const customEventsLookup = {} as Record<string, Script>;
   const scriptEventHandlers = await getTestScriptHandlers();
   const usedAssets = determineUsedAssets({
     projectData,
@@ -104,7 +104,7 @@ test("should include fonts referenced in gbvm script blocks", async () => {
       },
     ] as SceneResource[],
   } as ProjectResources;
-  const customEventsLookup = {} as Record<string, CustomEvent>;
+  const customEventsLookup = {} as Record<string, Script>;
   const scriptEventHandlers = await getTestScriptHandlers();
   const usedAssets = determineUsedAssets({
     projectData,
@@ -148,7 +148,7 @@ test("should include fonts referenced in dialogue", async () => {
       },
     ] as SceneResource[],
   } as ProjectResources;
-  const customEventsLookup = {} as Record<string, CustomEvent>;
+  const customEventsLookup = {} as Record<string, Script>;
   const scriptEventHandlers = await getTestScriptHandlers();
   const usedAssets = determineUsedAssets({
     projectData,
@@ -202,7 +202,7 @@ test("should include sound from play sound effect", async () => {
       },
     ] as SceneResource[],
   } as ProjectResources;
-  const customEventsLookup = {} as Record<string, CustomEvent>;
+  const customEventsLookup = {} as Record<string, Script>;
   const scriptEventHandlers = await getTestScriptHandlers();
   const usedAssets = determineUsedAssets({
     projectData,
@@ -246,7 +246,7 @@ test("should include sound from text sound effect", async () => {
       },
     ] as SceneResource[],
   } as ProjectResources;
-  const customEventsLookup = {} as Record<string, CustomEvent>;
+  const customEventsLookup = {} as Record<string, Script>;
   const scriptEventHandlers = await getTestScriptHandlers();
   const usedAssets = determineUsedAssets({
     projectData,

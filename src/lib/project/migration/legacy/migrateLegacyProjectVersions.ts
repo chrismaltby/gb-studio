@@ -25,7 +25,6 @@ import {
   isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import type { ProjectData } from "store/features/project/projectActions";
-import { CustomEvent } from "shared/lib/entities/entitiesTypes";
 import {
   customEventName,
   isUnionValue,
@@ -44,6 +43,7 @@ import {
   EngineFieldValue,
   Font,
   Scene,
+  Script,
   ScriptEvent,
   ScriptEventArgs,
   ScriptVariable,
@@ -1746,7 +1746,7 @@ export const migrateFrom300r3To310r1ScriptEvent = (
  */
 export const migrateFrom300r3To310r1Event = (
   event: ScriptEvent,
-  customEvents: CustomEvent[],
+  customEvents: Script[],
 ) => {
   const migrateMeta = generateMigrateMeta(event);
   if (event.args && event.command === "EVENT_CALL_CUSTOM_EVENT") {

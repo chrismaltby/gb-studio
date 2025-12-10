@@ -3,7 +3,6 @@ import { PrecompiledScene } from "../../src/lib/compiler/generateGBVMData";
 import ScriptBuilder, {
   ScriptBuilderOptions,
 } from "../../src/lib/compiler/scriptBuilder";
-import { CustomEvent } from "../../src/shared/lib/entities/entitiesTypes";
 import {
   dummyActorNormalized,
   dummyEngineFieldSchema,
@@ -12,7 +11,7 @@ import {
   getDummyCompiledFont,
 } from "../dummydata";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
-import { ScriptEvent } from "shared/lib/resources/types";
+import { Script, ScriptEvent } from "shared/lib/resources/types";
 
 const createTestScriptBuilder = async (
   sceneOverrides: Record<string, unknown> = {},
@@ -2150,7 +2149,7 @@ test("should reuse script symbol even if scene hashes are different when the sam
   > = {};
   const additionalScriptsCache: Record<string, string> = {};
 
-  const customEvents: CustomEvent[] = [
+  const customEvents: Script[] = [
     {
       id: "script1",
       name: "Script 1",
@@ -2238,7 +2237,7 @@ test("should NOT reuse script symbol even if scene hashes are different causing 
   > = {};
   const additionalScriptsCache: Record<string, string> = {};
 
-  const customEvents: CustomEvent[] = [
+  const customEvents: Script[] = [
     {
       id: "script1",
       name: "Script 1",

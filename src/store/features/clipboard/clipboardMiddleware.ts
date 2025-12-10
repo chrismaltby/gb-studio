@@ -19,7 +19,7 @@ import {
 import {
   ActorNormalized,
   ActorPrefabNormalized,
-  CustomEventNormalized,
+  ScriptNormalized,
   MetaspriteNormalized,
   SceneNormalized,
   ScriptEventNormalized,
@@ -92,9 +92,9 @@ const generateLocalVariableInsertActions = (
 };
 
 const generateCustomEventInsertActions = async (
-  customEvent: CustomEventNormalized,
+  customEvent: ScriptNormalized,
   scriptEventsLookup: Record<string, ScriptEventNormalized>,
-  existingCustomEvents: CustomEventNormalized[],
+  existingCustomEvents: ScriptNormalized[],
   existingScriptEventsLookup: Record<string, ScriptEventNormalized>,
 ): Promise<UnknownAction[]> => {
   const actions: UnknownAction[] = [];
@@ -581,7 +581,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
       const scriptEvents: ScriptEventNormalized[] = [];
-      const customEvents: CustomEventNormalized[] = [];
+      const customEvents: ScriptNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
       const addEvent = (scriptEvent: ScriptEventNormalized) => {
         scriptEvents.push(scriptEvent);
@@ -632,7 +632,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const triggerPrefabsLookup = triggerPrefabSelectors.selectEntities(state);
       const triggers: TriggerNormalized[] = [];
       const scriptEvents: ScriptEventNormalized[] = [];
-      const customEvents: CustomEventNormalized[] = [];
+      const customEvents: ScriptNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
       const triggerPrefabs: TriggerPrefabNormalized[] = [];
       const triggerPrefabsSeen: Record<string, boolean> = {};
@@ -710,7 +710,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
       const actors: ActorNormalized[] = [];
       const scriptEvents: ScriptEventNormalized[] = [];
-      const customEvents: CustomEventNormalized[] = [];
+      const customEvents: ScriptNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
       const actorPrefabs: ActorPrefabNormalized[] = [];
       const actorPrefabsSeen: Record<string, boolean> = {};
@@ -790,7 +790,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const scenes: SceneNormalized[] = [];
       const actors: ActorNormalized[] = [];
       const triggers: TriggerNormalized[] = [];
-      const customEvents: CustomEventNormalized[] = [];
+      const customEvents: ScriptNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
       const actorPrefabs: ActorPrefabNormalized[] = [];
       const actorPrefabsSeen: Record<string, boolean> = {};

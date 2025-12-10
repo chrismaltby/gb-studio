@@ -28,9 +28,8 @@ import type {
   Avatar,
   EngineFieldValue,
   Variable,
-  ScriptVariable,
-  ScriptActor,
   ScriptEvent,
+  Script,
 } from "shared/lib/resources/types";
 
 export type UnionVariableValue = {
@@ -147,17 +146,7 @@ export type TriggerPrefabNormalized = Omit<
   TriggerFieldsOmittedFromPrefab
 >;
 
-export type CustomEvent = {
-  id: string;
-  name: string;
-  symbol: string;
-  description: string;
-  variables: Record<string, ScriptVariable>;
-  actors: Record<string, ScriptActor>;
-  script: ScriptEvent[];
-};
-
-export type CustomEventNormalized = Omit<CustomEvent, "script"> & {
+export type ScriptNormalized = Omit<Script, "script"> & {
   script: string[];
 };
 
@@ -207,7 +196,7 @@ export type ProjectEntitiesData = {
   backgrounds: Background[];
   spriteSheets: Sprite[];
   palettes: Palette[];
-  customEvents: CustomEvent[];
+  customEvents: Script[];
   music: Music[];
   sounds: Sound[];
   fonts: Font[];
@@ -233,7 +222,7 @@ export interface EntitiesState {
   spriteAnimations: EntityState<SpriteAnimationNormalized, string>;
   spriteStates: EntityState<SpriteStateNormalized, string>;
   palettes: EntityState<Palette, string>;
-  customEvents: EntityState<CustomEventNormalized, string>;
+  customEvents: EntityState<ScriptNormalized, string>;
   music: EntityState<MusicAsset, string>;
   sounds: EntityState<SoundAsset, string>;
   fonts: EntityState<FontAsset, string>;

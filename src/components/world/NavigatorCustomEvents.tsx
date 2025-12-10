@@ -3,7 +3,7 @@ import { customEventSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
+import { ScriptNormalized } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { EntityListItem } from "ui/lists/EntityListItem";
@@ -111,7 +111,7 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   );
 
   const renderContextMenu = useCallback(
-    (item: EntityNavigatorItem<CustomEventNormalized>) => {
+    (item: EntityNavigatorItem<ScriptNormalized>) => {
       return [
         <MenuItem
           key="rename"
@@ -153,7 +153,7 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   );
 
   const renderLabel = useCallback(
-    (item: EntityNavigatorItem<CustomEventNormalized>) => {
+    (item: EntityNavigatorItem<ScriptNormalized>) => {
       if (item.type === "folder") {
         return (
           <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>

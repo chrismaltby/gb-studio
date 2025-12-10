@@ -49,7 +49,7 @@ import {
   TriggerNormalized,
   SceneNormalized,
   SpriteSheetNormalized,
-  CustomEventNormalized,
+  ScriptNormalized,
   ScriptEventNormalized,
   MetaspriteNormalized,
   SpriteAnimationNormalized,
@@ -149,7 +149,7 @@ const spriteAnimationsAdapter =
   createEntityAdapter<SpriteAnimationNormalized>();
 const spriteStatesAdapter = createEntityAdapter<SpriteStateNormalized>();
 const palettesAdapter = createEntityAdapter<Palette>();
-const customEventsAdapter = createEntityAdapter<CustomEventNormalized>();
+const customEventsAdapter = createEntityAdapter<ScriptNormalized>();
 const musicAdapter = createEntityAdapter<MusicAsset>({
   sortComparer: sortByFilename,
 });
@@ -341,7 +341,7 @@ const loadProject: CaseReducer<
   updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);
   updateAllCustomEventsArgs(
-    Object.values(state.customEvents.entities) as CustomEventNormalized[],
+    Object.values(state.customEvents.entities) as ScriptNormalized[],
     state.scriptEvents.entities,
     action.payload.scriptEventDefs,
   );
@@ -3842,11 +3842,11 @@ const addCustomEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
     customEventId: string;
-    defaults?: Partial<CustomEventNormalized>;
+    defaults?: Partial<ScriptNormalized>;
   }>
 > = (state, action) => {
   const customEventsTotal = localCustomEventSelectTotal(state);
-  const newCustomEvent: CustomEventNormalized = {
+  const newCustomEvent: ScriptNormalized = {
     id: action.payload.customEventId,
     name: defaultLocalisedCustomEventName(customEventsTotal),
     description: "",
@@ -3863,7 +3863,7 @@ const editCustomEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
     customEventId: string;
-    changes: Partial<CustomEventNormalized>;
+    changes: Partial<ScriptNormalized>;
   }>
 > = (state, action) => {
   const patch = { ...action.payload.changes };
@@ -4956,7 +4956,7 @@ const entitiesSlice = createSlice({
       reducer: addCustomEvent,
       prepare: (payload?: {
         customEventId?: string;
-        defaults?: Partial<CustomEventNormalized>;
+        defaults?: Partial<ScriptNormalized>;
       }) => {
         return {
           payload: {

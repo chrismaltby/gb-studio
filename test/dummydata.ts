@@ -3,7 +3,7 @@ import {
   SpriteSheetNormalized,
   ActorNormalized,
   TriggerNormalized,
-  CustomEventNormalized,
+  ScriptNormalized,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
   ScriptEventNormalized,
@@ -280,7 +280,7 @@ export const dummyMusic: MusicAsset = {
   settings: {},
 };
 
-export const dummyCustomEventNormalized: CustomEventNormalized = {
+export const dummyCustomEventNormalized: ScriptNormalized = {
   id: "",
   name: "",
   symbol: "script_0",

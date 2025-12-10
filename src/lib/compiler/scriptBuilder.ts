@@ -9,7 +9,6 @@ import {
 } from "shared/lib/variables/variableNames";
 import type {
   DistanceUnitType,
-  CustomEvent,
   TimeUnitType,
 } from "shared/lib/entities/entitiesTypes";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
@@ -59,6 +58,7 @@ import type {
   Constant,
   EngineFieldValue,
   Palette,
+  Script,
   ScriptEditorCtxType,
   ScriptEvent,
   Sound,
@@ -192,7 +192,7 @@ export interface ScriptBuilderOptions {
   emotes: PrecompiledEmote[];
   tilesets: PrecompiledTilesetData[];
   palettes: Palette[];
-  customEvents: CustomEvent[];
+  customEvents: Script[];
   entity?: ScriptBuilderEntity;
   engineFields: Record<string, EngineFieldSchema>;
   engineFieldValues: EngineFieldValue[];

@@ -1,7 +1,6 @@
 import type { Reference } from "components/forms/ReferencesSelect";
 import { DMG_PALETTE, MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import { eventHasArg } from "lib/helpers/eventSystem";
-import type { CustomEvent } from "shared/lib/entities/entitiesTypes";
 import { walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import keyBy from "lodash/keyBy";
@@ -12,6 +11,7 @@ import {
   Font,
   ProjectResources,
   Scene,
+  Script,
   Sound,
   Sprite,
   Tileset,
@@ -45,7 +45,7 @@ export const determineUsedAssets = ({
   warnings,
 }: {
   projectData: ProjectResources;
-  customEventsLookup: Record<string, CustomEvent>;
+  customEventsLookup: Record<string, Script>;
   scriptEventHandlers: ScriptEventHandlers;
   warnings: (msg: string) => void;
 }) => {

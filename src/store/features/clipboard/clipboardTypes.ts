@@ -6,7 +6,7 @@ import {
   TriggerNormalized,
   ActorNormalized,
   SceneNormalized,
-  CustomEventNormalized,
+  ScriptNormalized,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
@@ -48,14 +48,14 @@ export type ClipboardPaletteIds = {
 export type ClipboardScriptEvents = {
   scriptEvents: ScriptEventNormalized[];
   script: string[];
-  customEvents: CustomEventNormalized[];
+  customEvents: ScriptNormalized[];
 };
 
 export type ClipboardTriggers = {
   triggers: TriggerNormalized[];
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
-  customEvents: CustomEventNormalized[];
+  customEvents: ScriptNormalized[];
   triggerPrefabs?: TriggerPrefabNormalized[];
 };
 
@@ -63,7 +63,7 @@ export type ClipboardActors = {
   actors: ActorNormalized[];
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
-  customEvents: CustomEventNormalized[];
+  customEvents: ScriptNormalized[];
   actorPrefabs?: ActorPrefabNormalized[];
 };
 
@@ -73,7 +73,7 @@ export type ClipboardScenes = {
   triggers: TriggerNormalized[];
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
-  customEvents: CustomEventNormalized[];
+  customEvents: ScriptNormalized[];
   actorPrefabs?: ActorPrefabNormalized[];
   triggerPrefabs?: TriggerPrefabNormalized[];
 };

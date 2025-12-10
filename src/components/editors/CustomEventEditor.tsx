@@ -16,7 +16,7 @@ import {
   FormSectionTitle,
 } from "ui/form/layout/FormLayout";
 import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
-import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
+import { ScriptNormalized } from "shared/lib/entities/entitiesTypes";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
 import { BlankIcon, CheckIcon, LockIcon, LockOpenIcon } from "ui/icons/Icons";
@@ -37,7 +37,7 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 
 const customEventName = (
-  customEvent: CustomEventNormalized,
+  customEvent: ScriptNormalized,
   customEventIndex: number,
 ) => (customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`);
 
@@ -87,10 +87,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
   );
 
   const onChangeCustomEventProp = useCallback(
-    <K extends keyof CustomEventNormalized>(
-      key: K,
-      value: CustomEventNormalized[K],
-    ) => {
+    <K extends keyof ScriptNormalized>(key: K, value: ScriptNormalized[K]) => {
       dispatch(
         entitiesActions.editCustomEvent({
           customEventId: id,
