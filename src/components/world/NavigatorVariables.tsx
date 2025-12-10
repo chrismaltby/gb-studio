@@ -2,7 +2,6 @@ import React, { FC, useCallback, useEffect, useState } from "react";
 import { variableSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
-import { Variable } from "shared/lib/entities/entitiesTypes";
 import { allVariables } from "renderer/lib/variables";
 import { EntityListItem } from "ui/lists/EntityListItem";
 import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
@@ -10,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import entitiesActions from "store/features/entities/entitiesActions";
+import { Variable } from "shared/lib/resources/types";
 
 interface NavigatorVariablesProps {
   height: number;

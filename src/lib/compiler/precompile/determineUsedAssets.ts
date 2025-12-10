@@ -1,7 +1,7 @@
 import type { Reference } from "components/forms/ReferencesSelect";
 import { DMG_PALETTE, MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import { eventHasArg } from "lib/helpers/eventSystem";
-import type { CustomEvent, Variable } from "shared/lib/entities/entitiesTypes";
+import type { CustomEvent } from "shared/lib/entities/entitiesTypes";
 import { walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import keyBy from "lodash/keyBy";
@@ -15,6 +15,7 @@ import {
   Sound,
   Sprite,
   Tileset,
+  Variable,
 } from "shared/lib/resources/types";
 import { ensureString } from "shared/types";
 import { valuesOf } from "shared/lib/helpers/record";

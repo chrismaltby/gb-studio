@@ -1,9 +1,6 @@
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import uniq from "lodash/uniq";
-import {
-  CustomEventNormalized,
-  Variable,
-} from "shared/lib/entities/entitiesTypes";
+import { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import {
   customEventVariableCode,
@@ -15,6 +12,7 @@ import {
   tempVariableCode,
   tempVariableName,
 } from "shared/lib/variables/variableNames";
+import { Variable } from "shared/lib/resources/types";
 
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));

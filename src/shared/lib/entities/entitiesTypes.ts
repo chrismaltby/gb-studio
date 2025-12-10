@@ -27,6 +27,7 @@ import type {
   AvatarAsset,
   Avatar,
   EngineFieldValue,
+  Variable,
 } from "shared/lib/resources/types";
 
 export type UnionVariableValue = {
@@ -156,13 +157,6 @@ export type TriggerPrefabNormalized = Omit<
   TriggerNormalized,
   TriggerFieldsOmittedFromPrefab
 >;
-
-export type Variable = {
-  id: string;
-  name: string;
-  symbol: string;
-  flags?: Record<string, string>;
-};
 
 export type CustomEventVariable = {
   id: string;

@@ -7,11 +7,10 @@ import {
   ActorNormalized,
   SceneNormalized,
   CustomEventNormalized,
-  Variable,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
-import { MetaspriteTile } from "shared/lib/resources/types";
+import { MetaspriteTile, Variable } from "shared/lib/resources/types";
 import { ScriptValue } from "shared/lib/scriptValue/types";
 
 export const ClipboardTypeScriptEvents = "gbstudio.scriptevents";

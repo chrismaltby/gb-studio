@@ -26,7 +26,6 @@ import {
   SpriteAnimationNormalized,
   TriggerNormalized,
   TriggerPrefabNormalized,
-  Variable,
 } from "shared/lib/entities/entitiesTypes";
 import actions from "./clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -71,7 +70,7 @@ import {
 } from "shared/lib/scripts/walk";
 import { batch } from "react-redux";
 import { sortSubsetStringArray } from "shared/lib/helpers/array";
-import { MetaspriteTile } from "shared/lib/resources/types";
+import { MetaspriteTile, Variable } from "shared/lib/resources/types";
 
 const generateLocalVariableInsertActions = (
   originalId: string,

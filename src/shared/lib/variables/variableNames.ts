@@ -1,7 +1,5 @@
-import type {
-  CustomEventNormalized,
-  Variable,
-} from "shared/lib/entities/entitiesTypes";
+import type { CustomEventNormalized } from "shared/lib/entities/entitiesTypes";
+import { Variable } from "shared/lib/resources/types";
 
 type VariablesLookup = { [name: string]: Variable | undefined };
 

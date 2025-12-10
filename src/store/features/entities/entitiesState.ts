@@ -49,7 +49,6 @@ import {
   TriggerNormalized,
   SceneNormalized,
   SpriteSheetNormalized,
-  Variable,
   CustomEventNormalized,
   ScriptEventNormalized,
   MetaspriteNormalized,
@@ -114,6 +113,7 @@ import {
   SpriteResourceAsset,
   TilesetAsset,
   TilesetResourceAsset,
+  Variable,
 } from "shared/lib/resources/types";
 import {
   insertAfterElement,

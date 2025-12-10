@@ -28,7 +28,6 @@ import {
   CustomEventNormalized,
   SceneNormalized,
   SpriteSheetNormalized,
-  Variable,
 } from "shared/lib/entities/entitiesTypes";
 import { Reference, ReferenceType } from "./ReferencesSelect";
 import {
@@ -48,6 +47,7 @@ import {
   MusicAsset,
   SoundAsset,
   TilesetAsset,
+  Variable,
 } from "shared/lib/resources/types";
 
 interface AddReferenceMenuProps {

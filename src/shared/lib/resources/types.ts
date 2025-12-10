@@ -846,14 +846,14 @@ export type SettingsResource = Static<typeof SettingsResource>;
 
 export type Settings = ExtractResource<SettingsResource>;
 
-export const VariableData = Type.Object({
+export const Variable = Type.Object({
   id: Type.String(),
   name: Type.String(),
   symbol: Type.String(),
   flags: Type.Optional(Type.Record(Type.String(), Type.String())),
 });
 
-export type VariableData = Static<typeof VariableData>;
+export type Variable = Static<typeof Variable>;
 
 export const ConstantData = Type.Object({
   id: Type.String(),
@@ -868,7 +868,7 @@ export type Constant = ExtractResource<ConstantData>;
 
 export const VariablesResource = Type.Object({
   _resourceType: Type.Literal("variables"),
-  variables: Type.Array(VariableData),
+  variables: Type.Array(Variable),
   constants: Type.Array(ConstantData),
 });
 

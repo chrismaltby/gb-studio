@@ -9,7 +9,6 @@ import {
 } from "shared/lib/variables/variableNames";
 import type {
   DistanceUnitType,
-  Variable,
   ScriptEvent,
   CustomEvent,
   TimeUnitType,
@@ -64,6 +63,7 @@ import type {
   ScriptEditorCtxType,
   Sound,
   SpriteModeSetting,
+  Variable,
 } from "shared/lib/resources/types";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapUncommentedScript } from "shared/lib/scripts/walk";

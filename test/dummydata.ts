@@ -6,7 +6,6 @@ import {
   CustomEventNormalized,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
-  Variable,
   ScriptEventNormalized,
   ScriptEvent,
 } from "../src/shared/lib/entities/entitiesTypes";
@@ -66,6 +65,7 @@ import {
   Trigger,
   TriggerPrefabResource,
   TriggerResource,
+  Variable,
   VariablesResource,
 } from "shared/lib/resources/types";
 import { compressProjectResources } from "shared/lib/resources/compression";

@@ -24,7 +24,7 @@ import {
   MusicResource,
   PaletteResource,
   SettingsResource,
-  VariableData,
+  Variable,
   VariablesResource,
   EngineFieldValue,
   EngineFieldValuesResource,
@@ -735,8 +735,8 @@ describe("TypeBox Schemas", () => {
     const validVariable = { id: "var1", name: "Variable 1", symbol: "symbol" };
     const invalidVariable = { id: "var1", name: "Variable 1" };
 
-    expect(() => Value.Decode(VariableData, validVariable)).not.toThrow();
-    expect(() => Value.Decode(VariableData, invalidVariable)).toThrow();
+    expect(() => Value.Decode(Variable, validVariable)).not.toThrow();
+    expect(() => Value.Decode(Variable, invalidVariable)).toThrow();
   });
 
   it("should validate VariablesResource", () => {

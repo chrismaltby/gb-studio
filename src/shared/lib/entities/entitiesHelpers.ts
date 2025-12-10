@@ -10,7 +10,6 @@ import {
   ActorNormalized,
   TriggerNormalized,
   CustomEventNormalized,
-  Variable,
   UnionValue,
   UnionPropertyValue,
   UnionVariableValue,
@@ -70,6 +69,7 @@ import {
   Sprite,
   TilesetAsset,
   Trigger,
+  Variable,
 } from "shared/lib/resources/types";
 import { uniqBy } from "lodash";
 
