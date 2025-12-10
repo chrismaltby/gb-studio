@@ -26,7 +26,6 @@ import {
 } from "shared/lib/scripts/scriptDefHelpers";
 import type { ProjectData } from "store/features/project/projectActions";
 import {
-  AvatarData,
   CustomEvent,
   CustomEventVariable,
   EngineFieldValue,
@@ -46,6 +45,7 @@ import {
 import { ensureNumber } from "shared/types";
 import {
   Actor,
+  Avatar,
   Emote,
   Font,
   Scene,
@@ -1552,7 +1552,7 @@ const migrateFrom200r15Tor16Avatars = (
         }
       );
     })
-    .filter((i) => i) as AvatarData[];
+    .filter((i) => i) as Avatar[];
 
   const avatarsIdLookup = uniqueAvatarIds.reduce(
     (memo, oldId, index) => {

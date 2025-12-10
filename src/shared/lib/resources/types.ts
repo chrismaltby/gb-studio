@@ -523,7 +523,11 @@ export const AvatarResource = Type.Object({
 
 export type AvatarResource = Static<typeof AvatarResource>;
 
+export type Avatar = ExtractResource<AvatarResource>;
+
 export type AvatarResourceAsset = AvatarResource & AssetMetadata;
+
+export type AvatarAsset = ExtractResource<AvatarResourceAsset>;
 
 export const FontResource = Type.Object({
   _resourceType: Type.Literal("font"),

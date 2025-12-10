@@ -24,6 +24,8 @@ import type {
   MusicAsset,
   Sound,
   SoundAsset,
+  AvatarAsset,
+  Avatar,
 } from "shared/lib/resources/types";
 
 export type UnionVariableValue = {
@@ -154,19 +156,6 @@ export type TriggerPrefabNormalized = Omit<
   TriggerFieldsOmittedFromPrefab
 >;
 
-export type Avatar = {
-  id: string;
-  name: string;
-  filename: string;
-  width: number;
-  height: number;
-  plugin?: string;
-  inode: string;
-  _v: number;
-};
-
-export type AvatarData = Omit<Avatar, "_v" | "inode">;
-
 export type MusicSettings = {
   disableSpeedConversion?: boolean;
 };
@@ -263,7 +252,7 @@ export type ProjectEntitiesData = {
   music: Music[];
   sounds: Sound[];
   fonts: Font[];
-  avatars: AvatarData[];
+  avatars: Avatar[];
   emotes: Emote[];
   tilesets: Tileset[];
   variables: Variable[];
@@ -289,7 +278,7 @@ export interface EntitiesState {
   music: EntityState<MusicAsset, string>;
   sounds: EntityState<SoundAsset, string>;
   fonts: EntityState<FontAsset, string>;
-  avatars: EntityState<Avatar, string>;
+  avatars: EntityState<AvatarAsset, string>;
   emotes: EntityState<EmoteAsset, string>;
   tilesets: EntityState<TilesetAsset, string>;
   variables: EntityState<Variable, string>;

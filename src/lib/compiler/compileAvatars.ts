@@ -2,13 +2,13 @@ import promiseLimit from "lib/helpers/promiseLimit";
 import getFileModifiedTime from "lib/helpers/fs/getModifiedTime";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
-import { AvatarData } from "shared/lib/entities/entitiesTypes";
+import { Avatar } from "shared/lib/resources/types";
 
 type CompileAvatarOptions = {
   warnings: (msg: string) => void;
 };
 
-export type PrecompiledAvatarData = AvatarData & {
+export type PrecompiledAvatarData = Avatar & {
   data: Uint8Array;
   size: number;
   frames: number;
@@ -23,7 +23,7 @@ const avatarBuildCache: Record<
 > = {};
 
 const compileAvatars = async (
-  avatars: AvatarData[],
+  avatars: Avatar[],
   projectRoot: string,
   { warnings }: CompileAvatarOptions,
 ) => {

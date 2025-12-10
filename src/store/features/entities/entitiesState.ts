@@ -56,7 +56,6 @@ import {
   EngineFieldValue,
   MetaspriteNormalized,
   SpriteAnimationNormalized,
-  Avatar,
   SpriteStateNormalized,
   ScriptEventsRef,
   ScriptEventParentType,
@@ -96,6 +95,7 @@ import { decompressProjectResources } from "shared/lib/resources/compression";
 import { omit } from "shared/types";
 import { isEqual } from "lodash";
 import {
+  AvatarAsset,
   AvatarResourceAsset,
   BackgroundAsset,
   CompressedBackgroundResourceAsset,
@@ -159,7 +159,7 @@ const soundsAdapter = createEntityAdapter<SoundAsset>({
 const fontsAdapter = createEntityAdapter<FontAsset>({
   sortComparer: sortByFilename,
 });
-const avatarsAdapter = createEntityAdapter<Avatar>({
+const avatarsAdapter = createEntityAdapter<AvatarAsset>({
   sortComparer: sortByFilename,
 });
 const emotesAdapter = createEntityAdapter<EmoteAsset>({

@@ -108,11 +108,7 @@ import {
 import { compileSound } from "./sounds/compileSound";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
 import l10n from "shared/lib/lang/l10n";
-import {
-  AvatarData,
-  CustomEvent,
-  ScriptEvent,
-} from "shared/lib/entities/entitiesTypes";
+import { CustomEvent, ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import type { Reference } from "components/forms/ReferencesSelect";
 import type {
   MusicDriverSetting,
@@ -124,6 +120,7 @@ import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { EntityType } from "shared/lib/scripts/context";
 import compileTilesets from "lib/compiler/compileTilesets";
 import {
+  Avatar,
   ColorCorrectionSetting,
   Font,
   Music,
@@ -662,7 +659,7 @@ const precompileSprites = async (
 };
 
 const precompileAvatars = async (
-  avatars: AvatarData[],
+  avatars: Avatar[],
   scenes: Scene[],
   customEventsLookup: Record<string, CustomEvent>,
   projectRoot: string,
@@ -672,8 +669,8 @@ const precompileAvatars = async (
     warnings: (msg: string) => void;
   },
 ) => {
-  const usedAvatars: AvatarData[] = [];
-  const usedAvatarLookup: Record<string, AvatarData> = {};
+  const usedAvatars: Avatar[] = [];
+  const usedAvatarLookup: Record<string, Avatar> = {};
   const avatarLookup = indexById(avatars);
 
   walkScenesScripts(
