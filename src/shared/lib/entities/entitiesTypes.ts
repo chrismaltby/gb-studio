@@ -20,8 +20,6 @@ import type {
   Tileset,
 } from "shared/lib/resources/types";
 
-export type ObjPalette = "OBP0" | "OBP1";
-
 export type UnionVariableValue = {
   type: "variable";
   value?: string;

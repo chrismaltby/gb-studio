@@ -1,5 +1,4 @@
-import type { ObjPalette } from "shared/lib/entities/entitiesTypes";
-import { ColorCorrectionSetting } from "shared/lib/resources/types";
+import { ColorCorrectionSetting, ObjPalette } from "shared/lib/resources/types";
 
 /* eslint-disable no-param-reassign */
 const hexStringToDecimal = (str: string) => {

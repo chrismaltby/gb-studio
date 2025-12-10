@@ -1,6 +1,5 @@
 import PaletteBlock from "components/forms/PaletteBlock";
 import React, { FC } from "react";
-import { ObjPalette } from "shared/lib/entities/entitiesTypes";
 import {
   OptionLabelWithPreview,
   Select,
@@ -8,6 +7,7 @@ import {
 } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import { SingleValue } from "react-select";
+import { ObjPalette } from "shared/lib/resources/types";
 
 interface ObjPaletteSelectProps {
   name: string;

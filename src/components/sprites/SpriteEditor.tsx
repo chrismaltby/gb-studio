@@ -14,7 +14,6 @@ import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
-  ObjPalette,
   SpriteSheetNormalized,
   SpriteStateNormalized,
 } from "shared/lib/entities/entitiesTypes";
@@ -60,6 +59,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 import {
   MetaspriteTile,
+  ObjPalette,
   SpriteAnimationType,
   SpriteModeSetting,
 } from "shared/lib/resources/types";

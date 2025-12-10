@@ -4,13 +4,13 @@ import {
   animationMapBySpriteType,
   toEngineOrder,
 } from "shared/lib/sprites/helpers";
-import type { ObjPalette } from "shared/lib/entities/entitiesTypes";
 import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { optimiseTiles } from "lib/sprites/readSpriteData";
 import { ReferencedSprite } from "./precompile/determineUsedAssets";
 import {
   ColorModeSetting,
+  ObjPalette,
   Sprite,
   SpriteModeSetting,
 } from "shared/lib/resources/types";
