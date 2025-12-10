@@ -4,7 +4,7 @@ import AutoColorizedImageWorker, {
 } from "./AutoColorizedImage.worker";
 import { getSettings } from "store/features/settings/settingsState";
 import { useAppSelector } from "store/hooks";
-import { Palette } from "shared/lib/entities/entitiesTypes";
+import { Palette } from "shared/lib/resources/types";
 
 const workerPool: AutoColorizedImageWorker[] = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {

@@ -592,6 +592,8 @@ export const PaletteResource = Type.Object({
 
 export type PaletteResource = Static<typeof PaletteResource>;
 
+export type Palette = ExtractResource<PaletteResource>;
+
 export const ColorCorrectionSetting = Type.Union([
   Type.Literal("none"),
   Type.Literal("default"),

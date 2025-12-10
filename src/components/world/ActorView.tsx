@@ -8,11 +8,11 @@ import {
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
-import { Palette } from "shared/lib/entities/entitiesTypes";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import renderActorContextMenu from "./renderActorContextMenu";
 import { ContextMenu } from "ui/menu/ContextMenu";
 import { SpriteBoundingBox } from "components/sprites/MetaspriteEditor";
+import { Palette } from "shared/lib/resources/types";
 
 interface ActorViewProps {
   id: string;

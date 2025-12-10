@@ -50,7 +50,6 @@ import {
   SceneNormalized,
   Background,
   SpriteSheetNormalized,
-  Palette,
   Music,
   Variable,
   CustomEventNormalized,
@@ -111,6 +110,7 @@ import {
   FontResourceAsset,
   MetaspriteTile,
   MusicResourceAsset,
+  Palette,
   SoundResourceAsset,
   SpriteResourceAsset,
   TilesetResourceAsset,
@@ -3588,7 +3588,11 @@ const paintColor: CaseReducer<
 
 const setSceneExtractedPalettes: CaseReducer<
   EntitiesState,
-  PayloadAction<{ sceneId: string; palettes: Palette[]; tileColors: number[] }>
+  PayloadAction<{
+    sceneId: string;
+    palettes: Palette[];
+    tileColors: number[];
+  }>
 > = (state, action) => {
   const scene = localSceneSelectById(state, action.payload.sceneId);
   if (!scene) {

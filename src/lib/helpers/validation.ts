@@ -1,12 +1,12 @@
 import type {
   BackgroundData,
-  Palette,
   Tileset,
 } from "shared/lib/entities/entitiesTypes";
 import { compileImage } from "lib/compiler/compileImages";
 import {
   ColorCorrectionSetting,
   ColorModeSetting,
+  Palette,
 } from "shared/lib/resources/types";
 import { HexPalette } from "shared/lib/tiles/autoColor";
 

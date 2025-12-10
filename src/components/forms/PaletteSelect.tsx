@@ -5,7 +5,6 @@ import {
   getLocalisedDMGPalette,
   getLocalisedPalettes,
 } from "store/features/entities/entitiesState";
-import { Palette } from "shared/lib/entities/entitiesTypes";
 import PaletteBlock from "components/forms/PaletteBlock";
 import {
   Option,
@@ -17,6 +16,7 @@ import {
 } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import { SingleValue } from "react-select";
+import { Palette } from "shared/lib/resources/types";
 
 interface PaletteSelectProps extends SelectCommonProps {
   name: string;

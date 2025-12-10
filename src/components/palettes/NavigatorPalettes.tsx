@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { paletteSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
-import { Palette } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
@@ -20,6 +19,7 @@ import {
   buildEntityNavigatorItems,
 } from "shared/lib/entities/buildEntityNavigatorItems";
 import { paletteName } from "shared/lib/entities/entitiesHelpers";
+import { Palette } from "shared/lib/resources/types";
 
 interface NavigatorPalettesProps {
   height: number;

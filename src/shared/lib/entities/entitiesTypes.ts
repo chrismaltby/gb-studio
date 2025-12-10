@@ -13,6 +13,7 @@ import type {
   SpriteAsset,
   Emote,
   EmoteAsset,
+  Palette,
 } from "shared/lib/resources/types";
 
 export type ObjPalette = "OBP0" | "OBP1";
@@ -240,14 +241,6 @@ export type Tileset = {
 };
 
 export type TilesetData = Omit<Tileset, "_v" | "inode">;
-
-export type Palette = {
-  id: string;
-  name: string;
-  colors: [string, string, string, string];
-  defaultName?: string;
-  defaultColors?: [string, string, string, string];
-};
 
 export type Variable = {
   id: string;

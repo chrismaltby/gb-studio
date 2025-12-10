@@ -9,9 +9,9 @@ import {
 } from "store/features/entities/entitiesState";
 import ColorizedImage from "components/world/ColorizedImage";
 import { DMG_PALETTE, TILE_SIZE } from "consts";
-import { Palette } from "shared/lib/entities/entitiesTypes";
 import { assetURL } from "shared/lib/helpers/assets";
 import AutoColorizedImage from "components/world/AutoColorizedImage";
+import { Palette } from "shared/lib/resources/types";
 
 interface MetaspriteEditorProps {
   backgroundId: string;

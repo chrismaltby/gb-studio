@@ -2,12 +2,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { DMG_PALETTE } from "consts";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
-import { ObjPalette, Palette } from "shared/lib/entities/entitiesTypes";
+import { ObjPalette } from "shared/lib/entities/entitiesTypes";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
 } from "./SpriteSliceCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 import { getSettings } from "store/features/settings/settingsState";
+import { Palette } from "shared/lib/resources/types";
 
 interface SpriteSliceCanvasProps {
   spriteSheetId: string;

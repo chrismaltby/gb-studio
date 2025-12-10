@@ -113,7 +113,6 @@ import {
   CustomEvent,
   FontData,
   MusicData,
-  Palette,
   ScriptEvent,
   TilesetData,
 } from "shared/lib/entities/entitiesTypes";
@@ -129,6 +128,7 @@ import { EntityType } from "shared/lib/scripts/context";
 import compileTilesets from "lib/compiler/compileTilesets";
 import {
   ColorCorrectionSetting,
+  Palette,
   ProjectResources,
   Scene,
   SpriteModeSetting,

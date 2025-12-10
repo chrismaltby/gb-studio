@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { Palette } from "shared/lib/entities/entitiesTypes";
 import ColorizedImageWorker, {
   ColorizedImageResult,
 } from "./ColorizedImage.worker";
 import { getSettings } from "store/features/settings/settingsState";
 import { useAppSelector } from "store/hooks";
+import { Palette } from "shared/lib/resources/types";
 
 const workerPool: ColorizedImageWorker[] = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {

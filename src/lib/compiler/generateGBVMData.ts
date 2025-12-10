@@ -3,7 +3,6 @@ import flatten from "lodash/flatten";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 import type {
   EngineFieldValue,
-  Palette,
   SceneParallaxLayer,
   TilesetData,
 } from "shared/lib/entities/entitiesTypes";
@@ -25,6 +24,7 @@ import {
   CollisionExtraFlag,
   ColorModeSetting,
   Constant,
+  Palette,
   Scene,
   SceneBoundsRect,
   Trigger,

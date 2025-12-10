@@ -1,6 +1,9 @@
 import { normalize } from "path";
-import type { Palette } from "shared/lib/entities/entitiesTypes";
-import { CollisionTileDef, Settings } from "shared/lib/resources/types";
+import {
+  CollisionTileDef,
+  Palette,
+  Settings,
+} from "shared/lib/resources/types";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
 const isCli = __dirname.indexOf("out/cli") > -1;

@@ -10,7 +10,7 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
 import navigationActions from "store/features/navigation/navigationActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { Palette } from "shared/lib/entities/entitiesTypes";
+import { Palette } from "shared/lib/resources/types";
 
 type PaletteSelectProps = {
   name: string;
