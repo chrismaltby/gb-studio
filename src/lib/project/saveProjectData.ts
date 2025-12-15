@@ -5,7 +5,7 @@ import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import Path from "path";
 import { WriteResourcesPatch } from "shared/lib/resources/types";
 import promiseLimit from "lib/helpers/promiseLimit";
-import { uniq } from "lodash";
+import { uniq, throttle } from "lodash";
 import { pathToPosix } from "shared/lib/helpers/path";
 import { encodeResource } from "shared/lib/resources/save";
 
@@ -29,9 +29,9 @@ const saveProjectData = async (
 
   let completedCount = 0;
 
-  const notifyProgress = () => {
+  const notifyProgress = throttle(() => {
     options?.progress?.(completedCount, writeBuffer.length);
-  };
+  }, 50);
 
   const existingResourcePaths = new Set(
     (

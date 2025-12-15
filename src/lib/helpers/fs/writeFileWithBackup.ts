@@ -1,64 +1,25 @@
-import { access, constants, copyFile, renameSync } from "fs";
-import {
-  WriteFileAndFlushOptions,
-  writeFileAndFlush,
-} from "./writeFileAndFlush";
+import { access, constants, copyFile, rename, writeFile } from "fs-extra";
 
 const BACKUP_EXTENSION = "bak";
 const TMP_EXTENSION = "new";
 
-const backupFile = (
-  path: string,
-  callback: (err?: NodeJS.ErrnoException | null) => void,
-) => {
-  access(path, constants.F_OK, (err) => {
-    if (!err) {
-      return copyFile(path, `${path}.${BACKUP_EXTENSION}`, callback);
-    }
-    return callback();
-  });
-};
-
-export const writeFileWithBackup = (
+export const writeFileWithBackupAsync = async (
   path: string,
   data: string | NodeJS.ArrayBufferView,
-  options: WriteFileAndFlushOptions | BufferEncoding,
-  callback: (err?: NodeJS.ErrnoException | unknown | null) => void,
-) => {
-  return backupFile(path, (backupError) => {
-    if (backupError) {
-      return callback(backupError);
-    }
-    return writeFileAndFlush(
-      `${path}.${TMP_EXTENSION}`,
-      data,
-      options,
-      (writeError) => {
-        if (writeError) {
-          return callback(writeError);
-        }
-        try {
-          renameSync(`${path}.new`, path);
-        } catch (e) {
-          return callback(e);
-        }
-        return callback();
-      },
-    );
-  });
-};
+  options: BufferEncoding | { encoding?: BufferEncoding } = "utf8",
+): Promise<void> => {
+  const tmpPath = `${path}.${TMP_EXTENSION}`;
+  const bakPath = `${path}.${BACKUP_EXTENSION}`;
 
-export const writeFileWithBackupAsync = (
-  path: string,
-  data: string | NodeJS.ArrayBufferView,
-  options: WriteFileAndFlushOptions | BufferEncoding = "utf8",
-) => {
-  return new Promise<void>((resolve, reject) => {
-    writeFileWithBackup(path, data, options, (err) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve();
-    });
-  });
+  // Create backup if original exists
+  try {
+    await access(path, constants.F_OK);
+    await copyFile(path, bakPath);
+  } catch {
+    // File does not exist, no backup needed
+  }
+
+  // Write .new file and replace existing
+  await writeFile(tmpPath, data, options);
+  await rename(tmpPath, path);
 };
