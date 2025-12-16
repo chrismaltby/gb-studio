@@ -1038,6 +1038,14 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/states/platform.c", "src/states/topdown.c"],
   },
+  {
+    version: "4.2.0-e25",
+    description: createDescription("Fixes", [
+      "Fix issue where offscreen persistent actors were still visible",
+      "Fix issue preventing pinned and persistent actors from animating",
+    ]),
+    modifiedFiles: ["src/core/actor.c"],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
