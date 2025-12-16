@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import { DMG_PALETTE } from "consts";
+import { defaultProjectSettings, DMG_PALETTE } from "consts";
 import { avatarSelectors } from "store/features/entities/entitiesState";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
@@ -10,6 +10,8 @@ import { assetURL } from "shared/lib/helpers/assets";
 interface AvatarCanvasProps {
   avatarId: string;
 }
+
+const objPalette = defaultProjectSettings.defaultMonoOBP0;
 
 const worker = new SpriteSliceCanvasWorker();
 
@@ -68,7 +70,7 @@ export const AvatarCanvas = ({ avatarId }: AvatarCanvasProps) => {
       height: 16,
       flipX: false,
       flipY: false,
-      objPalette: "OBP0",
+      objPalette,
       palette: DMG_PALETTE.colors,
     });
   }, [canvasRef, avatar, workerId]);
