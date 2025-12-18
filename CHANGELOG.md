@@ -112,6 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When provided, a ".mono.png" file is now always preferred for tile data, even when Automatic Coloring is disabled. This ensures that the extract palette feature matches the automatic palette when a ".mono.png" is present.
 - Updated "Store Actor Direction In Variable" event description to document how its values are encoded [@mxashlynn](https://github.com/mxashlynn)
 - Hovering over an event's title in the script editor now shows its documentation in a tooltip (also visible when hovering in the Add Event menu)
+- Pasting a sprite frame into a selected empty frame now reuses the empty frame instead of creating a new one after it
 
 ### Fixed
 
