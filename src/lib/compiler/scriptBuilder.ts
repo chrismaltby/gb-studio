@@ -4170,12 +4170,10 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
-    this._actorGetPosition(actorRef);
-    const rpn = this._rpn();
-    rpn.int16(dirToAngle(direction));
-    rpn.refSet(this._localRef(actorRef, 3));
-    rpn.stop();
-    this._projectileLaunch(projectileIndex, this._localRef(actorRef, 1));
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn.int16(dirToAngle(direction)).stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 
