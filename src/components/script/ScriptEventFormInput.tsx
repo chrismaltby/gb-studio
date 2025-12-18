@@ -270,7 +270,12 @@ const ScriptEventFormInput = ({
   } else if (type === "code") {
     return (
       <OffscreenSkeletonInput>
-        <CodeEditor value={String(value || "")} onChange={onChangeField} />
+        <CodeEditor
+          value={String(value || "")}
+          onChange={onChangeField}
+          language={field.language || "gbvm"}
+          placeholder={field.placeholder}
+        />
       </OffscreenSkeletonInput>
     );
   } else if (type === "number") {

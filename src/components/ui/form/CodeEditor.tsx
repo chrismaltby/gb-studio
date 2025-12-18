@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import Editor from "react-simple-code-editor";
-import { highlight, Grammar } from "prismjs";
+import { highlight } from "prismjs";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-c";
+import Prism from "prismjs";
 import styled from "styled-components";
 import gbvmGrammar from "./prism/gbvm.grammar";
 import { useAppSelector } from "store/hooks";
@@ -15,6 +17,8 @@ interface CodeEditorProps {
   value: string;
   onChange?: (newValue: string) => void;
   currentLineNum?: number;
+  language: "gbvm" | "c";
+  placeholder?: string;
 }
 
 interface CodeViewerProps {
@@ -152,9 +156,10 @@ const Wrapper = styled.div<WrapperProps>`
 const highlightWithLineNumbers = (
   input: string,
   currentLineNum: number,
-  language: Grammar,
+  language: "gbvm" | "c",
 ) => {
-  const highlighted = highlight(input, language, "gbvm");
+  const grammar = language === "gbvm" ? gbvmGrammar : Prism.languages.c;
+  const highlighted = highlight(input, grammar, language);
   const lines = highlighted.split("\n");
   const gutterWidth = String(lines.length).length;
   return {
@@ -172,27 +177,150 @@ const highlightWithLineNumbers = (
 
 const noop = () => {};
 
+const getCommentPrefix = (language: "gbvm" | "c"): string => {
+  return language === "gbvm" ? "; " : "// ";
+};
+
+const toggleLineComment = (
+  value: string,
+  selectionStart: number,
+  selectionEnd: number,
+  language: "gbvm" | "c",
+): { newValue: string; newSelectionStart: number; newSelectionEnd: number } => {
+  const commentPrefix = getCommentPrefix(language);
+  const lines = value.split("\n");
+
+  // Find line indices for selection by counting characters
+  let charCount = 0;
+  let startLineIndex = -1;
+  let endLineIndex = -1;
+
+  for (let i = 0; i < lines.length; i++) {
+    const lineEnd = charCount + lines[i].length; // End of line content (before newline)
+
+    // Check if selection start falls within this line
+    if (startLineIndex === -1 && selectionStart <= lineEnd) {
+      startLineIndex = i;
+    }
+
+    // Check if selection end falls within this line
+    if (endLineIndex === -1 && selectionEnd <= lineEnd) {
+      endLineIndex = i;
+      break;
+    }
+
+    charCount = lineEnd + 1; // +1 for the newline character
+  }
+
+  // Handle edge cases
+  if (startLineIndex === -1) startLineIndex = lines.length - 1;
+  if (endLineIndex === -1) endLineIndex = lines.length - 1;
+
+  // Check if all selected lines are commented
+  const selectedLines = lines.slice(startLineIndex, endLineIndex + 1);
+  const allCommented = selectedLines.every((line) =>
+    line.trimStart().startsWith(commentPrefix.trim()),
+  );
+
+  let totalDelta = 0;
+  let firstLineDelta = 0;
+
+  // Toggle comments
+  for (let i = startLineIndex; i <= endLineIndex; i++) {
+    const line = lines[i];
+    if (allCommented) {
+      // Remove comment
+      const commentIndex = line.indexOf(commentPrefix.trim());
+      if (commentIndex !== -1) {
+        // Check if there's a space after the comment prefix
+        const hasSpace = line.substring(commentIndex).startsWith(commentPrefix);
+        const removeLength = hasSpace
+          ? commentPrefix.length
+          : commentPrefix.trim().length;
+        lines[i] =
+          line.substring(0, commentIndex) +
+          line.substring(commentIndex + removeLength);
+        const delta = -removeLength;
+        totalDelta += delta;
+        if (i === startLineIndex) {
+          firstLineDelta = delta;
+        }
+      }
+    } else {
+      // Add comment at the start of the line (preserving indentation)
+      const indentMatch = line.match(/^(\s*)/);
+      const indent = indentMatch ? indentMatch[1] : "";
+      lines[i] = indent + commentPrefix + line.substring(indent.length);
+      const delta = commentPrefix.length;
+      totalDelta += delta;
+      if (i === startLineIndex) {
+        firstLineDelta = delta;
+      }
+    }
+  }
+
+  return {
+    newValue: lines.join("\n"),
+    newSelectionStart: Math.max(0, selectionStart + firstLineDelta),
+    newSelectionEnd: Math.max(0, selectionEnd + totalDelta),
+  };
+};
+
 export const CodeEditor = ({
   value,
   currentLineNum,
   onChange,
+  language,
+  placeholder,
 }: CodeEditorProps) => {
   const [gutterWidth, setGutterWidth] = useState(3);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement | HTMLTextAreaElement>) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "/") {
+        e.preventDefault();
+
+        // Find the textarea - either the currentTarget is the textarea, or it contains one
+        const textarea =
+          e.currentTarget instanceof HTMLTextAreaElement
+            ? e.currentTarget
+            : e.currentTarget.querySelector("textarea");
+        if (!textarea) return;
+
+        const { selectionStart, selectionEnd } = textarea;
+
+        const { newValue, newSelectionStart, newSelectionEnd } =
+          toggleLineComment(value, selectionStart, selectionEnd, language);
+
+        onChange?.(newValue);
+
+        // Restore selection after React re-render
+        requestAnimationFrame(() => {
+          textarea.selectionStart = newSelectionStart;
+          textarea.selectionEnd = newSelectionEnd;
+        });
+      }
+    },
+    [value, language, onChange],
+  );
+
   return (
     <Wrapper $gutterWidth={gutterWidth}>
       <Editor
         className="editor"
         value={value}
         onValueChange={onChange ?? noop}
+        onKeyDown={handleKeyDown}
         highlight={(code) => {
           const { highlightedCode, gutterWidth: newGutterWidth } =
-            highlightWithLineNumbers(code, currentLineNum ?? -1, gbvmGrammar);
+            highlightWithLineNumbers(code, currentLineNum ?? -1, language);
           if (newGutterWidth !== gutterWidth) {
             setGutterWidth(newGutterWidth);
           }
           return highlightedCode;
         }}
         padding={0}
+        placeholder={placeholder}
         style={{
           fontFamily: '"Fira code", "Fira Mono", monospace',
           fontSize: 11,

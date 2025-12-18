@@ -317,5 +317,6 @@ export interface ScriptEventFieldSchema {
   noneLabel?: string;
   variant?: string;
   labelVariant?: string;
+  language?: "gbvm" | "c";
   filters?: Record<string, unknown>;
 }

@@ -1290,6 +1290,9 @@
   "FIELD_DISABLED": "Disabled",
   "FIELD_MONOCHROME_BGP_NOTE": "BGP palette is used for background and overlay layers.",
   "FIELD_MONOCHROME_OBP_NOTE": "OBP palettes are used for sprites.",
+  "FIELD_HEADERS": "Headers",
+  "FIELD_C_HEADERS_DESC": "Include C header files referenced by this script",
+  "FIELD_C_SCRIPT_DESC": "A valid C Script to execute.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1618,6 +1621,8 @@
   "EVENT_IF_FALSE_LABEL": "If {variable} Is 'False'",
   "EVENT_GBVM_SCRIPT": "GBVM Script",
   "EVENT_GBVM_SCRIPT_DESC": "Run a GBVM script.",
+  "EVENT_C_SCRIPT": "C Script",
+  "EVENT_C_SCRIPT_DESC": "Run a C script.",  
   "EVENT_LINK_CLOSE": "Link: Close",
   "EVENT_LINK_JOIN": "Link: Join",
   "EVENT_LINK_HOST": "Link: Host",

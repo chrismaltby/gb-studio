@@ -106,6 +106,7 @@ import {
   tileToSubpx,
   unitsValueToSubpx,
 } from "shared/lib/helpers/subpixels";
+import { checksumString } from "lib/helpers/checksum";
 
 export type ScriptOutput = string[];
 
@@ -8439,6 +8440,14 @@ extern void __mute_mask_${symbol};
   compileEvents = (path: ScriptEvent[]) => {
     const { compileEvents } = this.options;
     compileEvents(this, path);
+  };
+
+  inlineCScript = (code: string, headers: string) => {
+    const hash = checksumString(code + headers);
+    const symbol = "inline_c_script_" + hash;
+    const output = `#pragma bank 255\n\n#include <gbdk/platform.h>\n#include "vm.h"\n${headers}\n\nvoid ${symbol}(SCRIPT_CTX * THIS) OLDCALL BANKED {\nTHIS;\n${code}\n}\n`;
+    this.writeAsset(symbol + ".c", output);
+    this._callNative(symbol);
   };
 
   // --------------------------------------------------------------------------
