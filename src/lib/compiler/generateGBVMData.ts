@@ -1297,6 +1297,7 @@ export const compileGameGlobalsInclude = (
   constants: Constant[],
   engineConstants: Record<string, number>,
   stateReferences: string[],
+  fonts: PrecompiledFontData[],
 ) => {
   const variables = Object.values(variableAliasLookup).map(
     (v) => v?.symbol,
@@ -1323,6 +1324,9 @@ export const compileGameGlobalsInclude = (
       .map((string, stringIndex) => {
         return `${string} = ${stringIndex}\n`;
       })
+      .join("") +
+    fonts
+      .map((font, fontIndex) => `${font.symbol.toUpperCase()} = ${fontIndex}\n`)
       .join("")
   );
 };
@@ -1332,6 +1336,7 @@ export const compileGameGlobalsHeader = (
   constants: Constant[],
   engineConstants: Record<string, number>,
   stateReferences: string[],
+  fonts: PrecompiledFontData[],
 ) => {
   return (
     `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
@@ -1359,6 +1364,12 @@ export const compileGameGlobalsHeader = (
       .map((string, stringIndex) => {
         return `#define ${string} ${stringIndex}\n`;
       })
+      .join("") +
+    fonts
+      .map(
+        (font, fontIndex) =>
+          `#define ${font.symbol.toUpperCase()} ${fontIndex}\n`,
+      )
       .join("") +
     `\n` +
     `#endif\n`

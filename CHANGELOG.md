@@ -72,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to display a "Screen Grid" from the "View" menu which can be anchored to any corner of the scene [@pau-tomas](https://github.com/pau-tomas)
 - Add "Automatic Tile Flip" setting to optimize tilesets by reusing horizontally and vertically flipped tiles where possible. Only supported in "Color Only" scenes [@Mico27](https://github.com/Mico27)
 - Add support for setting global and per scene monochrome palettes for BGP (background & overlays), OBP0 and OBP1 (sprites) [Q-Bert-Reynolds](https://github.com/Q-Bert-Reynolds)
+- Add font indexes to `game_globals.h` and `game_globals.i` for use in custom gbvm scripts and plugins
 
 ### Changed
 

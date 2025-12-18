@@ -2042,6 +2042,7 @@ const compile = async (
     projectData.variables.constants,
     engineSchema.consts,
     precompiled.stateReferences,
+    precompiled.usedFonts,
   );
 
   output["game_globals.h"] = compileGameGlobalsHeader(
@@ -2049,6 +2050,7 @@ const compile = async (
     projectData.variables.constants,
     engineSchema.consts,
     precompiled.stateReferences,
+    precompiled.usedFonts,
   );
 
   const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");
