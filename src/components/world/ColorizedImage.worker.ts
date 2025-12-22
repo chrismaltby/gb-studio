@@ -38,6 +38,7 @@ workerCtx.onmessage = async (evt) => {
   const src = evt.data.src;
   const tiles = evt.data.tiles;
   const previewAsMono = evt.data.previewAsMono;
+  const monoBGP = evt.data.monoBGP ?? [0, 1, 2, 3];
   const palettes = evt.data.palettes;
   const colorCorrectionFn = hex2GBCrgb(evt.data.colorCorrection);
   const palettesRGB = palettes.map((colors: string[]) =>
@@ -102,7 +103,7 @@ workerCtx.onmessage = async (evt) => {
         const index = (pX + pY * width) * 4;
         const colorIndex = indexColour(data[index + 1]);
         const color = previewAsMono
-          ? dmgPalette[colorIndex]
+          ? dmgPalette[monoBGP[colorIndex]]
           : palette[colorIndex];
         data[index] = color.r;
         data[index + 1] = color.g;

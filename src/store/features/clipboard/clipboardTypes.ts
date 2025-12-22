@@ -1,17 +1,16 @@
 import {
-  MetaspriteTile,
-  Metasprite,
-  SpriteState,
-  SpriteAnimation,
+  MetaspriteNormalized,
+  SpriteStateNormalized,
+  SpriteAnimationNormalized,
   ScriptEventNormalized,
   TriggerNormalized,
   ActorNormalized,
   SceneNormalized,
-  CustomEventNormalized,
-  Variable,
+  ScriptNormalized,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
+import { MetaspriteTile, Variable } from "shared/lib/resources/types";
 import { ScriptValue } from "shared/lib/scriptValue/types";
 
 export const ClipboardTypeScriptEvents = "gbstudio.scriptevents";
@@ -31,14 +30,14 @@ export type ClipboardMetaspriteTiles = {
 };
 
 export type ClipboardMetasprites = {
-  metasprites: Metasprite[];
+  metasprites: MetaspriteNormalized[];
   metaspriteTiles: MetaspriteTile[];
 };
 
 export type ClipboardSpriteState = {
-  spriteState: SpriteState;
-  animations: SpriteAnimation[];
-  metasprites: Metasprite[];
+  spriteState: SpriteStateNormalized;
+  animations: SpriteAnimationNormalized[];
+  metasprites: MetaspriteNormalized[];
   metaspriteTiles: MetaspriteTile[];
 };
 
@@ -49,14 +48,14 @@ export type ClipboardPaletteIds = {
 export type ClipboardScriptEvents = {
   scriptEvents: ScriptEventNormalized[];
   script: string[];
-  customEvents: CustomEventNormalized[];
+  customEvents: ScriptNormalized[];
 };
 
 export type ClipboardTriggers = {
   triggers: TriggerNormalized[];
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
-  customEvents: CustomEventNormalized[];
+  customEvents: ScriptNormalized[];
   triggerPrefabs?: TriggerPrefabNormalized[];
 };
 
@@ -64,7 +63,7 @@ export type ClipboardActors = {
   actors: ActorNormalized[];
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
-  customEvents: CustomEventNormalized[];
+  customEvents: ScriptNormalized[];
   actorPrefabs?: ActorPrefabNormalized[];
 };
 
@@ -74,7 +73,7 @@ export type ClipboardScenes = {
   triggers: TriggerNormalized[];
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
-  customEvents: CustomEventNormalized[];
+  customEvents: ScriptNormalized[];
   actorPrefabs?: ActorPrefabNormalized[];
   triggerPrefabs?: TriggerPrefabNormalized[];
 };

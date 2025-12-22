@@ -4,43 +4,23 @@ import cloneDeep from "lodash/cloneDeep";
 import {
   EntitiesState,
   SpriteSheetNormalized,
-  Metasprite,
-  MetaspriteTile,
-  SpriteAnimation,
+  MetaspriteNormalized,
+  SpriteAnimationNormalized,
   SceneNormalized,
   ActorNormalized,
   TriggerNormalized,
-  Background,
-  Palette,
-  Music,
-  Font,
-  Avatar,
-  Emote,
-  CustomEventNormalized,
-  Variable,
-  EngineFieldValue,
+  ScriptNormalized,
   UnionValue,
   UnionPropertyValue,
   UnionVariableValue,
-  SpriteState,
-  SpriteSheetData,
+  SpriteStateNormalized,
   ScriptEventNormalized,
-  Sound,
-  Tileset,
-  CustomEventVariable,
-  CustomEventActor,
-  Actor,
-  Scene,
-  CustomEvent,
-  Trigger,
-  SpriteSheet,
   ActorPrefab,
   ActorPrefabNormalized,
   ActorScriptKey,
   TriggerPrefab,
   TriggerPrefabNormalized,
   TriggerScriptKey,
-  ScriptEvent,
 } from "shared/lib/entities/entitiesTypes";
 import { EntityAdapter, EntityId, EntityState } from "@reduxjs/toolkit";
 import { genSymbol, toValidSymbol } from "shared/lib/helpers/symbols";
@@ -68,7 +48,29 @@ import {
 } from "shared/lib/scriptValue/helpers";
 import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
 import { sortByKey } from "shared/lib/helpers/sortByKey";
-import { Constant, ProjectEntityResources } from "shared/lib/resources/types";
+import {
+  Actor,
+  AvatarAsset,
+  BackgroundAsset,
+  Constant,
+  EmoteAsset,
+  EngineFieldValue,
+  FontAsset,
+  MetaspriteTile,
+  MusicAsset,
+  Palette,
+  ProjectEntityResources,
+  Scene,
+  Script,
+  ScriptActor,
+  ScriptEvent,
+  ScriptVariable,
+  SoundAsset,
+  Sprite,
+  TilesetAsset,
+  Trigger,
+  Variable,
+} from "shared/lib/resources/types";
 import { uniqBy } from "lodash";
 
 interface NormalizedEntities {
@@ -76,22 +78,22 @@ interface NormalizedEntities {
   actors: Record<EntityId, ActorNormalized>;
   triggers: Record<EntityId, TriggerNormalized>;
   scriptEvents: Record<EntityId, ScriptEventNormalized>;
-  backgrounds: Record<EntityId, Background>;
+  backgrounds: Record<EntityId, BackgroundAsset>;
   sprites: Record<EntityId, SpriteSheetNormalized>;
-  metasprites: Record<EntityId, Metasprite>;
+  metasprites: Record<EntityId, MetaspriteNormalized>;
   metaspriteTiles: Record<EntityId, MetaspriteTile>;
-  spriteAnimations: Record<EntityId, SpriteAnimation>;
-  spriteStates: Record<EntityId, SpriteState>;
+  spriteAnimations: Record<EntityId, SpriteAnimationNormalized>;
+  spriteStates: Record<EntityId, SpriteStateNormalized>;
   palettes: Record<EntityId, Palette>;
-  music: Record<EntityId, Music>;
-  sounds: Record<EntityId, Sound>;
-  fonts: Record<EntityId, Font>;
-  avatars: Record<EntityId, Avatar>;
-  emotes: Record<EntityId, Emote>;
-  tilesets: Record<EntityId, Tileset>;
+  music: Record<EntityId, MusicAsset>;
+  sounds: Record<EntityId, SoundAsset>;
+  fonts: Record<EntityId, FontAsset>;
+  avatars: Record<EntityId, AvatarAsset>;
+  emotes: Record<EntityId, EmoteAsset>;
+  tilesets: Record<EntityId, TilesetAsset>;
   actorPrefabs: Record<EntityId, ActorPrefabNormalized>;
   triggerPrefabs: Record<EntityId, TriggerPrefabNormalized>;
-  scripts: Record<EntityId, CustomEventNormalized>;
+  scripts: Record<EntityId, ScriptNormalized>;
   variables: Record<EntityId, Variable>;
   constants: Record<EntityId, Constant>;
   engineFieldValues: Record<EntityId, EngineFieldValue>;
@@ -125,20 +127,20 @@ type NamedEntity = { name: string };
 
 interface DenormalizedEntities {
   actors: Actor[];
-  avatars: Avatar[];
-  backgrounds: Background[];
-  emotes: Emote[];
+  avatars: AvatarAsset[];
+  backgrounds: BackgroundAsset[];
+  emotes: EmoteAsset[];
   engineFieldValues: {
     engineFieldValues: EngineFieldValue[];
   };
-  fonts: Font[];
-  music: Music[];
+  fonts: FontAsset[];
+  music: MusicAsset[];
   palettes: Palette[];
   scenes: Scene[];
-  scripts: CustomEvent[];
-  sounds: Sound[];
-  sprites: SpriteSheet[];
-  tilesets: Tileset[];
+  scripts: Script[];
+  sounds: SoundAsset[];
+  sprites: Sprite[];
+  tilesets: TilesetAsset[];
   triggers: Trigger[];
   variables: {
     constants: Constant[];
@@ -292,32 +294,38 @@ export const denormalizeEntities = (
       EntityId,
       ScriptEventNormalized
     >,
-    backgrounds: state.backgrounds.entities as Record<EntityId, Background>,
+    backgrounds: state.backgrounds.entities as Record<
+      EntityId,
+      BackgroundAsset
+    >,
     sprites: state.spriteSheets.entities as Record<
       EntityId,
       SpriteSheetNormalized
     >,
-    metasprites: state.metasprites.entities as Record<EntityId, Metasprite>,
+    metasprites: state.metasprites.entities as Record<
+      EntityId,
+      MetaspriteNormalized
+    >,
     metaspriteTiles: state.metaspriteTiles.entities as Record<
       EntityId,
       MetaspriteTile
     >,
     spriteAnimations: state.spriteAnimations.entities as Record<
       EntityId,
-      SpriteAnimation
+      SpriteAnimationNormalized
     >,
-    spriteStates: state.spriteStates.entities as Record<EntityId, SpriteState>,
-    palettes: state.palettes.entities as Record<EntityId, Palette>,
-    scripts: state.customEvents.entities as Record<
+    spriteStates: state.spriteStates.entities as Record<
       EntityId,
-      CustomEventNormalized
+      SpriteStateNormalized
     >,
-    music: state.music.entities as Record<EntityId, Music>,
-    sounds: state.sounds.entities as Record<EntityId, Sound>,
-    fonts: state.fonts.entities as Record<EntityId, Font>,
-    avatars: state.avatars.entities as Record<EntityId, Avatar>,
-    emotes: state.emotes.entities as Record<EntityId, Emote>,
-    tilesets: state.tilesets.entities as Record<EntityId, Tileset>,
+    palettes: state.palettes.entities as Record<EntityId, Palette>,
+    scripts: state.customEvents.entities as Record<EntityId, ScriptNormalized>,
+    music: state.music.entities as Record<EntityId, MusicAsset>,
+    sounds: state.sounds.entities as Record<EntityId, SoundAsset>,
+    fonts: state.fonts.entities as Record<EntityId, FontAsset>,
+    avatars: state.avatars.entities as Record<EntityId, AvatarAsset>,
+    emotes: state.emotes.entities as Record<EntityId, EmoteAsset>,
+    tilesets: state.tilesets.entities as Record<EntityId, TilesetAsset>,
     variableResources: {
       variables: {
         variables: state.variables.ids,
@@ -399,11 +407,11 @@ export const denormalizeSprite = ({
   spriteStates,
 }: {
   sprite: SpriteSheetNormalized;
-  metasprites: Record<string, Metasprite>;
+  metasprites: Record<string, MetaspriteNormalized>;
   metaspriteTiles: Record<string, MetaspriteTile>;
-  spriteAnimations: Record<string, SpriteAnimation>;
-  spriteStates: Record<string, SpriteState>;
-}): SpriteSheetData => {
+  spriteAnimations: Record<string, SpriteAnimationNormalized>;
+  spriteStates: Record<string, SpriteStateNormalized>;
+}): Sprite => {
   const entities = {
     metasprites,
     metaspriteTiles,
@@ -414,14 +422,14 @@ export const denormalizeSprite = ({
 };
 
 export const normalizeSprite = (
-  sprite: SpriteSheet,
+  sprite: Sprite,
 ): {
   entities: {
     spriteSheets: Record<string, SpriteSheetNormalized>;
-    metasprites: Record<string, Metasprite> | undefined;
+    metasprites: Record<string, MetaspriteNormalized> | undefined;
     metaspriteTiles: Record<string, MetaspriteTile> | undefined;
-    spriteAnimations: Record<string, SpriteAnimation> | undefined;
-    spriteStates: Record<string, SpriteState> | undefined;
+    spriteAnimations: Record<string, SpriteAnimationNormalized> | undefined;
+    spriteStates: Record<string, SpriteStateNormalized> | undefined;
   };
   result: string;
 } => {
@@ -498,9 +506,9 @@ export const isVariableCustomEvent = (variable: string) => {
 };
 
 export const isCustomEventEqual = (
-  customEventA: CustomEventNormalized,
+  customEventA: ScriptNormalized,
   lookupA: Record<string, ScriptEventNormalized>,
-  customEventB: CustomEventNormalized,
+  customEventB: ScriptNormalized,
   lookupB: Record<string, ScriptEventNormalized>,
 ) => {
   const compareA = {
@@ -897,12 +905,12 @@ export const updateEntitySymbol = <T extends { id: string; symbol?: string }>(
 };
 
 export const updateCustomEventArgs = (
-  customEvent: CustomEventNormalized,
+  customEvent: ScriptNormalized,
   scriptEventLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs,
 ) => {
-  const variables = {} as Record<string, CustomEventVariable>;
-  const actors = {} as Record<string, CustomEventActor>;
+  const variables = {} as Record<string, ScriptVariable>;
+  const actors = {} as Record<string, ScriptActor>;
   const oldVariables = customEvent.variables;
   const oldActors = customEvent.actors;
 
@@ -1033,7 +1041,7 @@ export const updateCustomEventArgs = (
 };
 
 export const updateAllCustomEventsArgs = (
-  customEvents: CustomEventNormalized[],
+  customEvents: ScriptNormalized[],
   scriptEventLookup: Record<string, ScriptEventNormalized>,
   scriptEventDefs: ScriptEventDefs,
 ) => {
@@ -1070,7 +1078,7 @@ const triggerFixNulls = <T extends Trigger | TriggerPrefab>(trigger: T): T => {
   return newTrigger;
 };
 
-const scriptFixNulls = (script: CustomEvent): CustomEvent => {
+const scriptFixNulls = (script: Script): Script => {
   return { ...script, script: filterEvents(script.script, validScriptEvent) };
 };
 

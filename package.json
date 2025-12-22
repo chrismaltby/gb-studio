@@ -5,7 +5,7 @@
   "bugs": {
     "url": "https://github.com/chrismaltby/gb-studio/issues"
   },
-  "version": "4.2.0-alpha1",
+  "version": "4.2.0-beta1",
   "description": "Visual retro game maker",
   "main": ".webpack/main",
   "scripts": {
@@ -62,7 +62,7 @@
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "about-window": "^1.15.2",
     "adm-zip": "^0.5.16",
-    "chokidar": "^3.6.0",
+    "chokidar": "^5.0.0",
     "chroma-js": "^2.4.2",
     "commander": "^6.2.0",
     "copy-webpack-plugin": "^9.0.0",
@@ -74,6 +74,7 @@
     "fs-extra": "^7.0.1",
     "fuse.js": "^6.4.6",
     "glob": "^7.1.4",
+    "hash-wasm": "^4.12.0",
     "image-size": "^1.0.0",
     "lodash": "^4.17.21",
     "node-fetch": "^3.3.2",

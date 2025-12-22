@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { emoteSelectors } from "store/features/entities/entitiesState";
-import { Emote } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   Select,
@@ -11,6 +10,7 @@ import {
 } from "ui/form/Select";
 import { EmoteCanvas } from "components/world/EmoteCanvas";
 import { SingleValue } from "react-select";
+import { EmoteAsset } from "shared/lib/resources/types";
 
 interface EmoteSelectProps extends SelectCommonProps {
   name: string;
@@ -22,7 +22,7 @@ interface EmoteSelectProps extends SelectCommonProps {
 }
 
 interface EmoteOption extends Option {
-  emote: Emote;
+  emote: EmoteAsset;
 }
 
 export const EmoteSelect: FC<EmoteSelectProps> = ({
@@ -35,7 +35,7 @@ export const EmoteSelect: FC<EmoteSelectProps> = ({
 }) => {
   const emotes = useAppSelector((state) => emoteSelectors.selectAll(state));
   const [options, setOptions] = useState<EmoteOption[]>([]);
-  const [currentEmote, setCurrentEmote] = useState<Emote>();
+  const [currentEmote, setCurrentEmote] = useState<EmoteAsset>();
   const [currentValue, setCurrentValue] = useState<EmoteOption>();
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export const EmoteSelect: FC<EmoteSelectProps> = ({
       setCurrentValue({
         value: "",
         label: optionalLabel || "None",
-        emote: optionalEmote as Emote,
+        emote: optionalEmote as EmoteAsset,
       });
     } else {
       const firstEmote = emotes[0];

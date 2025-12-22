@@ -1,6 +1,5 @@
 import l10n from "shared/lib/lang/l10n";
 import React, { useState } from "react";
-import { Sound } from "shared/lib/entities/entitiesTypes";
 import soundfxActions from "store/features/soundfx/soundfxActions";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
@@ -9,9 +8,10 @@ import { Label } from "ui/form/Label";
 import { PlayIcon } from "ui/icons/Icons";
 import { useAppDispatch } from "store/hooks";
 import { NumberInput } from "ui/form/NumberInput";
+import { SoundAsset } from "shared/lib/resources/types";
 
 interface SoundViewerProps {
-  file: Sound;
+  file: SoundAsset;
 }
 
 const Wrapper = styled.div`

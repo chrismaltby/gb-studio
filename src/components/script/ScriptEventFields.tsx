@@ -5,7 +5,6 @@ import {
   ScriptEventFieldSchema,
   ScriptEventNormalized,
   ScriptEventParentType,
-  Sound,
 } from "shared/lib/entities/entitiesTypes";
 import {
   ScriptEventFields as ScriptEventFieldsWrapper,
@@ -21,6 +20,7 @@ import { ScriptEditorContext } from "./ScriptEditorContext";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { evaluateConditions } from "shared/lib/conditionsFilter";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
+import { SoundAsset } from "shared/lib/resources/types";
 
 interface ScriptEventFieldsProps {
   scriptEvent: ScriptEventNormalized;
@@ -43,7 +43,7 @@ export const isFieldVisible = (
   args: Record<string, unknown>,
   context: ScriptEditorCtx,
   scene: SceneNormalized | undefined,
-  soundsLookup: Record<string, Sound>,
+  soundsLookup: Record<string, SoundAsset>,
   ignoreConditions?: string[],
 ) => {
   if (!field.conditions) {

@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { soundSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
-import { Sound } from "shared/lib/entities/entitiesTypes";
 import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
@@ -18,6 +17,7 @@ import {
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import { Button } from "ui/buttons/Button";
 import { SearchIcon } from "ui/icons/Icons";
+import { SoundAsset } from "shared/lib/resources/types";
 
 interface NavigatorSoundsProps {
   height: number;
@@ -89,7 +89,7 @@ export const NavigatorSounds = ({
   }, []);
 
   const renderContextMenu = useCallback(
-    (item: FileSystemNavigatorItem<Sound>) => {
+    (item: FileSystemNavigatorItem<SoundAsset>) => {
       return [
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
           {l10n("FIELD_RENAME")}
@@ -109,7 +109,7 @@ export const NavigatorSounds = ({
   );
 
   const renderLabel = useCallback(
-    (item: FileSystemNavigatorItem<Sound>) => {
+    (item: FileSystemNavigatorItem<SoundAsset>) => {
       if (item.type === "folder") {
         return (
           <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>

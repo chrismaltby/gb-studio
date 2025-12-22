@@ -1,41 +1,42 @@
 import type { Reference } from "components/forms/ReferencesSelect";
 import { DMG_PALETTE, MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import { eventHasArg } from "lib/helpers/eventSystem";
-import type {
-  BackgroundData,
-  CustomEvent,
-  EmoteData,
-  FontData,
-  Scene,
-  SoundData,
-  SpriteSheetData,
-  TilesetData,
-  Variable,
-} from "shared/lib/entities/entitiesTypes";
 import { walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import keyBy from "lodash/keyBy";
-import { ColorModeSetting, ProjectResources } from "shared/lib/resources/types";
+import {
+  Background,
+  ColorModeSetting,
+  Emote,
+  Font,
+  ProjectResources,
+  Scene,
+  Script,
+  Sound,
+  Sprite,
+  Tileset,
+  Variable,
+} from "shared/lib/resources/types";
 import { ensureString } from "shared/types";
 import { valuesOf } from "shared/lib/helpers/record";
 import l10n from "shared/lib/lang/l10n";
 
 type HexPalette = [string, string, string, string];
 
-export type ReferencedBackground = BackgroundData & {
+export type ReferencedBackground = Background & {
   is360: boolean;
   uiPalette: HexPalette;
   colorMode: ColorModeSetting;
   forceTilesetGeneration: boolean;
 };
 
-export type ReferencedSprite = SpriteSheetData & {
+export type ReferencedSprite = Sprite & {
   colorMode: ColorModeSetting;
 };
 
-export type ReferencedEmote = EmoteData;
+export type ReferencedEmote = Emote;
 
-export type ReferencedTileset = TilesetData;
+export type ReferencedTileset = Tileset;
 
 export const determineUsedAssets = ({
   projectData,
@@ -44,7 +45,7 @@ export const determineUsedAssets = ({
   warnings,
 }: {
   projectData: ProjectResources;
-  customEventsLookup: Record<string, CustomEvent>;
+  customEventsLookup: Record<string, Script>;
   scriptEventHandlers: ScriptEventHandlers;
   warnings: (msg: string) => void;
 }) => {
@@ -61,8 +62,8 @@ export const determineUsedAssets = ({
   const projectColorMode = projectData.settings.colorMode;
 
   const usedVariablesLookup: Record<string, Variable> = {};
-  const usedSoundsLookup: Record<string, SoundData> = {};
-  const usedFontsLookup: Record<string, FontData> = {};
+  const usedSoundsLookup: Record<string, Sound> = {};
+  const usedFontsLookup: Record<string, Font> = {};
   const usedBackgroundsLookup: Record<string, ReferencedBackground> = {};
   const usedSpritesLookup: Record<string, ReferencedSprite> = {};
   const usedEmotesLookup: Record<string, ReferencedEmote> = {};

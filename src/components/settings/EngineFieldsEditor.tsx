@@ -18,7 +18,6 @@ import {
   SettingRowUnits,
   SettingsSidebarContainer,
 } from "ui/form/SettingRow";
-import { EngineFieldValue } from "shared/lib/entities/entitiesTypes";
 import { Input } from "ui/form/Input";
 import { Checkbox } from "ui/form/Checkbox";
 import clamp from "shared/lib/helpers/clamp";
@@ -31,6 +30,7 @@ import { useEngineFieldsDefaultValues } from "./useEngineFieldsDefaultValues";
 import ToggleButtons from "ui/form/ToggleButtons";
 import { pxToSubpx, pxToSubpxVelPrecise } from "shared/lib/helpers/subpixels";
 import AnimationStateSelect from "components/forms/AnimationStateSelect";
+import { EngineFieldValue } from "shared/lib/resources/types";
 
 const { editEngineFieldValue, removeEngineFieldValue } = entitiesActions;
 

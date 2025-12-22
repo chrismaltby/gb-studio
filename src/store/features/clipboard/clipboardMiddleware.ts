@@ -19,15 +19,13 @@ import {
 import {
   ActorNormalized,
   ActorPrefabNormalized,
-  CustomEventNormalized,
-  Metasprite,
-  MetaspriteTile,
+  ScriptNormalized,
+  MetaspriteNormalized,
   SceneNormalized,
   ScriptEventNormalized,
-  SpriteAnimation,
+  SpriteAnimationNormalized,
   TriggerNormalized,
   TriggerPrefabNormalized,
-  Variable,
 } from "shared/lib/entities/entitiesTypes";
 import actions from "./clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -72,6 +70,7 @@ import {
 } from "shared/lib/scripts/walk";
 import { batch } from "react-redux";
 import { sortSubsetStringArray } from "shared/lib/helpers/array";
+import { MetaspriteTile, Variable } from "shared/lib/resources/types";
 
 const generateLocalVariableInsertActions = (
   originalId: string,
@@ -93,9 +92,9 @@ const generateLocalVariableInsertActions = (
 };
 
 const generateCustomEventInsertActions = async (
-  customEvent: CustomEventNormalized,
+  customEvent: ScriptNormalized,
   scriptEventsLookup: Record<string, ScriptEventNormalized>,
-  existingCustomEvents: CustomEventNormalized[],
+  existingCustomEvents: ScriptNormalized[],
   existingScriptEventsLookup: Record<string, ScriptEventNormalized>,
 ): Promise<UnknownAction[]> => {
   const actions: UnknownAction[] = [];
@@ -482,7 +481,9 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         .map((id) => {
           return animationsLookup[id];
         })
-        .filter((animation): animation is SpriteAnimation => !!animation);
+        .filter(
+          (animation): animation is SpriteAnimationNormalized => !!animation,
+        );
 
       const metaspriteIds = flatten(
         animations.map((animation) => animation.frames),
@@ -492,7 +493,9 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         .map((id) => {
           return metaspritesLookup[id];
         })
-        .filter((metasprite): metasprite is Metasprite => !!metasprite);
+        .filter(
+          (metasprite): metasprite is MetaspriteNormalized => !!metasprite,
+        );
 
       const metaspriteTileIds = flatten(
         metasprites.map((metasprite) => metasprite.tiles),
@@ -537,7 +540,9 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
         .map((id) => {
           return metaspritesLookup[id];
         })
-        .filter((metasprite): metasprite is Metasprite => !!metasprite);
+        .filter(
+          (metasprite): metasprite is MetaspriteNormalized => !!metasprite,
+        );
 
       const metaspriteTileIds = flatten(
         metasprites.map((metasprite) => metasprite.tiles),
@@ -576,7 +581,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
       const scriptEvents: ScriptEventNormalized[] = [];
-      const customEvents: CustomEventNormalized[] = [];
+      const customEvents: ScriptNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
       const addEvent = (scriptEvent: ScriptEventNormalized) => {
         scriptEvents.push(scriptEvent);
@@ -627,7 +632,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const triggerPrefabsLookup = triggerPrefabSelectors.selectEntities(state);
       const triggers: TriggerNormalized[] = [];
       const scriptEvents: ScriptEventNormalized[] = [];
-      const customEvents: CustomEventNormalized[] = [];
+      const customEvents: ScriptNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
       const triggerPrefabs: TriggerPrefabNormalized[] = [];
       const triggerPrefabsSeen: Record<string, boolean> = {};
@@ -705,7 +710,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
       const actors: ActorNormalized[] = [];
       const scriptEvents: ScriptEventNormalized[] = [];
-      const customEvents: CustomEventNormalized[] = [];
+      const customEvents: ScriptNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
       const actorPrefabs: ActorPrefabNormalized[] = [];
       const actorPrefabsSeen: Record<string, boolean> = {};
@@ -785,7 +790,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       const scenes: SceneNormalized[] = [];
       const actors: ActorNormalized[] = [];
       const triggers: TriggerNormalized[] = [];
-      const customEvents: CustomEventNormalized[] = [];
+      const customEvents: ScriptNormalized[] = [];
       const customEventsSeen: Record<string, boolean> = {};
       const actorPrefabs: ActorPrefabNormalized[] = [];
       const actorPrefabsSeen: Record<string, boolean> = {};
@@ -1253,19 +1258,36 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       } else if (clipboard.format === ClipboardTypeMetasprites) {
         const data = clipboard.data;
 
-        const newActions = data.metasprites.reverse().map(() => {
-          return entitiesActions.addMetasprite({
-            spriteSheetId: action.payload.spriteSheetId,
-            spriteAnimationId: action.payload.spriteAnimationId,
-            afterMetaspriteId: action.payload.metaspriteId,
+        const state = store.getState();
+
+        const currentMetasprite = metaspriteSelectors.selectById(
+          state,
+          action.payload.metaspriteId,
+        );
+        const reuseCurrentMetasprite =
+          currentMetasprite && currentMetasprite.tiles.length === 0;
+
+        const newActions = data.metasprites
+          .filter((_, index) => {
+            return !reuseCurrentMetasprite || index > 0;
+          })
+          .map(() => {
+            return entitiesActions.addMetasprite({
+              spriteSheetId: action.payload.spriteSheetId,
+              spriteAnimationId: action.payload.spriteAnimationId,
+              afterMetaspriteId: action.payload.metaspriteId,
+            });
           });
-        });
 
         for (const action of newActions) {
           store.dispatch(action);
         }
 
-        const newIds = newActions.map((action) => action.payload.metaspriteId);
+        const newIds = [
+          ...(reuseCurrentMetasprite ? [currentMetasprite.id] : []),
+          // Reverse new ids as they get created in reverse order afterMetaspriteId
+          ...newActions.map((action) => action.payload.metaspriteId).reverse(),
+        ];
 
         const tileIdMetaspriteLookup = data.metasprites.reduce(
           (memo, metasprite, index) => {
@@ -1295,6 +1317,12 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
 
         for (const action of newTileActions) {
           store.dispatch(action);
+        }
+
+        if (reuseCurrentMetasprite) {
+          store.dispatch(
+            editorActions.setSelectedMetaspriteId(currentMetasprite.id),
+          );
         }
       } else if (clipboard.format === ClipboardTypeMetaspriteTiles) {
         const data = clipboard.data;

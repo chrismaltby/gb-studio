@@ -3,7 +3,6 @@ import { FormContainer, FormField, FormRow } from "ui/form/layout/FormLayout";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
   ActorNormalized,
-  CollisionGroup,
   SpriteSheetNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { SidebarColumn } from "ui/sidebars/Sidebar";
@@ -15,6 +14,7 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ActorEditorExtraCollisionFlags } from "./ActorEditorExtraCollisionFlags";
 import { sceneSelectors } from "store/features/entities/entitiesState";
+import { CollisionGroup } from "shared/lib/resources/types";
 
 interface ActorEditorPropertiesProps {
   actor: ActorNormalized;

@@ -22,9 +22,9 @@ import { clearL10NData, setL10NData } from "shared/lib/lang/l10n";
 import en from "lang/en.json";
 import { basename, join } from "path";
 import { PrecompiledFontData } from "lib/compiler/compileFonts";
-import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import { compileEventsWithScriptBuilder } from "lib/compiler/compileEntityEvents";
 import { stripCommentsFromGBVMScript } from "lib/compiler/gbvm/buildHelpers";
+import { ScriptEvent } from "shared/lib/resources/types";
 
 const globAsync = promisify(glob);
 

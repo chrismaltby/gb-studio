@@ -1,4 +1,4 @@
-import type { SpriteAnimationType } from "shared/lib/entities/entitiesTypes";
+import { SpriteAnimationType } from "shared/lib/resources/types";
 
 export type AnimationType =
   | "idle"

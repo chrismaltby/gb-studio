@@ -46,13 +46,19 @@ import { FixedSpacer, FlexRow } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ColorModeSelect } from "components/forms/ColorModeSelect";
 import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
-import { ColorCorrectionSetting } from "shared/lib/resources/types";
+import {
+  ColorCorrectionSetting,
+  MonoBGPPalette,
+  MonoOBJPalette,
+} from "shared/lib/resources/types";
 import { ColorCorrectionSelect } from "components/forms/ColorCorrectionSelect";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
 import stripInvalidFilenameCharacters from "shared/lib/helpers/stripInvalidFilenameCharacters";
 import { getROMFilename } from "shared/lib/helpers/filePaths";
 import SceneTypesSettingsCard from "components/settings/SceneTypesSettingsCard";
 import { AutoTileFlipSelect } from "components/forms/AutoTileFlipSelect";
+import { DMGPaletteSelectButton } from "components/forms/DMGPaletteSelectButton";
+import { defaultProjectSettings } from "consts";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -91,6 +97,9 @@ const SettingsPage: FC = () => {
     customHead,
     defaultBackgroundPaletteIds,
     defaultSpritePaletteIds,
+    defaultMonoBGP,
+    defaultMonoOBP0,
+    defaultMonoOBP1,
     defaultFontId,
     musicDriver,
     openBuildLogOnWarnings,
@@ -261,6 +270,27 @@ const SettingsPage: FC = () => {
     [defaultSpritePaletteIds, editSettings],
   );
 
+  const onEditMonoBGP = useCallback(
+    (palette: MonoBGPPalette) => {
+      editSettings({ defaultMonoBGP: palette });
+    },
+    [editSettings],
+  );
+
+  const onEditMonoOBP0 = useCallback(
+    (palette: MonoOBJPalette) => {
+      editSettings({ defaultMonoOBP0: palette });
+    },
+    [editSettings],
+  );
+
+  const onEditMonoOBP1 = useCallback(
+    (palette: MonoOBJPalette) => {
+      editSettings({ defaultMonoOBP1: palette });
+    },
+    [editSettings],
+  );
+
   const openAsset = useCallback(
     (path: string) => {
       dispatch(
@@ -338,6 +368,7 @@ const SettingsPage: FC = () => {
               ? l10n("FIELD_DEFAULT_BACKGROUND_PALETTES")
               : "",
             colorMode !== "mono" ? l10n("FIELD_DEFAULT_SPRITE_PALETTES") : "",
+            l10n("FIELD_DEFAULT_MONOCHROME_PALETTES"),
             l10n("FIELD_COLOR_CORRECTION"),
             l10n("FIELD_AUTO_TILE_FLIP"),
           ]}
@@ -389,6 +420,7 @@ const SettingsPage: FC = () => {
               </FormInfo>
             </SettingRowInput>
           </SearchableSettingRow>
+
           {colorEnabled && (
             <>
               <SearchableSettingRow
@@ -437,7 +469,58 @@ const SettingsPage: FC = () => {
                   </FormInfo>
                 </SettingRowInput>
               </SearchableSettingRow>
+            </>
+          )}
 
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_DEFAULT_MONOCHROME_PALETTES")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_DEFAULT_MONOCHROME_PALETTES")}
+            </SettingRowLabel>
+            <SettingRowInput>
+              <FormField name="defaultMonoBGP">
+                <DMGPaletteSelectButton
+                  name="bgp"
+                  label={"BGP"}
+                  variant="select"
+                  value={defaultMonoBGP}
+                  isSpritePalette={false}
+                  onChange={onEditMonoBGP}
+                  defaultValue={defaultProjectSettings.defaultMonoBGP}
+                />
+              </FormField>
+              <FormInfo>{l10n("FIELD_MONOCHROME_BGP_NOTE")}</FormInfo>
+              <FormField name="defaultMonoOBP0">
+                <DMGPaletteSelectButton
+                  name="obp0"
+                  label={"OBP0"}
+                  variant="select"
+                  value={defaultMonoOBP0}
+                  isSpritePalette={true}
+                  onChange={onEditMonoOBP0}
+                  defaultValue={defaultProjectSettings.defaultMonoOBP0}
+                />
+              </FormField>
+              <FixedSpacer height={3} />
+              <FormField name="defaultMonoOBP1">
+                <DMGPaletteSelectButton
+                  name="obp1"
+                  label={"OBP1"}
+                  variant="select"
+                  value={defaultMonoOBP1}
+                  isSpritePalette={true}
+                  onChange={onEditMonoOBP1}
+                  defaultValue={defaultProjectSettings.defaultMonoOBP1}
+                />
+              </FormField>
+              <FormInfo>{l10n("FIELD_MONOCHROME_OBP_NOTE")}</FormInfo>
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          {colorEnabled && (
+            <>
               <SearchableSettingRow
                 searchTerm={searchTerm}
                 searchMatches={[l10n("FIELD_DEFAULT_BACKGROUND_PALETTES")]}

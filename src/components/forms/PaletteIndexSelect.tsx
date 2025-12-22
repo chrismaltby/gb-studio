@@ -6,7 +6,6 @@ import {
   getLocalisedPalettesLookup,
   sceneSelectors,
 } from "store/features/entities/entitiesState";
-import { Palette } from "shared/lib/entities/entitiesTypes";
 import PaletteBlock from "components/forms/PaletteBlock";
 import {
   OptionLabelWithPreview,
@@ -14,6 +13,7 @@ import {
   SingleValueWithPreview,
 } from "ui/form/Select";
 import { SingleValue } from "react-select";
+import { Palette } from "shared/lib/resources/types";
 
 interface PaletteIndexSelectProps {
   name: string;

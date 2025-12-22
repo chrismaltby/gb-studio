@@ -1,9 +1,9 @@
 import { decBin } from "shared/lib/helpers/8bit";
-import type { SoundData } from "shared/lib/entities/entitiesTypes";
 import { compileFXHammer } from "./compileFXHammer";
 import { compileVGM } from "./compileVGM";
 import { compileWav } from "./compileWav";
 import { assetFilename } from "shared/lib/helpers/assets";
+import { Sound } from "shared/lib/resources/types";
 
 interface CompileSoundOptions {
   projectRoot: string;
@@ -49,7 +49,7 @@ const compileSoundFiles = async (
 };
 
 export const compileSound = async (
-  sound: SoundData,
+  sound: Sound,
   { projectRoot }: CompileSoundOptions,
 ): Promise<CompiledSound> => {
   const assetPath = assetFilename(projectRoot, "sounds", sound);

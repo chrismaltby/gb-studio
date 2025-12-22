@@ -7,7 +7,7 @@ import {
 import {
   ActorNormalized,
   ActorPrefabNormalized,
-  CustomEventNormalized,
+  ScriptNormalized,
   SceneNormalized,
   ScriptEventNormalized,
   TriggerNormalized,
@@ -48,7 +48,7 @@ export type ScriptUse = {
     }
   | {
       type: "custom";
-      customEvent: CustomEventNormalized;
+      customEvent: ScriptNormalized;
       customEventIndex: number;
     }
 );
@@ -74,7 +74,7 @@ workerCtx.onmessage = async (evt) => {
     evt.data.actorPrefabsLookup;
   const triggerPrefabsLookup: Record<string, TriggerPrefabNormalized> =
     evt.data.triggerPrefabsLookup;
-  const customEventsLookup: Record<string, CustomEventNormalized> =
+  const customEventsLookup: Record<string, ScriptNormalized> =
     evt.data.customEventsLookup;
   const l10NData: L10NLookup = evt.data.l10NData;
 

@@ -14,11 +14,6 @@ import type {
   ProjectExportType,
 } from "store/features/buildGame/buildGameActions";
 import type { SettingsState } from "store/features/settings/settingsState";
-import type {
-  Background,
-  SpriteSheetData,
-  Tileset,
-} from "shared/lib/entities/entitiesTypes";
 import type { BackgroundInfo } from "lib/helpers/validation";
 import type { Song } from "shared/lib/uge/song/Song";
 import type { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
@@ -33,6 +28,7 @@ import type { Patrons } from "scripts/fetchPatrons";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
 import {
   AvatarResourceAsset,
+  BackgroundAsset,
   ColorCorrectionSetting,
   ColorModeSetting,
   CompressedBackgroundResourceAsset,
@@ -41,8 +37,10 @@ import {
   MusicResourceAsset,
   ProjectResources,
   SoundResourceAsset,
+  Sprite,
   SpriteModeSetting,
   SpriteResourceAsset,
+  TilesetAsset,
   TilesetResourceAsset,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
@@ -249,8 +247,8 @@ const APISetup = {
       exportType: ProjectExportType,
     ) => ipcRenderer.invoke("project:export", data, engineSchema, exportType),
     getBackgroundInfo: (
-      background: Background,
-      tileset: Tileset | undefined,
+      background: BackgroundAsset,
+      tileset: TilesetAsset | undefined,
       is360: boolean,
       uiPalette: HexPalette | undefined,
       colorMode: ColorModeSetting,
@@ -338,7 +336,7 @@ const APISetup = {
   },
   sprite: {
     compileSprite: (
-      spriteData: SpriteSheetData,
+      spriteData: Sprite,
       defaultSpriteMode: SpriteModeSetting,
     ): Promise<PrecompiledSpriteSheetData> =>
       ipcRenderer.invoke("sprite:compile", spriteData, defaultSpriteMode),

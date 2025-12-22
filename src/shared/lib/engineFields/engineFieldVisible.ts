@@ -1,6 +1,6 @@
 import type { EngineFieldSchema } from "store/features/engine/engineState";
-import type { EngineFieldValue } from "shared/lib/entities/entitiesTypes";
 import { evaluateConditions } from "shared/lib/conditionsFilter";
+import { EngineFieldValue } from "shared/lib/resources/types";
 
 export const isEngineFieldVisible = (
   field: EngineFieldSchema,

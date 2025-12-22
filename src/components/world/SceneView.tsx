@@ -45,6 +45,7 @@ import { SceneContext } from "components/script/SceneContext";
 import { WarningIcon } from "ui/icons/Icons";
 import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeIds";
 import SceneScreenGrid from "components/world/SceneScreenGrid";
+import { MonoOBJPalette } from "shared/lib/resources/types";
 
 const TILE_SIZE = 8;
 
@@ -282,9 +283,27 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   );
   const previewAsMono = useAppSelector(
     (state) =>
-      state.project.present.settings.colorMode === "mixed" &&
-      state.project.present.settings.previewAsMono,
+      state.project.present.settings.colorMode === "mono" ||
+      (state.project.present.settings.colorMode === "mixed" &&
+        state.project.present.settings.previewAsMono),
   );
+  const defaultMonoBGP = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoBGP,
+  );
+  const monoBGP = scene?.monoBGP || defaultMonoBGP;
+
+  const defaultMonoOBP0 = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoOBP0,
+  );
+  const defaultMonoOBP1 = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoOBP1,
+  );
+  const monoOBJPalettes = useMemo(() => {
+    return [
+      scene?.monoOBP0 || defaultMonoOBP0,
+      scene?.monoOBP1 || defaultMonoOBP1,
+    ] as [MonoOBJPalette, MonoOBJPalette];
+  }, [scene?.monoOBP0, defaultMonoOBP0, scene?.monoOBP1, defaultMonoOBP1]);
 
   const tool = useAppSelector((state) => state.editor.tool);
   const showLayers = useAppSelector((state) => state.editor.showLayers);
@@ -718,6 +737,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
                   scene?.paletteIds?.[7] === "auto" ? undefined : palettes[7]
                 }
                 previewAsMono={previewAsMono}
+                monoBGP={monoBGP}
               />
             ) : (
               <ColorizedImage
@@ -731,6 +751,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
                 tiles={tileColors}
                 palettes={palettes}
                 previewAsMono={previewAsMono}
+                monoBGP={monoBGP}
               />
             )}
           </>
@@ -863,6 +884,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
                 id={actorId}
                 sceneId={id}
                 palettes={spritePalettes}
+                monoPalettes={monoOBJPalettes}
                 editable={editable}
               />
             ))}

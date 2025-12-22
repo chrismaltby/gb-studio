@@ -1,28 +1,36 @@
 import type { EntityState } from "@reduxjs/toolkit";
 import type {
-  ColorModeOverrideSetting,
+  Actor,
+  Trigger,
+  Scene,
   Constant,
-  CoordinateType,
-  SceneBoundsRect,
   ScriptEditorCtxType,
-  SpriteModeSetting,
+  MetaspriteTile,
+  Metasprite,
+  SpriteState,
+  SpriteAnimation,
+  Sprite,
+  SpriteAsset,
+  Emote,
+  EmoteAsset,
+  Palette,
+  Background,
+  BackgroundAsset,
+  TilesetAsset,
+  Tileset,
+  Font,
+  FontAsset,
+  Music,
+  MusicAsset,
+  Sound,
+  SoundAsset,
+  AvatarAsset,
+  Avatar,
+  EngineFieldValue,
+  Variable,
+  ScriptEvent,
+  Script,
 } from "shared/lib/resources/types";
-
-export type CollisionGroup = "" | "1" | "2" | "3" | "player";
-
-export type CollisionExtraFlag = "1" | "2" | "3" | "4" | "solid" | "platform";
-
-export type ActorDirection = "up" | "down" | "left" | "right";
-export type SpriteAnimationType =
-  | "fixed"
-  | "fixed_movement"
-  | "multi"
-  | "multi_movement"
-  | "horizontal"
-  | "horizontal_movement"
-  | "platform_player"
-  | "cursor";
-export type ObjPalette = "OBP0" | "OBP1";
 
 export type UnionVariableValue = {
   type: "variable";
@@ -59,22 +67,8 @@ export type ScriptEventParentType =
   | "actorPrefab"
   | "triggerPrefab";
 
-export type ScriptEventArgs = Record<string, unknown>;
-
-export type ScriptEvent = {
-  id: string;
-  command: string;
-  args?: ScriptEventArgs | undefined;
-  children?: Record<string, ScriptEvent[] | undefined> | undefined;
-};
-
 export type ScriptEventNormalized = Omit<ScriptEvent, "children"> & {
   children?: Record<string, string[]>;
-};
-
-export type ScriptEventArgsOverride = {
-  id: string;
-  args: ScriptEventArgs;
 };
 
 export type ScriptEventsRef = {
@@ -93,35 +87,6 @@ export const actorScriptKeys = [
   "hit3Script",
 ] as const;
 export type ActorScriptKey = (typeof actorScriptKeys)[number];
-
-export type Actor = {
-  id: string;
-  name: string;
-  symbol: string;
-  notes?: string;
-  coordinateType: CoordinateType;
-  x: number;
-  y: number;
-  prefabId: string;
-  spriteSheetId: string;
-  paletteId: string;
-  frame: number;
-  moveSpeed: number;
-  animSpeed: number;
-  direction: ActorDirection;
-  animate: boolean;
-  isPinned: boolean;
-  persistent: boolean;
-  collisionGroup: CollisionGroup;
-  collisionExtraFlags: CollisionExtraFlag[];
-  prefabScriptOverrides: Record<string, ScriptEventArgsOverride>;
-  script: ScriptEvent[];
-  startScript: ScriptEvent[];
-  updateScript: ScriptEvent[];
-  hit1Script: ScriptEvent[];
-  hit2Script: ScriptEvent[];
-  hit3Script: ScriptEvent[];
-};
 
 export type ActorNormalized = Omit<
   Actor,
@@ -160,21 +125,6 @@ export type ActorPrefabNormalized = Omit<
 export const triggerScriptKeys = ["script", "leaveScript"] as const;
 export type TriggerScriptKey = (typeof triggerScriptKeys)[number];
 
-export type Trigger = {
-  id: string;
-  name: string;
-  symbol: string;
-  notes?: string;
-  prefabId: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  prefabScriptOverrides: Record<string, ScriptEventArgsOverride>;
-  script: ScriptEvent[];
-  leaveScript: ScriptEvent[];
-};
-
 export type TriggerNormalized = Omit<Trigger, "script" | "leaveScript"> & {
   script: string[];
   leaveScript: string[];
@@ -196,239 +146,24 @@ export type TriggerPrefabNormalized = Omit<
   TriggerFieldsOmittedFromPrefab
 >;
 
-export type Background = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  width: number;
-  height: number;
-  imageWidth: number;
-  imageHeight: number;
-  tileColors: number[];
-  monoOverrideId?: string;
-  autoColor?: boolean;
-  plugin?: string;
-  inode: string;
-  _v: number;
-  autoTileFlipOverride?: boolean;
-};
-
-export type BackgroundData = Omit<Background, "_v" | "inode">;
-
-export type Font = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  width: number;
-  height: number;
-  plugin?: string;
-  inode: string;
-  mapping: Record<string, number | number[]>;
-  _v: number;
-};
-
-export type FontData = Omit<Font, "mapping" | "_v" | "inode">;
-
-export type Avatar = {
-  id: string;
-  name: string;
-  filename: string;
-  width: number;
-  height: number;
-  plugin?: string;
-  inode: string;
-  _v: number;
-};
-
-export type AvatarData = Omit<Avatar, "_v" | "inode">;
-
-export type Emote = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  width: number;
-  height: number;
-  plugin?: string;
-  inode: string;
-  _v: number;
-};
-
-export type EmoteData = Omit<Emote, "_v" | "inode">;
-
-export type MusicSettings = {
-  disableSpeedConversion?: boolean;
-};
-
-export type Music = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  plugin?: string;
-  settings: MusicSettings;
-  type?: string;
-  inode: string;
-  _v: number;
-};
-
-export type MusicData = Omit<Music, "_v" | "inode">;
-
-export type Sound = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  plugin?: string;
-  type: "wav" | "vgm" | "fxhammer";
-  numEffects?: number;
-  inode: string;
-  _v: number;
-};
-
-export type SoundData = Omit<Sound, "_v" | "inode">;
-
-export type Tileset = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  width: number;
-  height: number;
-  imageWidth: number;
-  imageHeight: number;
-  plugin?: string;
-  inode: string;
-  _v: number;
-};
-
-export type TilesetData = Omit<Tileset, "_v" | "inode">;
-
-export type Palette = {
-  id: string;
-  name: string;
-  colors: [string, string, string, string];
-  defaultName?: string;
-  defaultColors?: [string, string, string, string];
-};
-
-export type Variable = {
-  id: string;
-  name: string;
-  symbol: string;
-  flags?: Record<string, string>;
-};
-
-export type CustomEventVariable = {
-  id: string;
-  name: string;
-  passByReference: boolean;
-};
-
-export type CustomEventActor = {
-  id: string;
-  name: string;
-};
-
-export type CustomEvent = {
-  id: string;
-  name: string;
-  symbol: string;
-  description: string;
-  variables: Record<string, CustomEventVariable>;
-  actors: Record<string, CustomEventActor>;
-  script: ScriptEvent[];
-};
-
-export type CustomEventNormalized = Omit<CustomEvent, "script"> & {
+export type ScriptNormalized = Omit<Script, "script"> & {
   script: string[];
 };
 
-export type EngineFieldValue = {
-  id: string;
-  value?: number | string | undefined;
-};
-
-export type MetaspriteTile = {
-  id: string;
-  x: number;
-  y: number;
-  sliceX: number;
-  sliceY: number;
-  palette: number;
-  flipX: boolean;
-  flipY: boolean;
-  objPalette: ObjPalette;
-  paletteIndex: number;
-  priority: boolean;
-};
-
-export type Metasprite = {
-  id: string;
+export type MetaspriteNormalized = Omit<Metasprite, "tiles"> & {
   tiles: string[];
 };
 
-type MetaspriteData = Omit<Metasprite, "tiles"> & {
-  tiles: MetaspriteTile[];
-};
-
-export type SpriteState = {
-  id: string;
-  name: string;
-  animationType: SpriteAnimationType;
-  flipLeft: boolean;
+export type SpriteStateNormalized = Omit<SpriteState, "animations"> & {
   animations: string[];
 };
 
-type SpriteStateData = Omit<SpriteState, "animations"> & {
-  animations: SpriteAnimationData[];
-};
-
-export type SpriteAnimation = {
-  id: string;
+export type SpriteAnimationNormalized = Omit<SpriteAnimation, "frames"> & {
   frames: string[];
 };
 
-export type SpriteAnimationData = Omit<SpriteAnimation, "frames"> & {
-  frames: MetaspriteData[];
-};
-
-export type SpriteSheet = {
-  id: string;
-  name: string;
-  symbol: string;
-  filename: string;
-  numTiles: number;
-  plugin?: string;
-  inode: string;
-  checksum: string;
-  _v: number;
-  width: number;
-  height: number;
-  canvasOriginX: number;
-  canvasOriginY: number;
-  canvasWidth: number;
-  canvasHeight: number;
-  boundsX: number;
-  boundsY: number;
-  boundsWidth: number;
-  boundsHeight: number;
-  animSpeed: number | null;
-  states: SpriteStateData[];
-  spriteMode?: SpriteModeSetting;
-};
-
-export type SpriteSheetNormalized = Omit<SpriteSheet, "states"> & {
+export type SpriteSheetNormalized = Omit<SpriteAsset, "states"> & {
   states: string[];
-};
-
-export type SpriteSheetData = Omit<SpriteSheet, "_v" | "inode">;
-
-export type SceneParallaxLayer = {
-  height: number;
-  speed: number;
 };
 
 export const sceneScriptKeys = [
@@ -438,37 +173,6 @@ export const sceneScriptKeys = [
   "playerHit3Script",
 ] as const;
 export type SceneScriptKey = (typeof sceneScriptKeys)[number];
-
-export type Scene = {
-  id: string;
-  type: string;
-  name: string;
-  symbol: string;
-  notes?: string;
-  labelColor?: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  backgroundId: string;
-  tilesetId: string;
-  colorModeOverride: ColorModeOverrideSetting;
-  paletteIds: string[];
-  spritePaletteIds: string[];
-  collisions: number[];
-  autoFadeSpeed: number | null;
-  autoFadeEventCollapse?: boolean;
-  parallax?: SceneParallaxLayer[];
-  scrollBounds?: SceneBoundsRect;
-  playerSpriteSheetId?: string;
-  actors: Actor[];
-  triggers: Trigger[];
-  script: ScriptEvent[];
-  playerHit1Script: ScriptEvent[];
-  playerHit2Script: ScriptEvent[];
-  playerHit3Script: ScriptEvent[];
-  spriteMode?: SpriteModeSetting;
-};
 
 export type SceneNormalized = Omit<
   Scene,
@@ -489,16 +193,16 @@ export type SceneNormalized = Omit<
 
 export type ProjectEntitiesData = {
   scenes: Scene[];
-  backgrounds: BackgroundData[];
-  spriteSheets: SpriteSheetData[];
+  backgrounds: Background[];
+  spriteSheets: Sprite[];
   palettes: Palette[];
-  customEvents: CustomEvent[];
-  music: MusicData[];
-  sounds: SoundData[];
-  fonts: FontData[];
-  avatars: AvatarData[];
-  emotes: EmoteData[];
-  tilesets: TilesetData[];
+  customEvents: Script[];
+  music: Music[];
+  sounds: Sound[];
+  fonts: Font[];
+  avatars: Avatar[];
+  emotes: Emote[];
+  tilesets: Tileset[];
   variables: Variable[];
   constants: Constant[];
   engineFieldValues: EngineFieldValue[];
@@ -511,20 +215,20 @@ export interface EntitiesState {
   actorPrefabs: EntityState<ActorPrefabNormalized, string>;
   triggerPrefabs: EntityState<TriggerPrefabNormalized, string>;
   scriptEvents: EntityState<ScriptEventNormalized, string>;
-  backgrounds: EntityState<Background, string>;
+  backgrounds: EntityState<BackgroundAsset, string>;
   spriteSheets: EntityState<SpriteSheetNormalized, string>;
-  metasprites: EntityState<Metasprite, string>;
+  metasprites: EntityState<MetaspriteNormalized, string>;
   metaspriteTiles: EntityState<MetaspriteTile, string>;
-  spriteAnimations: EntityState<SpriteAnimation, string>;
-  spriteStates: EntityState<SpriteState, string>;
+  spriteAnimations: EntityState<SpriteAnimationNormalized, string>;
+  spriteStates: EntityState<SpriteStateNormalized, string>;
   palettes: EntityState<Palette, string>;
-  customEvents: EntityState<CustomEventNormalized, string>;
-  music: EntityState<Music, string>;
-  sounds: EntityState<Sound, string>;
-  fonts: EntityState<Font, string>;
-  avatars: EntityState<Avatar, string>;
-  emotes: EntityState<Emote, string>;
-  tilesets: EntityState<Tileset, string>;
+  customEvents: EntityState<ScriptNormalized, string>;
+  music: EntityState<MusicAsset, string>;
+  sounds: EntityState<SoundAsset, string>;
+  fonts: EntityState<FontAsset, string>;
+  avatars: EntityState<AvatarAsset, string>;
+  emotes: EntityState<EmoteAsset, string>;
+  tilesets: EntityState<TilesetAsset, string>;
   variables: EntityState<Variable, string>;
   constants: EntityState<Constant, string>;
   engineFieldValues: EntityState<EngineFieldValue, string>;

@@ -16,8 +16,10 @@ import {
   dummyTriggerPrefabResource,
   dummyTriggerResource,
 } from "../dummydata";
-import { CompressedProjectResources } from "shared/lib/resources/types";
-import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
+import {
+  CompressedProjectResources,
+  ScriptEvent,
+} from "shared/lib/resources/types";
 
 describe("isProjectVersion", () => {
   test("should confirm version matches", () => {

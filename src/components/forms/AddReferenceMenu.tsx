@@ -25,16 +25,9 @@ import {
   variableSelectors,
 } from "store/features/entities/entitiesState";
 import {
-  Background,
-  CustomEventNormalized,
-  Emote,
-  Font,
-  Music,
+  ScriptNormalized,
   SceneNormalized,
-  Sound,
   SpriteSheetNormalized,
-  Tileset,
-  Variable,
 } from "shared/lib/entities/entitiesTypes";
 import { Reference, ReferenceType } from "./ReferencesSelect";
 import {
@@ -47,6 +40,15 @@ import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 import l10n from "shared/lib/lang/l10n";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { StyledMenu } from "ui/menu/style";
+import {
+  BackgroundAsset,
+  EmoteAsset,
+  FontAsset,
+  MusicAsset,
+  SoundAsset,
+  TilesetAsset,
+  Variable,
+} from "shared/lib/resources/types";
 
 interface AddReferenceMenuProps {
   onBlur?: () => void;
@@ -74,7 +76,7 @@ interface EventOptGroup {
 const MENU_HEADER_HEIGHT = 68;
 const MENU_ITEM_HEIGHT = 25;
 
-const backgroundToOption = (background: Background): EventOption => {
+const backgroundToOption = (background: BackgroundAsset): EventOption => {
   return {
     label: background.name,
     value: background.id,
@@ -90,7 +92,7 @@ const spriteToOption = (sprite: SpriteSheetNormalized): EventOption => {
   };
 };
 
-const fontToOption = (font: Font): EventOption => {
+const fontToOption = (font: FontAsset): EventOption => {
   return {
     label: font.name,
     value: font.id,
@@ -119,7 +121,7 @@ const variableToOption = (variable: {
   };
 };
 
-const musicToOption = (music: Music): EventOption => {
+const musicToOption = (music: MusicAsset): EventOption => {
   return {
     label: music.name,
     value: music.id,
@@ -127,7 +129,7 @@ const musicToOption = (music: Music): EventOption => {
   };
 };
 
-const soundToOption = (sound: Sound): EventOption => {
+const soundToOption = (sound: SoundAsset): EventOption => {
   return {
     label: sound.name,
     value: sound.id,
@@ -135,7 +137,7 @@ const soundToOption = (sound: Sound): EventOption => {
   };
 };
 
-const emoteToOption = (emote: Emote): EventOption => {
+const emoteToOption = (emote: EmoteAsset): EventOption => {
   return {
     label: emote.name,
     value: emote.id,
@@ -143,7 +145,7 @@ const emoteToOption = (emote: Emote): EventOption => {
   };
 };
 
-const tilesetToOption = (tileset: Tileset): EventOption => {
+const tilesetToOption = (tileset: TilesetAsset): EventOption => {
   return {
     label: tileset.name,
     value: tileset.id,
@@ -152,7 +154,7 @@ const tilesetToOption = (tileset: Tileset): EventOption => {
 };
 
 const customEventToOption = (
-  customEvent: CustomEventNormalized,
+  customEvent: ScriptNormalized,
   index: number,
 ): EventOption => {
   return {

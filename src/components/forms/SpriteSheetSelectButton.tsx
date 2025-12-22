@@ -3,10 +3,7 @@ import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
-import {
-  ActorDirection,
-  SpriteSheetNormalized,
-} from "shared/lib/entities/entitiesTypes";
+import { SpriteSheetNormalized } from "shared/lib/entities/entitiesTypes";
 import {
   FormatFolderLabel,
   SelectMenu,
@@ -16,6 +13,7 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { SpriteSheetSelect } from "./SpriteSheetSelect";
 import { FlexGrow } from "ui/spacing/Spacing";
+import { ActorDirection } from "shared/lib/resources/types";
 
 interface SpriteSheetSelectProps {
   name: string;

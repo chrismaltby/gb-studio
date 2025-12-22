@@ -1,11 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { tilesetSelectors } from "store/features/entities/entitiesState";
-import {
-  UnitType,
-  Tileset,
-  GridUnitType,
-} from "shared/lib/entities/entitiesTypes";
+import { UnitType, GridUnitType } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   OptGroup,
@@ -20,6 +16,7 @@ import uniq from "lodash/uniq";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { SingleValue } from "react-select";
+import { TilesetAsset } from "shared/lib/resources/types";
 
 interface TilesetSelectProps extends SelectCommonProps {
   name: string;
@@ -36,7 +33,7 @@ interface TilesetSelectProps extends SelectCommonProps {
 }
 
 interface TilesetOption extends Option {
-  tileset?: Tileset;
+  tileset?: TilesetAsset;
 }
 
 interface TilesetOptGroup extends OptGroup {
@@ -50,7 +47,7 @@ const Wrapper = styled.div`
 const buildOptions = (
   memo: OptGroup[],
   plugin: string | undefined,
-  tilesets: Tileset[],
+  tilesets: TilesetAsset[],
 ) => {
   memo.push({
     label: plugin ? plugin : "",
@@ -75,7 +72,7 @@ export const TilesetSelect: FC<TilesetSelectProps> = ({
 }) => {
   const tilesets = useAppSelector((state) => tilesetSelectors.selectAll(state));
   const [options, setOptions] = useState<TilesetOptGroup[]>([]);
-  const [currentTileset, setCurrentTileset] = useState<Tileset>();
+  const [currentTileset, setCurrentTileset] = useState<TilesetAsset>();
   const [currentValue, setCurrentValue] = useState<TilesetOption>();
 
   useEffect(() => {

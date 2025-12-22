@@ -28,6 +28,7 @@ workerCtx.onmessage = async (evt) => {
   const src = evt.data.src;
   const tilesSrc = evt.data.tilesSrc as string | undefined;
   const previewAsMono = evt.data.previewAsMono;
+  const monoBGP = evt.data.monoBGP ?? [0, 1, 2, 3];
   const uiPalette = evt.data.uiPalette;
   const colorCorrectionFn = hex2GBCrgb(evt.data.colorCorrection);
 
@@ -161,7 +162,7 @@ workerCtx.onmessage = async (evt) => {
         const index = ii * 4;
         const colorIndex = indexedImage.data[ii];
         const color = previewAsMono
-          ? dmgPalette[colorIndex]
+          ? dmgPalette[monoBGP[colorIndex]]
           : palette[colorIndex];
         data[index] = color.r;
         data[index + 1] = color.g;

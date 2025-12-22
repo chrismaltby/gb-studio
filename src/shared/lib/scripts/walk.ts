@@ -2,30 +2,30 @@ import mapValues from "lodash/mapValues";
 import {
   actorScriptKeys,
   ActorNormalized,
-  Actor,
   ActorScriptKey,
-  CustomEventNormalized,
+  ScriptNormalized,
   SceneNormalized,
-  Scene,
   SceneScriptKey,
   ScriptEventNormalized,
-  ScriptEvent,
   TriggerNormalized,
-  Trigger,
   TriggerScriptKey,
   triggerScriptKeys,
   sceneScriptKeys,
-  CustomEvent,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
   ActorPrefab,
   TriggerPrefab,
-  ScriptEventArgsOverride,
 } from "shared/lib/entities/entitiesTypes";
 import type {
+  Actor,
   CompressedSceneResourceWithChildren,
+  Scene,
   SceneResource,
+  Script,
+  ScriptEvent,
+  ScriptEventArgsOverride,
   ScriptResource,
+  Trigger,
 } from "shared/lib/resources/types";
 
 type ScriptMapOptions =
@@ -258,7 +258,7 @@ export const mapTriggersScript = <T extends Trigger | TriggerPrefab>(
   });
 };
 
-const mapCustomScriptScript = <T extends CustomEvent | ScriptResource>(
+const mapCustomScriptScript = <T extends Script | ScriptResource>(
   customScript: T,
   callback: (e: ScriptEvent) => ScriptEvent,
 ): T => {
@@ -268,7 +268,7 @@ const mapCustomScriptScript = <T extends CustomEvent | ScriptResource>(
   };
 };
 
-export const mapCustomScriptsScript = <T extends CustomEvent | ScriptResource>(
+export const mapCustomScriptsScript = <T extends Script | ScriptResource>(
   customScripts: T[],
   callback: (e: ScriptEvent) => ScriptEvent,
 ): T[] => {
@@ -316,7 +316,7 @@ type WalkOptions =
   | {
       filter?: (ScriptEvent: ScriptEvent) => boolean;
       customEvents?: {
-        lookup: Record<string, CustomEvent>;
+        lookup: Record<string, Script>;
         maxDepth: number;
         args?: Record<string, unknown>;
         visitedIds?: Set<string>;
@@ -507,7 +507,7 @@ type WalkNormalizedOptions =
       includeCommented?: boolean;
       overrides?: Record<string, ScriptEventArgsOverride>;
       customEvents?: {
-        lookup: Record<string, CustomEventNormalized>;
+        lookup: Record<string, ScriptNormalized>;
         maxDepth: number;
         args?: Record<string, unknown>;
         visitedIds?: Set<string>;
@@ -778,7 +778,7 @@ export const walkNormalizedScenesScripts = (
 };
 
 export const walkNormalizedCustomEventScripts = (
-  customEvent: CustomEventNormalized,
+  customEvent: ScriptNormalized,
   lookup: Record<string, ScriptEventNormalized>,
   options: WalkNormalizedOptions,
   callback: (scriptEvent: ScriptEventNormalized) => void,

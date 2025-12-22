@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Palette } from "shared/lib/entities/entitiesTypes";
-import { ColorModeSetting } from "shared/lib/resources/types";
+import { ColorModeSetting, Palette } from "shared/lib/resources/types";
 
 type BackgroundAsset = {
   id: string;

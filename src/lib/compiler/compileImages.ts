@@ -10,11 +10,6 @@ import {
   readFileToIndexedImage,
   indexedImageToTilesDataArray,
 } from "lib/tiles/readFileToTiles";
-import {
-  BackgroundData,
-  Palette,
-  TilesetData,
-} from "shared/lib/entities/entitiesTypes";
 import promiseLimit from "lib/helpers/promiseLimit";
 import { FLAG_VRAM_BANK_1 } from "consts";
 import { fileExists } from "lib/helpers/fs/fileExists";
@@ -25,7 +20,12 @@ import {
 import type { ColorModeSetting } from "store/features/settings/settingsState";
 import l10n from "shared/lib/lang/l10n";
 import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
-import { ColorCorrectionSetting } from "shared/lib/resources/types";
+import {
+  Background,
+  ColorCorrectionSetting,
+  Palette,
+  Tileset,
+} from "shared/lib/resources/types";
 import { ReferencedBackground } from "./precompile/determineUsedAssets";
 import { HexPalette } from "shared/lib/tiles/autoColor";
 import { divisibleBy8 } from "shared/lib/helpers/8bit";
@@ -40,7 +40,7 @@ const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;
 const MAX_PIXELS = 16380 * 64;
 
-type PrecompiledBackgroundData = BackgroundData & {
+type PrecompiledBackgroundData = Background & {
   commonTilesetId?: string;
   vramData: [number[], number[]];
   tilemap: number[];
@@ -58,7 +58,7 @@ type CompileImageOptions = {
 type ImageTileAllocationStrategy = (
   tileIndex: number,
   numTiles: number,
-  image: BackgroundData,
+  image: Background,
 ) => { tileIndex: number; inVRAM2: boolean };
 
 /**
@@ -113,7 +113,7 @@ const padArrayEnd = <T>(arr: T[], len: number, padding: T) => {
 };
 
 const readCommonTileset = async (
-  commonTileset: TilesetData | undefined,
+  commonTileset: Tileset | undefined,
   projectPath: string,
 ) => {
   if (!commonTileset) {
@@ -171,8 +171,8 @@ const buildImageData = (
 };
 
 export const compileImage = async (
-  img: BackgroundData,
-  commonTileset: TilesetData | undefined,
+  img: Background,
+  commonTileset: Tileset | undefined,
   is360: boolean,
   uiPalette: HexPalette | undefined,
   colorMode: ColorModeSetting,
@@ -394,7 +394,7 @@ export const compileImage = async (
 
 const compileImages = async (
   imgs: ReferencedBackground[],
-  commonTilesetsLookup: Record<string, TilesetData[]>,
+  commonTilesetsLookup: Record<string, Tileset[]>,
   colorCorrection: ColorCorrectionSetting,
   autoTileFlipEnabled: boolean,
   projectPath: string,

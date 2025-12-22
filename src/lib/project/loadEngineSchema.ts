@@ -48,7 +48,7 @@ export const loadEngineSchema = async (
     localEngine.sceneTypes || defaultEngine.sceneTypes || defaultSceneTypes;
   let consts = localEngine.consts || defaultEngine.consts || {};
 
-  const enginePlugins = glob.sync(`${pluginsPath}/*/engine`);
+  const enginePlugins = glob.sync(`${pluginsPath}/**/engine`);
   for (const enginePluginPath of enginePlugins) {
     const enginePluginJsonPath = Path.join(enginePluginPath, "engine.json");
     if (await pathExists(enginePluginJsonPath)) {

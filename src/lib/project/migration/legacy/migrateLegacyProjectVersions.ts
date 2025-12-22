@@ -26,21 +26,6 @@ import {
 } from "shared/lib/scripts/scriptDefHelpers";
 import type { ProjectData } from "store/features/project/projectActions";
 import {
-  Actor,
-  AvatarData,
-  CustomEvent,
-  CustomEventVariable,
-  EmoteData,
-  EngineFieldValue,
-  FontData,
-  Scene,
-  ScriptEventArgs,
-  ScriptEvent,
-  SpriteAnimationData,
-  SpriteAnimationType,
-  SpriteSheetData,
-} from "shared/lib/entities/entitiesTypes";
-import {
   customEventName,
   isUnionValue,
   isUnionVariableValue,
@@ -51,6 +36,21 @@ import {
   isScriptValue,
 } from "shared/lib/scriptValue/types";
 import { ensureNumber } from "shared/types";
+import {
+  Actor,
+  Avatar,
+  Emote,
+  EngineFieldValue,
+  Font,
+  Scene,
+  Script,
+  ScriptEvent,
+  ScriptEventArgs,
+  ScriptVariable,
+  Sprite,
+  SpriteAnimation,
+  SpriteAnimationType,
+} from "shared/lib/resources/types";
 
 const indexById = <T>(arr: T[]) => keyBy(arr, "id");
 
@@ -110,7 +110,7 @@ const applyEventsMigration = (
 };
 
 type ProjectDataV1 = Omit<ProjectData, "spriteSheets" | "scenes"> & {
-  spriteSheets: (SpriteSheetData & { numFrames: number })[];
+  spriteSheets: (Sprite & { numFrames: number })[];
   scenes: (Omit<Scene, "actors"> & {
     actors: (Actor & { movementType?: string })[];
   })[];
@@ -1122,10 +1122,10 @@ const migrateFrom200r6To200r7Scenes = (data: ProjectData): ProjectData => {
 };
 
 type ProjectDataV200r7 = Omit<ProjectData, "spriteSheets"> & {
-  spriteSheets: (SpriteSheetData & {
+  spriteSheets: (Sprite & {
     animationType: SpriteAnimationType;
     flipLeft: boolean;
-    animations: SpriteAnimationData[];
+    animations: SpriteAnimation[];
   })[];
 };
 
@@ -1423,7 +1423,7 @@ const migrateFrom200r13To200r14Events = (data: ProjectData): ProjectData => {
 /* Version 2.0.0 r15 migrates old emote events to new emotes format (and creates default emote pngs if missing)
  */
 const migrateFrom200r14To200r15Event =
-  (emotesData: EmoteData[]) =>
+  (emotesData: Emote[]) =>
   (event: ScriptEvent): ScriptEvent => {
     const migrateMeta = generateMigrateMeta(event);
 
@@ -1465,7 +1465,7 @@ const migrateFrom200r14Tor15Emotes = (
     width: 16,
     height: 16,
     filename: `${name}.png`,
-  })) as EmoteData[];
+  })) as Emote[];
 
   for (let i = 0; i < emotesData.length; i++) {
     const emoteData = emotesData[i];
@@ -1550,7 +1550,7 @@ const migrateFrom200r15Tor16Avatars = (
         }
       );
     })
-    .filter((i) => i) as AvatarData[];
+    .filter((i) => i) as Avatar[];
 
   const avatarsIdLookup = uniqueAvatarIds.reduce(
     (memo, oldId, index) => {
@@ -1609,7 +1609,7 @@ const migrateFrom200r16Tor17Fonts = (
     id: uuid(),
     name,
     filename: `${name}.png`,
-  })) as FontData[];
+  })) as Font[];
 
   for (let i = 0; i < fontsData.length; i++) {
     const fontData = fontsData[i];
@@ -1746,7 +1746,7 @@ export const migrateFrom300r3To310r1ScriptEvent = (
  */
 export const migrateFrom300r3To310r1Event = (
   event: ScriptEvent,
-  customEvents: CustomEvent[],
+  customEvents: Script[],
 ) => {
   const migrateMeta = generateMigrateMeta(event);
   if (event.args && event.command === "EVENT_CALL_CUSTOM_EVENT") {
@@ -1819,7 +1819,7 @@ export const migrateFrom300r3To310r1 = (
             };
             return memo;
           },
-          {} as Record<string, CustomEventVariable>,
+          {} as Record<string, ScriptVariable>,
         ),
         script: mapScript(customEvent.script, (e) =>
           migrateFrom300r3To310r1Event(

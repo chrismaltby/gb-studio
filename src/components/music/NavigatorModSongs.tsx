@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
-import { Music } from "shared/lib/entities/entitiesTypes";
 import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
@@ -19,6 +18,7 @@ import {
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import { Button } from "ui/buttons/Button";
 import { SearchIcon } from "ui/icons/Icons";
+import { MusicAsset } from "shared/lib/resources/types";
 
 interface NavigatorSongsProps {
   height: number;
@@ -42,7 +42,10 @@ const EmptyState = styled.div`
   padding: 36px 12px;
 `;
 
-const songToNavigatorItem = (song: Music, songIndex: number): NavigatorItem => {
+const songToNavigatorItem = (
+  song: MusicAsset,
+  songIndex: number,
+): NavigatorItem => {
   return {
     id: song.id,
     name: song.name ? song.name : `Song ${songIndex + 1}`,
@@ -58,7 +61,7 @@ const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.name, b.name);
 };
 
-export const modFilter = (s: Music) => {
+export const modFilter = (s: MusicAsset) => {
   return s.type && s.type === "mod";
 };
 
@@ -159,7 +162,7 @@ export const NavigatorModSongs = ({
   );
 
   const renderLabel = useCallback(
-    (item: FileSystemNavigatorItem<Music>) => {
+    (item: FileSystemNavigatorItem<MusicAsset>) => {
       if (item.type === "folder") {
         return (
           <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>

@@ -7,7 +7,7 @@ import {
   TriggerNormalized,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
-  CustomEventNormalized,
+  ScriptNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import {
   ActorDirection,
@@ -34,7 +34,7 @@ export interface ConnectionsWorkerRequest {
   triggersLookup: Record<string, TriggerNormalized>;
   actorPrefabsLookup: Record<string, ActorPrefabNormalized>;
   triggerPrefabsLookup: Record<string, TriggerPrefabNormalized>;
-  customEventsLookup: Record<string, CustomEventNormalized>;
+  customEventsLookup: Record<string, ScriptNormalized>;
 }
 
 export interface ConnectionsWorkerResult {
@@ -105,7 +105,7 @@ const getSceneConnections = (
   triggersLookup: Record<string, TriggerNormalized>,
   actorPrefabsLookup: Record<string, ActorPrefabNormalized>,
   triggerPrefabsLookup: Record<string, TriggerPrefabNormalized>,
-  customEventsLookup: Record<string, CustomEventNormalized>,
+  customEventsLookup: Record<string, ScriptNormalized>,
 ) => {
   const ifMatches = (
     scriptEvent: ScriptEventNormalized,

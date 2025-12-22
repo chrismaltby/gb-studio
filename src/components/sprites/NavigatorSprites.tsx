@@ -15,7 +15,7 @@ import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
   SpriteSheetNormalized,
-  SpriteState,
+  SpriteStateNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";
@@ -182,7 +182,7 @@ export const NavigatorSprites = ({
       const seenStates: string[] = [];
 
       const tree = selectedSprite.states.map((stateId) => {
-        const state = spriteStatesLookup[stateId] as SpriteState;
+        const state = spriteStatesLookup[stateId] as SpriteStateNormalized;
         return {
           ...state,
         };

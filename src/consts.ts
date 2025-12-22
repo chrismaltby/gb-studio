@@ -1,6 +1,9 @@
 import { normalize } from "path";
-import type { Palette } from "shared/lib/entities/entitiesTypes";
-import { CollisionTileDef, Settings } from "shared/lib/resources/types";
+import {
+  CollisionTileDef,
+  Palette,
+  Settings,
+} from "shared/lib/resources/types";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
 const isCli = __dirname.indexOf("out/cli") > -1;
@@ -403,6 +406,9 @@ export const defaultProjectSettings: Settings = {
   defaultSpritePaletteId: "default-sprite",
   defaultUIPaletteId: "default-ui",
   playerPaletteId: "",
+  defaultMonoBGP: [0, 1, 2, 3],
+  defaultMonoOBP0: [0, 1, 3],
+  defaultMonoOBP1: [0, 2, 3],
   navigatorSplitSizes: [400, 30, 30, 30, 30],
   showNavigator: true,
   defaultFontId: "",

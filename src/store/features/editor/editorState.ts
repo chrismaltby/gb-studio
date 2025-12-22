@@ -16,10 +16,7 @@ import {
   MAX_ZOOM_LEVEL,
 } from "consts";
 import { zoomIn, zoomOut } from "shared/lib/helpers/zoom";
-import {
-  ScriptEventParentType,
-  Variable,
-} from "shared/lib/entities/entitiesTypes";
+import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
 import navigationActions from "store/features/navigation/navigationActions";
 import projectActions from "store/features/project/projectActions";
 import settingsActions from "store/features/settings/settingsActions";
@@ -30,6 +27,7 @@ import type { NavigationSection } from "store/features/navigation/navigationStat
 import type { RootState } from "store/configureStore";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import { selectScriptIds } from "store/features/entities/entitiesState";
+import { Variable } from "shared/lib/resources/types";
 
 export type Tool =
   | "triggers"

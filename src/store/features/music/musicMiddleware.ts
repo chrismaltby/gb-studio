@@ -5,9 +5,9 @@ import soundfxActions from "store/features/soundfx/soundfxActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./musicActions";
 import { musicSelectors } from "store/features/entities/entitiesState";
-import { MusicSettings } from "shared/lib/entities/entitiesTypes";
 import { assetPath } from "shared/lib/helpers/assets";
 import API from "renderer/lib/api";
+import { MusicSettings } from "shared/lib/resources/types";
 
 let modPlayer: ScripTracker;
 

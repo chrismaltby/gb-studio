@@ -15,7 +15,6 @@ import {
   triggerPrefabSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
-import { ActorDirection } from "shared/lib/entities/entitiesTypes";
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -28,6 +27,7 @@ import { throttle } from "lodash";
 import { optimiseScriptValue } from "shared/lib/scriptValue/helpers";
 import { ensureScriptValue } from "shared/lib/scriptValue/types";
 import { filterUndefined } from "shared/lib/helpers/array";
+import { ActorDirection } from "shared/lib/resources/types";
 
 const worker = new ConnectionsWorker();
 

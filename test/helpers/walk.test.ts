@@ -1,12 +1,8 @@
 import {
-  Actor,
   ActorNormalized,
-  CustomEvent,
-  CustomEventNormalized,
+  ScriptNormalized,
   SceneNormalized,
-  ScriptEvent,
   ScriptEventNormalized,
-  Trigger,
   TriggerNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import {
@@ -30,6 +26,12 @@ import {
   dummyTriggerNormalized,
   dummyTriggerPrefabNormalized,
 } from "../dummydata";
+import {
+  Actor,
+  Script,
+  ScriptEvent,
+  Trigger,
+} from "shared/lib/resources/types";
 
 test("shouldn't walk empty events", () => {
   const events: ScriptEvent[] = [];
@@ -143,7 +145,7 @@ test("shouldn't recursively walk through the same custom script multiple times",
         },
       ],
     },
-  } as unknown as Record<string, CustomEvent>;
+  } as unknown as Record<string, Script>;
   const output: string[] = [];
   const myFn = (node: ScriptEvent) => output.push(node.id);
   walkScript(
@@ -209,7 +211,7 @@ test("shouldn't recursively walk through the same normalized custom script multi
       id: "s1",
       script: ["1", "2"],
     },
-  } as unknown as Record<string, CustomEventNormalized>;
+  } as unknown as Record<string, ScriptNormalized>;
   const output: string[] = [];
   const myFn = (node: ScriptEventNormalized) => output.push(node.id);
   walkNormalizedScript(
@@ -309,7 +311,7 @@ test("should visit normalized custom script multiple times when called at same l
       id: "s1",
       script: ["1"],
     },
-  } as unknown as Record<string, CustomEventNormalized>;
+  } as unknown as Record<string, ScriptNormalized>;
   const output: string[] = [];
   const myFn = (node: ScriptEventNormalized) => output.push(node.id);
   walkNormalizedScript(
@@ -352,7 +354,7 @@ test("should visit custom script multiple times when called at same level", () =
         },
       ],
     },
-  } as unknown as Record<string, CustomEvent>;
+  } as unknown as Record<string, Script>;
   const output: string[] = [];
   const myFn = (node: ScriptEvent) => output.push(node.id);
   walkScript(

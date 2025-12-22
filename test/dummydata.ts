@@ -1,20 +1,12 @@
 import {
   SceneNormalized,
-  Background,
   SpriteSheetNormalized,
-  Music,
   ActorNormalized,
   TriggerNormalized,
-  Palette,
-  CustomEventNormalized,
-  Scene,
-  Actor,
-  Trigger,
+  ScriptNormalized,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
-  Variable,
   ScriptEventNormalized,
-  ScriptEvent,
 } from "../src/shared/lib/entities/entitiesTypes";
 import { ProjectData } from "../src/store/features/project/projectActions";
 import { RootState } from "../src/store/configureStore";
@@ -47,25 +39,33 @@ import {
   PrecompiledSprite,
 } from "../src/lib/compiler/generateGBVMData";
 import {
+  Actor,
   ActorPrefabResource,
   ActorResource,
   AvatarResource,
+  BackgroundAsset,
   CompressedBackgroundResource,
   CompressedSceneResourceWithChildren,
   EmoteResource,
   EngineFieldValuesResource,
   FontResource,
+  MusicAsset,
   MusicResource,
+  Palette,
   PaletteResource,
   ProjectResources,
+  Scene,
   SceneResource,
+  ScriptEvent,
   ScriptResource,
   SettingsResource,
   SoundResource,
   SpriteResource,
   TilesetResource,
+  Trigger,
   TriggerPrefabResource,
   TriggerResource,
+  Variable,
   VariablesResource,
 } from "shared/lib/resources/types";
 import { compressProjectResources } from "shared/lib/resources/compression";
@@ -194,7 +194,7 @@ export const dummyPrecompiledBackground: PrecompiledBackground = {
   colorMode: "mixed",
 };
 
-export const dummyBackground: Background = {
+export const dummyBackground: BackgroundAsset = {
   id: "",
   name: "",
   symbol: "bg_0",
@@ -270,7 +270,7 @@ export const dummyPrecompiledSpriteSheet: PrecompiledSprite = {
   spriteMode: "8x16",
 };
 
-export const dummyMusic: Music = {
+export const dummyMusic: MusicAsset = {
   id: "",
   name: "",
   symbol: "song_0",
@@ -280,7 +280,7 @@ export const dummyMusic: Music = {
   settings: {},
 };
 
-export const dummyCustomEventNormalized: CustomEventNormalized = {
+export const dummyCustomEventNormalized: ScriptNormalized = {
   id: "",
   name: "",
   symbol: "script_0",
@@ -330,6 +330,9 @@ export const dummyProjectData: ProjectData = {
     defaultSpritePaletteIds: ["", "", "", "", "", "", "", ""],
     defaultSpritePaletteId: "",
     defaultUIPaletteId: "",
+    defaultMonoBGP: [0, 1, 2, 3],
+    defaultMonoOBP0: [0, 1, 3],
+    defaultMonoOBP1: [0, 2, 3],
     customHead: "",
     navigatorSplitSizes: [300, 100, 100],
     showNavigator: true,
@@ -622,6 +625,9 @@ export const dummySettingsResource: SettingsResource = {
   defaultSpritePaletteId: "spritePalette1",
   defaultUIPaletteId: "uiPalette",
   playerPaletteId: "playerPalette",
+  defaultMonoBGP: [0, 1, 2, 3],
+  defaultMonoOBP0: [0, 1, 3],
+  defaultMonoOBP1: [0, 2, 3],
   navigatorSplitSizes: [200, 300],
   showNavigator: true,
   defaultFontId: "font1",
@@ -747,6 +753,9 @@ export const dummyProjectResources: ProjectResources = {
     defaultSpritePaletteIds: ["", "", "", "", "", "", "", ""],
     defaultSpritePaletteId: "",
     defaultUIPaletteId: "",
+    defaultMonoBGP: [0, 1, 2, 3],
+    defaultMonoOBP0: [0, 1, 3],
+    defaultMonoOBP1: [0, 2, 3],
     customHead: "",
     navigatorSplitSizes: [300, 100, 100],
     showNavigator: true,

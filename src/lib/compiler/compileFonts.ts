@@ -1,11 +1,11 @@
 import { CompiledFontData, readFileToFontData } from "lib/fonts/fontData";
 import { assetFilename } from "shared/lib/helpers/assets";
-import { FontData } from "shared/lib/entities/entitiesTypes";
+import { Font } from "shared/lib/resources/types";
 
-export type PrecompiledFontData = FontData & CompiledFontData;
+export type PrecompiledFontData = Font & CompiledFontData;
 
 const compileFonts = async (
-  fonts: FontData[],
+  fonts: Font[],
   projectRoot: string,
 ): Promise<PrecompiledFontData[]> => {
   const compiled: PrecompiledFontData[] = [];

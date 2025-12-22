@@ -1,6 +1,5 @@
 import { keyBy } from "lodash";
-import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
-import { ProjectResources } from "shared/lib/resources/types";
+import { ProjectResources, ScriptEvent } from "shared/lib/resources/types";
 import { mapActorScript, mapTriggerScript } from "shared/lib/scripts/walk";
 
 export const applyPrefabs = (

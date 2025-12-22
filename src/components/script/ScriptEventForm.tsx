@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import { customEventSelectors } from "store/features/entities/entitiesState";
 import {
-  CustomEventNormalized,
+  ScriptNormalized,
   ScriptEventFieldSchema,
   ScriptEventNormalized,
   ScriptEventParentType,
@@ -25,7 +25,7 @@ interface ScriptEventFormProps {
 const getScriptEventFields = (
   command: string,
   value: { customEventId?: string; engineFieldKey?: string },
-  customEvents: Record<string, CustomEventNormalized>,
+  customEvents: Record<string, ScriptNormalized>,
   scriptEventDefs: Record<string, ScriptEventDef>,
 ) => {
   const eventCommands =

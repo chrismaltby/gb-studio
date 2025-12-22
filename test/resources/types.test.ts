@@ -24,9 +24,9 @@ import {
   MusicResource,
   PaletteResource,
   SettingsResource,
-  VariableData,
+  Variable,
   VariablesResource,
-  EngineFieldValueData,
+  EngineFieldValue,
   EngineFieldValuesResource,
   isProjectMetadataResource,
 } from "shared/lib/resources/types";
@@ -604,6 +604,9 @@ describe("TypeBox Schemas", () => {
       defaultSpritePaletteId: "spritePalette1",
       defaultUIPaletteId: "uiPalette",
       playerPaletteId: "playerPalette",
+      defaultMonoBGP: [0, 1, 2, 3],
+      defaultMonoOBP0: [0, 1, 3],
+      defaultMonoOBP1: [0, 2, 3],
       navigatorSplitSizes: [200, 300],
       showNavigator: true,
       defaultFontId: "font1",
@@ -735,8 +738,8 @@ describe("TypeBox Schemas", () => {
     const validVariable = { id: "var1", name: "Variable 1", symbol: "symbol" };
     const invalidVariable = { id: "var1", name: "Variable 1" };
 
-    expect(() => Value.Decode(VariableData, validVariable)).not.toThrow();
-    expect(() => Value.Decode(VariableData, invalidVariable)).toThrow();
+    expect(() => Value.Decode(Variable, validVariable)).not.toThrow();
+    expect(() => Value.Decode(Variable, invalidVariable)).toThrow();
   });
 
   it("should validate VariablesResource", () => {
@@ -759,8 +762,8 @@ describe("TypeBox Schemas", () => {
     const validField = { id: "field1", value: "someValue" };
     const invalidField = { id: "field1", value: [] };
 
-    expect(() => Value.Decode(EngineFieldValueData, validField)).not.toThrow();
-    expect(() => Value.Decode(EngineFieldValueData, invalidField)).toThrow();
+    expect(() => Value.Decode(EngineFieldValue, validField)).not.toThrow();
+    expect(() => Value.Decode(EngineFieldValue, invalidField)).toThrow();
   });
 
   it("should validate EngineFieldValuesResource", () => {

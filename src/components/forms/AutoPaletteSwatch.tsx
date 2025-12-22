@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import PaletteBlock from "components/forms/PaletteBlock";
-import { Palette } from "shared/lib/entities/entitiesTypes";
 import { LockIcon } from "ui/icons/Icons";
+import { Palette } from "shared/lib/resources/types";
 
 type AutoPaletteSwatchProps = {
   palette: Palette | undefined;

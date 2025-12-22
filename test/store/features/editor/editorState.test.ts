@@ -9,7 +9,7 @@ import { RootState } from "../../../../src/store/configureStore";
 import { create } from "../../../redux-utils";
 import { BRUSH_8PX, BRUSH_SLOPE, DRAG_ACTOR } from "consts";
 import { MIN_SIDEBAR_WIDTH } from "renderer/lib/window/sidebar";
-import { Variable } from "shared/lib/entities/entitiesTypes";
+import { Variable } from "shared/lib/resources/types";
 
 test("Should allow setting tool", () => {
   const state: EditorState = {

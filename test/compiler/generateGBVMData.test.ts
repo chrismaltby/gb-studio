@@ -46,6 +46,7 @@ describe("compileGameGlobalsHeader", () => {
       ],
       { PLATFORM_CONST_1: 5 },
       ["STATE_DEFAULT", "STATE_EXPLODE", "STATE_OPEN"],
+      [],
     );
     expect(output).toInclude("VAR_1 0");
     expect(output).toInclude("VAR_2 1");

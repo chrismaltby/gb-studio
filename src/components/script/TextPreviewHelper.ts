@@ -1,7 +1,7 @@
-import { Font } from "shared/lib/entities/entitiesTypes";
 import { FontData, lexTextWithMapping } from "shared/lib/helpers/fonts";
 import { assetURL } from "shared/lib/helpers/assets";
 import { TILE_SIZE } from "consts";
+import { FontAsset } from "shared/lib/resources/types";
 
 const DOLLAR_CHAR = 4;
 const HASH_CHAR = 3;
@@ -64,7 +64,7 @@ const loadImage = async (src: string): Promise<HTMLImageElement> => {
   });
 };
 
-export const loadFont = async (font: Font): Promise<FontData> => {
+export const loadFont = async (font: FontAsset): Promise<FontData> => {
   const fontFilename = assetURL("fonts", font);
   const img = await loadImage(fontFilename);
   const widths: number[] = [];

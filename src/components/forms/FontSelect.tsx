@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { fontSelectors } from "store/features/entities/entitiesState";
-import { Font } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   Select,
@@ -11,6 +10,7 @@ import {
 } from "ui/form/Select";
 import { FontIcon } from "ui/icons/Icons";
 import { SingleValue } from "react-select";
+import { FontAsset } from "shared/lib/resources/types";
 
 interface FontSelectProps extends SelectCommonProps {
   name: string;
@@ -22,7 +22,7 @@ interface FontSelectProps extends SelectCommonProps {
 }
 
 interface FontOption extends Option {
-  font: Font;
+  font: FontAsset;
 }
 
 export const FontSelect: FC<FontSelectProps> = ({
@@ -35,7 +35,7 @@ export const FontSelect: FC<FontSelectProps> = ({
 }) => {
   const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
   const [options, setOptions] = useState<FontOption[]>([]);
-  const [currentFont, setCurrentFont] = useState<Font>();
+  const [currentFont, setCurrentFont] = useState<FontAsset>();
   const [currentValue, setCurrentValue] = useState<FontOption>();
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export const FontSelect: FC<FontSelectProps> = ({
       setCurrentValue({
         value: "",
         label: optionalLabel || "None",
-        font: optionalFont as Font,
+        font: optionalFont as FontAsset,
       });
     } else {
       const firstFont = fonts[0];

@@ -8,15 +8,8 @@ import {
   tempVariableName,
 } from "shared/lib/variables/variableNames";
 import type {
-  ActorDirection,
-  Palette,
   DistanceUnitType,
-  Variable,
-  ScriptEvent,
-  CustomEvent,
-  SoundData,
   TimeUnitType,
-  EngineFieldValue,
 } from "shared/lib/entities/entitiesTypes";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
@@ -61,9 +54,16 @@ import type { Reference } from "components/forms/ReferencesSelect";
 import { clone } from "lib/helpers/clone";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
 import type {
+  ActorDirection,
   Constant,
+  EngineFieldValue,
+  Palette,
+  Script,
   ScriptEditorCtxType,
+  ScriptEvent,
+  Sound,
   SpriteModeSetting,
+  Variable,
 } from "shared/lib/resources/types";
 import { encodeString } from "shared/lib/helpers/fonts";
 import { mapUncommentedScript } from "shared/lib/scripts/walk";
@@ -187,12 +187,12 @@ export interface ScriptBuilderOptions {
   fonts: PrecompiledFontData[];
   defaultFontId: string;
   music: PrecompiledMusicTrack[];
-  sounds: SoundData[];
+  sounds: Sound[];
   avatars: ScriptBuilderEntity[];
   emotes: PrecompiledEmote[];
   tilesets: PrecompiledTilesetData[];
   palettes: Palette[];
-  customEvents: CustomEvent[];
+  customEvents: Script[];
   entity?: ScriptBuilderEntity;
   engineFields: Record<string, EngineFieldSchema>;
   engineFieldValues: EngineFieldValue[];
@@ -4170,12 +4170,10 @@ extern void __mute_mask_${symbol};
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Direction");
-    this._actorGetPosition(actorRef);
-    const rpn = this._rpn();
-    rpn.int16(dirToAngle(direction));
-    rpn.refSet(this._localRef(actorRef, 3));
-    rpn.stop();
-    this._projectileLaunch(projectileIndex, this._localRef(actorRef, 1));
+    const rpn = this._rpnProjectilePosArgs(actorRef, x, y);
+    rpn.int16(dirToAngle(direction)).stop();
+    this._projectileLaunch(projectileIndex, ".ARG2");
+    this._stackPop(3);
     this._addNL();
   };
 

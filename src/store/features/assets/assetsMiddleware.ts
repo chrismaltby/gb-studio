@@ -7,16 +7,16 @@ import {
   tilesetSelectors,
 } from "store/features/entities/entitiesState";
 import API from "renderer/lib/api";
-import { Background } from "shared/lib/entities/entitiesTypes";
 import { HexPalette } from "shared/lib/tiles/autoColor";
 import {
+  BackgroundAsset,
   ColorCorrectionSetting,
   ColorModeSetting,
 } from "shared/lib/resources/types";
 import { DMG_PALETTE } from "consts";
 
 const generateAssetHash = (
-  background: Background,
+  background: BackgroundAsset,
   is360: boolean,
   uiPaletteId: string,
   colorMode: ColorModeSetting,

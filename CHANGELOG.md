@@ -71,6 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add "Default Scene Type" setting used when creating new scenes
 - Add ability to display a "Screen Grid" from the "View" menu which can be anchored to any corner of the scene [@pau-tomas](https://github.com/pau-tomas)
 - Add "Automatic Tile Flip" setting to optimize tilesets by reusing horizontally and vertically flipped tiles where possible. Only supported in "Color Only" scenes [@Mico27](https://github.com/Mico27)
+- Add support for setting global and per scene monochrome palettes for BGP (background & overlays), OBP0 and OBP1 (sprites) [Q-Bert-Reynolds](https://github.com/Q-Bert-Reynolds)
+- Add font indexes to `game_globals.h` and `game_globals.i` for use in custom gbvm scripts and plugins
 
 ### Changed
 
@@ -110,6 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When provided, a ".mono.png" file is now always preferred for tile data, even when Automatic Coloring is disabled. This ensures that the extract palette feature matches the automatic palette when a ".mono.png" is present.
 - Updated "Store Actor Direction In Variable" event description to document how its values are encoded [@mxashlynn](https://github.com/mxashlynn)
 - Hovering over an event's title in the script editor now shows its documentation in a tooltip (also visible when hovering in the Add Event menu)
+- Pasting a sprite frame into a selected empty frame now reuses the empty frame instead of creating a new one after it
 
 ### Fixed
 

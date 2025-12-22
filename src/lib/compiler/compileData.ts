@@ -108,16 +108,6 @@ import {
 import { compileSound } from "./sounds/compileSound";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
 import l10n from "shared/lib/lang/l10n";
-import {
-  AvatarData,
-  CustomEvent,
-  FontData,
-  MusicData,
-  Palette,
-  Scene,
-  ScriptEvent,
-  TilesetData,
-} from "shared/lib/entities/entitiesTypes";
 import type { Reference } from "components/forms/ReferencesSelect";
 import type {
   MusicDriverSetting,
@@ -129,9 +119,19 @@ import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { EntityType } from "shared/lib/scripts/context";
 import compileTilesets from "lib/compiler/compileTilesets";
 import {
+  Avatar,
   ColorCorrectionSetting,
+  Font,
+  MonoBGPPalette,
+  MonoOBJPalette,
+  Music,
+  Palette,
   ProjectResources,
+  Scene,
+  Script,
+  ScriptEvent,
   SpriteModeSetting,
+  Tileset,
 } from "shared/lib/resources/types";
 import { applyPrefabs } from "./applyPrefabs";
 import { EngineSchema } from "lib/project/loadEngineSchema";
@@ -220,7 +220,7 @@ const ensureProjectAsset = async (
 export const precompileBackgrounds = async (
   backgroundReferences: ReferencedBackground[],
   scenes: Scene[],
-  tilesets: TilesetData[],
+  tilesets: Tileset[],
   colorCorrection: ColorCorrectionSetting,
   autoTileFlipEnabled: boolean,
   projectRoot: string,
@@ -250,7 +250,7 @@ export const precompileBackgrounds = async (
       }
       return memo;
     },
-    {} as Record<string, TilesetData[]>,
+    {} as Record<string, Tileset[]>,
   );
 
   const backgroundsData = await compileImages(
@@ -386,6 +386,9 @@ const precompilePalettes = async (
   const isColor = settings.colorMode !== "mono" || settings.sgbEnabled;
 
   const palettesLookup = indexById(palettes);
+  const defaultBGP = settings.defaultMonoBGP || [0, 1, 2, 3];
+  const defaultOBP0 = settings.defaultMonoOBP0 || [0, 1, 3];
+  const defaultOBP1 = settings.defaultMonoOBP1 || [0, 2, 3];
   const defaultBackgroundPaletteIds =
     settings.defaultBackgroundPaletteIds || [];
   const defaultSpritePaletteIds = settings.defaultSpritePaletteIds || [];
@@ -420,25 +423,52 @@ const precompilePalettes = async (
     };
   };
 
+  const getDMGPalette = <T extends MonoBGPPalette | MonoOBJPalette>(
+    scenePal: T | undefined,
+    defaultPal: T,
+  ): [string, string, string, string] => {
+    const defaultPalette = [
+      "DMG_WHITE",
+      "DMG_LITE_GRAY",
+      "DMG_DARK_GRAY",
+      "DMG_BLACK",
+    ] as [string, string, string, string];
+    if (defaultPal.length === 3 && (!scenePal || scenePal.length === 3)) {
+      // OBJ palette
+      const palette: MonoOBJPalette = scenePal || defaultPal;
+      return [
+        defaultPalette[palette[0]],
+        defaultPalette[palette[0]],
+        defaultPalette[palette[1]],
+        defaultPalette[palette[2]],
+      ];
+    } else if (
+      defaultPal.length === 4 &&
+      (!scenePal || scenePal.length === 4)
+    ) {
+      // BGP palette
+      const palette: MonoBGPPalette = scenePal || defaultPal;
+      return [
+        defaultPalette[palette[0]],
+        defaultPalette[palette[1]],
+        defaultPalette[palette[2]],
+        defaultPalette[palette[3]],
+      ];
+    }
+    return defaultPalette;
+  };
+
   // Background palettes
 
   for (let i = 0; i < scenes.length; i++) {
     const scene = scenes[i];
     const sceneBackgroundPaletteIds = scene.paletteIds || [];
-
     const background = backgrounds[scene.backgroundId];
     if (background?.autoPalettes?.[0]) {
     }
 
     const scenePalette = {
-      dmg: [
-        ["DMG_WHITE", "DMG_LITE_GRAY", "DMG_DARK_GRAY", "DMG_BLACK"] as [
-          string,
-          string,
-          string,
-          string,
-        ],
-      ],
+      dmg: [getDMGPalette(scene.monoBGP, defaultBGP)],
       colors: isColor
         ? [
             getBackgroundPalette(
@@ -514,18 +544,8 @@ const precompilePalettes = async (
 
     const actorsPalette = {
       dmg: [
-        ["DMG_WHITE", "DMG_WHITE", "DMG_LITE_GRAY", "DMG_BLACK"] as [
-          string,
-          string,
-          string,
-          string,
-        ],
-        ["DMG_WHITE", "DMG_WHITE", "DMG_DARK_GRAY", "DMG_BLACK"] as [
-          string,
-          string,
-          string,
-          string,
-        ],
+        getDMGPalette(scene.monoOBP0, defaultOBP0),
+        getDMGPalette(scene.monoOBP1, defaultOBP1),
       ],
       colors: isColor
         ? [
@@ -662,9 +682,9 @@ const precompileSprites = async (
 };
 
 const precompileAvatars = async (
-  avatars: AvatarData[],
+  avatars: Avatar[],
   scenes: Scene[],
-  customEventsLookup: Record<string, CustomEvent>,
+  customEventsLookup: Record<string, Script>,
   projectRoot: string,
   {
     warnings,
@@ -672,8 +692,8 @@ const precompileAvatars = async (
     warnings: (msg: string) => void;
   },
 ) => {
-  const usedAvatars: AvatarData[] = [];
-  const usedAvatarLookup: Record<string, AvatarData> = {};
+  const usedAvatars: Avatar[] = [];
+  const usedAvatarLookup: Record<string, Avatar> = {};
   const avatarLookup = indexById(avatars);
 
   walkScenesScripts(
@@ -742,8 +762,8 @@ const precompileTilesets = async (
 
 const precompileMusic = (
   scenes: Scene[],
-  customEventsLookup: Record<string, CustomEvent>,
-  music: MusicData[],
+  customEventsLookup: Record<string, Script>,
+  music: Music[],
   musicDriver: MusicDriverSetting,
 ) => {
   const usedMusicIds: string[] = [];
@@ -807,9 +827,9 @@ const precompileMusic = (
 };
 
 const precompileFonts = async (
-  usedFonts: FontData[],
+  usedFonts: Font[],
   scenes: Scene[],
-  customEventsLookup: Record<string, CustomEvent>,
+  customEventsLookup: Record<string, Script>,
   defaultFontId: string,
   projectRoot: string,
   {
@@ -837,7 +857,7 @@ const precompileFonts = async (
 
 export const precompileScenes = (
   scenes: Scene[],
-  customEventsLookup: Record<string, CustomEvent>,
+  customEventsLookup: Record<string, Script>,
   defaultPlayerSprites: Record<string, string>,
   defaultSpriteMode: SpriteModeSetting,
   usedBackgrounds: PrecompiledBackground[],
@@ -2022,6 +2042,7 @@ const compile = async (
     projectData.variables.constants,
     engineSchema.consts,
     precompiled.stateReferences,
+    precompiled.usedFonts,
   );
 
   output["game_globals.h"] = compileGameGlobalsHeader(
@@ -2029,6 +2050,7 @@ const compile = async (
     projectData.variables.constants,
     engineSchema.consts,
     precompiled.stateReferences,
+    precompiled.usedFonts,
   );
 
   const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");

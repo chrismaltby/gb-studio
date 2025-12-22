@@ -1,5 +1,7 @@
-import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
-import { CompressedProjectResources } from "shared/lib/resources/types";
+import {
+  CompressedProjectResources,
+  ScriptEvent,
+} from "shared/lib/resources/types";
 import {
   mapScenesScript,
   mapActorsScript,

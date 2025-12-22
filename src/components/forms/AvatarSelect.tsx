@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { avatarSelectors } from "store/features/entities/entitiesState";
-import { Avatar } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   Select,
@@ -11,6 +10,7 @@ import {
 } from "ui/form/Select";
 import { AvatarCanvas } from "components/world/AvatarCanvas";
 import { SingleValue } from "react-select";
+import { AvatarAsset } from "shared/lib/resources/types";
 
 interface AvatarSelectProps extends SelectCommonProps {
   name: string;
@@ -22,7 +22,7 @@ interface AvatarSelectProps extends SelectCommonProps {
 }
 
 interface AvatarOption extends Option {
-  avatar: Avatar;
+  avatar: AvatarAsset;
 }
 
 export const AvatarSelect: FC<AvatarSelectProps> = ({
@@ -35,7 +35,7 @@ export const AvatarSelect: FC<AvatarSelectProps> = ({
 }) => {
   const avatars = useAppSelector((state) => avatarSelectors.selectAll(state));
   const [options, setOptions] = useState<AvatarOption[]>([]);
-  const [currentAvatar, setCurrentAvatar] = useState<Avatar>();
+  const [currentAvatar, setCurrentAvatar] = useState<AvatarAsset>();
   const [currentValue, setCurrentValue] = useState<AvatarOption>();
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export const AvatarSelect: FC<AvatarSelectProps> = ({
       setCurrentValue({
         value: "",
         label: optionalLabel || "None",
-        avatar: optionalAvatar as Avatar,
+        avatar: optionalAvatar as AvatarAsset,
       });
     } else {
       const firstAvatar = avatars[0];

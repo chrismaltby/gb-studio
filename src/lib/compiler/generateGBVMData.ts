@@ -1,16 +1,6 @@
 /* eslint-disable camelcase */
 import flatten from "lodash/flatten";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
-import type {
-  Actor,
-  CollisionExtraFlag,
-  EngineFieldValue,
-  Palette,
-  Scene,
-  SceneParallaxLayer,
-  TilesetData,
-  Trigger,
-} from "shared/lib/entities/entitiesTypes";
 import { CompiledFontData } from "lib/fonts/fontData";
 import {
   decHex32Val,
@@ -25,9 +15,17 @@ import type {
   SceneTypeSchema,
 } from "store/features/engine/engineState";
 import {
+  Actor,
+  CollisionExtraFlag,
   ColorModeSetting,
   Constant,
+  EngineFieldValue,
+  Palette,
+  Scene,
   SceneBoundsRect,
+  SceneParallaxLayer,
+  Tileset,
+  Trigger,
 } from "shared/lib/resources/types";
 import { VariableMapData } from "./compileData";
 import { GlobalProjectiles } from "./scriptBuilder";
@@ -76,7 +74,7 @@ export interface PrecompiledEmote {
   data: Uint8Array;
 }
 
-export type PrecompiledTilesetData = TilesetData & {
+export type PrecompiledTilesetData = Tileset & {
   id: string;
   symbol: string;
   data: number[] | Uint8Array;
@@ -1299,6 +1297,7 @@ export const compileGameGlobalsInclude = (
   constants: Constant[],
   engineConstants: Record<string, number>,
   stateReferences: string[],
+  fonts: PrecompiledFontData[],
 ) => {
   const variables = Object.values(variableAliasLookup).map(
     (v) => v?.symbol,
@@ -1325,6 +1324,9 @@ export const compileGameGlobalsInclude = (
       .map((string, stringIndex) => {
         return `${string} = ${stringIndex}\n`;
       })
+      .join("") +
+    fonts
+      .map((font, fontIndex) => `${font.symbol.toUpperCase()} = ${fontIndex}\n`)
       .join("")
   );
 };
@@ -1334,6 +1336,7 @@ export const compileGameGlobalsHeader = (
   constants: Constant[],
   engineConstants: Record<string, number>,
   stateReferences: string[],
+  fonts: PrecompiledFontData[],
 ) => {
   return (
     `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
@@ -1361,6 +1364,12 @@ export const compileGameGlobalsHeader = (
       .map((string, stringIndex) => {
         return `#define ${string} ${stringIndex}\n`;
       })
+      .join("") +
+    fonts
+      .map(
+        (font, fontIndex) =>
+          `#define ${font.symbol.toUpperCase()} ${fontIndex}\n`,
+      )
       .join("") +
     `\n` +
     `#endif\n`

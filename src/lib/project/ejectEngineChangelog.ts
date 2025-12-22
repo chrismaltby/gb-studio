@@ -1038,6 +1038,31 @@ const changes: EngineChange[] = [
     ]),
     modifiedFiles: ["src/states/platform.c", "src/states/topdown.c"],
   },
+  {
+    version: "4.2.0-e25",
+    description: createDescription("Fixes", [
+      "Fix issue where offscreen persistent actors were still visible",
+      "Fix issue preventing pinned and persistent actors from animating",
+    ]),
+    modifiedFiles: ["src/core/actor.c"],
+  },
+  {
+    version: "4.2.0-e26",
+    description: createDescription("Updates", [
+      "Optimize vm_call_native",
+      "Add vm_asm/vm_endasm instructions",
+      "No longer overwrite the memory below SP in crash handler",
+      "Fix issue in adventure where exit run state event fired when exiting ground state",
+    ]),
+    modifiedFiles: [
+      "include/vm.h",
+      "include/vm.i",
+      "src/core/crash_handler.s",
+      "src/core/vm.c",
+      "src/core/vm_instructions.c",
+      "src/states/adventure.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

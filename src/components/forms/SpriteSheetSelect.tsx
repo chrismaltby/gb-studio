@@ -2,10 +2,7 @@ import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
-import {
-  ActorDirection,
-  SpriteSheetNormalized,
-} from "shared/lib/entities/entitiesTypes";
+import { SpriteSheetNormalized } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   OptGroup,
@@ -17,7 +14,7 @@ import {
 } from "ui/form/Select";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { SingleValue } from "react-select";
-import { SpriteModeSetting } from "shared/lib/resources/types";
+import { ActorDirection, SpriteModeSetting } from "shared/lib/resources/types";
 
 interface SpriteSheetSelectProps extends SelectCommonProps {
   name: string;

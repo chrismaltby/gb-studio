@@ -1,12 +1,10 @@
 // Helpers around script data
 
-import {
-  ScriptEventNormalized,
-  ScriptEvent,
-} from "shared/lib/entities/entitiesTypes";
+import { ScriptEventNormalized } from "shared/lib/entities/entitiesTypes";
 import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
 import isEqual from "lodash/isEqual";
 import SparkMD5 from "spark-md5";
+import { ScriptEvent } from "shared/lib/resources/types";
 
 export const isNormalizedScriptEqual = (
   idsA: string[] = [],

@@ -1,9 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import {
-  ActorNormalized,
-  ActorDirection,
-} from "shared/lib/entities/entitiesTypes";
+import { ActorNormalized } from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   OptionLabelWithPreview,
@@ -22,6 +19,7 @@ import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
 import { components, SingleValue } from "react-select";
+import { ActorDirection } from "shared/lib/resources/types";
 
 interface ActorSelectProps {
   name: string;

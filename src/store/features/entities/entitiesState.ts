@@ -48,31 +48,16 @@ import {
   ActorNormalized,
   TriggerNormalized,
   SceneNormalized,
-  Background,
   SpriteSheetNormalized,
-  Palette,
-  Music,
-  Variable,
-  CustomEventNormalized,
+  ScriptNormalized,
   ScriptEventNormalized,
-  MusicSettings,
-  EngineFieldValue,
-  Metasprite,
-  MetaspriteTile,
-  SpriteAnimation,
-  Font,
-  ObjPalette,
-  Avatar,
-  Emote,
-  SpriteState,
+  MetaspriteNormalized,
+  SpriteAnimationNormalized,
+  SpriteStateNormalized,
   ScriptEventsRef,
   ScriptEventParentType,
-  Sound,
-  Tileset,
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
-  ScriptEventArgsOverride,
-  ScriptEventArgs,
 } from "shared/lib/entities/entitiesTypes";
 import {
   sortByFilename,
@@ -105,15 +90,30 @@ import { decompressProjectResources } from "shared/lib/resources/compression";
 import { omit } from "shared/types";
 import { isEqual } from "lodash";
 import {
+  AvatarAsset,
   AvatarResourceAsset,
+  BackgroundAsset,
   CompressedBackgroundResourceAsset,
   Constant,
+  EmoteAsset,
   EmoteResourceAsset,
+  EngineFieldValue,
+  FontAsset,
   FontResourceAsset,
+  MetaspriteTile,
+  MusicAsset,
   MusicResourceAsset,
+  MusicSettings,
+  ObjPalette,
+  Palette,
+  ScriptEventArgs,
+  ScriptEventArgsOverride,
+  SoundAsset,
   SoundResourceAsset,
   SpriteResourceAsset,
+  TilesetAsset,
   TilesetResourceAsset,
+  Variable,
 } from "shared/lib/resources/types";
 import {
   insertAfterElement,
@@ -134,34 +134,35 @@ const triggersAdapter = createEntityAdapter<TriggerNormalized>();
 const scenesAdapter = createEntityAdapter<SceneNormalized>();
 const actorPrefabsAdapter = createEntityAdapter<ActorPrefabNormalized>();
 const triggerPrefabsAdapter = createEntityAdapter<TriggerPrefabNormalized>();
-const backgroundsAdapter = createEntityAdapter<Background>({
+const backgroundsAdapter = createEntityAdapter<BackgroundAsset>({
   sortComparer: sortByFilename,
 });
 const spriteSheetsAdapter = createEntityAdapter<SpriteSheetNormalized>({
   sortComparer: sortByFilename,
 });
-const tilesetsAdapter = createEntityAdapter<Tileset>({
+const tilesetsAdapter = createEntityAdapter<TilesetAsset>({
   sortComparer: sortByFilename,
 });
-const metaspritesAdapter = createEntityAdapter<Metasprite>();
+const metaspritesAdapter = createEntityAdapter<MetaspriteNormalized>();
 const metaspriteTilesAdapter = createEntityAdapter<MetaspriteTile>();
-const spriteAnimationsAdapter = createEntityAdapter<SpriteAnimation>();
-const spriteStatesAdapter = createEntityAdapter<SpriteState>();
+const spriteAnimationsAdapter =
+  createEntityAdapter<SpriteAnimationNormalized>();
+const spriteStatesAdapter = createEntityAdapter<SpriteStateNormalized>();
 const palettesAdapter = createEntityAdapter<Palette>();
-const customEventsAdapter = createEntityAdapter<CustomEventNormalized>();
-const musicAdapter = createEntityAdapter<Music>({
+const customEventsAdapter = createEntityAdapter<ScriptNormalized>();
+const musicAdapter = createEntityAdapter<MusicAsset>({
   sortComparer: sortByFilename,
 });
-const soundsAdapter = createEntityAdapter<Sound>({
+const soundsAdapter = createEntityAdapter<SoundAsset>({
   sortComparer: sortByFilename,
 });
-const fontsAdapter = createEntityAdapter<Font>({
+const fontsAdapter = createEntityAdapter<FontAsset>({
   sortComparer: sortByFilename,
 });
-const avatarsAdapter = createEntityAdapter<Avatar>({
+const avatarsAdapter = createEntityAdapter<AvatarAsset>({
   sortComparer: sortByFilename,
 });
-const emotesAdapter = createEntityAdapter<Emote>({
+const emotesAdapter = createEntityAdapter<EmoteAsset>({
   sortComparer: sortByFilename,
 });
 const variablesAdapter = createEntityAdapter<Variable>();
@@ -340,7 +341,7 @@ const loadProject: CaseReducer<
   updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);
   updateAllCustomEventsArgs(
-    Object.values(state.customEvents.entities) as CustomEventNormalized[],
+    Object.values(state.customEvents.entities) as ScriptNormalized[],
     state.scriptEvents.entities,
     action.payload.scriptEventDefs,
   );
@@ -528,11 +529,11 @@ const loadDetectedSprite: CaseReducer<
   EntitiesState,
   PayloadAction<{
     spriteSheetId: string;
-    spriteAnimations: SpriteAnimation[];
-    spriteStates: SpriteState[];
-    metasprites: Metasprite[];
+    spriteAnimations: SpriteAnimationNormalized[];
+    spriteStates: SpriteStateNormalized[];
+    metasprites: MetaspriteNormalized[];
     metaspriteTiles: MetaspriteTile[];
-    state: SpriteState;
+    state: SpriteStateNormalized;
     changes: Partial<SpriteSheetNormalized>;
   }>
 > = (state, action) => {
@@ -812,16 +813,20 @@ const fixAllSpritesWithMissingStates = (state: EntitiesState) => {
   for (const sprite of sprites) {
     if (!sprite.states || sprite.states.length === 0) {
       // Create default state for newly added spritesheets
-      const metasprites: Metasprite[] = Array.from(Array(8)).map(() => ({
-        id: uuid(),
-        tiles: [],
-      }));
-      const animations: SpriteAnimation[] = metasprites.map((metasprite) => ({
-        id: uuid(),
-        frames: [metasprite.id],
-      }));
+      const metasprites: MetaspriteNormalized[] = Array.from(Array(8)).map(
+        () => ({
+          id: uuid(),
+          tiles: [],
+        }),
+      );
+      const animations: SpriteAnimationNormalized[] = metasprites.map(
+        (metasprite) => ({
+          id: uuid(),
+          frames: [metasprite.id],
+        }),
+      );
       const animationIds = animations.map((a) => a.id);
-      const spriteState: SpriteState = {
+      const spriteState: SpriteStateNormalized = {
         id: uuid(),
         name: "",
         animationType: "multi_movement",
@@ -2447,8 +2452,8 @@ const editBackgroundAutoTileFlipOverride: CaseReducer<
 
 const updateMonoOverrideIds = (state: EntitiesState) => {
   const backgrounds = localBackgroundSelectAll(state);
-  const getKey = (b: Background) => `${b.plugin ?? ""}_${b.filename}`;
-  const getMonoKey = (b: Background) =>
+  const getKey = (b: BackgroundAsset) => `${b.plugin ?? ""}_${b.filename}`;
+  const getMonoKey = (b: BackgroundAsset) =>
     `${b.plugin ?? ""}_${monoOverrideForFilename(b.filename)}`;
   const monoOverrideLookup = keyBy(backgrounds, getKey);
   backgrounds.forEach((b) => {
@@ -2513,7 +2518,7 @@ const addMetasprite: CaseReducer<
     return;
   }
 
-  const newMetasprite: Metasprite = {
+  const newMetasprite: MetaspriteNormalized = {
     id: action.payload.metaspriteId,
     tiles: [],
   };
@@ -3042,7 +3047,7 @@ const editSpriteAnimation: CaseReducer<
   PayloadAction<{
     spriteSheetId: string;
     spriteAnimationId: string;
-    changes: Partial<SpriteAnimation>;
+    changes: Partial<SpriteAnimationNormalized>;
   }>
 > = (state, action) => {
   const spriteAnimation =
@@ -3138,21 +3143,23 @@ const addSpriteState: CaseReducer<
 
   const eightElements = Array.from(Array(8));
 
-  const newMetasprites: Metasprite[] = eightElements.map(() => ({
+  const newMetasprites: MetaspriteNormalized[] = eightElements.map(() => ({
     id: uuid(),
     tiles: [],
   }));
 
   metaspritesAdapter.addMany(state.metasprites, newMetasprites);
 
-  const newAnimations: SpriteAnimation[] = eightElements.map((_, index) => ({
-    id: uuid(),
-    frames: [newMetasprites[index].id],
-  }));
+  const newAnimations: SpriteAnimationNormalized[] = eightElements.map(
+    (_, index) => ({
+      id: uuid(),
+      frames: [newMetasprites[index].id],
+    }),
+  );
 
   spriteAnimationsAdapter.addMany(state.spriteAnimations, newAnimations);
 
-  const newSpriteState: SpriteState = {
+  const newSpriteState: SpriteStateNormalized = {
     id: action.payload.spriteStateId,
     name: sprite.states.length > 0 ? l10n("FIELD_STATE_NEW_STATE_NAME") : "",
     animations: newAnimations.map((anim) => anim.id),
@@ -3167,7 +3174,10 @@ const addSpriteState: CaseReducer<
 
 const editSpriteState: CaseReducer<
   EntitiesState,
-  PayloadAction<{ spriteStateId: string; changes: Partial<SpriteState> }>
+  PayloadAction<{
+    spriteStateId: string;
+    changes: Partial<SpriteStateNormalized>;
+  }>
 > = (state, action) => {
   const spriteState = state.spriteStates.entities[action.payload.spriteStateId];
 
@@ -3578,7 +3588,11 @@ const paintColor: CaseReducer<
 
 const setSceneExtractedPalettes: CaseReducer<
   EntitiesState,
-  PayloadAction<{ sceneId: string; palettes: Palette[]; tileColors: number[] }>
+  PayloadAction<{
+    sceneId: string;
+    palettes: Palette[];
+    tileColors: number[];
+  }>
 > = (state, action) => {
   const scene = localSceneSelectById(state, action.payload.sceneId);
   if (!scene) {
@@ -3828,11 +3842,11 @@ const addCustomEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
     customEventId: string;
-    defaults?: Partial<CustomEventNormalized>;
+    defaults?: Partial<ScriptNormalized>;
   }>
 > = (state, action) => {
   const customEventsTotal = localCustomEventSelectTotal(state);
-  const newCustomEvent: CustomEventNormalized = {
+  const newCustomEvent: ScriptNormalized = {
     id: action.payload.customEventId,
     name: defaultLocalisedCustomEventName(customEventsTotal),
     description: "",
@@ -3849,7 +3863,7 @@ const editCustomEvent: CaseReducer<
   EntitiesState,
   PayloadAction<{
     customEventId: string;
-    changes: Partial<CustomEventNormalized>;
+    changes: Partial<ScriptNormalized>;
   }>
 > = (state, action) => {
   const patch = { ...action.payload.changes };
@@ -4942,7 +4956,7 @@ const entitiesSlice = createSlice({
       reducer: addCustomEvent,
       prepare: (payload?: {
         customEventId?: string;
-        defaults?: Partial<CustomEventNormalized>;
+        defaults?: Partial<ScriptNormalized>;
       }) => {
         return {
           payload: {

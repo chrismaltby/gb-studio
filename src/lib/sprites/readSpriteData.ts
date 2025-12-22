@@ -18,8 +18,7 @@ import {
   makeIndexedImage,
   sliceIndexedImage,
 } from "shared/lib/tiles/indexedImage";
-import type { MetaspriteTile } from "shared/lib/entities/entitiesTypes";
-import { SpriteModeSetting } from "shared/lib/resources/types";
+import { SpriteModeSetting, MetaspriteTile } from "shared/lib/resources/types";
 
 /**
  * Read an image filename into a GB 2bpp data array

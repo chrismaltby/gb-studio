@@ -20,7 +20,7 @@ import {
   ScriptEventNormalized,
   ScriptEventFieldSchema,
   ScriptEventParentType,
-  CustomEventNormalized,
+  ScriptNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
@@ -267,7 +267,7 @@ const eventToOption =
 
 const customEventToOption =
   (scriptEventDefs: ScriptEventDefs) =>
-  (event: CustomEventNormalized): EventOption => {
+  (event: ScriptNormalized): EventOption => {
     return {
       label: event.name,
       displayLabel: `${l10n(EVENT_CALL_CUSTOM_EVENT)} "${event.name}"`,

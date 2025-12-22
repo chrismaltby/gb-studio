@@ -546,6 +546,8 @@
   "FIELD_FLIP_HORIZONTAL": "Flip Horizontal",
   "FIELD_FLIP_VERTICAL": "Flip Vertical",
   "FIELD_MONOCHROME_PALETTE": "Monochrome Palette",
+  "FIELD_MONOCHROME_PALETTES": "Monochrome Palettes",
+  "FIELD_DEFAULT_MONOCHROME_PALETTES": "Default Monochrome Palettes",
   "FIELD_COLOR_PALETTE": "Color Palette",
   "FIELD_EDIT_IMAGE": "Edit Image",
   "FIELD_UNIQUE": "Unique",
@@ -1286,6 +1288,8 @@
   "FIELD_AUTO_TILE_FLIP_SUPPORT_DESC": "Only applies to 'Color Only' scenes.",
   "FIELD_SET_AUTO_TILE_FLIP_OVERRIDE": "Set Auto Tile Flip Override",
   "FIELD_DISABLED": "Disabled",
+  "FIELD_MONOCHROME_BGP_NOTE": "BGP palette is used for background and overlay layers.",
+  "FIELD_MONOCHROME_OBP_NOTE": "OBP palettes are used for sprites.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

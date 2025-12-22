@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import {
@@ -14,16 +14,14 @@ import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import {
-  MetaspriteTile,
-  ObjPalette,
-  SpriteAnimationType,
   SpriteSheetNormalized,
-  SpriteState,
+  SpriteStateNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { Label } from "ui/form/Label";
 import {
   metaspriteTileSelectors,
+  sceneSelectors,
   spriteAnimationSelectors,
   spriteSheetSelectors,
   spriteStateSelectors,
@@ -60,7 +58,13 @@ import { SpriteSymbolsEditor } from "components/forms/symbols/SpriteSymbolsEdito
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
-import { SpriteModeSetting } from "shared/lib/resources/types";
+import {
+  MetaspriteTile,
+  MonoOBJPalette,
+  ObjPalette,
+  SpriteAnimationType,
+  SpriteModeSetting,
+} from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
 
@@ -113,6 +117,27 @@ export const SpriteEditor = ({
   );
   const showSpriteModeOverride = sprite?.spriteMode || spriteModeOverrideOpen;
 
+  const previewAsSceneId = useAppSelector(
+    (state) => state.editor.previewAsSceneId,
+  );
+  const scene = useAppSelector((state) =>
+    sceneSelectors.selectById(state, previewAsSceneId),
+  );
+
+  const defaultMonoOBP0 = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoOBP0,
+  );
+  const defaultMonoOBP1 = useAppSelector(
+    (state) => state.project.present.settings.defaultMonoOBP1,
+  );
+
+  const monoOBJPalettes = useMemo(() => {
+    return [
+      scene?.monoOBP0 || defaultMonoOBP0,
+      scene?.monoOBP1 || defaultMonoOBP1,
+    ] as [MonoOBJPalette, MonoOBJPalette];
+  }, [scene?.monoOBP0, defaultMonoOBP0, scene?.monoOBP1, defaultMonoOBP1]);
+
   const dispatch = useAppDispatch();
 
   const selectSidebar = () => {};
@@ -135,7 +160,10 @@ export const SpriteEditor = ({
   );
 
   const onChangeSpriteStateProp = useCallback(
-    <T extends keyof SpriteState>(key: T, value: SpriteState[T]) => {
+    <T extends keyof SpriteStateNormalized>(
+      key: T,
+      value: SpriteStateNormalized[T],
+    ) => {
       dispatch(
         entitiesActions.editSpriteState({
           spriteStateId,
@@ -662,6 +690,7 @@ export const SpriteEditor = ({
                       name="objPalette"
                       value={metaspriteTile.objPalette}
                       onChange={onChangeTilesObjPalette}
+                      monoPalettes={monoOBJPalettes}
                     />
                     <InputGroupAppend>
                       <Button

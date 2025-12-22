@@ -6,13 +6,17 @@ import {
   metaspriteTileSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesState";
-import { MetaspriteTile, Palette } from "shared/lib/entities/entitiesTypes";
 import MetaspriteCanvasWorker, {
   MetaspriteCanvasResult,
 } from "./MetaspriteCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 import { getSettings } from "store/features/settings/settingsState";
-import { SpriteModeSetting } from "shared/lib/resources/types";
+import {
+  MetaspriteTile,
+  MonoOBJPalette,
+  Palette,
+  SpriteModeSetting,
+} from "shared/lib/resources/types";
 
 interface MetaspriteCanvasProps {
   spriteSheetId: string;
@@ -20,6 +24,7 @@ interface MetaspriteCanvasProps {
   flipX?: boolean;
   palettes?: Palette[];
   previewAsMono?: boolean;
+  monoPalettes?: [MonoOBJPalette, MonoOBJPalette];
   spriteMode?: SpriteModeSetting;
 }
 
@@ -32,6 +37,7 @@ export const MetaspriteCanvas = memo(
     flipX = false,
     palettes,
     previewAsMono,
+    monoPalettes,
     spriteMode,
   }: MetaspriteCanvasProps) => {
     const [workerId] = useState(Math.random());
@@ -122,6 +128,7 @@ export const MetaspriteCanvas = memo(
         palette: DMG_PALETTE.colors,
         palettes: paletteColors,
         previewAsMono,
+        monoPalettes,
         colorCorrection,
         spriteMode:
           spriteMode ?? spriteSheet.spriteMode ?? defaultSpriteMode ?? "8x16",
@@ -136,6 +143,7 @@ export const MetaspriteCanvas = memo(
       flipX,
       workerId,
       previewAsMono,
+      monoPalettes,
       colorCorrection,
       spriteMode,
       defaultSpriteMode,

@@ -33,8 +33,6 @@ import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import React, { useCallback, useContext } from "react";
 import { useAppSelector } from "store/hooks";
 import {
-  ActorDirection,
-  CollisionGroup,
   MovementType,
   ScriptEventFieldSchema,
   UnionValue,
@@ -82,6 +80,7 @@ import { SingleValue } from "react-select";
 import ConstantValueSelect from "components/forms/ConstantValueSelect";
 import { EngineFieldType } from "store/features/engine/engineState";
 import { OverlaySpeedSelect } from "components/forms/OverlaySpeedSelect";
+import { ActorDirection, CollisionGroup } from "shared/lib/resources/types";
 
 interface ScriptEventFormInputProps {
   id: string;

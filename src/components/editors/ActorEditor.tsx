@@ -16,10 +16,7 @@ import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import {
-  ActorDirection,
-  ActorNormalized,
-} from "shared/lib/entities/entitiesTypes";
+import { ActorNormalized } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { CaretRightIcon, CheckIcon, PinIcon } from "ui/icons/Icons";
@@ -44,7 +41,7 @@ import { FlexGrow } from "ui/spacing/Spacing";
 import { ActorPrefabSelectButton } from "components/forms/ActorPrefabSelectButton";
 import { PrefabHeader } from "ui/form/headers/PrefabHeader";
 import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
-import { CoordinateType } from "shared/lib/resources/types";
+import { ActorDirection, CoordinateType } from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
 import { Label } from "ui/form/Label";
 

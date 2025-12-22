@@ -1,4 +1,3 @@
-import type { ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import ScriptBuilder, {
   ScriptBuilderEntity,
   ScriptBuilderEntityType,
@@ -8,7 +7,7 @@ import ScriptBuilder, {
 import { PrecompiledScene } from "./generateGBVMData";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { LATEST_PROJECT_VERSION } from "lib/project/migration/migrateProjectResources";
-import { SpriteModeSetting } from "shared/lib/resources/types";
+import { ScriptEvent, SpriteModeSetting } from "shared/lib/resources/types";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";

@@ -1,12 +1,12 @@
 import DirectionPicker from "components/forms/DirectionPicker";
 import React, { Dispatch } from "react";
 import { UnknownAction } from "redux";
+import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
+import l10n from "shared/lib/lang/l10n";
 import {
   ActorDirection,
-  SceneNormalized,
-} from "shared/lib/entities/entitiesTypes";
-import l10n from "shared/lib/lang/l10n";
-import { ColorModeOverrideSetting } from "shared/lib/resources/types";
+  ColorModeOverrideSetting,
+} from "shared/lib/resources/types";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import settingsActions from "store/features/settings/settingsActions";

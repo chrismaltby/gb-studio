@@ -1,11 +1,11 @@
 import { applyPrefabs } from "lib/compiler/applyPrefabs";
-import { ScriptEvent } from "shared/lib/entities/entitiesTypes";
 import {
   ActorResource,
   ActorPrefabResource,
   ProjectResources,
   TriggerResource,
   TriggerPrefabResource,
+  ScriptEvent,
 } from "shared/lib/resources/types";
 import {
   dummyActorPrefabResource,
