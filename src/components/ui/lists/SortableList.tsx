@@ -62,13 +62,13 @@ export const SortableList = <T,>({
         (orientation === "vertical" && e.key === "ArrowDown")
       ) {
         e.preventDefault();
-        throttledNext.current(items, selectedIndex || -1);
+        throttledNext.current(items, selectedIndex ?? -1);
       } else if (
         (orientation === "horizontal" && e.key === "ArrowLeft") ||
         (orientation === "vertical" && e.key === "ArrowUp")
       ) {
         e.preventDefault();
-        throttledPrev.current(items, selectedIndex || -1);
+        throttledPrev.current(items, selectedIndex ?? -1);
       } else if (e.key === "Home") {
         if (items[0]) {
           onSelect(items[0]);
