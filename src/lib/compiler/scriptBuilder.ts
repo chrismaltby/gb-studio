@@ -6097,6 +6097,25 @@ extern void __mute_mask_${symbol};
     this._addNL();
   };
 
+  _stackPushScriptValue = (value: ScriptValue) => {
+    this._addComment("Push Script Value");
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value),
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      this._stackPushConst(rpnOps[0].value);
+    } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
+      this._stackPushVariable(rpnOps[0].value);
+    } else {
+      const localsLookup = this._performFetchOperations(fetchOps);
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.stop();
+    }
+    this._addNL();
+  };
+  
   variableCopy = (
     setVariable: ScriptBuilderVariable,
     otherVariable: ScriptBuilderVariable,
