@@ -1597,6 +1597,20 @@
       "defaultValue": "MOVE_TYPE_8_WAY"
     },
     {
+      "key": "INPUT_ADVENTURE_DIRECTION_TYPE",
+      "sceneType": "ADVENTURE",
+      "label": "FIELD_DIRECTION_TYPE",
+      "description": "FIELD_DIRECTION_TYPE_INPUT_DESC",
+      "group": "GAMETYPE_ADVENTURE",
+      "type": "select",
+      "options": [
+        ["DIRECTION_TYPE_2_WAY", "FIELD_2_WAY"],
+        ["DIRECTION_TYPE_4_WAY", "FIELD_4_WAY"]
+      ],
+      "cType": "define",
+      "defaultValue": "DIRECTION_TYPE_4_WAY"
+    },
+    {
       "key": "adv_walk_vel",
       "sceneType": "ADVENTURE",
       "label": "FIELD_WALK_VEL",
