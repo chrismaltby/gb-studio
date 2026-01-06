@@ -1063,6 +1063,37 @@ const changes: EngineChange[] = [
       "src/states/adventure.c",
     ],
   },
+  {
+    version: "4.2.0-e27",
+    description: createDescription("Fixes", [
+      "Improve VM_STEP performance",
+      "Free space in bank 0 by moving sin table to banked space and by converting cos/sin/isqrt to banked functions",
+      "Fix wall jump typo in platformer scene type",
+      "Fix issue where offscreen actors could flash onscreen for a few frames if manually activated",
+      "Fix loading sprites with NULL tileset",
+      "Optimize activate_actors_in_row and Optimize activate_actors_in_col",
+      "Fix player to actor collision in adventure scene type",
+      "Fix crash handler",
+      "Fix staggering when player is moving in shmup scenes",
+      "Spread actor screen boundary checks over multiple frames to improve performance",
+      "Spread projectile collision checks over multiple frames",
+      "Fix vm_actor_move_to interupt to stop actor on tile boundaries again",
+      "Fix emotes when in 8x8 sprite mode",
+    ]),
+    modifiedFiles: [
+      "include/math.h",
+      "src/core/actor.c",
+      "src/core/crash_handler.s",
+      "src/core/data_manager.c",
+      "src/core/math.c",
+      "src/core/projectiles.c",
+      "src/core/vm.c",
+      "src/core/vm_actor.c",
+      "src/states/adventure.c",
+      "src/states/platform.c",
+      "src/states/shmup.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
