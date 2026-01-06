@@ -24,6 +24,7 @@ import {
   Scene,
   SceneBoundsRect,
   SceneParallaxLayer,
+  SpriteAnimationType,
   Tileset,
   Trigger,
 } from "shared/lib/resources/types";
@@ -265,6 +266,16 @@ const toASMCollisionMask = (mask: string[]) => {
     .sort();
 
   return flags.length > 0 ? flags.join(" | ") : 0;
+};
+
+const toASMDirectionMask = (animationType: SpriteAnimationType) => {
+  if (
+    animationType === "horizontal" ||
+    animationType === "horizontal_movement"
+  ) {
+    return "ANIM_DIR_MASK_HORIZONTAL";
+  }
+  return "ANIM_DIR_MASK_FULL";
 };
 
 const maybeScriptFarPtr = (scriptSymbol: string | null | undefined) =>
@@ -688,6 +699,7 @@ export const compileSceneActors = (
           },
           bounds: compileBounds(sprite),
           dir: dirEnum(actor.direction),
+          anim_dir: dirEnum(actor.direction),
           sprite: toFarPtr(sprite.symbol),
           move_speed: pxToSubpx(actor.moveSpeed),
           anim_tick: actor.animSpeed,
@@ -971,6 +983,14 @@ ${stateReferences
   )
   .join("\n")}
 
+${stateReferences
+  .map((state, n) => {
+    const stateIndex = Math.max(0, stateNames.indexOf(statesOrder[n]));
+    const spriteState = spriteSheet.states[stateIndex];
+    return `#define SPRITE_ANIM_DIR_MASK_${spriteSheetIndex}_${state} ${toASMDirectionMask(spriteState.animationType)}`;
+  })
+  .join("\n")}
+
 ${spriteSheet.metasprites
   .map((metasprite, metaspriteIndex) => {
     return `const metasprite_t ${
@@ -1007,6 +1027,14 @@ ${Array.from(Array(maxState + 1).keys())
   .join(",\n")}
 };
 
+const UBYTE ${spriteSheet.symbol}_animation_dir_masks_lookup[] = {
+${Array.from(Array(maxState + 1).keys())
+  .map(
+    (n) => `    SPRITE_ANIM_DIR_MASK_${spriteSheetIndex}_${stateReferences[n]}`,
+  )
+  .join(",\n")}
+};
+
 ${SPRITESHEET_TYPE} ${spriteSheet.symbol} = {
 ${toStructData(
   {
@@ -1015,6 +1043,7 @@ ${toStructData(
     metasprites: `${spriteSheet.symbol}_metasprites`,
     animations: `${spriteSheet.symbol}_animations`,
     animations_lookup: `${spriteSheet.symbol}_animations_lookup`,
+    animation_dir_masks_lookup: `${spriteSheet.symbol}_animation_dir_masks_lookup`,
     bounds: compileBounds(spriteSheet),
     tileset: spriteSheet.tileset
       ? toFarPtr(spriteSheet.tileset.symbol)
