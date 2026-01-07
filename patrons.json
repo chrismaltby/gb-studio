@@ -80,6 +80,13 @@
       }
     },
     {
+      "id": "71689",
+      "type": "user",
+      "attributes": {
+        "full_name": "Michael Towns (gamebuoygames)"
+      }
+    },
+    {
       "id": "27034715",
       "type": "user",
       "attributes": {
@@ -171,13 +178,6 @@
       },
       "id": "3319189",
       "type": "user"
-    },
-    {
-      "id": "71689",
-      "type": "user",
-      "attributes": {
-        "full_name": "Michael Towns (gamebuoygames)"
-      }
     },
     {
       "attributes": {
