@@ -32,6 +32,8 @@ test("Should set move player to position", () => {
     { type: "number", value: 9 },
     ["walls", "actors"],
     "horizontal",
+	[],
     "tiles",
+	
   );
 });

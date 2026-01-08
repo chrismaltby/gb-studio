@@ -26,6 +26,7 @@ test("Should move player relatively", () => {
     { type: "number", value: 9 },
     ["walls"],
     "horizontal",
+	[],
     "tiles",
   );
 });

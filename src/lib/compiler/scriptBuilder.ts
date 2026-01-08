@@ -439,6 +439,7 @@ const toASMDir = (direction: string) => {
 const toASMMoveFlags = (
   moveType: string,
   useCollisions: boolean | Array<"walls" | "actors">,
+  axis: ScriptBuilderAxis[],
   relative?: boolean,
   relativeUnits?: DistanceUnitType,
 ) => {
@@ -459,6 +460,8 @@ const toASMMoveFlags = (
       relative && relativeUnits === "tiles"
         ? ".ACTOR_ATTR_RELATIVE_SNAP_TILE"
         : [],
+	  axis && axis.includes("x") ? ".ACTOR_ATTR_LOCK_DIR_H" : [],
+      axis && axis.includes("y") ? ".ACTOR_ATTR_LOCK_DIR_V" : [],
     ),
   );
 };
@@ -3005,7 +3008,8 @@ extern void __mute_mask_${symbol};
     y: number,
     useCollisions: boolean,
     moveType: ScriptBuilderMoveType,
-    units: DistanceUnitType = "tiles",
+	axis: ScriptBuilderAxis[],
+    units: DistanceUnitType = "tiles",	
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -3014,7 +3018,7 @@ extern void __mute_mask_${symbol};
     this._setConst(this._localRef(actorRef, 2), unitsValueToSubpx(y, units));
     this._setConst(
       this._localRef(actorRef, 3),
-      toASMMoveFlags(moveType, useCollisions),
+      toASMMoveFlags(moveType, useCollisions, axis),
     );
     this._actorMoveTo(actorRef);
     this._assertStackNeutral(stackPtr);
@@ -3026,7 +3030,8 @@ extern void __mute_mask_${symbol};
     variableY: string,
     useCollisions: boolean,
     moveType: ScriptBuilderMoveType,
-    units: DistanceUnitType = "tiles",
+	axis: ScriptBuilderAxis[],
+    units: DistanceUnitType = "tiles",	
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -3045,7 +3050,7 @@ extern void __mute_mask_${symbol};
 
     this._setConst(
       this._localRef(actorRef, 3),
-      toASMMoveFlags(moveType, useCollisions),
+      toASMMoveFlags(moveType, useCollisions, axis),
     );
     this._actorMoveTo(actorRef);
     this._assertStackNeutral(stackPtr);
@@ -3058,7 +3063,8 @@ extern void __mute_mask_${symbol};
     valueY: ScriptValue,
     collideWith: boolean | Array<"walls" | "actors">,
     moveType: ScriptBuilderMoveType,
-    units: DistanceUnitType = "tiles",
+	axis: ScriptBuilderAxis[],
+    units: DistanceUnitType = "tiles",	
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -3091,12 +3097,12 @@ extern void __mute_mask_${symbol};
     this._performValueRPN(rpn, rpnOpsY, localsLookup);
     rpn.refSet(this._localRef(actorRef, 2));
 
-    rpn.int16(toASMMoveFlags(moveType, collideWith));
+    rpn.int16(toASMMoveFlags(moveType, collideWith, axis));
     rpn.refSet(this._localRef(actorRef, 3));
 
     rpn.stop();
     this._addComment(`-- Move Actor`);
-    this.actorSetById(actorId);
+    this.actorSetById(actorId);	
     this._actorMoveTo(actorRef);
     this._assertStackNeutral(stackPtr);
     this._addNL();
@@ -3107,7 +3113,8 @@ extern void __mute_mask_${symbol};
     y = 0,
     useCollisions = false,
     moveType: ScriptBuilderMoveType,
-    units: DistanceUnitType = "tiles",
+	axis: ScriptBuilderAxis[],
+    units: DistanceUnitType = "tiles",	
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -3130,7 +3137,7 @@ extern void __mute_mask_${symbol};
 
     this._setConst(
       this._localRef(actorRef, 3),
-      toASMMoveFlags(moveType, useCollisions),
+      toASMMoveFlags(moveType, useCollisions, axis),
     );
     this._actorMoveTo(actorRef);
     this._assertStackNeutral(stackPtr);
@@ -3143,7 +3150,8 @@ extern void __mute_mask_${symbol};
     valueY: ScriptValue,
     collideWith: boolean | Array<"walls" | "actors">,
     moveType: ScriptBuilderMoveType,
-    units: DistanceUnitType = "tiles",
+	axis: ScriptBuilderAxis[],
+    units: DistanceUnitType = "tiles",	
   ) => {
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move Relative");
@@ -3179,7 +3187,7 @@ extern void __mute_mask_${symbol};
     rpn.actorId(actorId); // Actor ID
     this._performValueRPN(rpn, rpnOpsX, localsLookup2); // X Value
     this._performValueRPN(rpn, rpnOpsY, localsLookup2); // Y Value
-    rpn.int16(toASMMoveFlags(moveType, collideWith, true, units)); // Move Flags
+    rpn.int16(toASMMoveFlags(moveType, collideWith, axis, true, units)); // Move Flags
     rpn.stop();
 
     this._addComment(`-- Move Actor`);

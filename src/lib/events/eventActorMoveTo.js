@@ -97,6 +97,20 @@ const fields = [
       },
     ],
   },
+  {
+    key: "axis",
+    width: "50%",
+    label: l10n("FIELD_LOCK_AXIS"),
+    description: l10n("FIELD_LOCK_AXIS_DESC"),
+    type: "togglebuttons",
+    options: [
+      ["x", "H", l10n("FIELD_HORIZONTAL")],
+      ["y", "V", l10n("FIELD_VERTICAL")],
+    ],
+    allowMultiple: true,
+    allowNone: true,
+    defaultValue: [],
+  },
 ];
 
 const compile = (input, helpers) => {
@@ -107,7 +121,8 @@ const compile = (input, helpers) => {
     input.y,
     input.collideWith,
     input.moveType,
-    input.units,
+	input.axis,
+    input.units,	
   );
 };
 
