@@ -101,7 +101,8 @@ const SceneCollisions = ({
       for (let yi = 0; yi < height; yi++) {
         for (let xi = 0; xi < width; xi++) {
           const collisionIndex = width * yi + xi;
-          let tile = collisions[collisionIndex] ?? 0;
+          const rawTile = collisions[collisionIndex] ?? 0;
+          let tile = rawTile;
           let unknownTile = tile !== 0;
 
           for (const tileDef of collisionTileDefs) {
@@ -129,9 +130,9 @@ const SceneCollisions = ({
           }
           if (
             unknownTile ||
-            (showCollisionTileValues && tile !== 0 && tile !== undefined)
+            (showCollisionTileValues && rawTile !== 0 && rawTile !== undefined)
           ) {
-            drawLetter(decHexVal(tile), ctx, xi, yi);
+            drawLetter(decHexVal(rawTile), ctx, xi, yi);
           }
         }
       }

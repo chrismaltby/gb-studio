@@ -374,3 +374,37 @@ export const migrate420r8To420r9: ProjectResourcesMigration = {
   to: { version: "4.2.0", release: "9" },
   migrationFn: migrateFrom420r8To420r9Settings,
 };
+
+// Fix broken values in EVENT_ENGINE_FIELD_SET carried over from 2.0.0 projects
+export const migrateFrom420r9To420r10Event: ScriptEventMigrationFn = (
+  scriptEvent,
+) => {
+  if (scriptEvent.args && scriptEvent.command === "EVENT_ENGINE_FIELD_SET") {
+    const args = scriptEvent.args;
+    if (
+      args.value &&
+      typeof args.value === "object" &&
+      "type" in args.value === false &&
+      "value" in args.value &&
+      typeof args.value.value === "number"
+    ) {
+      return {
+        ...scriptEvent,
+        args: {
+          ...args,
+          value: {
+            type: "number",
+            value: args.value.value,
+          },
+        },
+      };
+    }
+  }
+  return scriptEvent;
+};
+
+export const migrate420r9To420r10: ProjectResourcesMigration = {
+  from: { version: "4.2.0", release: "9" },
+  to: { version: "4.2.0", release: "10" },
+  migrationFn: createScriptEventsMigrator(migrateFrom420r9To420r10Event),
+};
