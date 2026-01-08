@@ -862,7 +862,7 @@ export const CursorHorizontalIcon = () => (
   </svg>
 );
 
-export const CursorVeticalIcon = () => (
+export const CursorVerticalIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M13 6h4l-5-6-5 6h4v12h-4l5 6 5-6h-4z" />
   </svg>

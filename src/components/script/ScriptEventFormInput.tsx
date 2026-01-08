@@ -692,6 +692,7 @@ const ScriptEventFormInput = ({
         <MovementTypeSelect
           value={value as MovementType | undefined}
           onChange={onChangeField}
+          allowLockedDirection={field.allowLockedDirection}
         />
       </OffscreenSkeletonInput>
     );

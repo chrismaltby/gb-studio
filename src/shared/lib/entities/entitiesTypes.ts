@@ -265,7 +265,14 @@ export type DistanceUnitType = (typeof distanceUnitTypes)[number];
 export type TimeUnitType = (typeof timeUnitTypes)[number];
 export type GridUnitType = (typeof gridUnitTypes)[number];
 
-export const movementTypes = ["horizontal", "vertical", "diagonal"] as const;
+export const movementTypes = [
+  "horizontal",
+  "vertical",
+  "diagonal",
+  "horizontal_locked",
+  "vertical_locked",
+  "diagonal_locked",
+] as const;
 export type MovementType = (typeof movementTypes)[number];
 
 export interface ScriptEventFieldSchema {
@@ -316,6 +323,7 @@ export interface ScriptEventFieldSchema {
   singleLine?: boolean;
   noneLabel?: string;
   variant?: string;
+  allowLockedDirection?: boolean;
   labelVariant?: string;
   filters?: Record<string, unknown>;
 }

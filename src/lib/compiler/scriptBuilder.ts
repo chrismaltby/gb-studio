@@ -230,7 +230,13 @@ export interface ScriptBuilderOptions {
   compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => void;
 }
 
-type ScriptBuilderMoveType = "horizontal" | "vertical" | "diagonal";
+type ScriptBuilderMoveType =
+  | "horizontal"
+  | "vertical"
+  | "diagonal"
+  | "horizontal-locked"
+  | "vertical-locked"
+  | "diagonal-locked";
 
 type ScriptBuilderComparisonOperator =
   | ".EQ"
@@ -451,13 +457,20 @@ const toASMMoveFlags = (
       Array.isArray(useCollisions) && useCollisions.includes("actors")
         ? ".ACTOR_ATTR_CHECK_COLL_ACTORS"
         : [],
-      moveType === "horizontal" ? ".ACTOR_ATTR_H_FIRST" : [],
-      moveType === "diagonal" ? ".ACTOR_ATTR_DIAGONAL" : [],
+      typeof moveType === "string" && moveType.startsWith("horizontal")
+        ? ".ACTOR_ATTR_H_FIRST"
+        : [],
+      typeof moveType === "string" && moveType.startsWith("diagonal")
+        ? ".ACTOR_ATTR_DIAGONAL"
+        : [],
       relative && relativeUnits === "pixels"
         ? ".ACTOR_ATTR_RELATIVE_SNAP_PX"
         : [],
       relative && relativeUnits === "tiles"
         ? ".ACTOR_ATTR_RELATIVE_SNAP_TILE"
+        : [],
+      typeof moveType === "string" && moveType.endsWith("_locked")
+        ? ".ACTOR_ATTR_LOCK_DIR"
         : [],
     ),
   );

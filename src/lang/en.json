@@ -1290,6 +1290,7 @@
   "FIELD_DISABLED": "Disabled",
   "FIELD_MONOCHROME_BGP_NOTE": "BGP palette is used for background and overlay layers.",
   "FIELD_MONOCHROME_OBP_NOTE": "OBP palettes are used for sprites.",
+  "FIELD_LOCK_DIRECTION": "Lock Direction",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

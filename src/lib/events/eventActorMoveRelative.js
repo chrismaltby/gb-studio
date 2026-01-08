@@ -90,6 +90,7 @@ const fields = [
         flexBasis: 30,
         flexGrow: 0,
         alignBottom: true,
+        allowLockedDirection: true,
       },
     ],
   },
