@@ -227,12 +227,17 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     [collisionTileDefs],
   );
 
-  const setBrush = (brush: Brush) => {
-    dispatch(editorActions.setBrush({ brush: brush }));
-  };
+  const setBrush = useCallback(
+    (brush: Brush) => {
+      dispatch(editorActions.setBrush({ brush: brush }));
+    },
+    [dispatch],
+  );
+
   const setSection = (section: NavigationSection) => {
     dispatch(navigationActions.setSection(section));
   };
+
   const setNavigationId = (navigationId: string) => {
     dispatch(navigationActions.setNavigationId(navigationId));
   };
