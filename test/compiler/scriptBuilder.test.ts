@@ -138,7 +138,7 @@ test("Should be able to move actor to new location", async () => {
       projectiles: [],
     } as unknown as PrecompiledScene,
   });
-  sb.actorMoveTo(5, 6, true, "horizontal", []);
+  sb.actorMoveTo(5, 6, true, "horizontal");
   expect(output).toEqual([
     "        ; Actor Move To",
     "        VM_SET_CONST            ^/(.LOCAL_ACTOR + 1)/, 1280",
@@ -212,7 +212,7 @@ test("Should be able to generate script string", async () => {
     } as unknown as PrecompiledScene,
   });
   sb.actorSetActive("actor2");
-  sb.actorMoveTo(5, 6, true, "horizontal", []);
+  sb.actorMoveTo(5, 6, true, "horizontal");
   sb._packLocals();
   expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
     `.module MY_SCRIPT
@@ -3546,8 +3546,8 @@ describe("actorMoveRelativeByScriptValues", () => {
       },
       false,
       "horizontal",
-	  [],
       "tiles",
+      [],
     );
 
     expect([
@@ -3604,8 +3604,8 @@ describe("actorMoveRelativeByScriptValues", () => {
       },
       false,
       "horizontal",
-	  [],
       "tiles",
+      [],
     );
 
     expect([
@@ -3676,8 +3676,8 @@ describe("actorMoveToScriptValues", () => {
       },
       false,
       "horizontal",
-	  [],
-      "tiles",	  
+      "tiles",
+      [],
     );
 
     expect([
@@ -3734,8 +3734,8 @@ describe("actorMoveToScriptValues", () => {
       },
       false,
       "horizontal",
-	  [],
-      "tiles",	  
+      "tiles",
+      [],
     );
 
     expect([
@@ -3796,8 +3796,8 @@ describe("actorMoveToScriptValues", () => {
       },
       false,
       "horizontal",
-	   [],
-      "tiles",	 
+      "tiles",
+      [],
     );
 
     expect([

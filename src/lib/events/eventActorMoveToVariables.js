@@ -28,7 +28,7 @@ const fields = [
     ],
   },
   {
-    key: "axis",
+    key: "lockDirection",
     width: "50%",
     label: l10n("FIELD_LOCK_AXIS"),
     description: l10n("FIELD_LOCK_AXIS_DESC"),
@@ -46,7 +46,12 @@ const fields = [
 const compile = (input, helpers) => {
   const { actorSetActive, actorMoveToVariables } = helpers;
   actorSetActive(input.actorId);
-  actorMoveToVariables(input.vectorX, input.vectorY, input.axis, "tiles");
+  actorMoveToVariables(
+    input.vectorX,
+    input.vectorY,
+    "tiles",
+    input.lockDirection,
+  );
 };
 
 module.exports = {

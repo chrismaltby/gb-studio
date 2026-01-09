@@ -91,7 +91,7 @@ const fields = [
     alignBottom: true,
     fields: [
       {
-        key: "axis",
+        key: "lockDirection",
         width: "50%",
         label: l10n("FIELD_LOCK_DIRECTION"),
         description: l10n("FIELD_LOCK_DIRECTION_DESC"),
@@ -127,8 +127,8 @@ const compile = (input, helpers) => {
     input.y,
     input.collideWith,
     input.moveType,
-    input.axis,
     input.units,
+    input.lockDirection,
   );
 };
 
