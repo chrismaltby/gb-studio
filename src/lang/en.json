@@ -1296,6 +1296,8 @@
   "FIELD_HORIZONTAL_ONLY": "Horizontal Only",
   "FIELD_LOCK_DIRECTION": "Lock Direction",
   "FIELD_LOCK_DIRECTION_DESC": "Prevents the actor from changing facing direction along the selected axis while moving.",
+  "FIELD_MOVEMENT": "Movement",
+  "FIELD_OPTIONS": "Options",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -19,6 +19,17 @@ const autoLabel = (fetchArg, input) => {
 
 const fields = [
   {
+    key: "__section",
+    type: "tabs",
+    defaultValue: "movement",
+    variant: "eventSection",
+    values: {
+      movement: l10n("FIELD_MOVEMENT"),
+      options: l10n("FIELD_OPTIONS"),
+      presets: l10n("FIELD_PRESETS"),
+    },
+  },
+  {
     type: "group",
     wrapItems: true,
     flexBasis: "100%",
@@ -71,57 +82,106 @@ const fields = [
         ],
       },
     ],
-  },
-  {
-    key: "collideWith",
-    width: "50%",
-    flexBasis: 0,
-    minWidth: 150,
-    label: l10n("FIELD_COLLIDE_WITH"),
-    description: l10n("FIELD_COLLIDE_WITH_DESC"),
-    type: "togglebuttons",
-    options: [
-      ["walls", `${l10n("FIELD_WALLS")}`, `${l10n("FIELD_WALLS")}`],
-      ["actors", `${l10n("FIELD_ACTORS")}`, `${l10n("FIELD_ACTORS")}`],
+    conditions: [
+      {
+        key: "__section",
+        in: ["movement", undefined],
+      },
     ],
-    allowNone: true,
-    allowMultiple: true,
-    defaultValue: ["walls"],
   },
   {
     type: "group",
-    flexBasis: 0,
-    minWidth: 150,
-    alignBottom: true,
+    wrapItems: true,
+    flexBasis: "100%",
     fields: [
       {
-        key: "axis",
+        key: "collideWith",
         width: "50%",
-        label: l10n("FIELD_LOCK_DIRECTION"),
-        description: l10n("FIELD_LOCK_DIRECTION_DESC"),
+        flexBasis: 0,
+        minWidth: 150,
+        label: l10n("FIELD_COLLIDE_WITH"),
+        description: l10n("FIELD_COLLIDE_WITH_DESC"),
         type: "togglebuttons",
         options: [
-          ["x", "H", l10n("FIELD_HORIZONTAL")],
-          ["y", "V", l10n("FIELD_VERTICAL")],
+          ["walls", `${l10n("FIELD_WALLS")}`, `${l10n("FIELD_WALLS")}`],
+          ["actors", `${l10n("FIELD_ACTORS")}`, `${l10n("FIELD_ACTORS")}`],
         ],
-        allowMultiple: true,
         allowNone: true,
-        defaultValue: [],
+        allowMultiple: true,
+        defaultValue: ["walls"],
       },
       {
-        key: "moveType",
-        label: l10n("FIELD_MOVE_TYPE"),
-        description: l10n("FIELD_MOVE_TYPE_DESC"),
-        hideLabel: true,
-        type: "moveType",
-        defaultValue: "horizontal",
-        flexBasis: 35,
-        flexGrow: 0,
+        type: "group",
+        flexBasis: 0,
+        minWidth: 150,
         alignBottom: true,
+        fields: [
+          {
+            key: "axis",
+            width: "50%",
+            label: l10n("FIELD_LOCK_DIRECTION"),
+            description: l10n("FIELD_LOCK_DIRECTION_DESC"),
+            type: "togglebuttons",
+            options: [
+              ["x", "H", l10n("FIELD_HORIZONTAL")],
+              ["y", "V", l10n("FIELD_VERTICAL")],
+            ],
+            allowMultiple: true,
+            allowNone: true,
+            defaultValue: [],
+          },
+          {
+            key: "moveType",
+            label: l10n("FIELD_MOVE_TYPE"),
+            description: l10n("FIELD_MOVE_TYPE_DESC"),
+            hideLabel: true,
+            type: "moveType",
+            defaultValue: "horizontal",
+            flexBasis: 35,
+            flexGrow: 0,
+            alignBottom: true,
+          },
+        ],
+      },
+    ],
+    conditions: [
+      {
+        key: "__section",
+        in: ["options"],
+      },
+    ],
+  },
+  {
+    type: "presets",
+    conditions: [
+      {
+        key: "__section",
+        in: ["presets"],
       },
     ],
   },
 ];
+
+const userPresetsGroups = [
+  {
+    id: "movement",
+    label: l10n("FIELD_MOVEMENT"),
+    fields: ["x", "y"],
+  },
+  {
+    id: "units",
+    label: l10n("FIELD_UNITS"),
+    fields: ["units"],
+  },
+  {
+    id: "options",
+    label: l10n("FIELD_OPTIONS"),
+    fields: ["collideWith", "axis", "moveType"],
+    selected: true,
+  },
+];
+
+const userPresetsIgnore = ["__section"];
 
 const compile = (input, helpers) => {
   const { actorMoveToScriptValues } = helpers;
@@ -146,6 +206,8 @@ module.exports = {
   fields,
   compile,
   waitUntilAfterInitFade: true,
+  userPresetsGroups,
+  userPresetsIgnore,
   helper: {
     type: "position",
     x: "x",
