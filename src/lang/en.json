@@ -705,7 +705,7 @@
   "FIELD_MOVE_TYPE_SHAKE_DESC": "Choose if camera should shake only in horizontal or vertical axis or if should shake in both directions.",
   "FIELD_MOVE_TYPE_INPUT_DESC": "Choose if should allow movement in 8 directions (up, down, left, right, and four diagonals) or only 4 (up, down, left, right).",
   "FIELD_DIRECTION_TYPE": "Direction Type",
-  "FIELD_DIRECTION_TYPE_INPUT_DESC": "Choose if should allow facing in 4 directions (up, down, left, right) or only 2 (left, right).",
+  "FIELD_DIRECTION_TYPE_INPUT_DESC": "Choose if should allow player facing in 4 directions (up, down, left, right) or only horizontal directions (left, right).",
   "FIELD_ACTOR_ACTIVATE_DESC": "The actor you want to activate.",
   "FIELD_ACTOR_DEACTIVATE_DESC": "The actor you want to deactivate.",
   "FIELD_ACTOR_HIDE_DESC": "The actor you want to hide.",
@@ -1293,6 +1293,9 @@
   "FIELD_DISABLED": "Disabled",
   "FIELD_MONOCHROME_BGP_NOTE": "BGP palette is used for background and overlay layers.",
   "FIELD_MONOCHROME_OBP_NOTE": "OBP palettes are used for sprites.",
+  "FIELD_HORIZONTAL_ONLY": "Horizontal Only",
+  "FIELD_LOCK_DIRECTION": "Lock Direction",
+  "FIELD_LOCK_DIRECTION_DESC": "Prevents the actor from changing facing direction along the selected axis while moving.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

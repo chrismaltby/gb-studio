@@ -18,48 +18,71 @@ const autoLabel = (fetchArg, input) => {
 
 const fields = [
   {
-    key: "actorId",
-    label: l10n("ACTOR"),
-    description: l10n("FIELD_ACTOR_MOVE_DESC"),
-    type: "actor",
-    defaultValue: "$self$",
-  },
-  {
     type: "group",
+    wrapItems: true,
+    flexBasis: "100%",
     fields: [
       {
-        key: "x",
-        label: l10n("FIELD_X"),
-        description: l10n("FIELD_X_RELATIVE_DESC"),
-        type: "value",
-        min: -31,
-        max: 31,
-        width: "50%",
-        defaultValue: {
-          type: "number",
-          value: 0,
-        },
-        unitsField: "units",
-        unitsDefault: "tiles",
-        unitsAllowed: ["tiles", "pixels"],
+        key: "actorId",
+        label: l10n("ACTOR"),
+        description: l10n("FIELD_ACTOR_MOVE_DESC"),
+        type: "actor",
+        defaultValue: "$self$",
       },
       {
-        key: "y",
-        label: l10n("FIELD_Y"),
-        description: l10n("FIELD_Y_RELATIVE_DESC"),
-        type: "value",
-        min: -31,
-        max: 31,
-        width: "50%",
-        defaultValue: {
-          type: "number",
-          value: 0,
-        },
-        unitsField: "units",
-        unitsDefault: "tiles",
-        unitsAllowed: ["tiles", "pixels"],
+        type: "group",
+        fields: [
+          {
+            key: "x",
+            label: l10n("FIELD_X"),
+            description: l10n("FIELD_X_RELATIVE_DESC"),
+            type: "value",
+            min: -31,
+            max: 31,
+            width: "50%",
+            defaultValue: {
+              type: "number",
+              value: 0,
+            },
+            unitsField: "units",
+            unitsDefault: "tiles",
+            unitsAllowed: ["tiles", "pixels"],
+          },
+          {
+            key: "y",
+            label: l10n("FIELD_Y"),
+            description: l10n("FIELD_Y_RELATIVE_DESC"),
+            type: "value",
+            min: -31,
+            max: 31,
+            width: "50%",
+            defaultValue: {
+              type: "number",
+              value: 0,
+            },
+            unitsField: "units",
+            unitsDefault: "tiles",
+            unitsAllowed: ["tiles", "pixels"],
+          },
+        ],
       },
     ],
+  },
+  {
+    key: "collideWith",
+    width: "50%",
+    flexBasis: 0,
+    minWidth: 150,
+    label: l10n("FIELD_COLLIDE_WITH"),
+    description: l10n("FIELD_COLLIDE_WITH_DESC"),
+    type: "togglebuttons",
+    options: [
+      ["walls", `${l10n("FIELD_WALLS")}`, `${l10n("FIELD_WALLS")}`],
+      ["actors", `${l10n("FIELD_ACTORS")}`, `${l10n("FIELD_ACTORS")}`],
+    ],
+    allowNone: true,
+    allowMultiple: true,
+    defaultValue: ["walls"],
   },
   {
     type: "group",
@@ -68,17 +91,18 @@ const fields = [
     alignBottom: true,
     fields: [
       {
-        key: "collideWith",
-        label: l10n("FIELD_COLLIDE_WITH"),
-        description: l10n("FIELD_COLLIDE_WITH_DESC"),
+        key: "axis",
+        width: "50%",
+        label: l10n("FIELD_LOCK_DIRECTION"),
+        description: l10n("FIELD_LOCK_DIRECTION_DESC"),
         type: "togglebuttons",
         options: [
-          ["walls", `${l10n("FIELD_WALLS")}`, `${l10n("FIELD_WALLS")}`],
-          ["actors", `${l10n("FIELD_ACTORS")}`, `${l10n("FIELD_ACTORS")}`],
+          ["x", "H", l10n("FIELD_HORIZONTAL")],
+          ["y", "V", l10n("FIELD_VERTICAL")],
         ],
-        allowNone: true,
         allowMultiple: true,
-        defaultValue: ["walls"],
+        allowNone: true,
+        defaultValue: [],
       },
       {
         key: "moveType",
@@ -93,20 +117,6 @@ const fields = [
       },
     ],
   },
-  {
-    key: "axis",
-    width: "50%",
-    label: l10n("FIELD_LOCK_AXIS"),
-    description: l10n("FIELD_LOCK_AXIS_DESC"),
-    type: "togglebuttons",
-    options: [
-      ["x", "H", l10n("FIELD_HORIZONTAL")],
-      ["y", "V", l10n("FIELD_VERTICAL")],
-    ],
-    allowMultiple: true,
-    allowNone: true,
-    defaultValue: [],
-  },
 ];
 
 const compile = (input, helpers) => {
@@ -117,8 +127,8 @@ const compile = (input, helpers) => {
     input.y,
     input.collideWith,
     input.moveType,
-	input.axis,
-    input.units,	
+    input.axis,
+    input.units,
   );
 };
 

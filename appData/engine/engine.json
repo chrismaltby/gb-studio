@@ -1604,8 +1604,8 @@
       "group": "GAMETYPE_ADVENTURE",
       "type": "select",
       "options": [
-        ["DIRECTION_TYPE_2_WAY", "FIELD_2_WAY"],
-        ["DIRECTION_TYPE_4_WAY", "FIELD_4_WAY"]
+        ["DIRECTION_TYPE_4_WAY", "FIELD_4_WAY"],
+        ["DIRECTION_TYPE_HORIZONTAL", "FIELD_HORIZONTAL_ONLY"]
       ],
       "cType": "define",
       "defaultValue": "DIRECTION_TYPE_4_WAY"
