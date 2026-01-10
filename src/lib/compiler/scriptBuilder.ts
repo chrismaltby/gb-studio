@@ -1699,6 +1699,20 @@ class ScriptBuilder {
     return localsLookup;
   };
 
+  // Replaces custom script V0-V9 strings with arg ScriptBuilderFunctionArg data
+  _resolveVariableRef = <T extends ScriptBuilderVariable>(
+    variable: T,
+  ): T | ScriptBuilderFunctionArg => {
+    if (typeof variable === "string" && variable.match(/^V[0-9]$/)) {
+      const arg = this.options.argLookup.variable.get(variable);
+      if (!arg) {
+        throw new Error("Cant find arg");
+      }
+      return arg;
+    }
+    return variable;
+  };
+
   _performValueRPN = (
     rpn: RPNHandler,
     rpnOps: PrecompiledValueRPNOperation[],
@@ -1716,7 +1730,7 @@ class ScriptBuilder {
           break;
         }
         case "variable": {
-          rpn.refVariable(rpnOp.value);
+          rpn.refVariable(this._resolveVariableRef(rpnOp.value));
           break;
         }
         case "local": {
@@ -2087,14 +2101,9 @@ class ScriptBuilder {
         token.type === "speedVariable" ||
         token.type === "fontVariable"
       ) {
-        const variable = token.variableId;
-        if (variable.match(/^V[0-9]$/)) {
-          const key = variable;
-          const arg = this.options.argLookup.variable.get(key);
-          if (!arg) {
-            throw new Error("Cant find arg");
-          }
-          if (this._isIndirectVariable(arg)) {
+        const variable = this._resolveVariableRef(token.variableId);
+        if (this._isFunctionArg(variable)) {
+          if (this._isIndirectVariable(variable)) {
             const localRef = this._declareLocal(
               `text_arg${indirectVars.length}`,
               1,
@@ -2102,11 +2111,11 @@ class ScriptBuilder {
             );
             indirectVars.unshift({
               local: localRef,
-              arg: arg.symbol,
+              arg: variable.symbol,
             });
             usedVariableAliases.push(this._rawOffsetStackAddr(localRef));
           } else {
-            usedVariableAliases.push(this._rawOffsetStackAddr(arg.symbol));
+            usedVariableAliases.push(this._rawOffsetStackAddr(variable.symbol));
           }
         } else {
           usedVariableAliases.push(
@@ -5929,11 +5938,8 @@ extern void __mute_mask_${symbol};
     }
 
     // Lookup args if in V0-9 format
-    if (variable.match(/^V[0-9]$/)) {
-      const arg = this.options.argLookup.variable.get(variable);
-      if (!arg) {
-        throw new Error("Cant find arg: " + variable);
-      }
+    const arg = this._resolveVariableRef(variable);
+    if (this._isFunctionArg(arg)) {
       return arg.symbol;
     }
 

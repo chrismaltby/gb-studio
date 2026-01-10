@@ -106,7 +106,10 @@ export const loadScriptEventHandlerFromTrustedString = async (
       ? (lookup: (key: string) => string, input: Record<string, unknown>) => {
           try {
             const result = callModuleFunction("autoLabel", [lookup, input]);
-            return String(result);
+            if (typeof result === "string") {
+              return result;
+            }
+            return undefined;
           } catch (error) {
             throw error;
           }

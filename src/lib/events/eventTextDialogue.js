@@ -9,7 +9,7 @@ const autoLabel = (fetchArg, args) => {
       text: fetchArg("text"),
     });
   } else {
-    l10n("EVENT_TEXT");
+    return l10n("EVENT_TEXT");
   }
 };
 

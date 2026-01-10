@@ -112,7 +112,7 @@ export type ScriptEventHandler = ScriptEventDef & {
   autoLabel?: (
     lookup: (key: string) => string,
     args: Record<string, unknown>,
-  ) => string;
+  ) => string | undefined;
   compile: (input: unknown, helpers: unknown) => void;
   fields: ScriptEventHandlerFieldSchema[];
   fieldsLookup: Record<string, ScriptEventHandlerFieldSchema>;

@@ -25,7 +25,6 @@ import {
   TOOL_SELECT,
   MIDDLE_MOUSE,
   TILE_COLOR_PROPS,
-  TILE_COLOR_PALETTE,
   BRUSH_SLOPE,
 } from "consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";

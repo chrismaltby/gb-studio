@@ -173,6 +173,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where engine fields belonging to unused or disabled scene types could prevent the project from compiling
 - Fix issue where text selection during rename of a script event would cause event to be dragged
 - Fix broken values in EVENT_ENGINE_FIELD_SET carried over from 2.0.0 projects
+- Fix issue where variables passed by reference in expressions within custom scripts would use incorrect values
 
 ## [4.1.3] - 2024-09-16
 
