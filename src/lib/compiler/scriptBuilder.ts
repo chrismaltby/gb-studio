@@ -1876,20 +1876,20 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
   };
 
-  _actorMoveToInit = (addr: string) => {
-    this._addCmd("VM_ACTOR_MOVE_TO_INIT", addr);
+  _actorMoveToInit = (addr: string, attr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_INIT", addr, attr);
   };
 
-  _actorMoveToX = (addr: string) => {
-    this._addCmd("VM_ACTOR_MOVE_TO_X", addr);
+  _actorMoveToX = (addr: string, attr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_X", addr, attr);
   };
 
-  _actorMoveToY = (addr: string) => {
-    this._addCmd("VM_ACTOR_MOVE_TO_Y", addr);
+  _actorMoveToY = (addr: string, attr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_Y", addr, attr);
   };
 
-  _actorMoveToXY = (addr: string) => {
-    this._addCmd("VM_ACTOR_MOVE_TO_XY", addr);
+  _actorMoveToXY = (addr: string, attr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_XY", addr, attr);
   };
 
   _actorMoveToSetDirX = (addr: string) => {
@@ -3104,6 +3104,8 @@ extern void __mute_mask_${symbol};
       scriptValueToSubpixels(valueY, units),
     );
 
+    const attr = toASMMoveFlags(moveType, collideWith);
+
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(optimisedX, "x");
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(optimisedY, "y");
 
@@ -3124,26 +3126,24 @@ extern void __mute_mask_${symbol};
     this._performValueRPN(rpn, rpnOpsY, localsLookup);
     rpn.refSet(this._localRef(actorRef, 2));
 
-    rpn.int16(toASMMoveFlags(moveType, collideWith));
-    rpn.refSet(this._localRef(actorRef, 3));
 
     rpn.stop();
     this._addComment(`-- Move Actor`);
     this.actorSetById(actorId);
-    this._actorMoveToInit(actorRef);
+    this._actorMoveToInit(actorRef, attr);
     if (moveType === "horizontal") {
       this._actorMoveToSetDirX(actorRef);
-      this._actorMoveToX(actorRef);
+      this._actorMoveToX(actorRef, attr);
       this._actorMoveToSetDirY(actorRef);
-      this._actorMoveToY(actorRef);
+      this._actorMoveToY(actorRef, attr);
     } else if (moveType === "vertical") {
       this._actorMoveToSetDirY(actorRef);
-      this._actorMoveToY(actorRef);
+      this._actorMoveToY(actorRef, attr);
       this._actorMoveToSetDirX(actorRef);
-      this._actorMoveToX(actorRef);
+      this._actorMoveToX(actorRef, attr);
     } else if (moveType === "diagonal") {
       this._actorMoveToSetDirX(actorRef);
-      this._actorMoveToXY(actorRef);
+      this._actorMoveToXY(actorRef, attr);
     }
     this._assertStackNeutral(stackPtr);
     this._addNL();
@@ -3205,6 +3205,8 @@ extern void __mute_mask_${symbol};
       return;
     }
 
+    const attr = toASMMoveFlags(moveType, collideWith, true, units);
+
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
       optimiseScriptValue(scriptValueToSubpixels(valueX, units)),
       "x",
@@ -3226,33 +3228,32 @@ extern void __mute_mask_${symbol};
     rpn.actorId(actorId); // Actor ID
     this._performValueRPN(rpn, rpnOpsX, localsLookup2); // X Value
     this._performValueRPN(rpn, rpnOpsY, localsLookup2); // Y Value
-    rpn.int16(toASMMoveFlags(moveType, collideWith, true, units)); // Move Flags
     rpn.stop();
 
     this._addComment(`-- Move Actor`);
-    this._actorMoveToInit(".ARG3");
+    this._actorMoveToInit(".ARG2", attr);
     if (moveX && !moveY) {
-      this._actorMoveToSetDirX(".ARG3");
-      this._actorMoveToX(".ARG3"); 
+      this._actorMoveToSetDirX(".ARG2");
+      this._actorMoveToX(".ARG2", attr); 
     } else if (moveY && !moveX) {
-      this._actorMoveToSetDirY(".ARG3");
-      this._actorMoveToY(".ARG3"); 
+      this._actorMoveToSetDirY(".ARG2");
+      this._actorMoveToY(".ARG2", attr); 
     } else if (moveType === "horizontal") {
-      this._actorMoveToSetDirX(".ARG3");
-      this._actorMoveToX(".ARG3");
-      this._actorMoveToSetDirY(".ARG3");
-      this._actorMoveToY(".ARG3");
+      this._actorMoveToSetDirX(".ARG2");
+      this._actorMoveToX(".ARG2", attr);
+      this._actorMoveToSetDirY(".ARG2");
+      this._actorMoveToY(".ARG2", attr);
     } else if (moveType === "vertical") {
-      this._actorMoveToSetDirY(".ARG3");
-      this._actorMoveToY(".ARG3");
-      this._actorMoveToSetDirX(".ARG3");
-      this._actorMoveToX(".ARG3");
+      this._actorMoveToSetDirY(".ARG2");
+      this._actorMoveToY(".ARG2", attr);
+      this._actorMoveToSetDirX(".ARG2");
+      this._actorMoveToX(".ARG2", attr);
     } else if (moveType === "diagonal") {
-      this._actorMoveToSetDirX(".ARG3");
-      this._actorMoveToXY(".ARG3");
+      this._actorMoveToSetDirX(".ARG2");
+      this._actorMoveToXY(".ARG2", attr);
     }
 
-    this._stackPop(4);
+    this._stackPop(3);
     this._assertStackNeutral(stackPtr);
     this._addNL();
   };
