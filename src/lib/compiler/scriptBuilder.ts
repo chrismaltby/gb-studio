@@ -1876,6 +1876,30 @@ class ScriptBuilder {
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
   };
 
+  _actorMoveToInit = (addr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_INIT", addr);
+  };
+
+  _actorMoveToX = (addr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_X", addr);
+  };
+
+  _actorMoveToY = (addr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_Y", addr);
+  };
+
+  _actorMoveToXY = (addr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_XY", addr);
+  };
+
+  _actorMoveToSetDirX = (addr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_SET_DIR_X", addr);
+  };
+
+  _actorMoveToSetDirY = (addr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_SET_DIR_Y", addr);
+  };
+
   _actorMoveCancel = (addr: string) => {
     this._addCmd("VM_ACTOR_MOVE_CANCEL", addr);
   };
@@ -3013,7 +3037,7 @@ extern void __mute_mask_${symbol};
     x: number,
     y: number,
     useCollisions: boolean,
-    moveType: ScriptBuilderMoveType,
+    moveType: ScriptBuilderMoveType = "horizontal",
     units: DistanceUnitType = "tiles",
   ) => {
     const actorRef = this._declareLocal("actor", 4);
@@ -3034,7 +3058,7 @@ extern void __mute_mask_${symbol};
     variableX: string,
     variableY: string,
     useCollisions: boolean,
-    moveType: ScriptBuilderMoveType,
+    moveType: ScriptBuilderMoveType = "horizontal",
     units: DistanceUnitType = "tiles",
   ) => {
     const actorRef = this._declareLocal("actor", 4);
@@ -3066,7 +3090,7 @@ extern void __mute_mask_${symbol};
     valueX: ScriptValue,
     valueY: ScriptValue,
     collideWith: boolean | Array<"walls" | "actors">,
-    moveType: ScriptBuilderMoveType,
+    moveType: ScriptBuilderMoveType = "horizontal",
     units: DistanceUnitType = "tiles",
   ) => {
     const actorRef = this._declareLocal("actor", 4);
@@ -3106,7 +3130,21 @@ extern void __mute_mask_${symbol};
     rpn.stop();
     this._addComment(`-- Move Actor`);
     this.actorSetById(actorId);
-    this._actorMoveTo(actorRef);
+    this._actorMoveToInit(actorRef);
+    if (moveType === "horizontal") {
+      this._actorMoveToSetDirX(actorRef);
+      this._actorMoveToX(actorRef);
+      this._actorMoveToSetDirY(actorRef);
+      this._actorMoveToY(actorRef);
+    } else if (moveType === "vertical") {
+      this._actorMoveToSetDirY(actorRef);
+      this._actorMoveToY(actorRef);
+      this._actorMoveToSetDirX(actorRef);
+      this._actorMoveToX(actorRef);
+    } else if (moveType === "diagonal") {
+      this._actorMoveToSetDirX(actorRef);
+      this._actorMoveToXY(actorRef);
+    }
     this._assertStackNeutral(stackPtr);
     this._addNL();
   };
@@ -3115,7 +3153,7 @@ extern void __mute_mask_${symbol};
     x = 0,
     y = 0,
     useCollisions = false,
-    moveType: ScriptBuilderMoveType,
+    moveType: ScriptBuilderMoveType = "horizontal",
     units: DistanceUnitType = "tiles",
   ) => {
     const actorRef = this._declareLocal("actor", 4);
@@ -3151,7 +3189,7 @@ extern void __mute_mask_${symbol};
     valueX: ScriptValue,
     valueY: ScriptValue,
     collideWith: boolean | Array<"walls" | "actors">,
-    moveType: ScriptBuilderMoveType,
+    moveType: ScriptBuilderMoveType = "horizontal",
     units: DistanceUnitType = "tiles",
   ) => {
     const stackPtr = this.stackPtr;
@@ -3192,7 +3230,28 @@ extern void __mute_mask_${symbol};
     rpn.stop();
 
     this._addComment(`-- Move Actor`);
-    this._actorMoveTo(".ARG3");
+    this._actorMoveToInit(".ARG3");
+    if (moveX && !moveY) {
+      this._actorMoveToSetDirX(".ARG3");
+      this._actorMoveToX(".ARG3"); 
+    } else if (moveY && !moveX) {
+      this._actorMoveToSetDirY(".ARG3");
+      this._actorMoveToY(".ARG3"); 
+    } else if (moveType === "horizontal") {
+      this._actorMoveToSetDirX(".ARG3");
+      this._actorMoveToX(".ARG3");
+      this._actorMoveToSetDirY(".ARG3");
+      this._actorMoveToY(".ARG3");
+    } else if (moveType === "vertical") {
+      this._actorMoveToSetDirY(".ARG3");
+      this._actorMoveToY(".ARG3");
+      this._actorMoveToSetDirX(".ARG3");
+      this._actorMoveToX(".ARG3");
+    } else if (moveType === "diagonal") {
+      this._actorMoveToSetDirX(".ARG3");
+      this._actorMoveToXY(".ARG3");
+    }
+
     this._stackPop(4);
     this._assertStackNeutral(stackPtr);
     this._addNL();
