@@ -5,6 +5,7 @@ import { tilesetSelectors } from "store/features/entities/entitiesState";
 import TilePreviewWorker, { TilePreviewResult } from "./TilePreview.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 import { GridUnitType } from "shared/lib/entities/entitiesTypes";
+import { getSettings } from "store/features/settings/settingsState";
 
 interface TileCanvasProps {
   tilesetId: string;
@@ -19,6 +20,10 @@ export const TileCanvas = ({
   tileIndex,
   tileSize,
 }: TileCanvasProps) => {
+  const colorCorrection = useAppSelector(
+    (state) => getSettings(state).colorCorrection,
+  );
+
   const size = tileSize === "16px" ? 2 : 1;
   const width = TILE_SIZE * size;
   const height = TILE_SIZE * size;
@@ -73,8 +78,9 @@ export const TileCanvas = ({
       palette: DMG_PALETTE.colors,
       tileIndex,
       tileSize,
+      colorCorrection,
     });
-  }, [canvasRef, tileIndex, tileSize, tileset, workerId]);
+  }, [canvasRef, tileIndex, tileSize, colorCorrection, tileset, workerId]);
 
   return (
     <canvas
