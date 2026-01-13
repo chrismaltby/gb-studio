@@ -661,19 +661,19 @@ const compileBounds = ({
   };
 };
 
-const actor_flags_str = (actor: Actor): string => {
-  var flags_str: string = "0";
-  if(actor.isPinned) {
-    flags_str += "| ACTOR_FLAG_PINNED";
+const toActorFlags = (actor: Actor): string => {
+  const flags = [];
+
+  if (actor.isPinned) {
+    flags.push("ACTOR_FLAG_PINNED");
+  } else {
+    flags.push("ACTOR_FLAG_COLLISION");
   }
-  else
-  {
-    flags_str += "| ACTOR_FLAG_COLLISION";
+  if (actor.persistent) {
+    flags.push("ACTOR_FLAG_PERSISTENT");
   }
-  if(actor.persistent) {
-    flags_str += "| ACTOR_FLAG_PERSISTENT";
-  }
-  return flags_str;
+
+  return flags.length > 0 ? flags.join(" | ") : "0";
 };
 
 export const compileSceneActors = (
@@ -706,7 +706,7 @@ export const compileSceneActors = (
           sprite: toFarPtr(sprite.symbol),
           move_speed: pxToSubpx(actor.moveSpeed),
           anim_tick: actor.animSpeed,
-          flags: actor_flags_str(actor),
+          flags: toActorFlags(actor),
           collision_group: toASMCollisionGroup(
             actor.collisionGroup,
             actor.collisionExtraFlags,
