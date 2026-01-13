@@ -1094,6 +1094,20 @@ const changes: EngineChange[] = [
       "src/states/shmup.c",
     ],
   },
+  {
+    version: "4.2.0-e28",
+    description: createDescription("Updates", [
+      'Change actor flags from bitfield-bools to "classic" bitmask accessed via SET/CLR/CHK_FLAG macro',
+      "Optimise actors_render performance by moving some checks to earlier in the function",
+    ]),
+    modifiedFiles: [
+      "include/gbs_types.h",
+      "include/vm_actor.h",
+      "src/core/actor.c",
+      "src/core/data_manager.c",
+      "src/core/vm_actor.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
