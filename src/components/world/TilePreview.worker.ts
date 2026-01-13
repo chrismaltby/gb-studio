@@ -36,7 +36,8 @@ workerCtx.onmessage = async (evt) => {
   const tileIndex = evt.data.tileIndex ?? 0;
   const tileSize = evt.data.tileSize === "16px" ? TILE_SIZE * 2 : TILE_SIZE;
   const palette = evt.data.palette;
-  const paletteRGB = palette.map(hex2GBCrgb);
+  const colorCorrectionFn = hex2GBCrgb(evt.data.colorCorrection);
+  const paletteRGB = palette.map(colorCorrectionFn);
 
   let canvas: OffscreenCanvas;
   let ctx: OffscreenCanvasRenderingContext2D;

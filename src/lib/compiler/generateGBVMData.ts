@@ -661,6 +661,21 @@ const compileBounds = ({
   };
 };
 
+const toActorFlags = (actor: Actor): string => {
+  const flags = [];
+
+  if (actor.isPinned) {
+    flags.push("ACTOR_FLAG_PINNED");
+  } else {
+    flags.push("ACTOR_FLAG_COLLISION");
+  }
+  if (actor.persistent) {
+    flags.push("ACTOR_FLAG_PERSISTENT");
+  }
+
+  return flags.length > 0 ? flags.join(" | ") : "0";
+};
+
 export const compileSceneActors = (
   scene: PrecompiledScene,
   sceneIndex: number,
@@ -691,13 +706,11 @@ export const compileSceneActors = (
           sprite: toFarPtr(sprite.symbol),
           move_speed: pxToSubpx(actor.moveSpeed),
           anim_tick: actor.animSpeed,
-          pinned: actor.isPinned ? "TRUE" : "FALSE",
-          persistent: actor.persistent ? "TRUE" : "FALSE",
+          flags: toActorFlags(actor),
           collision_group: toASMCollisionGroup(
             actor.collisionGroup,
             actor.collisionExtraFlags,
           ),
-          collision_enabled: actor.isPinned ? "FALSE" : "TRUE",
           script_update: maybeScriptFarPtr(events.actorsMovement[actorIndex]),
           script: maybeScriptFarPtr(events.actors[actorIndex]),
           reserve_tiles: scene.actorsExclusiveLookup[actor.id] ?? 0,

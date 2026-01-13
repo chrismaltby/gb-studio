@@ -4799,3 +4799,395 @@ describe("getVariableAlias", () => {
     expect(sb.getVariableAlias("V0")).toBe(".SCRIPT_ARG_0_VARIABLE");
   });
 });
+
+describe("compileCustomEventScript", () => {
+  test("Should compile a custom event script with no args", async () => {
+    const dummyCompiledFont = await getDummyCompiledFont();
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        customEvents: [
+          {
+            id: "script1",
+            name: "Hello World Script",
+            description: "",
+            variables: {},
+            actors: {},
+            symbol: "script1",
+            script: [
+              {
+                command: "EVENT_TEXT",
+                args: {
+                  text: ["Hello World"],
+                },
+                id: "event1",
+              },
+            ],
+          },
+        ],
+        fonts: [dummyCompiledFont],
+      },
+    );
+
+    const script = sb.compileCustomEventScript("script1");
+    expect(script).toEqual({ argsLen: 0, scriptRef: "script1" });
+    expect(sb.options.additionalScripts["script1"].compiledScript)
+      .toEqual(`.module script1
+
+.include "vm.i"
+.include "data/game_globals.i"
+
+.area _CODE_255
+
+
+___bank_script1 = 255
+.globl ___bank_script1
+
+_script1::
+        ; Text Dialogue
+        VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
+        VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
+        VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_LOAD_TEXT            0
+        .asciz "Hello World"
+        VM_DISPLAY_TEXT
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
+        VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_OUT_SPEED
+        VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT)/
+
+        VM_RET_FAR
+`);
+  });
+
+  test("Should compile a custom event script with indirect variable arg", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        customEvents: [
+          {
+            id: "script1",
+            name: "Test Script",
+            description: "",
+            variables: {
+              V0: {
+                id: "V0",
+                name: "Variable A",
+                passByReference: true,
+              },
+            },
+            actors: {},
+            symbol: "script1",
+            script: [
+              {
+                command: "EVENT_INC_VALUE",
+                args: {
+                  variable: "V0",
+                },
+                id: "event1",
+              },
+            ],
+          },
+        ],
+      },
+    );
+
+    const script = sb.compileCustomEventScript("script1");
+    expect(script).toEqual({ argsLen: 1, scriptRef: "script1" });
+    expect(sb.options.additionalScripts["script1"].compiledScript)
+      .toEqual(`.module script1
+
+.include "vm.i"
+.include "data/game_globals.i"
+
+.area _CODE_255
+
+.SCRIPT_ARG_INDIRECT_0_VARIABLE = -3
+
+___bank_script1 = 255
+.globl ___bank_script1
+
+_script1::
+        ; Variable Increment By 1
+        VM_RPN
+            .R_REF_IND  .SCRIPT_ARG_INDIRECT_0_VARIABLE
+            .R_INT8     1
+            .R_OPERATOR .ADD
+            .R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE
+            .R_STOP
+
+        VM_RET_FAR_N            1
+`);
+  });
+
+  test("Should compile a custom event script with direct variable arg", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        customEvents: [
+          {
+            id: "script1",
+            name: "Test Script",
+            description: "",
+            variables: {
+              V0: {
+                id: "V0",
+                name: "Variable A",
+                passByReference: false,
+              },
+            },
+            actors: {},
+            symbol: "script1",
+            script: [
+              {
+                command: "EVENT_INC_VALUE",
+                args: {
+                  variable: "V0",
+                },
+                id: "event1",
+              },
+            ],
+          },
+        ],
+      },
+    );
+
+    const script = sb.compileCustomEventScript("script1");
+    expect(script).toEqual({ argsLen: 1, scriptRef: "script1" });
+    expect(sb.options.additionalScripts["script1"].compiledScript)
+      .toEqual(`.module script1
+
+.include "vm.i"
+.include "data/game_globals.i"
+
+.area _CODE_255
+
+.SCRIPT_ARG_0_VARIABLE = -3
+
+___bank_script1 = 255
+.globl ___bank_script1
+
+_script1::
+        ; Variable Increment By 1
+        VM_RPN
+            .R_REF      .SCRIPT_ARG_0_VARIABLE
+            .R_INT8     1
+            .R_OPERATOR .ADD
+            .R_REF_SET  .SCRIPT_ARG_0_VARIABLE
+            .R_STOP
+
+        VM_RET_FAR_N            1
+`);
+  });
+
+  test("Should compile a custom event script with actor arg", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        customEvents: [
+          {
+            id: "script1",
+            name: "Test Script",
+            description: "",
+            variables: {},
+            actors: {
+              "0": {
+                id: "0",
+                name: "Actor A",
+              },
+            },
+            symbol: "script1",
+            script: [
+              {
+                command: "EVENT_ACTOR_SET_DIRECTION",
+                args: {
+                  actorId: "0",
+                  direction: {
+                    type: "direction",
+                    value: "right",
+                  },
+                },
+                id: "event1",
+              },
+            ],
+          },
+        ],
+      },
+    );
+
+    const script = sb.compileCustomEventScript("script1");
+    expect(script).toEqual({ argsLen: 1, scriptRef: "script1" });
+
+    expect(sb.options.additionalScripts["script1"].compiledScript)
+      .toEqual(`.module script1
+
+.include "vm.i"
+.include "data/game_globals.i"
+
+.area _CODE_255
+
+.SCRIPT_ARG_0_ACTOR = -7
+.LOCAL_ACTOR = -4
+
+___bank_script1 = 255
+.globl ___bank_script1
+
+_script1::
+        VM_RESERVE              4
+
+        ; Actor Set Direction To
+        VM_SET                  .LOCAL_ACTOR, .SCRIPT_ARG_0_ACTOR
+        VM_ACTOR_SET_DIR        .LOCAL_ACTOR, .DIR_RIGHT
+
+        VM_RESERVE              -4
+        VM_RET_FAR_N            1
+`);
+  });
+
+  test("Should compile a custom event script with actor arg in script value", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        customEvents: [
+          {
+            id: "script1",
+            name: "Test Script",
+            description: "",
+            variables: {
+              V0: {
+                id: "V0",
+                name: "Variable A",
+                passByReference: true,
+              },
+            },
+            actors: {
+              "0": {
+                id: "0",
+                name: "Actor A",
+              },
+            },
+            symbol: "script1",
+            script: [
+              {
+                command: "EVENT_SET_VALUE",
+                args: {
+                  variable: "V0",
+                  value: {
+                    type: "property",
+                    target: "0",
+                    property: "xpos",
+                  },
+                },
+                id: "event1",
+              },
+            ],
+          },
+        ],
+      },
+    );
+
+    const script = sb.compileCustomEventScript("script1");
+    expect(script).toEqual({ argsLen: 2, scriptRef: "script1" });
+
+    expect(sb.options.additionalScripts["script1"].compiledScript)
+      .toEqual(`.module script1
+
+.include "vm.i"
+.include "data/game_globals.i"
+
+.area _CODE_255
+
+.SCRIPT_ARG_INDIRECT_0_VARIABLE = -7
+.SCRIPT_ARG_1_ACTOR = -8
+.LOCAL_TMP0_ACTOR_POS = -4
+
+___bank_script1 = 255
+.globl ___bank_script1
+
+_script1::
+        VM_RESERVE              4
+
+        ; Variable Set To
+        ; -- Fetch .SCRIPT_ARG_1_ACTOR actorPosition
+        VM_SET                  .LOCAL_TMP0_ACTOR_POS, .SCRIPT_ARG_1_ACTOR
+        VM_ACTOR_GET_POS        .LOCAL_TMP0_ACTOR_POS
+        ; -- Calculate value
+        VM_RPN
+            .R_REF      ^/(.LOCAL_TMP0_ACTOR_POS + 1)/
+            .R_INT16    8
+            .R_OPERATOR .SHR
+            .R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE
+            .R_STOP
+
+        VM_RESERVE              -4
+        VM_RET_FAR_N            2
+`);
+  });
+
+  test("Should compile a custom event script with camera property in script value", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        customEvents: [
+          {
+            id: "script1",
+            name: "Test Script",
+            description: "",
+            variables: {
+              V0: {
+                id: "V0",
+                name: "Variable A",
+                passByReference: true,
+              },
+            },
+            actors: {},
+            symbol: "script1",
+            script: [
+              {
+                command: "EVENT_SET_VALUE",
+                args: {
+                  variable: "V0",
+                  value: {
+                    type: "property",
+                    target: "camera",
+                    property: "xpos",
+                  },
+                },
+                id: "event1",
+              },
+            ],
+          },
+        ],
+      },
+    );
+
+    const script = sb.compileCustomEventScript("script1");
+    expect(script).toEqual({ argsLen: 1, scriptRef: "script1" });
+
+    expect(sb.options.additionalScripts["script1"].compiledScript)
+      .toEqual(`.module script1
+
+.include "vm.i"
+.include "data/game_globals.i"
+
+.area _CODE_255
+
+.SCRIPT_ARG_INDIRECT_0_VARIABLE = -3
+
+___bank_script1 = 255
+.globl ___bank_script1
+
+_script1::
+        ; Variable Set To
+        ; -- Calculate value
+        VM_RPN
+            .R_REF_MEM  .MEM_I16, _camera_x
+            .R_INT16    8
+            .R_OPERATOR .SHR
+            .R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE
+            .R_STOP
+
+        VM_RET_FAR_N            1
+`);
+  });
+});

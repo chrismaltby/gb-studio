@@ -5655,7 +5655,7 @@ extern void __mute_mask_${symbol};
                       value: getArg("variable", val.value),
                     };
                   }
-                } else if (val.type === "property" && val.target === "actor") {
+                } else if (val.type === "property" && val.target !== "camera") {
                   const scriptArg = getArg("actor", val.target);
                   if (scriptArg && typeof scriptArg === "string") {
                     return {
