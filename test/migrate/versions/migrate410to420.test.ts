@@ -10,6 +10,7 @@ import {
   migrateFrom420r5To420r6EngineFields,
   migrateFrom420r6To420r7Event,
   migrateFrom420r7To420r8Scenes,
+  migrateFrom420r9To420r10Event,
 } from "lib/project/migration/versions/410to420";
 import {
   CompressedProjectResources,
@@ -934,5 +935,183 @@ describe("migrateFrom420r7To420r8Scenes", () => {
     expect(migrated.scenes[0].paletteIds).toEqual(
       resources.scenes[0].paletteIds,
     );
+  });
+});
+
+describe("migrateFrom420r9To420r10Event", () => {
+  test("should fix broken value object missing type property", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: {
+          value: 42,
+        },
+      },
+    };
+    expect(migrateFrom420r9To420r10Event(oldEvent)).toMatchObject({
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: {
+          type: "number",
+          value: 42,
+        },
+      },
+    });
+  });
+
+  test("should not modify value if it already has type property", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: {
+          type: "number",
+          value: 42,
+        },
+      },
+    };
+    const result = migrateFrom420r9To420r10Event(oldEvent);
+    expect(result).toMatchObject({
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: {
+          type: "number",
+          value: 42,
+        },
+      },
+    });
+  });
+
+  test("should not modify value if it is not an object", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: 42,
+      },
+    };
+    const result = migrateFrom420r9To420r10Event(oldEvent);
+    expect(result.args?.value).toEqual(42);
+  });
+
+  test("should not modify value if it is null", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: null,
+      },
+    };
+    const result = migrateFrom420r9To420r10Event(oldEvent);
+    expect(result.args?.value).toBeNull();
+  });
+
+  test("should not modify value if inner value is not a number", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: {
+          value: "not a number",
+        },
+      },
+    };
+    const result = migrateFrom420r9To420r10Event(oldEvent);
+    expect(result.args?.value).toEqual({
+      value: "not a number",
+    });
+  });
+
+  test("should not modify non-engine-field-set events", () => {
+    const input: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_FOO",
+      args: {
+        value: {
+          value: 42,
+        },
+      },
+    };
+    const output = migrateFrom420r9To420r10Event(input);
+    expect(output).toEqual(input);
+  });
+
+  test("should return event unchanged if args is undefined", () => {
+    const input: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ENGINE_FIELD_SET",
+    };
+    const output = migrateFrom420r9To420r10Event(input);
+    expect(output).toEqual(input);
+  });
+
+  test("should not mutate input", () => {
+    const input: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: {
+          value: 42,
+        },
+      },
+    };
+    const inputClone = cloneDeep(input);
+    migrateFrom420r9To420r10Event(input);
+    expect(input).toEqual(inputClone);
+  });
+
+  test("should handle value object with value property set to 0", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: {
+          value: 0,
+        },
+      },
+    };
+    expect(migrateFrom420r9To420r10Event(oldEvent)).toMatchObject({
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: {
+          type: "number",
+          value: 0,
+        },
+      },
+    });
+  });
+
+  test("should handle value object with negative number", () => {
+    const oldEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: {
+          value: -10,
+        },
+      },
+    };
+    expect(migrateFrom420r9To420r10Event(oldEvent)).toMatchObject({
+      command: "EVENT_ENGINE_FIELD_SET",
+      args: {
+        engineFieldKey: "some_field",
+        value: {
+          type: "number",
+          value: -10,
+        },
+      },
+    });
   });
 });

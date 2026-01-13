@@ -52,6 +52,13 @@
       }
     },
     {
+      "id": "54329",
+      "type": "user",
+      "attributes": {
+        "full_name": "Clay Gardner"
+      }
+    },
+    {
       "id": "45298882",
       "type": "user",
       "attributes": {
@@ -91,6 +98,13 @@
       "type": "user",
       "attributes": {
         "full_name": "MsRiaCayde"
+      }
+    },
+    {
+      "id": "3495903",
+      "type": "user",
+      "attributes": {
+        "full_name": "thavok"
       }
     }
   ],
