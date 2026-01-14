@@ -1108,6 +1108,30 @@ const changes: EngineChange[] = [
       "src/core/vm_actor.c",
     ],
   },
+  {
+    version: "4.2.0-e29",
+    description: createDescription("Updates", [
+      "Add support for horizontal only player sprite in adventure scenes",
+      "Add new optimised instructions for moving actors VM_ACTOR_MOVE_TO_INIT, VM_ACTOR_MOVE_TO_X, VM_ACTOR_MOVE_TO_Y, VM_ACTOR_MOVE_TO_XY, VM_ACTOR_MOVE_TO_SET_DIR_X, VM_ACTOR_MOVE_TO_SET_DIR_Y",
+      "Optimise calls to projectile_launch when launch direction is axis aligned",
+      "Use static variable for saving/restoring bank in scroll",
+      "Use static variable for saving/restoring bank in projectiles",
+      "Minor optimizations to the general banked data manipulation functions",
+    ]),
+    modifiedFiles: [
+      "include/compat.h",
+      "include/vm.i",
+      "include/vm_actor.h",
+      "src/core/actor.c",
+      "src/core/bankdata.c",
+      "src/core/projectiles.c",
+      "src/core/scroll.c",
+      "src/core/vm.c",
+      "src/core/vm_actor.c",
+      "src/core/vm_instructions.c",
+      "src/states/adventure.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

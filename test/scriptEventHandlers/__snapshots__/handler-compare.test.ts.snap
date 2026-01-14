@@ -64,10 +64,11 @@ _script::
             .R_INT16    0
             .R_INT16    256
             .R_INT16    0
-            .R_INT16    ^/(.ACTOR_ATTR_CHECK_COLL_WALLS | .ACTOR_ATTR_H_FIRST | .ACTOR_ATTR_RELATIVE_SNAP_TILE)/
             .R_STOP
-        VM_ACTOR_MOVE_TO        .ARG3
-        VM_POP                  4
+        VM_ACTOR_MOVE_TO_INIT   .ARG2, ^/(.ACTOR_ATTR_CHECK_COLL_WALLS | .ACTOR_ATTR_H_FIRST | .ACTOR_ATTR_RELATIVE_SNAP_TILE)/
+        VM_ACTOR_MOVE_TO_SET_DIR_X .ARG2
+        VM_ACTOR_MOVE_TO_X      .ARG2, ^/(.ACTOR_ATTR_CHECK_COLL_WALLS | .ACTOR_ATTR_H_FIRST | .ACTOR_ATTR_RELATIVE_SNAP_TILE)/
+        VM_POP                  3
 
 "
 `;
@@ -94,11 +95,13 @@ _script::
             .R_REF_SET  ^/(.LOCAL_ACTOR + 1)/
             .R_INT16    4352
             .R_REF_SET  ^/(.LOCAL_ACTOR + 2)/
-            .R_INT16    ^/(.ACTOR_ATTR_CHECK_COLL_WALLS | .ACTOR_ATTR_H_FIRST)/
-            .R_REF_SET  ^/(.LOCAL_ACTOR + 3)/
             .R_STOP
         VM_SET_CONST            .LOCAL_ACTOR, 0
-        VM_ACTOR_MOVE_TO        .LOCAL_ACTOR
+        VM_ACTOR_MOVE_TO_INIT   .LOCAL_ACTOR, ^/(.ACTOR_ATTR_CHECK_COLL_WALLS | .ACTOR_ATTR_H_FIRST)/
+        VM_ACTOR_MOVE_TO_SET_DIR_X .LOCAL_ACTOR
+        VM_ACTOR_MOVE_TO_X      .LOCAL_ACTOR, ^/(.ACTOR_ATTR_CHECK_COLL_WALLS | .ACTOR_ATTR_H_FIRST)/
+        VM_ACTOR_MOVE_TO_SET_DIR_Y .LOCAL_ACTOR
+        VM_ACTOR_MOVE_TO_Y      .LOCAL_ACTOR, ^/(.ACTOR_ATTR_CHECK_COLL_WALLS | .ACTOR_ATTR_H_FIRST)/
 
 "
 `;

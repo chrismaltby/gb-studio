@@ -3547,6 +3547,7 @@ describe("actorMoveRelativeByScriptValues", () => {
       false,
       "horizontal",
       "tiles",
+      [],
     );
 
     expect([
@@ -3604,6 +3605,7 @@ describe("actorMoveRelativeByScriptValues", () => {
       false,
       "horizontal",
       "tiles",
+      [],
     );
 
     expect([
@@ -3675,6 +3677,7 @@ describe("actorMoveToScriptValues", () => {
       false,
       "horizontal",
       "tiles",
+      [],
     );
 
     expect([
@@ -3732,6 +3735,7 @@ describe("actorMoveToScriptValues", () => {
       false,
       "horizontal",
       "tiles",
+      [],
     );
 
     expect([
@@ -3793,6 +3797,7 @@ describe("actorMoveToScriptValues", () => {
       false,
       "horizontal",
       "tiles",
+      [],
     );
 
     expect([

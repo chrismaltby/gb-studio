@@ -73,6 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add "Automatic Tile Flip" setting to optimize tilesets by reusing horizontally and vertically flipped tiles where possible. Only supported in "Color Only" scenes [@Mico27](https://github.com/Mico27)
 - Add support for setting global and per scene monochrome palettes for BGP (background & overlays), OBP0 and OBP1 (sprites) [Q-Bert-Reynolds](https://github.com/Q-Bert-Reynolds)
 - Add font indexes to `game_globals.h` and `game_globals.i` for use in custom gbvm scripts and plugins
+- Add ability to lock actor direction when using "Actor Move To/Relative" events so the actor does not change direction during movement
 
 ### Changed
 
@@ -114,6 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated "Store Actor Direction In Variable" event description to document how its values are encoded [@mxashlynn](https://github.com/mxashlynn)
 - Hovering over an event's title in the script editor now shows its documentation in a tooltip (also visible when hovering in the Add Event menu)
 - Pasting a sprite frame into a selected empty frame now reuses the empty frame instead of creating a new one after it
+- Add ability to lock player direction in Adventure scenes to only face horizontal directions [@Mico27](https://github.com/Mico27)
 
 ### Fixed
 

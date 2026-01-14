@@ -12,6 +12,7 @@ test("Should move player relatively", () => {
       moveType: "horizontal",
       collideWith: ["walls"],
       units: "tiles",
+      lockDirection: ["y"],
     },
     {
       scene: { actors: [] },
@@ -27,5 +28,6 @@ test("Should move player relatively", () => {
     ["walls"],
     "horizontal",
     "tiles",
+    ["y"],
   );
 });
