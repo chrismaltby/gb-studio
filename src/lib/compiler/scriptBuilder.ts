@@ -6115,7 +6115,7 @@ extern void __mute_mask_${symbol};
     }
     this._addNL();
   };
-  
+
   variableCopy = (
     setVariable: ScriptBuilderVariable,
     otherVariable: ScriptBuilderVariable,
