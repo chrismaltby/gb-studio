@@ -397,7 +397,7 @@ const WorldView = () => {
     }
     dispatch(editorActions.setTool({ tool: "select" }));
     setHoverState(undefined);
-  }, [clipboardVariables, dispatch, hoverState, pasteMode]);
+  }, [clipboardVariables, dispatch, hoverState, pasteMode, defaultSceneTypeId]);
 
   //#endregion Add Scene
 

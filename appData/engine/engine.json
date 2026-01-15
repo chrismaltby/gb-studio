@@ -1,5 +1,5 @@
 {
-  "version": "4.2.0-e26",
+  "version": "4.2.0-e29",
   "fields": [
     {
       "key": "INPUT_PLATFORM_INTERACT",
@@ -1595,6 +1595,20 @@
       ],
       "cType": "define",
       "defaultValue": "MOVE_TYPE_8_WAY"
+    },
+    {
+      "key": "INPUT_ADVENTURE_DIRECTION_TYPE",
+      "sceneType": "ADVENTURE",
+      "label": "FIELD_DIRECTION_TYPE",
+      "description": "FIELD_DIRECTION_TYPE_INPUT_DESC",
+      "group": "GAMETYPE_ADVENTURE",
+      "type": "select",
+      "options": [
+        ["DIRECTION_TYPE_4_WAY", "FIELD_4_WAY"],
+        ["DIRECTION_TYPE_HORIZONTAL", "FIELD_HORIZONTAL_ONLY"]
+      ],
+      "cType": "define",
+      "defaultValue": "DIRECTION_TYPE_4_WAY"
     },
     {
       "key": "adv_walk_vel",

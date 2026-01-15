@@ -108,6 +108,7 @@ const compile = (input, helpers) => {
     input.collideWith,
     input.moveType,
     input.units,
+    [],
   );
 };
 

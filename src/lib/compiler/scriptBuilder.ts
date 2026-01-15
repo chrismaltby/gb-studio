@@ -1718,6 +1718,20 @@ class ScriptBuilder {
     return localsLookup;
   };
 
+  // Replaces custom script V0-V9 strings with arg ScriptBuilderFunctionArg data
+  _resolveVariableRef = <T extends ScriptBuilderVariable>(
+    variable: T,
+  ): T | ScriptBuilderFunctionArg => {
+    if (typeof variable === "string" && variable.match(/^V[0-9]$/)) {
+      const arg = this.options.argLookup.variable.get(variable);
+      if (!arg) {
+        throw new Error("Cant find arg");
+      }
+      return arg;
+    }
+    return variable;
+  };
+
   _performValueRPN = (
     rpn: RPNHandler,
     rpnOps: PrecompiledValueRPNOperation[],
@@ -1735,7 +1749,7 @@ class ScriptBuilder {
           break;
         }
         case "variable": {
-          rpn.refVariable(rpnOp.value);
+          rpn.refVariable(this._resolveVariableRef(rpnOp.value));
           break;
         }
         case "local": {
@@ -1879,6 +1893,84 @@ class ScriptBuilder {
 
   _actorMoveTo = (addr: string) => {
     this._addCmd("VM_ACTOR_MOVE_TO", addr);
+  };
+
+  _actorMoveToInit = (addr: string, attr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_INIT", addr, attr);
+  };
+
+  _actorMoveToX = (addr: string, attr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_X", addr, attr);
+  };
+
+  _actorMoveToY = (addr: string, attr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_Y", addr, attr);
+  };
+
+  _actorMoveToXY = (addr: string, attr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_XY", addr, attr);
+  };
+
+  _actorMoveToSetDirX = (addr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_SET_DIR_X", addr);
+  };
+
+  _actorMoveToSetDirY = (addr: string) => {
+    this._addCmd("VM_ACTOR_MOVE_TO_SET_DIR_Y", addr);
+  };
+
+  _actorMoveToOps = (
+    addr: string,
+    attr: string,
+    moveType: ScriptBuilderMoveType,
+    moveX: boolean,
+    moveY: boolean,
+    lockDirection: ScriptBuilderAxis[],
+  ) => {
+    const lockDirX = lockDirection.includes("x");
+    const lockDirY = lockDirection.includes("y");
+
+    if (!moveX && !moveY) {
+      return;
+    }
+
+    this._actorMoveToInit(addr, attr);
+    if (moveX && !moveY) {
+      if (!lockDirX) {
+        this._actorMoveToSetDirX(addr);
+      }
+      this._actorMoveToX(addr, attr);
+    } else if (moveY && !moveX) {
+      if (!lockDirY) {
+        this._actorMoveToSetDirY(addr);
+      }
+      this._actorMoveToY(addr, attr);
+    } else if (moveType === "horizontal") {
+      if (!lockDirX) {
+        this._actorMoveToSetDirX(addr);
+      }
+      this._actorMoveToX(addr, attr);
+      if (!lockDirY) {
+        this._actorMoveToSetDirY(addr);
+      }
+      this._actorMoveToY(addr, attr);
+    } else if (moveType === "vertical") {
+      if (!lockDirY) {
+        this._actorMoveToSetDirY(addr);
+      }
+      this._actorMoveToY(addr, attr);
+      if (!lockDirX) {
+        this._actorMoveToSetDirX(addr);
+      }
+      this._actorMoveToX(addr, attr);
+    } else if (moveType === "diagonal") {
+      if (!lockDirY) {
+        this._actorMoveToSetDirY(addr);
+      } else if (!lockDirX) {
+        this._actorMoveToSetDirX(addr);
+      }
+      this._actorMoveToXY(addr, attr);
+    }
   };
 
   _actorMoveCancel = (addr: string) => {
@@ -2106,14 +2198,9 @@ class ScriptBuilder {
         token.type === "speedVariable" ||
         token.type === "fontVariable"
       ) {
-        const variable = token.variableId;
-        if (variable.match(/^V[0-9]$/)) {
-          const key = variable;
-          const arg = this.options.argLookup.variable.get(key);
-          if (!arg) {
-            throw new Error("Cant find arg");
-          }
-          if (this._isIndirectVariable(arg)) {
+        const variable = this._resolveVariableRef(token.variableId);
+        if (this._isFunctionArg(variable)) {
+          if (this._isIndirectVariable(variable)) {
             const localRef = this._declareLocal(
               `text_arg${indirectVars.length}`,
               1,
@@ -2121,11 +2208,11 @@ class ScriptBuilder {
             );
             indirectVars.unshift({
               local: localRef,
-              arg: arg.symbol,
+              arg: variable.symbol,
             });
             usedVariableAliases.push(this._rawOffsetStackAddr(localRef));
           } else {
-            usedVariableAliases.push(this._rawOffsetStackAddr(arg.symbol));
+            usedVariableAliases.push(this._rawOffsetStackAddr(variable.symbol));
           }
         } else {
           usedVariableAliases.push(
@@ -3023,7 +3110,7 @@ extern void __mute_mask_${symbol};
     x: number,
     y: number,
     useCollisions: boolean,
-    moveType: ScriptBuilderMoveType,
+    moveType: ScriptBuilderMoveType = "horizontal",
     units: DistanceUnitType = "tiles",
   ) => {
     const actorRef = this._declareLocal("actor", 4);
@@ -3044,7 +3131,7 @@ extern void __mute_mask_${symbol};
     variableX: string,
     variableY: string,
     useCollisions: boolean,
-    moveType: ScriptBuilderMoveType,
+    moveType: ScriptBuilderMoveType = "horizontal",
     units: DistanceUnitType = "tiles",
   ) => {
     const actorRef = this._declareLocal("actor", 4);
@@ -3076,8 +3163,9 @@ extern void __mute_mask_${symbol};
     valueX: ScriptValue,
     valueY: ScriptValue,
     collideWith: boolean | Array<"walls" | "actors">,
-    moveType: ScriptBuilderMoveType,
+    moveType: ScriptBuilderMoveType = "horizontal",
     units: DistanceUnitType = "tiles",
+    lockDirection: ScriptBuilderAxis[] = [],
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     const stackPtr = this.stackPtr;
@@ -3089,6 +3177,8 @@ extern void __mute_mask_${symbol};
     const optimisedY = optimiseScriptValue(
       scriptValueToSubpixels(valueY, units),
     );
+
+    const attr = toASMMoveFlags(moveType, collideWith);
 
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(optimisedX, "x");
     const [rpnOpsY, fetchOpsY] = precompileScriptValue(optimisedY, "y");
@@ -3110,13 +3200,10 @@ extern void __mute_mask_${symbol};
     this._performValueRPN(rpn, rpnOpsY, localsLookup);
     rpn.refSet(this._localRef(actorRef, 2));
 
-    rpn.int16(toASMMoveFlags(moveType, collideWith));
-    rpn.refSet(this._localRef(actorRef, 3));
-
     rpn.stop();
     this._addComment(`-- Move Actor`);
     this.actorSetById(actorId);
-    this._actorMoveTo(actorRef);
+    this._actorMoveToOps(actorRef, attr, moveType, true, true, lockDirection);
     this._assertStackNeutral(stackPtr);
     this._addNL();
   };
@@ -3125,7 +3212,7 @@ extern void __mute_mask_${symbol};
     x = 0,
     y = 0,
     useCollisions = false,
-    moveType: ScriptBuilderMoveType,
+    moveType: ScriptBuilderMoveType = "horizontal",
     units: DistanceUnitType = "tiles",
   ) => {
     const actorRef = this._declareLocal("actor", 4);
@@ -3161,8 +3248,9 @@ extern void __mute_mask_${symbol};
     valueX: ScriptValue,
     valueY: ScriptValue,
     collideWith: boolean | Array<"walls" | "actors">,
-    moveType: ScriptBuilderMoveType,
+    moveType: ScriptBuilderMoveType = "horizontal",
     units: DistanceUnitType = "tiles",
+    lockDirection: ScriptBuilderAxis[] = [],
   ) => {
     const stackPtr = this.stackPtr;
     this._addComment("Actor Move Relative");
@@ -3176,6 +3264,8 @@ extern void __mute_mask_${symbol};
     if (!moveX && !moveY) {
       return;
     }
+
+    const attr = toASMMoveFlags(moveType, collideWith, true, units);
 
     const [rpnOpsX, fetchOpsX] = precompileScriptValue(
       optimiseScriptValue(scriptValueToSubpixels(valueX, units)),
@@ -3198,12 +3288,11 @@ extern void __mute_mask_${symbol};
     rpn.actorId(actorId); // Actor ID
     this._performValueRPN(rpn, rpnOpsX, localsLookup2); // X Value
     this._performValueRPN(rpn, rpnOpsY, localsLookup2); // Y Value
-    rpn.int16(toASMMoveFlags(moveType, collideWith, true, units)); // Move Flags
     rpn.stop();
 
     this._addComment(`-- Move Actor`);
-    this._actorMoveTo(".ARG3");
-    this._stackPop(4);
+    this._actorMoveToOps(".ARG2", attr, moveType, moveX, moveY, lockDirection);
+    this._stackPop(3);
     this._assertStackNeutral(stackPtr);
     this._addNL();
   };
@@ -5665,7 +5754,7 @@ extern void __mute_mask_${symbol};
                       value: getArg("variable", val.value),
                     };
                   }
-                } else if (val.type === "property" && val.target === "actor") {
+                } else if (val.type === "property" && val.target !== "camera") {
                   const scriptArg = getArg("actor", val.target);
                   if (scriptArg && typeof scriptArg === "string") {
                     return {
@@ -5948,11 +6037,8 @@ extern void __mute_mask_${symbol};
     }
 
     // Lookup args if in V0-9 format
-    if (variable.match(/^V[0-9]$/)) {
-      const arg = this.options.argLookup.variable.get(variable);
-      if (!arg) {
-        throw new Error("Cant find arg: " + variable);
-      }
+    const arg = this._resolveVariableRef(variable);
+    if (this._isFunctionArg(arg)) {
       return arg.symbol;
     }
 
