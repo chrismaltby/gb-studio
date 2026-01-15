@@ -1,5 +1,12 @@
-import React, { forwardRef, ReactNode } from "react";
+import React, {
+  forwardRef,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { DropdownButton } from "ui/buttons/DropdownButton";
+import { Checkbox } from "ui/form/Checkbox";
 import useResizeObserver from "ui/hooks/use-resize-observer";
 import { ArrowIcon, BreakpointIcon, CommentIcon } from "ui/icons/Icons";
 import {
@@ -49,10 +56,35 @@ interface ScriptEventHeaderProps {
   breakpointTitle?: string;
   children?: ReactNode;
   menuItems?: ReactNode;
+  menuKeyboardHandler?: (
+    e: React.KeyboardEvent<HTMLElement> | KeyboardEvent,
+  ) => boolean;
   onOpenMenu?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onToggle?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onToggleSelection?: () => void;
   onContextMenu?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
+
+const PreventDrag = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div
+      onMouseDown={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 export const ScriptEventHeader = forwardRef<
   HTMLDivElement,
@@ -72,13 +104,41 @@ export const ScriptEventHeader = forwardRef<
       isBreakpoint,
       breakpointTitle,
       menuItems,
+      menuKeyboardHandler,
       onOpenMenu,
       onToggle,
+      onToggleSelection,
       onContextMenu,
       children,
     },
     outerRef,
   ) => {
+    const isHovered = useRef(false);
+
+    const onMouseEnter = useCallback(() => {
+      isHovered.current = true;
+    }, []);
+
+    const onMouseLeave = useCallback(() => {
+      isHovered.current = false;
+    }, []);
+
+    const onKeyDown = useCallback(
+      (e: KeyboardEvent) => {
+        if (isHovered.current && menuKeyboardHandler) {
+          menuKeyboardHandler(e);
+        }
+      },
+      [isHovered, menuKeyboardHandler],
+    );
+
+    useEffect(() => {
+      window.addEventListener("keydown", onKeyDown);
+      return () => {
+        window.removeEventListener("keydown", onKeyDown);
+      };
+    }, [onKeyDown]);
+
     return (
       <StyledScriptEventHeader
         ref={outerRef}
@@ -90,37 +150,54 @@ export const ScriptEventHeader = forwardRef<
         $isMoveable={isMoveable}
         $isSelected={isSelected}
         $isExecuting={isExecuting}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       >
         <StyledScriptEventHeaderTitle
           onClick={onToggle}
           onContextMenu={onContextMenu}
         >
-          {!isComment && !isDisabled ? (
-            <StyledScriptEventHeaderCaret $isOpen={isOpen}>
-              <ArrowIcon />
-            </StyledScriptEventHeaderCaret>
-          ) : (
-            <StyledScriptEventHeaderCaret>
-              <CommentIcon />
-            </StyledScriptEventHeaderCaret>
-          )}
+          <PreventDrag>
+            {!isComment && !isDisabled ? (
+              <StyledScriptEventHeaderCaret $isOpen={isOpen}>
+                <ArrowIcon />
+              </StyledScriptEventHeaderCaret>
+            ) : (
+              <StyledScriptEventHeaderCaret>
+                <CommentIcon />
+              </StyledScriptEventHeaderCaret>
+            )}
+          </PreventDrag>
           <FixedSpacer width={5} />
           {children}
         </StyledScriptEventHeaderTitle>
+        {isMoveable && (
+          <PreventDrag>
+            <Checkbox
+              id="selectEvent"
+              name="selectEvent"
+              checked={isSelected}
+              onChange={onToggleSelection}
+            />
+          </PreventDrag>
+        )}
         {isBreakpoint && breakpointTitle && (
           <StyledScriptEventHeaderBreakpointIndicator title={breakpointTitle}>
             <BreakpointIcon />
           </StyledScriptEventHeaderBreakpointIndicator>
         )}
         {menuItems && (
-          <DropdownButton
-            size="small"
-            variant="transparent"
-            menuDirection="right"
-            onMouseDown={onOpenMenu}
-          >
-            {menuItems}
-          </DropdownButton>
+          <PreventDrag>
+            <DropdownButton
+              size="small"
+              variant="transparent"
+              menuDirection="right"
+              onMouseDown={onOpenMenu}
+              onKeyDown={menuKeyboardHandler}
+            >
+              {menuItems}
+            </DropdownButton>
+          </PreventDrag>
         )}
       </StyledScriptEventHeader>
     );

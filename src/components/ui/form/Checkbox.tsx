@@ -45,7 +45,7 @@ const StyledCheckbox = styled.div`
   }
 `;
 
-const CheckboxContainer = styled.div`
+export const CheckboxContainer = styled.div`
   position: relative;
   display: inline-block;
   top: 1px;

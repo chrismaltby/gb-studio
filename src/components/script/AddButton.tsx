@@ -20,6 +20,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import { CloneIcon, PlusIcon } from "ui/icons/Icons";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { StyledButton } from "ui/buttons/style";
+import { acceleratorForPlatform } from "ui/menu/style";
 
 interface AddButtonProps {
   parentType: ScriptEventParentType;
@@ -34,19 +35,9 @@ interface WrapperProps {
 }
 
 const Wrapper = styled.div<WrapperProps>`
+  container-type: inline-size;
   display: flex;
   padding: 10px;
-
-  ${StyledButton} {
-    width: 100%;
-    max-width: 480px;
-
-    svg {
-      width: 12px;
-      height: 12px;
-      margin-right: 5px;
-    }
-  }
 
   background: ${(props) => props.theme.colors.scripting.form.background};
   border-top: 1px solid ${(props) => props.theme.colors.sidebar.border};
@@ -64,6 +55,28 @@ const Wrapper = styled.div<WrapperProps>`
       : ""}
 `;
 
+const ButtonGroup = styled.div<WrapperProps>`
+  display: flex;
+  width: 100%;
+  max-width: 480px;
+  gap: 10px;
+  ${StyledButton} {
+    flex-grow: 1;
+    svg {
+      width: 12px;
+      height: 12px;
+      margin-right: 5px;
+    }
+  }
+  ${StyledButton}:nth-child(2) {
+    flex-grow: 0;
+    width: 35px;
+    svg {
+      margin: 0;
+    }
+  }
+`;
+
 const AddButton = ({
   parentType,
   parentId,
@@ -77,6 +90,15 @@ const AddButton = ({
   >("bottom-right");
   const [pasteMode, setPasteMode] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
+  const isHovered = useRef(false);
+
+  const clipboardFormat = useAppSelector(
+    (state) => state.clipboard.data?.format,
+  );
+
+  const onFetchClipboard = useCallback(() => {
+    dispatch(clipboardActions.fetchClipboard());
+  }, [dispatch]);
 
   const scriptEventSelectionIds = useAppSelector(
     (state) => state.editor.scriptEventSelectionIds,
@@ -143,20 +165,49 @@ const AddButton = ({
     );
   }, [dispatch, parentId, parentKey, parentType]);
 
-  const handleKeys = useCallback((e: KeyboardEvent) => {
-    if (e.altKey) {
-      setPasteMode(true);
-    }
-  }, []);
+  const handleKeys = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.altKey) {
+        setPasteMode(true);
+      }
+      if (isHovered.current) {
+        if ((e.ctrlKey || e.metaKey) && e.code === "KeyV") {
+          e.stopPropagation();
+          e.preventDefault();
+          dispatch(
+            clipboardActions.pasteScriptEvents({
+              entityId: parentId,
+              type: parentType,
+              key: parentKey,
+            }),
+          );
+          return true;
+        }
+      }
+    },
+    [dispatch, parentId, parentKey, parentType],
+  );
 
-  const handleKeysUp = useCallback((e: KeyboardEvent) => {
-    if (!e.altKey) {
-      setPasteMode(false);
-    }
-  }, []);
+  const handleKeysUp = useCallback(
+    (e: KeyboardEvent) => {
+      if (!e.altKey) {
+        setPasteMode(false);
+      }
+    },
+    [setPasteMode],
+  );
 
   const handleBlur = useCallback(() => {
     setPasteMode(false);
+  }, [setPasteMode]);
+
+  const onMouseEnter = useCallback(() => {
+    isHovered.current = true;
+    onFetchClipboard();
+  }, [onFetchClipboard]);
+
+  const onMouseLeave = useCallback(() => {
+    isHovered.current = false;
   }, []);
 
   useEffect(() => {
@@ -169,7 +220,7 @@ const AddButton = ({
       window.removeEventListener("keyup", handleKeysUp);
       window.removeEventListener("blur", handleBlur);
     };
-  });
+  }, [handleKeys, handleKeysUp, handleBlur]);
 
   drop(dropRef);
 
@@ -196,11 +247,39 @@ const AddButton = ({
           </RelativePortal>
         </>
       )}
-      <Wrapper $conditional={conditional ?? false}>
-        <Button onClick={pasteMode ? onPaste : onOpen}>
-          {pasteMode ? <CloneIcon /> : <PlusIcon />}
-          {pasteMode ? l10n("MENU_PASTE_EVENT") : l10n("SIDEBAR_ADD_EVENT")}
-        </Button>
+      <Wrapper
+        $conditional={conditional ?? false}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
+        <ButtonGroup>
+          {pasteMode ? (
+            <Button
+              onClick={onPaste}
+              title={`${l10n("MENU_PASTE_EVENT")} (${acceleratorForPlatform("CommandOrControl+V")})`}
+            >
+              <CloneIcon />
+              {l10n("MENU_PASTE_EVENT")}
+            </Button>
+          ) : (
+            <>
+              <Button onClick={onOpen}>
+                <PlusIcon />
+                {l10n("SIDEBAR_ADD_EVENT")}
+              </Button>
+              {clipboardFormat === "gbstudio.scriptevents" && (
+                <>
+                  <Button
+                    onClick={onPaste}
+                    title={`${l10n("MENU_PASTE_EVENT")} (${acceleratorForPlatform("CommandOrControl+V")})`}
+                  >
+                    <CloneIcon />
+                  </Button>
+                </>
+              )}
+            </>
+          )}
+        </ButtonGroup>
       </Wrapper>
     </ScriptEventWrapper>
   );

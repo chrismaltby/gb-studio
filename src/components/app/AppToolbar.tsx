@@ -39,6 +39,7 @@ import useWindowFocus from "ui/hooks/use-window-focus";
 import useWindowSize from "ui/hooks/use-window-size";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import API from "renderer/lib/api";
+import clipboardActions from "store/features/clipboard/clipboardActions";
 
 const sectionAccelerators = {
   world: "CommandOrControl+1",
@@ -94,6 +95,10 @@ const AppToolbar: FC = () => {
     }),
     [],
   );
+
+  useEffect(() => {
+    dispatch(clipboardActions.fetchClipboard());
+  }, [dispatch]);
 
   const onRun = useCallback(() => {
     dispatch(buildGameActions.buildGame({ buildType: "web" }));
