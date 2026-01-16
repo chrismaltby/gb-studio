@@ -70,8 +70,8 @@
     "group": "gold"
   },
   {
-    "login": "Italo-Soares-Tradutor",
-    "html_url": "https://github.com/Italo-Soares-Tradutor",
+    "login": "crutchcorn",
+    "html_url": "https://github.com/crutchcorn",
     "group": "gold"
   },
   {
@@ -80,8 +80,8 @@
     "group": "gold"
   },
   {
-    "login": "crutchcorn",
-    "html_url": "https://github.com/crutchcorn",
+    "login": "Italo-Soares-Tradutor",
+    "html_url": "https://github.com/Italo-Soares-Tradutor",
     "group": "gold"
   },
   {
@@ -262,6 +262,11 @@
   {
     "login": "RYU-N2001",
     "html_url": "https://github.com/RYU-N2001",
+    "group": "silver"
+  },
+  {
+    "login": "Phidias618",
+    "html_url": "https://github.com/Phidias618",
     "group": "silver"
   },
   {
