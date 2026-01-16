@@ -15,7 +15,14 @@ import React, {
 } from "react";
 import { PinDirection, RelativePortal } from "ui/layout/RelativePortal";
 import { CaretDownIcon } from "ui/icons/Icons";
-import { Menu, MenuItem, MenuItemProps } from "ui/menu/Menu";
+import {
+  extractMenuAccelerator,
+  Menu,
+  MenuItem,
+  MenuItemProps,
+  normalizeMenuAccelerator,
+  normalizeMenuEvent,
+} from "ui/menu/Menu";
 import { ButtonProps } from "./Button";
 import {
   StyledButton,
@@ -213,6 +220,20 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       (e: React.KeyboardEvent<HTMLElement>) => {
         const { key } = e;
 
+        // Check for accelerator match first
+        const accel = normalizeMenuEvent(e);
+        const el = menuRef.current?.querySelector(
+          `[data-accelerator="${accel}"]`,
+        ) as HTMLDivElement | null;
+        if (el) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          el.click();
+          closeMenu();
+          return;
+        }
+
         if (onKeyDown?.(e)) {
           closeMenu();
           return;
@@ -332,6 +353,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
     // Inject menu props into menu components
     const childrenWithProps = useMemo(
       () =>
+        isOpen &&
         childArray.map((child) => {
           if (
             !isValidElement<
@@ -342,8 +364,14 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
             return child;
           }
           const itemIndex = menuItemChildren.indexOf(child);
+
+          const accelerator = extractMenuAccelerator(child.props.children);
+
           return cloneElement(child, {
             "data-index": itemIndex,
+            "data-accelerator": accelerator
+              ? normalizeMenuAccelerator(accelerator)
+              : undefined,
             tabIndex: -1,
             role: "menuitem",
             onKeyDown: onMenuKeyDown,
@@ -385,6 +413,7 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       [
         childArray,
         closeMenu,
+        isOpen,
         menuDirection,
         menuItemChildren,
         menuWidth,

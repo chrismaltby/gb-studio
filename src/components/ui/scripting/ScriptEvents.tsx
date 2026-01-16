@@ -51,9 +51,6 @@ interface ScriptEventHeaderProps {
   breakpointTitle?: string;
   children?: ReactNode;
   menuItems?: ReactNode;
-  menuKeyboardHandler?: (
-    e: React.KeyboardEvent<HTMLElement> | KeyboardEvent,
-  ) => boolean;
   onOpenMenu?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onToggle?: (event: React.MouseEvent<HTMLDivElement>) => void;
   onToggleSelection?: () => void;
@@ -110,7 +107,6 @@ export const ScriptEventHeader = forwardRef<
       isBreakpoint,
       breakpointTitle,
       menuItems,
-      menuKeyboardHandler,
       onOpenMenu,
       onToggle,
       onToggleSelection,
@@ -174,7 +170,6 @@ export const ScriptEventHeader = forwardRef<
               variant="transparent"
               menuDirection="right"
               onMouseDown={onOpenMenu}
-              onKeyDown={menuKeyboardHandler}
             >
               {menuItems}
             </DropdownButton>

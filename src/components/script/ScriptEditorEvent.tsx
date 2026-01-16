@@ -348,62 +348,6 @@ const ScriptEditorEvent = React.memo(
       }
     }, [context.entityType, context.instanceId, dispatch, id]);
 
-    const contextMenuKeyboardHandler = useCallback(
-      (e: React.KeyboardEvent<Element> | KeyboardEvent) => {
-        if ((e.ctrlKey || e.metaKey) && e.code === "KeyG") {
-          e.stopPropagation();
-          e.preventDefault();
-          dispatch(
-            entitiesActions.groupScriptEvents({
-              scriptEventIds: scriptEventSelectionIds,
-              parentId,
-              parentKey,
-              parentType,
-            }),
-          );
-          return true;
-        } else if ((e.ctrlKey || e.metaKey) && e.code === "KeyC") {
-          e.stopPropagation();
-          e.preventDefault();
-          dispatch(
-            clipboardActions.copyScriptEvents({
-              scriptEventIds:
-                scriptEventSelectionIds.length > 0
-                  ? scriptEventSelectionIds
-                  : [id],
-            }),
-          );
-          return true;
-        } else if ((e.ctrlKey || e.metaKey) && e.code === "KeyV") {
-          e.stopPropagation();
-          e.preventDefault();
-          dispatch(
-            clipboardActions.pasteScriptEvents({
-              entityId: parentId,
-              type: parentType,
-              key: parentKey,
-              insertId: id,
-              before: e.shiftKey,
-            }),
-          );
-          return true;
-        } else if ((e.ctrlKey || e.metaKey) && e.code === "Slash") {
-          e.stopPropagation();
-          e.preventDefault();
-          dispatch(
-            entitiesActions.toggleScriptEventComment({
-              scriptEventId: id,
-              additionalScriptEventIds: scriptEventSelectionIds,
-            }),
-          );
-          return true;
-        }
-
-        return false;
-      },
-      [dispatch, id, parentId, parentKey, parentType, scriptEventSelectionIds],
-    );
-
     const contextMenuItems = useMemo(
       () =>
         scriptEvent
@@ -564,7 +508,6 @@ const ScriptEditorEvent = React.memo(
               isBreakpoint={breakpointEnabled}
               breakpointTitle={l10n("FIELD_BREAKPOINT")}
               menuItems={contextMenuItems}
-              menuKeyboardHandler={contextMenuKeyboardHandler}
               onOpenMenu={onFetchClipboard}
               onContextMenu={onContextMenu}
               onToggle={!rename ? toggleOpen : undefined}
@@ -627,7 +570,6 @@ const ScriptEditorEvent = React.memo(
             x={contextMenu.x}
             y={contextMenu.y}
             onClose={onContextMenuClose}
-            onKeyDown={contextMenuKeyboardHandler}
           >
             {contextMenu.menu}
           </ContextMenu>
