@@ -349,7 +349,7 @@ const ScriptEditorEvent = React.memo(
     }, [context.entityType, context.instanceId, dispatch, id]);
 
     const contextMenuKeyboardHandler = useCallback(
-      (e: React.KeyboardEvent<HTMLElement> | KeyboardEvent) => {
+      (e: React.KeyboardEvent<Element> | KeyboardEvent) => {
         if ((e.ctrlKey || e.metaKey) && e.code === "KeyG") {
           e.stopPropagation();
           e.preventDefault();
@@ -492,11 +492,18 @@ const ScriptEditorEvent = React.memo(
     );
 
     const onMouseEnter = useCallback(() => {
-      dispatch(editorActions.selectScriptEvent({ eventId: id }));
-    }, [dispatch, id]);
+      dispatch(
+        editorActions.selectScriptEvent({
+          eventId: id,
+          parentId,
+          parentKey,
+          parentType,
+        }),
+      );
+    }, [dispatch, id, parentId, parentKey, parentType]);
 
     const onMouseLeave = useCallback(() => {
-      dispatch(editorActions.selectScriptEvent({ eventId: "" }));
+      dispatch(editorActions.clearScriptEvent());
     }, [dispatch]);
 
     const isExecuting = scriptEvent?.id === context.executingId;
@@ -506,24 +513,6 @@ const ScriptEditorEvent = React.memo(
         headerRef.current.scrollIntoView();
       }
     }, [isExecuting]);
-
-    const onKeyDown = useCallback(
-      (e: KeyboardEvent) => {
-        if (contextMenu) {
-          if (contextMenuKeyboardHandler(e)) {
-            onContextMenuClose();
-          }
-        }
-      },
-      [contextMenu, contextMenuKeyboardHandler, onContextMenuClose],
-    );
-
-    useEffect(() => {
-      window.addEventListener("keydown", onKeyDown);
-      return () => {
-        window.removeEventListener("keydown", onKeyDown);
-      };
-    }, [onKeyDown]);
 
     if (!scriptEvent) {
       return null;
@@ -563,6 +552,7 @@ const ScriptEditorEvent = React.memo(
           <div ref={dragRef} title={description}>
             <ScriptEventHeader
               ref={headerRef}
+              scriptEventId={scriptEvent.id}
               isConditional={isConditional}
               isComment={Boolean(isComment)}
               isDisabled={Boolean(isDisabled)}
@@ -579,6 +569,7 @@ const ScriptEditorEvent = React.memo(
               onContextMenu={onContextMenu}
               onToggle={!rename ? toggleOpen : undefined}
               onToggleSelection={onToggleSelection}
+              onMouseEnter={onMouseEnter}
             >
               {isVisible && (
                 <>
@@ -636,6 +627,7 @@ const ScriptEditorEvent = React.memo(
             x={contextMenu.x}
             y={contextMenu.y}
             onClose={onContextMenuClose}
+            onKeyDown={contextMenuKeyboardHandler}
           >
             {contextMenu.menu}
           </ContextMenu>

@@ -518,6 +518,19 @@ export const DropdownButton: FC<DropdownButtonProps & ButtonProps> = React.memo(
       offsetY,
     ]);
 
+    const onHotkeyHandled = useCallback(() => {
+      closeMenu();
+    }, [closeMenu]);
+
+    useEffect(() => {
+      if (menu) {
+        document.addEventListener("gbs::hotkey", onHotkeyHandled);
+      }
+      return () => {
+        document.removeEventListener("gbs::hotkey", onHotkeyHandled);
+      };
+    }, [menu, onHotkeyHandled]);
+
     return (
       <StyledDropdownButton>
         {openUpwards && menu}

@@ -169,7 +169,12 @@ test("Should be able to select script event", () => {
     ...initialState,
     eventId: "",
   };
-  const action = actions.selectScriptEvent({ eventId: "event1" });
+  const action = actions.selectScriptEvent({
+    eventId: "event1",
+    parentType: "scene",
+    parentId: "",
+    parentKey: "",
+  });
   const newState = reducer(state, action);
   expect(newState.eventId).toBe("event1");
 });
@@ -753,7 +758,12 @@ describe("editor reducer", () => {
 
   describe("selectScriptEvent", () => {
     test("should set eventId", () => {
-      const action = actions.selectScriptEvent({ eventId: "event_1" });
+      const action = actions.selectScriptEvent({
+        eventId: "event_1",
+        parentType: "scene",
+        parentId: "scene_1",
+        parentKey: "script",
+      });
       const newState = reducer(state, action);
       expect(newState.eventId).toBe("event_1");
     });

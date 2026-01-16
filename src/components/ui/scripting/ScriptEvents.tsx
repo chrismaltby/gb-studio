@@ -1,10 +1,4 @@
-import React, {
-  forwardRef,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-} from "react";
+import React, { forwardRef, ReactNode } from "react";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { Checkbox } from "ui/form/Checkbox";
 import useResizeObserver from "ui/hooks/use-resize-observer";
@@ -43,6 +37,7 @@ export const ScriptEventRenameInputCompleteButton = (
 ) => <StyledScriptEventRenameInputCompleteButton {...props} />;
 
 interface ScriptEventHeaderProps {
+  scriptEventId: string;
   nestLevel: number;
   isConditional?: boolean;
   isComment?: boolean;
@@ -63,6 +58,7 @@ interface ScriptEventHeaderProps {
   onToggle?: (event: React.MouseEvent<HTMLDivElement>) => void;
   onToggleSelection?: () => void;
   onContextMenu?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
 const PreventDrag = ({ children }: { children: React.ReactNode }) => {
@@ -71,14 +67,23 @@ const PreventDrag = ({ children }: { children: React.ReactNode }) => {
       onMouseDown={(e) => {
         e.stopPropagation();
         e.preventDefault();
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
       }}
       onPointerDown={(e) => {
         e.stopPropagation();
         e.preventDefault();
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
       }}
       onTouchStart={(e) => {
         e.stopPropagation();
         e.preventDefault();
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
       }}
     >
       {children}
@@ -92,6 +97,7 @@ export const ScriptEventHeader = forwardRef<
 >(
   (
     {
+      scriptEventId,
       isConditional,
       nestLevel,
       isComment,
@@ -109,39 +115,15 @@ export const ScriptEventHeader = forwardRef<
       onToggle,
       onToggleSelection,
       onContextMenu,
+      onMouseEnter,
       children,
     },
     outerRef,
   ) => {
-    const isHovered = useRef(false);
-
-    const onMouseEnter = useCallback(() => {
-      isHovered.current = true;
-    }, []);
-
-    const onMouseLeave = useCallback(() => {
-      isHovered.current = false;
-    }, []);
-
-    const onKeyDown = useCallback(
-      (e: KeyboardEvent) => {
-        if (isHovered.current && menuKeyboardHandler) {
-          menuKeyboardHandler(e);
-        }
-      },
-      [isHovered, menuKeyboardHandler],
-    );
-
-    useEffect(() => {
-      window.addEventListener("keydown", onKeyDown);
-      return () => {
-        window.removeEventListener("keydown", onKeyDown);
-      };
-    }, [onKeyDown]);
-
     return (
       <StyledScriptEventHeader
         ref={outerRef}
+        id={`script-event-header-${scriptEventId}`}
         $nestLevel={nestLevel}
         $isConditional={isConditional}
         $isComment={isComment}
@@ -151,7 +133,6 @@ export const ScriptEventHeader = forwardRef<
         $isSelected={isSelected}
         $isExecuting={isExecuting}
         onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
       >
         <StyledScriptEventHeaderTitle
           onClick={onToggle}

@@ -85,6 +85,7 @@ export const ScriptEventAutoFade = () => {
     <ScriptEventWrapper>
       <ScriptEventHeader
         ref={headerRef}
+        scriptEventId=""
         nestLevel={0}
         altBg={false}
         isOpen={isOpen}

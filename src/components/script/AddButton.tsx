@@ -21,6 +21,7 @@ import { CloneIcon, PlusIcon } from "ui/icons/Icons";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { StyledButton } from "ui/buttons/style";
 import { acceleratorForPlatform } from "ui/menu/style";
+import editorActions from "store/features/editor/editorActions";
 
 interface AddButtonProps {
   parentType: ScriptEventParentType;
@@ -90,7 +91,6 @@ const AddButton = ({
   >("bottom-right");
   const [pasteMode, setPasteMode] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
-  const isHovered = useRef(false);
 
   const clipboardFormat = useAppSelector(
     (state) => state.clipboard.data?.format,
@@ -170,22 +170,8 @@ const AddButton = ({
       if (e.altKey) {
         setPasteMode(true);
       }
-      if (isHovered.current) {
-        if ((e.ctrlKey || e.metaKey) && e.code === "KeyV") {
-          e.stopPropagation();
-          e.preventDefault();
-          dispatch(
-            clipboardActions.pasteScriptEvents({
-              entityId: parentId,
-              type: parentType,
-              key: parentKey,
-            }),
-          );
-          return true;
-        }
-      }
     },
-    [dispatch, parentId, parentKey, parentType],
+    [setPasteMode],
   );
 
   const handleKeysUp = useCallback(
@@ -202,13 +188,19 @@ const AddButton = ({
   }, [setPasteMode]);
 
   const onMouseEnter = useCallback(() => {
-    isHovered.current = true;
     onFetchClipboard();
-  }, [onFetchClipboard]);
+    dispatch(
+      editorActions.selectScriptEventParent({
+        parentType,
+        parentId,
+        parentKey,
+      }),
+    );
+  }, [dispatch, onFetchClipboard, parentId, parentKey, parentType]);
 
   const onMouseLeave = useCallback(() => {
-    isHovered.current = false;
-  }, []);
+    dispatch(editorActions.clearScriptEvent());
+  }, [dispatch]);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeys);
