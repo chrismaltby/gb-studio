@@ -180,7 +180,7 @@ const AppToolbar: FC = () => {
     if (e.target && (e.target as Node).nodeName !== "BODY") {
       return;
     }
-    if (e.key === "/" && searchInputRef.current) {
+    if (!e.metaKey && !e.ctrlKey && e.key === "/" && searchInputRef.current) {
       searchInputRef.current.focus();
       e.preventDefault();
     }
