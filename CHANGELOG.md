@@ -122,6 +122,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pasting a sprite frame into a selected empty frame now reuses the empty frame instead of creating a new one after it
 - Add ability to lock player direction in Adventure scenes to only face horizontal directions [@Mico27](https://github.com/Mico27)
 - "Add Event" button now includes a Paste button when script events can be pasted
+- Sprite Animation State select dropdowns now group states that are only used by a single sprite. States shared by multiple sprites appear ungrouped, and you can hover over them to see which sprites use them
 
 ### Fixed
 
