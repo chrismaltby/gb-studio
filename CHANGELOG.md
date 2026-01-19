@@ -185,6 +185,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where variables passed by reference in expressions within custom scripts would use incorrect values
 - Fix issue where using actor properties in custom scripts would always return player properties
 - Fix issue preventing storing presets for "Launch Projectile in Slot" events
+- Fix issue where clicking on effect row in music editor in some cases could cause application to crash 
 
 ## [4.1.3] - 2024-09-16
 
