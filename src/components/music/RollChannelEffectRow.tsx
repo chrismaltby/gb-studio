@@ -91,8 +91,10 @@ const RollChannelEffectRowFwd = ({
     (e: MouseEvent) => {
       if (!renderPattern) return;
       const col = Math.floor(e.offsetX / cellSize);
-      const cell = renderPattern[col][channelId];
-      const lastCell = renderPattern[selectedEffectCell || 0][channelId];
+      const cell = renderPattern[col]?.[channelId] as PatternCell | undefined;
+      const lastCell = renderPattern[selectedEffectCell || 0]?.[channelId] as
+        | PatternCell
+        | undefined;
 
       if (e.button === 0 && tool !== "eraser") {
         // If there's a note in position
@@ -101,11 +103,11 @@ const RollChannelEffectRowFwd = ({
             effectcode:
               cell.effectcode !== null
                 ? cell.effectcode
-                : lastCell.effectcode || 0,
+                : lastCell?.effectcode || 0,
             effectparam:
               cell.effectparam !== null
                 ? cell.effectparam
-                : lastCell.effectparam || 0,
+                : lastCell?.effectparam || 0,
           };
           dispatch(
             trackerDocumentActions.editPatternCell({
