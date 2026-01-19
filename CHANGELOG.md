@@ -76,8 +76,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add _stackPushScriptValue helper for use in plugins [@Phidias618](https://github.com/Phidias618)
 - Add ability to lock actor direction when using "Actor Move To/Relative" events so the actor does not change direction during movement
 - Add copy (Ctrl/Cmd+C), paste (Ctrl/Cmd+V), paste before (Ctrl/Cmd+Shift+V), comment (Ctrl/Cmd+/) keyboard shortcuts to script event editor can be used when hovering mouse cursor over script event's title or when hoverring the "Add Event" button
-- Add ability to select multiple script events in editor using checkbox at right hand side of the event's title, previously this was only available by shift + clicking on script event title. When multiple events are selected copy/paste/comment/group keyboard shortcuts apply to all selected events
-- Add keyboard shortcuts to the script event editor: copy (Ctrl/Cmd+C), paste (Ctrl/Cmd+V), paste before (Ctrl/Cmd+Shift+V), group (Ctrl/Cmd+G) and comment (Ctrl/Cmd+/). Shortcuts can be used while hovering over a script event title or the "Add Event' button.
 - Add ability to select multiple script events using a checkbox on the right-hand side of each event title. Previously this was only possible using Shift+Click. When multiple events are selected, copy, paste, comment, and group commands apply to all selected events.
 
 ### Changed
