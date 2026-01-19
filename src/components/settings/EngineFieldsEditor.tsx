@@ -316,6 +316,7 @@ const EngineFieldInput: FC<EngineFieldInputProps> = ({
         value={String(value || "")}
         onChange={onChange}
         allowDefault
+        groupBySprites
       />
     );
   }

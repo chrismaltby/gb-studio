@@ -549,6 +549,7 @@ const ScriptEventFormInput = ({
           value={String(value || "")}
           onChange={onChangeField}
           allowDefault
+          groupBySprites
         />
       </OffscreenSkeletonInput>
     );

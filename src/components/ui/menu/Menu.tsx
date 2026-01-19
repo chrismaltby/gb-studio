@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactNode } from "react";
+import React, { Children, forwardRef, isValidElement, ReactNode } from "react";
 import styled from "styled-components";
 import { CaretRightIcon } from "ui/icons/Icons";
 import {
@@ -11,6 +11,41 @@ import {
   StyledMenuItemIcon,
 } from "ui/menu/style";
 
+export const extractMenuAccelerator = (children: ReactNode): string | null => {
+  let accelerator: string | null = null;
+
+  Children.forEach(children, (child) => {
+    if (
+      isValidElement(child) &&
+      child.type === MenuAccelerator &&
+      typeof child.props.accelerator === "string"
+    ) {
+      accelerator = child.props.accelerator;
+    }
+  });
+
+  return accelerator;
+};
+
+export const normalizeMenuAccelerator = (accelerator: string) =>
+  accelerator
+    .replace("CommandOrControl", "ctrl")
+    .split("+")
+    .map((p) => p.toLowerCase())
+    .sort()
+    .join("+");
+
+export const normalizeMenuEvent = (e: KeyboardEvent | React.KeyboardEvent) => {
+  const parts: string[] = [];
+  if (e.ctrlKey || e.metaKey) {
+    parts.push("ctrl");
+  }
+  if (e.shiftKey) parts.push("shift");
+  if (e.altKey) parts.push("alt");
+  parts.push(e.key.toLowerCase());
+  return parts.sort().join("+");
+};
+
 export const Menu = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -18,6 +53,7 @@ export const Menu = forwardRef<
 
 export interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
   readonly "data-index"?: number;
+  readonly "data-accelerator"?: string;
   readonly selected?: boolean;
   readonly onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   readonly onMouseEnter?: (

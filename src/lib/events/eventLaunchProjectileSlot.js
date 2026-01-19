@@ -206,7 +206,6 @@ const userPresetsGroups = [
       "angle",
       "angleVariable",
       "targetActorId",
-      "initialOffset",
     ],
     selected: true,
   },

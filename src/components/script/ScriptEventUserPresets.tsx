@@ -47,7 +47,7 @@ const argsToStore = (
 
   return keysToStore.reduce(
     (memo, key) => {
-      memo[key] = args[key] ?? scriptEventDef.fieldsLookup[key].defaultValue;
+      memo[key] = args[key] ?? scriptEventDef.fieldsLookup[key]?.defaultValue;
       return memo;
     },
     {} as Record<string, unknown>,

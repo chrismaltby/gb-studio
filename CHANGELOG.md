@@ -73,6 +73,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add "Automatic Tile Flip" setting to optimize tilesets by reusing horizontally and vertically flipped tiles where possible. Only supported in "Color Only" scenes [@Mico27](https://github.com/Mico27)
 - Add support for setting global and per scene monochrome palettes for BGP (background & overlays), OBP0 and OBP1 (sprites) [Q-Bert-Reynolds](https://github.com/Q-Bert-Reynolds)
 - Add font indexes to `game_globals.h` and `game_globals.i` for use in custom gbvm scripts and plugins
+- Add _stackPushScriptValue helper for use in plugins [@Phidias618](https://github.com/Phidias618)
+- Add ability to lock actor direction when using "Actor Move To/Relative" events so the actor does not change direction during movement
+- Add copy (Ctrl/Cmd+C), paste (Ctrl/Cmd+V), paste before (Ctrl/Cmd+Shift+V), comment (Ctrl/Cmd+/) keyboard shortcuts to script event editor can be used when hovering mouse cursor over script event's title or when hoverring the "Add Event" button
+- Add ability to select multiple script events in editor using checkbox at right hand side of the event's title, previously this was only available by shift + clicking on script event title. When multiple events are selected copy/paste/comment/group keyboard shortcuts apply to all selected events
+- Add keyboard shortcuts to the script event editor: copy (Ctrl/Cmd+C), paste (Ctrl/Cmd+V), paste before (Ctrl/Cmd+Shift+V), group (Ctrl/Cmd+G) and comment (Ctrl/Cmd+/). Shortcuts can be used while hovering over a script event title or the "Add Event' button.
+- Add ability to select multiple script events using a checkbox on the right-hand side of each event title. Previously this was only possible using Shift+Click. When multiple events are selected, copy, paste, comment, and group commands apply to all selected events.
 
 ### Changed
 
@@ -114,6 +120,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated "Store Actor Direction In Variable" event description to document how its values are encoded [@mxashlynn](https://github.com/mxashlynn)
 - Hovering over an event's title in the script editor now shows its documentation in a tooltip (also visible when hovering in the Add Event menu)
 - Pasting a sprite frame into a selected empty frame now reuses the empty frame instead of creating a new one after it
+- Add ability to lock player direction in Adventure scenes to only face horizontal directions [@Mico27](https://github.com/Mico27)
+- "Add Event" button now includes a Paste button when script events can be pasted
+- Sprite Animation State select dropdowns now group states that are only used by a single sprite. States shared by multiple sprites appear ungrouped, and you can hover over them to see which sprites use them
 
 ### Fixed
 
@@ -175,6 +184,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix broken values in EVENT_ENGINE_FIELD_SET carried over from 2.0.0 projects
 - Fix issue where variables passed by reference in expressions within custom scripts would use incorrect values
 - Fix issue where using actor properties in custom scripts would always return player properties
+- Fix issue preventing storing presets for "Launch Projectile in Slot" events
 
 ## [4.1.3] - 2024-09-16
 

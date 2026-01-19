@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
-import { spriteStateSelectors } from "store/features/entities/entitiesState";
 import {
-  Option,
+  spriteSheetSelectors,
+  spriteStateSelectors,
+} from "store/features/entities/entitiesState";
+import {
+  Option as DefaultOption,
   CreatableSelect,
   Select as DefaultSelect,
   SelectCommonProps,
+  OptGroup,
 } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
@@ -14,11 +18,16 @@ import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import { IMEInput } from "ui/form/IMEInput";
 import { SingleValue } from "react-select";
 
+type Option = DefaultOption & {
+  title?: string;
+};
+
 interface AnimationStateSelectProps extends SelectCommonProps {
   name: string;
   value?: string;
   canRename?: boolean;
   allowDefault?: boolean;
+  groupBySprites?: boolean;
   onChange?: (newId: string) => void;
 }
 
@@ -116,6 +125,7 @@ const AnimationStateSelect = ({
   value,
   canRename,
   allowDefault,
+  groupBySprites,
   onChange,
 }: AnimationStateSelectProps) => {
   const [renameVisible, setRenameVisible] = useState(false);
@@ -123,9 +133,16 @@ const AnimationStateSelect = ({
   const [renameId, setRenameId] = useState("");
   const [currentValue, setCurrentValue] = useState<Option>();
 
-  const [options, setOptions] = useState<Option[]>([]);
+  const [options, setOptions] = useState<(Option | OptGroup)[]>([]);
   const spriteStates = useAppSelector((state) =>
     spriteStateSelectors.selectAll(state),
+  );
+  const spriteStatesLookup = useAppSelector((state) =>
+    spriteStateSelectors.selectEntities(state),
+  );
+
+  const sprites = useAppSelector((state) =>
+    spriteSheetSelectors.selectAll(state),
   );
 
   const onRenameStart = () => {
@@ -160,26 +177,96 @@ const AnimationStateSelect = ({
   };
 
   useEffect(() => {
-    const options = ([] as Option[]).concat(
-      allowDefault
-        ? {
-            value: "",
-            label: l10n("FIELD_DEFAULT"),
+    if (!groupBySprites) {
+      // Flat list of sprite animation states
+      setOptions(
+        ([] as (Option | OptGroup)[]).concat(
+          allowDefault
+            ? {
+                value: "",
+                label: l10n("FIELD_DEFAULT"),
+              }
+            : [],
+          uniq(
+            spriteStates
+              .map((s) => s.name)
+              .filter((name): name is string => Boolean(name)),
+          )
+            .sort(collator.compare)
+            .map((stateName) => ({
+              value: stateName,
+              label: stateName,
+            })),
+        ),
+      );
+      return;
+    }
+
+    // Group sprite animation states by the sprites that use them
+    // If multiple sprites use the same state, it appears at the top of the list
+
+    const stateSpritesLookup = sprites.reduce(
+      (memo, sprite) => {
+        for (const spriteStateId of sprite.states) {
+          const spriteState = spriteStatesLookup[spriteStateId];
+          if (spriteState && spriteState.name) {
+            (memo[spriteState.name] ??= []).push(sprite.name);
           }
-        : [],
-      uniq(
-        spriteStates
-          .map((state) => state.name)
-          .filter((i) => i)
-          .sort(collator.compare),
-      ).map((state) => ({
-        value: state,
-        label: state,
-      })),
+        }
+        return memo;
+      },
+      {} as Record<string, string[]>,
     );
 
-    setOptions(options);
-  }, [allowDefault, spriteStates]);
+    const entries = Object.entries(stateSpritesLookup);
+
+    const ungroupedOptions: Option[] = entries
+      .filter(([, spriteNames]) => uniq(spriteNames).length > 1)
+      .map(([stateName, spriteNames]) => {
+        const uniqueSprites = uniq(spriteNames);
+        return {
+          value: stateName,
+          label: stateName,
+          title: uniqueSprites.join(", "),
+        };
+      })
+      .sort((a, b) => collator.compare(a.label, b.label));
+
+    const groupedOptions: OptGroup[] = Object.entries(
+      entries
+        .filter(([, spriteNames]) => uniq(spriteNames).length === 1)
+        .reduce<Record<string, Option[]>>(
+          (groups, [stateName, spriteNames]) => {
+            const spriteName = spriteNames[0];
+            (groups[spriteName] ??= []).push({
+              value: stateName,
+              label: stateName,
+              title: spriteName,
+            });
+            return groups;
+          },
+          {},
+        ),
+    )
+      .map(([label, options]) => ({
+        label,
+        options: options.sort((a, b) => collator.compare(a.label, b.label)),
+      }))
+      .sort((a, b) => collator.compare(a.label, b.label));
+
+    setOptions(
+      ([] as (Option | OptGroup)[]).concat(
+        allowDefault
+          ? {
+              value: "",
+              label: l10n("FIELD_DEFAULT"),
+            }
+          : [],
+        ungroupedOptions,
+        groupedOptions,
+      ),
+    );
+  }, [allowDefault, groupBySprites, spriteStates, spriteStatesLookup, sprites]);
 
   useEffect(() => {
     setCurrentValue({
@@ -221,6 +308,9 @@ const AnimationStateSelect = ({
             }
           }}
           options={options}
+          formatOptionLabel={(option: Option) => {
+            return <div title={option.title}>{option.label}</div>;
+          }}
         />
       )}
       {canRename &&

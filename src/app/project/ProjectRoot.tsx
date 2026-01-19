@@ -9,12 +9,15 @@ import GlobalStyle from "ui/globalStyle";
 import { initTheme } from "renderer/lib/theme";
 import { initFullScreenDetector } from "renderer/lib/handleFullScreen";
 import initRendererL10N from "renderer/lib/lang/initRendererL10N";
+import { initMouseTracking } from "renderer/lib/helpers/mouse";
 import "./initProject";
+import "./appHotkeys";
 
 (async () => {
   await initRendererL10N();
   await initTheme();
   await initFullScreenDetector();
+  initMouseTracking();
 
   const root = createRoot(document.getElementById("App") as HTMLElement);
   root.render(

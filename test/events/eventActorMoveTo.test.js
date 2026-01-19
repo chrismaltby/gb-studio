@@ -18,6 +18,7 @@ test("Should set move player to position", () => {
       moveType: "horizontal",
       collideWith: ["walls", "actors"],
       units: "tiles",
+      lockDirection: ["x"],
     },
     {
       scene: { actors: [] },
@@ -33,5 +34,6 @@ test("Should set move player to position", () => {
     ["walls", "actors"],
     "horizontal",
     "tiles",
+    ["x"],
   );
 });

@@ -1,5 +1,6 @@
 import styled, { css } from "styled-components";
 import { StyledButton } from "ui/buttons/style";
+import { CheckboxContainer } from "ui/form/Checkbox";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { Label } from "ui/form/Label";
 import { StyledFormField, StyledFormFieldInput } from "ui/form/layout/style";
@@ -183,6 +184,22 @@ export const StyledScriptEventHeader = styled.div<StyledScriptEventHeaderProps>`
         `
       : ""}      
 
+  ${CheckboxContainer} {
+    top: 0px;
+    margin-right: 3px;
+    div {
+      display: block;
+      svg {
+        fill: none;
+      }
+    }
+    visibility: hidden;
+  }
+
+  &:hover ${CheckboxContainer} {
+    visibility: visible;
+  }
+
   ${(props) =>
     props.$isSelected
       ? css`
@@ -192,6 +209,15 @@ export const StyledScriptEventHeader = styled.div<StyledScriptEventHeaderProps>`
 
             svg {
               fill: ${(props) => props.theme.colors.highlightText};
+            }
+
+            ${CheckboxContainer} {
+              div {
+                svg {
+                  fill: none;
+                }
+              }
+              visibility: visible;
             }
           }
         `

@@ -95,6 +95,9 @@ export interface EditorState {
   scene: string;
   entityId: string;
   eventId: string;
+  eventParentType: ScriptEventParentType;
+  eventParentId: string;
+  eventParentKey: string;
   sceneSelectionIds: string[];
   scriptEventSelectionIds: string[];
   scriptEventSelectionParentId: string;
@@ -167,6 +170,9 @@ export const initialState: EditorState = {
   scene: "",
   entityId: "",
   eventId: "",
+  eventParentType: "scene",
+  eventParentId: "",
+  eventParentKey: "",
   sceneSelectionIds: [],
   scriptEventSelectionIds: [],
   scriptEventSelectionParentId: "",
@@ -379,8 +385,40 @@ const editorSlice = createSlice({
       state.eventId = state.dragging === "" ? "" : state.eventId;
     },
 
-    selectScriptEvent: (state, action: PayloadAction<{ eventId: string }>) => {
+    selectScriptEvent: (
+      state,
+      action: PayloadAction<{
+        eventId: string;
+        parentType: ScriptEventParentType;
+        parentId: string;
+        parentKey: string;
+      }>,
+    ) => {
       state.eventId = action.payload.eventId;
+      state.eventParentType = action.payload.parentType;
+      state.eventParentId = action.payload.parentId;
+      state.eventParentKey = action.payload.parentKey;
+    },
+
+    selectScriptEventParent: (
+      state,
+      action: PayloadAction<{
+        parentType: ScriptEventParentType;
+        parentId: string;
+        parentKey: string;
+      }>,
+    ) => {
+      state.eventId = "";
+      state.eventParentType = action.payload.parentType;
+      state.eventParentId = action.payload.parentId;
+      state.eventParentKey = action.payload.parentKey;
+    },
+
+    clearScriptEvent: (state) => {
+      state.eventId = "";
+      state.eventParentType = "scene";
+      state.eventParentId = "";
+      state.eventParentKey = "";
     },
 
     selectScene: (state, action: PayloadAction<{ sceneId: string }>) => {

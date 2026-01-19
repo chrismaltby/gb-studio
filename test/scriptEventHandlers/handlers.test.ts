@@ -2281,7 +2281,7 @@ describe("script handlers", () => {
         expect(scriptString).toInclude("Actor Move To");
         expect(scriptString).toInclude(".R_INT16    2560");
         expect(scriptString).toInclude(".R_INT16    5120");
-        expect(scriptString).toInclude("VM_ACTOR_MOVE_TO        .LOCAL_ACTOR");
+        expect(scriptString).toInclude("VM_ACTOR_MOVE_TO_INIT   .LOCAL_ACTOR");
 
         plugin.cleanup();
       },
@@ -2342,7 +2342,7 @@ describe("script handlers", () => {
         expect(scriptString).toInclude("Actor Move To");
         expect(scriptString).toInclude(".R_INT16    2560");
         expect(scriptString).toInclude(".R_INT16    5120");
-        expect(scriptString).toInclude("VM_ACTOR_MOVE_TO        .LOCAL_ACTOR");
+        expect(scriptString).toInclude("VM_ACTOR_MOVE_TO_INIT   .LOCAL_ACTOR");
 
         plugin.cleanup();
       },
@@ -2403,7 +2403,7 @@ describe("script handlers", () => {
         expect(scriptString).toInclude("Actor Move To");
         expect(scriptString).toInclude(".R_INT16    320");
         expect(scriptString).toInclude(".R_INT16    640");
-        expect(scriptString).toInclude("VM_ACTOR_MOVE_TO        .LOCAL_ACTOR");
+        expect(scriptString).toInclude("VM_ACTOR_MOVE_TO_INIT   .LOCAL_ACTOR");
 
         plugin.cleanup();
       },
@@ -3063,7 +3063,8 @@ describe("script handlers", () => {
             userPresetsGroups: [{ name: "Group 1", fields: ["text"] }],
             userPresetsIgnore: ["ignored"],
             fields: [
-              { key: "text", type: "text", defaultValue: "" }
+              { key: "text", type: "text", defaultValue: "" },
+              { key: "ignored", type: "text", defaultValue: "" }               
             ],
             compile: () => {},
           };

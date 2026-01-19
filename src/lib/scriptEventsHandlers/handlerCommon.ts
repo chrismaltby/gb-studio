@@ -112,6 +112,19 @@ export const validateUserPresets = (handler: ScriptEventHandler): void => {
     );
     console.error("Missing fields: " + missingFields.join(", "));
   }
+
+  const allowedExtraFields = ["units"];
+
+  const extraFields = presetFields.filter(
+    (key) => !allFields.includes(key) && !allowedExtraFields.includes(key),
+  );
+
+  if (extraFields.length > 0) {
+    console.error(
+      `${handler.id} defined userPresetsGroups or userPresetsIgnore but included some fields that do not exist in the handler's fields.`,
+    );
+    console.error("Extra fields: " + extraFields.join(", "));
+  }
 };
 
 /**
