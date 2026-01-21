@@ -74,28 +74,21 @@ const tokenizer = (input: string): Token[] => {
         if (i === 0) {
           return [
             {
-              type: "VAL",
-              value: 0,
-            },
-            {
               type: "OP",
-              operator: "-",
+              operator: "neg",
             },
           ];
         }
         const previous = tokens[i - 1];
         if (
           previous.type === "LBRACE" ||
+          previous.type === "SEPERATOR" ||
           (previous.type === "OP" && isOperatorSymbol(previous.operator))
         ) {
           return [
             {
-              type: "VAL",
-              value: 0,
-            },
-            {
               type: "OP",
-              operator: "-",
+              operator: "neg",
             },
           ];
         }

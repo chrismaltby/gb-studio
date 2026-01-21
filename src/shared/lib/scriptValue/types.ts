@@ -50,6 +50,7 @@ export const valueUnaryOperatorTypes = [
   "not",
   "isqrt",
   "abs",
+  "neg",
   // Bitwise
   "bNOT",
 ] as const;

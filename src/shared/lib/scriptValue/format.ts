@@ -163,6 +163,8 @@ export const scriptValueToString = (
     )},${scriptValueToString(value.valueB, options)})`;
   } else if (value.type === "rnd") {
     return `rnd(${scriptValueToString(value.value, options)})`;
+  } else if (value.type === "neg") {
+    return `-(${scriptValueToString(value.value, options)})`;
   } else if (value.type === "indirect") {
     return `INDIRECT`;
   }
