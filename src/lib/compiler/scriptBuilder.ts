@@ -274,6 +274,7 @@ type ScriptBuilderRPNOperation =
   | ".SHL"
   | ".SHR"
   | ".RND"
+  | ".NEG"
   | ScriptBuilderComparisonOperator;
 
 type ScriptBuilderOverlayMoveSpeed =
@@ -353,6 +354,7 @@ const rpnUnaryOperators: ScriptBuilderRPNOperation[] = [
   ".B_NOT",
   ".ISQRT",
   ".RND",
+  ".NEG",
 ];
 
 // - Helpers --------------
@@ -553,6 +555,8 @@ const toScriptOperator = (
       return ".SHL";
     case ">>":
       return ".SHR";
+    case "neg":
+      return ".NEG";
   }
   assertUnreachable(operator);
 };
@@ -613,6 +617,8 @@ const valueFunctionToScriptOperator = (
       return ".B_NOT";
     case "rnd":
       return ".RND";
+    case "neg":
+      return ".NEG";
   }
   assertUnreachable(operator);
 };
@@ -633,6 +639,8 @@ const funToScriptOperator = (
       return ".ISQRT";
     case "rnd":
       return ".RND";
+    case "neg":
+      return ".SUB";
   }
   assertUnreachable(fun);
 };

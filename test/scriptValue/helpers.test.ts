@@ -1156,12 +1156,8 @@ test("should return zero when converting min(5,) to script value", () => {
 test("should convert expression (-5) to script value", () => {
   const input = "-5";
   expect(expressionToScriptValue(input)).toEqual({
-    type: "sub",
-    valueA: {
-      type: "number",
-      value: 0,
-    },
-    valueB: {
+    type: "neg",
+    value: {
       type: "number",
       value: 5,
     },
@@ -1192,12 +1188,8 @@ test("should convert expression (10+(-5)) to script value", () => {
       value: 10,
     },
     valueB: {
-      type: "sub",
-      valueA: {
-        type: "number",
-        value: 0,
-      },
-      valueB: {
+      type: "neg",
+      value: {
         type: "number",
         value: 5,
       },
@@ -2202,6 +2194,69 @@ describe("engine constants in expressions", () => {
       valueB: {
         type: "constant",
         value: "engine::MULTIPLIER",
+      },
+    });
+  });
+});
+
+describe("expressions", () => {
+  test("should optimise expression script values", () => {
+    const input: ScriptValue = {
+      type: "expression",
+      value: "5 + 0",
+    };
+    expect(optimiseScriptValue(input)).toEqual({
+      type: "number",
+      value: 5,
+    });
+  });
+
+  test("should optimise multiply by negative numbers", () => {
+    const input: ScriptValue = {
+      type: "expression",
+      value: "0 * -1",
+    };
+    expect(optimiseScriptValue(input)).toEqual({
+      type: "number",
+      value: -0,
+    });
+  });
+
+  test("should optimise multiply variable by negative numbers", () => {
+    const input: ScriptValue = {
+      type: "expression",
+      value: "$00$ * -1",
+    };
+    expect(optimiseScriptValue(input)).toEqual({
+      type: "mul",
+      valueA: {
+        type: "variable",
+        value: "0",
+      },
+      valueB: {
+        type: "number",
+        value: -1,
+      },
+    });
+  });
+
+  test("should optimise multiply variable by negative variable", () => {
+    const input: ScriptValue = {
+      type: "expression",
+      value: "$00$ * -$01$",
+    };
+    expect(optimiseScriptValue(input)).toEqual({
+      type: "mul",
+      valueA: {
+        type: "variable",
+        value: "0",
+      },
+      valueB: {
+        type: "neg",
+        value: {
+          type: "variable",
+          value: "1",
+        },
       },
     });
   });
