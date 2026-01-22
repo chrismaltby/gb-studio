@@ -1946,29 +1946,41 @@ class ScriptBuilder {
     if (moveX && !moveY) {
       if (!lockDirX) {
         this._actorMoveToSetDirX(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToX(addr, attr);
     } else if (moveY && !moveX) {
       if (!lockDirY) {
         this._actorMoveToSetDirY(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToY(addr, attr);
     } else if (moveType === "horizontal") {
       if (!lockDirX) {
         this._actorMoveToSetDirX(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToX(addr, attr);
       if (!lockDirY) {
         this._actorMoveToSetDirY(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToY(addr, attr);
     } else if (moveType === "vertical") {
       if (!lockDirY) {
         this._actorMoveToSetDirY(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToY(addr, attr);
       if (!lockDirX) {
         this._actorMoveToSetDirX(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToX(addr, attr);
     } else if (moveType === "diagonal") {
@@ -1976,6 +1988,8 @@ class ScriptBuilder {
         this._actorMoveToSetDirY(addr);
       } else if (!lockDirX) {
         this._actorMoveToSetDirX(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToXY(addr, attr);
     }
@@ -2030,6 +2044,10 @@ class ScriptBuilder {
 
   _actorSetAnimFrame = (addr: string) => {
     this._addCmd("VM_ACTOR_SET_ANIM_FRAME", addr);
+  };
+
+  _actorSetAnimMoving = (addr: string) => {
+    this._addCmd("VM_ACTOR_SET_ANIM_MOVING", addr);
   };
 
   _actorGetAnimFrame = (addr: string) => {
