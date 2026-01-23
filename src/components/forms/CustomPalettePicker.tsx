@@ -9,12 +9,19 @@ import clamp from "shared/lib/helpers/clamp";
 import styled, { css } from "styled-components";
 import { TextField } from "ui/form/TextField";
 import { NumberField } from "ui/form/NumberField";
-import { FixedSpacer } from "ui/spacing/Spacing";
+import { FixedSpacer, FlexRow } from "ui/spacing/Spacing";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { GBCHexToColorCorrectedHex } from "shared/lib/color/colorCorrection";
-import { hex2GBChex, rgb5BitToGBCHex } from "shared/lib/helpers/color";
+import {
+  hex2GBChex,
+  rgb5BitToGBCHex,
+  rawHexToCorrectedHex,
+  rawHexToClosestRepresentableRawHex,
+  CorrectedHex,
+  CanonicalRawHex,
+} from "shared/lib/helpers/color";
 import { getSettings } from "store/features/settings/settingsState";
+import { correctedHexToCanonicalHex } from "shared/lib/color/reverseColorCorrection";
 
 const DEFAULT_WHITE = "E8F8E0";
 const DEFAULT_LIGHT = "B0F088";
@@ -227,27 +234,32 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
   const [colorH, setColorH] = useState(0);
   const [colorS, setColorS] = useState(0);
   const [colorV, setColorV] = useState(0);
-  const [currentCustomHex, setCurrentCustomHex] = useState("");
+  const [colorHex, setColorHex] = useState("000000");
+  const [colorCorrectedHex, setColorCorrectedHex] = useState("000000");
 
   const getWhiteHex = useCallback(
-    () => palette?.colors[0] || DEFAULT_WHITE,
+    () =>
+      rawHexToClosestRepresentableRawHex(palette?.colors[0] || DEFAULT_WHITE),
     [palette?.colors],
   );
   const getLightHex = useCallback(
-    () => palette?.colors[1] || DEFAULT_LIGHT,
+    () =>
+      rawHexToClosestRepresentableRawHex(palette?.colors[1] || DEFAULT_LIGHT),
     [palette?.colors],
   );
   const getDarkHex = useCallback(
-    () => palette?.colors[2] || DEFAULT_DARK,
+    () =>
+      rawHexToClosestRepresentableRawHex(palette?.colors[2] || DEFAULT_DARK),
     [palette?.colors],
   );
   const getBlackHex = useCallback(
-    () => palette?.colors[3] || DEFAULT_BLACK,
+    () =>
+      rawHexToClosestRepresentableRawHex(palette?.colors[3] || DEFAULT_BLACK),
     [palette?.colors],
   );
 
   const updateCurrentColor = useCallback(
-    (newHex: string) => {
+    (newHex: CanonicalRawHex) => {
       if (selectedColor === 0) {
         dispatch(
           entitiesActions.editPalette({
@@ -297,12 +309,18 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
     ],
   );
 
+  const updateHexInputs = useCallback((hex: CanonicalRawHex) => {
+    setColorHex(hex);
+    setColorCorrectedHex(rawHexToCorrectedHex(hex));
+  }, []);
+
   const updateColorFromRGB = useCallback(
     (r: number, g: number, b: number) => {
-      const hexString =
+      const hexString = rawHexToClosestRepresentableRawHex(
         decimalToHexString(Math.round((r / 31) * 255)) +
-        decimalToHexString(Math.round((g / 31) * 255)) +
-        decimalToHexString(Math.round((b / 31) * 255));
+          decimalToHexString(Math.round((g / 31) * 255)) +
+          decimalToHexString(Math.round((b / 31) * 255)),
+      );
 
       updateCurrentColor(hexString);
 
@@ -311,11 +329,9 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       setColorH(Math.floor(hsv.h * 360));
       setColorS(Math.floor(hsv.s * 100));
       setColorV(Math.floor(hsv.v * 100));
-      setCurrentCustomHex(
-        "#" + hex2GBChex(hexString, colorCorrection).toLowerCase(),
-      );
+      updateHexInputs(hexString);
     },
-    [updateCurrentColor, colorCorrection],
+    [updateCurrentColor, updateHexInputs],
   );
 
   const updateColorFromHSV = useCallback(
@@ -330,23 +346,22 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       if (g > 31) g = 31;
       if (b > 31) b = 31;
 
-      const hexString =
+      const hexString = rawHexToClosestRepresentableRawHex(
         decimalToHexString(r * 8) +
-        decimalToHexString(g * 8) +
-        decimalToHexString(b * 8);
+          decimalToHexString(g * 8) +
+          decimalToHexString(b * 8),
+      );
 
       updateCurrentColor(hexString);
       setColorR(r);
       setColorG(g);
       setColorB(b);
-      setCurrentCustomHex(
-        "#" + hex2GBChex(hexString, colorCorrection).toLowerCase(),
-      );
+      updateHexInputs(hexString);
     },
-    [updateCurrentColor, colorCorrection],
+    [updateCurrentColor, updateHexInputs],
   );
 
-  const applyHexToState = useCallback((hex: string) => {
+  const applyHexToState = useCallback((hex: CanonicalRawHex) => {
     let r = hexToDecimal(hex.substring(0, 2)) / 8;
     let g = hexToDecimal(hex.substring(2, 4)) / 8;
     let b = hexToDecimal(hex.substring(4)) / 8;
@@ -371,7 +386,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
 
   const onColorSelect = useCallback(
     (colorIndex: ColorIndex) => {
-      let editHex = "000000";
+      let editHex: CanonicalRawHex = "000000" as CanonicalRawHex;
       if (colorIndex === 0) {
         editHex = getWhiteHex();
       } else if (colorIndex === 1) {
@@ -382,9 +397,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
         editHex = getBlackHex();
       }
       setSelectedColor(colorIndex);
-      setCurrentCustomHex(
-        "#" + hex2GBChex(editHex, colorCorrection).toLowerCase(),
-      );
+      updateHexInputs(editHex);
       applyHexToState(editHex);
     },
     [
@@ -393,30 +406,46 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
       getDarkHex,
       getLightHex,
       getWhiteHex,
-      colorCorrection,
+      updateHexInputs,
     ],
   );
 
-  const onHexChange = useCallback(
+  const onChangeHex = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const parsedValue = e.target.value.replace(/[^#A-Fa-f0-9]/g, "");
-      const croppedValue = parsedValue.startsWith("#")
-        ? parsedValue.substring(0, 7)
-        : parsedValue.substring(0, 6);
-      setCurrentCustomHex(croppedValue);
+      const parsedValue = e.target.value.replace(/[^A-Fa-f0-9]/g, "");
+      const croppedValue = parsedValue.substring(0, 6);
+      setColorHex(croppedValue);
       let hex = croppedValue.replace("#", "");
       if (hex.length === 3) {
         hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
       }
       if (hex.length === 6) {
-        if (colorCorrection === "default") {
-          hex = GBCHexToColorCorrectedHex(hex);
-        }
-        applyHexToState(hex);
-        updateCurrentColor(hex);
+        const canonicalHex = rawHexToClosestRepresentableRawHex(hex);
+        setColorCorrectedHex(rawHexToCorrectedHex(canonicalHex));
+        applyHexToState(canonicalHex);
+        updateCurrentColor(canonicalHex);
       }
     },
-    [applyHexToState, updateCurrentColor, colorCorrection],
+    [applyHexToState, updateCurrentColor],
+  );
+
+  const onChangeCorrectedHex = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const parsedValue = e.target.value.replace(/[^A-Fa-f0-9]/g, "");
+      const croppedValue = parsedValue.substring(0, 6);
+      setColorCorrectedHex(croppedValue);
+      let hex = croppedValue.replace("#", "");
+      if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+      }
+      if (hex.length === 6) {
+        const canonicalHex = correctedHexToCanonicalHex(hex as CorrectedHex);
+        setColorHex(canonicalHex);
+        applyHexToState(canonicalHex);
+        updateCurrentColor(canonicalHex);
+      }
+    },
+    [applyHexToState, updateCurrentColor],
   );
 
   const onChangeR = useCallback(
@@ -521,13 +550,13 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
 
   const initialiseColorValues = useCallback(
     (color: string | undefined, paletteIndex: number) => {
-      const editHex = color || defaultColors[paletteIndex];
-      setCurrentCustomHex(
-        "#" + hex2GBChex(editHex, colorCorrection).toLowerCase(),
+      const editHex = rawHexToClosestRepresentableRawHex(
+        color || defaultColors[paletteIndex],
       );
+      updateHexInputs(editHex);
       applyHexToState(editHex);
     },
-    [applyHexToState, colorCorrection],
+    [applyHexToState, updateHexInputs],
   );
 
   const onPaste = useCallback(
@@ -541,7 +570,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
         const clipboardData = await API.clipboard.readText();
         const hexString = clipboardData.replace(/[^A-Fa-f0-9]*/g, "");
         if (hexString.length === 6) {
-          updateCurrentColor(hexString);
+          updateCurrentColor(rawHexToClosestRepresentableRawHex(hexString));
         }
         initialiseColorValues(hexString, selectedColor);
       } catch (err) {
@@ -779,15 +808,29 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
         </ColorValueFormItem>
       </ColorValueForm>
 
-      <TextField
-        name="colorHex"
-        label={`${l10n("FIELD_HEX_COLOR")} (${l10n("FIELD_CLOSEST_MATCH")})`}
-        size="large"
-        maxLength={7}
-        placeholder="#000000"
-        value={currentCustomHex}
-        onChange={onHexChange}
-      />
+      <FlexRow>
+        {colorCorrection === "none" ? (
+          <TextField
+            name="colorHex"
+            label={`${l10n("FIELD_HEX_COLOR")} (${l10n("FIELD_CLOSEST_MATCH")})`}
+            size="large"
+            maxLength={7}
+            placeholder="#000000"
+            value={`#${colorHex.toLowerCase()}`}
+            onChange={onChangeHex}
+          />
+        ) : (
+          <TextField
+            name="colorCorrection"
+            label={`${l10n("FIELD_HEX_COLOR")} (${l10n("FIELD_CLOSEST_MATCH")})`}
+            size="large"
+            maxLength={7}
+            placeholder="#000000"
+            value={`#${colorCorrectedHex.toLowerCase()}`}
+            onChange={onChangeCorrectedHex}
+          />
+        )}
+      </FlexRow>
       <FixedSpacer height={20} />
       <div>
         {palette.defaultColors ? (
