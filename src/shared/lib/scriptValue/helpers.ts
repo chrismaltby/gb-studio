@@ -189,6 +189,11 @@ export const optimiseScriptValue = (
             value: optimisedValue.value,
           },
         };
+      } else if (type === "neg") {
+        return {
+          type: "number",
+          value: Math.floor(-optimisedValue.value),
+        };
       }
       /* istanbul ignore next: unreachable */
       assertUnreachable(type);
@@ -237,6 +242,7 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
         "||": "or",
         "<<": "shl",
         ">>": "shr",
+        neg: "neg",
       };
 
       const scriptValueOperator = operatorMap[operator];
@@ -340,6 +346,15 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
               type: "atan2",
               valueA,
               valueB,
+            });
+          }
+        } else if (operation.function === "neg") {
+          const value = stack.pop();
+          if (value) {
+            stack.push({
+              type: "sub",
+              valueA: { type: "number", value: 0 },
+              valueB: value,
             });
           }
         } else {

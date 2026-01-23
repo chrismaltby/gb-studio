@@ -19,6 +19,7 @@ export const operatorSymbols = [
   "||",
   "<<",
   ">>",
+  "neg",
 ] as const;
 export type OperatorSymbol = (typeof operatorSymbols)[number];
 
@@ -29,6 +30,7 @@ export const functionSymbols = [
   "atan2",
   "isqrt",
   "rnd",
+  "neg",
 ] as const;
 export type FunctionSymbol = (typeof functionSymbols)[number];
 
@@ -39,6 +41,7 @@ export const functionArgsLen: Record<FunctionSymbol, number> = {
   atan2: 2,
   isqrt: 1,
   rnd: 1,
+  neg: 1,
 };
 
 export enum Associativity {
@@ -127,6 +130,7 @@ const operatorArgsLen: Record<OperatorSymbol, number> = {
   "||": 2,
   "<<": 2,
   ">>": 2,
+  neg: 1,
 };
 
 export const getOperatorArgsLen = (operator: OperatorSymbol): number => {

@@ -122,6 +122,7 @@ const iconLookup: Record<
   atan2: <TextIcon>atan2</TextIcon>,
   isqrt: <SquareRootIcon />,
   rnd: <TextIcon>rnd</TextIcon>,
+  neg: <TextIcon>-</TextIcon>,
   // bitwise
   shl: <TextIcon>&lt;&lt;</TextIcon>,
   shr: <TextIcon>&gt;&gt;</TextIcon>,
@@ -168,6 +169,7 @@ const l10nKeyLookup: Record<
   atan2: "FIELD_ATAN2",
   isqrt: "FIELD_SQUARE_ROOT",
   rnd: "FIELD_RANDOM",
+  neg: "FIELD_SUB_VALUE",
   // bitwise
   shl: "FIELD_LEFT_SHIFT",
   shr: "FIELD_RIGHT_SHIFT",

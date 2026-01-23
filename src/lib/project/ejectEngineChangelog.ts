@@ -1132,6 +1132,35 @@ const changes: EngineChange[] = [
       "src/states/adventure.c",
     ],
   },
+  {
+    version: "4.2.0-e30",
+    description: createDescription("Updates", [
+      "VM_ACTOR_SET_ANIM_MOVING to be used before moving when direction is locked rather than setting within vm_actor_move_to_init to prevent animation flicker in cases where movement is blocked",
+      "Match vm_actor_move_to actor/actor collisions to previous implementation to fix jank, tests all actors every frame and stops at previous position rather than snapping",
+      "Add unary negate operator to rpn",
+      "Fix issue where offscreen actors could appear onscreen while VM is locked",
+      "Implement correct bank switching in the GBT_PLAYER music driver",
+      "Remove unused variable 'map' in scroll.c",
+      "Save one cycle in VM_STEP",
+      "Improve performance of VM_CALL_NATIVE",
+      "Optimize isqrt function using assembly code",
+    ]),
+    modifiedFiles: [
+      "include/vm.i",
+      "include/vm_actor.h",
+      "lib/gbt_player.lib",
+      "src/core/actor.c",
+      "src/core/math.c",
+      "src/core/scroll.c",
+      "src/core/vm.c",
+      "src/core/vm_actor.c",
+      "src/core/vm_instructions.c",
+      "third-party/GBT_PLAYER/Makefile",
+      "third-party/GBT_PLAYER/gbt_player.s",
+      "third-party/GBT_PLAYER/gbt_player_bank1.s",
+      "third-party/GBT_PLAYER/makelib.bat",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

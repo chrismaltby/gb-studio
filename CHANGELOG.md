@@ -121,6 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to lock player direction in Adventure scenes to only face horizontal directions [@Mico27](https://github.com/Mico27)
 - "Add Event" button now includes a Paste button when script events can be pasted
 - Sprite Animation State select dropdowns now group states that are only used by a single sprite. States shared by multiple sprites appear ungrouped, and you can hover over them to see which sprites use them
+- Improved GBVM performance during native calls [@untoxa](https://github.com/untoxa) and integer square root calculations [@Phidias618](https://github.com/Phidias618)
 
 ### Fixed
 
@@ -184,6 +185,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where using actor properties in custom scripts would always return player properties
 - Fix issue preventing storing presets for "Launch Projectile in Slot" events
 - Fix issue where clicking on effect row in music editor in some cases could cause application to crash 
+- Fix issue where Actor Move To/Relative events would cause actors to teleport during actor/actor collisions
+- Fix issue where Actor Move To/Relative events would show flash of movement animation when path was blocked by another actor
+- Fix issue where offscreen actors could appear onscreen while script is locked
 
 ## [4.1.3] - 2024-09-16
 
