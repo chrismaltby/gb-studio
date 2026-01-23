@@ -48,7 +48,6 @@
     "gb-studio-cli": "./out/cli/gb-studio-cli.js"
   },
   "dependencies": {
-    "3x3-equation-solver": "^1.2.18",
     "@jitl/quickjs-singlefile-browser-release-sync": "^0.31.0",
     "@jitl/quickjs-singlefile-cjs-debug-sync": "^0.31.0",
     "@jitl/quickjs-singlefile-cjs-release-sync": "^0.31.0",

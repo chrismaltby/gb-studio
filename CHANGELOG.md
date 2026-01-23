@@ -188,6 +188,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where Actor Move To/Relative events would cause actors to teleport during actor/actor collisions
 - Fix issue where Actor Move To/Relative events would show flash of movement animation when path was blocked by another actor
 - Fix issue where offscreen actors could appear onscreen while script is locked
+- Fix issue where copy/pasting hex colors in the palette editor could result in colors being remapped incorrectly when color correction was enabled
 
 ## [4.1.3] - 2024-09-16
 
