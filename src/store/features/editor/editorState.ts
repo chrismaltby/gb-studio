@@ -147,6 +147,7 @@ export interface EditorState {
   selectedMetaspriteTileIds: string[];
   showSpriteGrid: boolean;
   showOnionSkin: boolean;
+  darkBackground: boolean;
   playSpriteAnimation: boolean;
   spriteTileSelection?: SpriteTileSelection;
   showSpriteBoundingBox: boolean;
@@ -223,6 +224,7 @@ export const initialState: EditorState = {
   selectedMetaspriteTileIds: [],
   showSpriteGrid: true,
   showOnionSkin: false,
+  darkBackground: false,
   playSpriteAnimation: false,
   showSpriteBoundingBox: false,
   replaceSpriteTileMode: undefined,
@@ -849,6 +851,10 @@ const editorSlice = createSlice({
 
     setShowSpriteGrid: (state, action: PayloadAction<boolean>) => {
       state.showSpriteGrid = action.payload;
+    },
+
+    setDarkbackground: (state, action: PayloadAction<boolean>) => {
+      state.darkBackground = action.payload;
     },
 
     setPlaySpriteAnimation: (state, action: PayloadAction<boolean>) => {
