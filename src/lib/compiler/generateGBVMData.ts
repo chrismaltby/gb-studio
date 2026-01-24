@@ -1024,7 +1024,7 @@ ${SPRITESHEET_TYPE} ${spriteSheet.symbol} = {
 ${toStructData(
   {
     n_metasprites: spriteSheet.metaspritesOrder.length,
-    emote_origin: { x: 8, y: -spriteSheet.canvasHeight + 8},
+    emote_origin: { x: 0, y: -spriteSheet.canvasHeight },
     metasprites: `${spriteSheet.symbol}_metasprites`,
     animations: `${spriteSheet.symbol}_animations`,
     animations_lookup: `${spriteSheet.symbol}_animations_lookup`,
