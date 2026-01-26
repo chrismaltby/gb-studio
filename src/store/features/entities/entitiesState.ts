@@ -859,8 +859,9 @@ const addScene: CaseReducer<
   }>
 > = (state, action) => {
   const scenesTotal = localSceneSelectTotal(state);
-  const backgroundId = String(localBackgroundSelectIds(state)[0]);
-  const background = localBackgroundSelectById(state, backgroundId);
+  const backgrounds = localBackgroundSelectAll(state);
+  const background = backgrounds.find((bg) => !bg.name.endsWith(".mono"));
+  const backgroundId = background ? background.id : "";
 
   const newScene: SceneNormalized = {
     name: defaultLocalisedSceneName(scenesTotal),
