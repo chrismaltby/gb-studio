@@ -1645,6 +1645,7 @@ ipcMain.handle(
     colorMode: ColorModeSetting,
     colorCorrection: ColorCorrectionSetting,
     autoTileFlipEnabled: boolean,
+    writeMonoImage: boolean,
   ) => {
     const projectRoot = Path.dirname(projectPath);
     return getBackgroundInfo(
@@ -1655,6 +1656,7 @@ ipcMain.handle(
       colorMode,
       colorCorrection,
       autoTileFlipEnabled,
+      writeMonoImage,
       projectRoot,
     );
   },

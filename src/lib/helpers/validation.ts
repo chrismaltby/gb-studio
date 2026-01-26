@@ -24,6 +24,7 @@ export const getBackgroundInfo = async (
   colorMode: ColorModeSetting,
   colorCorrection: ColorCorrectionSetting,
   autoTileFlipEnabled: boolean,
+  writeMonoImage: boolean,
   projectPath: string,
 ): Promise<BackgroundInfo> => {
   const warnings: string[] = [];
@@ -37,9 +38,8 @@ export const getBackgroundInfo = async (
       colorCorrection,
       autoTileFlipEnabled,
       projectPath,
-      { warnings: (msg) => warnings.push(msg) },
+      { warnings: (msg) => warnings.push(msg), writeMonoImage },
     );
-
     return {
       warnings,
       numTiles: result.tilesetLength,

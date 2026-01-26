@@ -32,6 +32,7 @@ import { divisibleBy8 } from "shared/lib/helpers/8bit";
 import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
 import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { autoFlipTiles } from "shared/lib/tiles/autoFlip";
+import { writeIndexedImagePNG } from "lib/helpers/writeIndexedImage";
 
 const TILE_FIRST_CHUNK_SIZE = 128;
 const TILE_BANK_SIZE = 192;
@@ -53,6 +54,7 @@ type PrecompiledBackgroundData = Background & {
 
 type CompileImageOptions = {
   warnings: (msg: string) => void;
+  writeMonoImage?: boolean;
 };
 
 type ImageTileAllocationStrategy = (
@@ -179,7 +181,7 @@ export const compileImage = async (
   colorCorrection: ColorCorrectionSetting,
   autoTileFlipEnabled: boolean,
   projectPath: string,
-  { warnings }: CompileImageOptions,
+  { warnings, writeMonoImage }: CompileImageOptions,
 ): Promise<PrecompiledBackgroundData> => {
   let autoColorMode = ImageColorMode.MANUAL;
   const cgbOnly = colorMode === "color";
@@ -210,7 +212,16 @@ export const compileImage = async (
       colorCorrection,
       uiPalette,
     );
+
     indexedImage = paletteData.indexedImage;
+
+    if (writeMonoImage) {
+      await writeIndexedImagePNG(
+        `${filename.replace(/\.png$/, "")}.mono.png`,
+        indexedImage,
+      );
+    }
+
     autoTileColors = paletteData.map;
     autoPalettes = paletteData.palettes.map((colors, index) => ({
       id: `${img.id}_p${index}`,

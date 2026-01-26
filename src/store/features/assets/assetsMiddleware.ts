@@ -85,6 +85,7 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
               colorMode,
               colorCorrection,
               autoTileFlipEnabled,
+              isExtracting,
             )
             .then((info) => {
               store.dispatch(

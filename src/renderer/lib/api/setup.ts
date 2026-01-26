@@ -254,6 +254,7 @@ const APISetup = {
       colorMode: ColorModeSetting,
       colorCorrection: ColorCorrectionSetting,
       autoTileFlipEnabled: boolean,
+      writeMonoImage: boolean,
     ): Promise<BackgroundInfo> =>
       ipcRenderer.invoke(
         "project:get-background-info",
@@ -264,6 +265,7 @@ const APISetup = {
         colorMode,
         colorCorrection,
         autoTileFlipEnabled,
+        writeMonoImage,
       ),
     addFile: (filename: string): Promise<void> =>
       ipcRenderer.invoke("project:add-file", filename),
