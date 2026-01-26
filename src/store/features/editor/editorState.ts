@@ -95,6 +95,9 @@ export interface EditorState {
   scene: string;
   entityId: string;
   eventId: string;
+  eventParentType: ScriptEventParentType;
+  eventParentId: string;
+  eventParentKey: string;
   sceneSelectionIds: string[];
   scriptEventSelectionIds: string[];
   scriptEventSelectionParentId: string;
@@ -144,6 +147,7 @@ export interface EditorState {
   selectedMetaspriteTileIds: string[];
   showSpriteGrid: boolean;
   showOnionSkin: boolean;
+  darkBackground: boolean;
   playSpriteAnimation: boolean;
   spriteTileSelection?: SpriteTileSelection;
   showSpriteBoundingBox: boolean;
@@ -167,6 +171,9 @@ export const initialState: EditorState = {
   scene: "",
   entityId: "",
   eventId: "",
+  eventParentType: "scene",
+  eventParentId: "",
+  eventParentKey: "",
   sceneSelectionIds: [],
   scriptEventSelectionIds: [],
   scriptEventSelectionParentId: "",
@@ -217,6 +224,7 @@ export const initialState: EditorState = {
   selectedMetaspriteTileIds: [],
   showSpriteGrid: true,
   showOnionSkin: false,
+  darkBackground: false,
   playSpriteAnimation: false,
   showSpriteBoundingBox: false,
   replaceSpriteTileMode: undefined,
@@ -379,8 +387,40 @@ const editorSlice = createSlice({
       state.eventId = state.dragging === "" ? "" : state.eventId;
     },
 
-    selectScriptEvent: (state, action: PayloadAction<{ eventId: string }>) => {
+    selectScriptEvent: (
+      state,
+      action: PayloadAction<{
+        eventId: string;
+        parentType: ScriptEventParentType;
+        parentId: string;
+        parentKey: string;
+      }>,
+    ) => {
       state.eventId = action.payload.eventId;
+      state.eventParentType = action.payload.parentType;
+      state.eventParentId = action.payload.parentId;
+      state.eventParentKey = action.payload.parentKey;
+    },
+
+    selectScriptEventParent: (
+      state,
+      action: PayloadAction<{
+        parentType: ScriptEventParentType;
+        parentId: string;
+        parentKey: string;
+      }>,
+    ) => {
+      state.eventId = "";
+      state.eventParentType = action.payload.parentType;
+      state.eventParentId = action.payload.parentId;
+      state.eventParentKey = action.payload.parentKey;
+    },
+
+    clearScriptEvent: (state) => {
+      state.eventId = "";
+      state.eventParentType = "scene";
+      state.eventParentId = "";
+      state.eventParentKey = "";
     },
 
     selectScene: (state, action: PayloadAction<{ sceneId: string }>) => {
@@ -811,6 +851,10 @@ const editorSlice = createSlice({
 
     setShowSpriteGrid: (state, action: PayloadAction<boolean>) => {
       state.showSpriteGrid = action.payload;
+    },
+
+    setDarkbackground: (state, action: PayloadAction<boolean>) => {
+      state.darkBackground = action.payload;
     },
 
     setPlaySpriteAnimation: (state, action: PayloadAction<boolean>) => {

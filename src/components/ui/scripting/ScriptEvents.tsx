@@ -1,5 +1,6 @@
 import React, { forwardRef, ReactNode } from "react";
 import { DropdownButton } from "ui/buttons/DropdownButton";
+import { Checkbox } from "ui/form/Checkbox";
 import useResizeObserver from "ui/hooks/use-resize-observer";
 import { ArrowIcon, BreakpointIcon, CommentIcon } from "ui/icons/Icons";
 import {
@@ -36,6 +37,7 @@ export const ScriptEventRenameInputCompleteButton = (
 ) => <StyledScriptEventRenameInputCompleteButton {...props} />;
 
 interface ScriptEventHeaderProps {
+  scriptEventId: string;
   nestLevel: number;
   isConditional?: boolean;
   isComment?: boolean;
@@ -51,8 +53,40 @@ interface ScriptEventHeaderProps {
   menuItems?: ReactNode;
   onOpenMenu?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onToggle?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onToggleSelection?: () => void;
   onContextMenu?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
+
+const PreventDrag = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div
+      onMouseDown={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+      }}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+      }}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 export const ScriptEventHeader = forwardRef<
   HTMLDivElement,
@@ -60,6 +94,7 @@ export const ScriptEventHeader = forwardRef<
 >(
   (
     {
+      scriptEventId,
       isConditional,
       nestLevel,
       isComment,
@@ -74,7 +109,9 @@ export const ScriptEventHeader = forwardRef<
       menuItems,
       onOpenMenu,
       onToggle,
+      onToggleSelection,
       onContextMenu,
+      onMouseEnter,
       children,
     },
     outerRef,
@@ -82,6 +119,7 @@ export const ScriptEventHeader = forwardRef<
     return (
       <StyledScriptEventHeader
         ref={outerRef}
+        id={`script-event-header-${scriptEventId}`}
         $nestLevel={nestLevel}
         $isConditional={isConditional}
         $isComment={isComment}
@@ -90,37 +128,52 @@ export const ScriptEventHeader = forwardRef<
         $isMoveable={isMoveable}
         $isSelected={isSelected}
         $isExecuting={isExecuting}
+        onMouseEnter={onMouseEnter}
       >
         <StyledScriptEventHeaderTitle
           onClick={onToggle}
           onContextMenu={onContextMenu}
         >
-          {!isComment && !isDisabled ? (
-            <StyledScriptEventHeaderCaret $isOpen={isOpen}>
-              <ArrowIcon />
-            </StyledScriptEventHeaderCaret>
-          ) : (
-            <StyledScriptEventHeaderCaret>
-              <CommentIcon />
-            </StyledScriptEventHeaderCaret>
-          )}
+          <PreventDrag>
+            {!isComment && !isDisabled ? (
+              <StyledScriptEventHeaderCaret $isOpen={isOpen}>
+                <ArrowIcon />
+              </StyledScriptEventHeaderCaret>
+            ) : (
+              <StyledScriptEventHeaderCaret>
+                <CommentIcon />
+              </StyledScriptEventHeaderCaret>
+            )}
+          </PreventDrag>
           <FixedSpacer width={5} />
           {children}
         </StyledScriptEventHeaderTitle>
+        {isMoveable && (
+          <PreventDrag>
+            <Checkbox
+              id="selectEvent"
+              name="selectEvent"
+              checked={isSelected}
+              onChange={onToggleSelection}
+            />
+          </PreventDrag>
+        )}
         {isBreakpoint && breakpointTitle && (
           <StyledScriptEventHeaderBreakpointIndicator title={breakpointTitle}>
             <BreakpointIcon />
           </StyledScriptEventHeaderBreakpointIndicator>
         )}
         {menuItems && (
-          <DropdownButton
-            size="small"
-            variant="transparent"
-            menuDirection="right"
-            onMouseDown={onOpenMenu}
-          >
-            {menuItems}
-          </DropdownButton>
+          <PreventDrag>
+            <DropdownButton
+              size="small"
+              variant="transparent"
+              menuDirection="right"
+              onMouseDown={onOpenMenu}
+            >
+              {menuItems}
+            </DropdownButton>
+          </PreventDrag>
         )}
       </StyledScriptEventHeader>
     );

@@ -3063,7 +3063,8 @@ describe("script handlers", () => {
             userPresetsGroups: [{ name: "Group 1", fields: ["text"] }],
             userPresetsIgnore: ["ignored"],
             fields: [
-              { key: "text", type: "text", defaultValue: "" }
+              { key: "text", type: "text", defaultValue: "" },
+              { key: "ignored", type: "text", defaultValue: "" }               
             ],
             compile: () => {},
           };

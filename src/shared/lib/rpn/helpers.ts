@@ -51,6 +51,7 @@ export const getPrecedence = (token: Token): number => {
     switch (token.operator) {
       case "~":
       case "!":
+      case "neg":
         return 14;
       case "*":
       case "/":

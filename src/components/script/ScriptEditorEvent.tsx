@@ -154,6 +154,17 @@ const ScriptEditorEvent = React.memo(
       [dispatch, id, parentId, parentKey, parentType, scriptEventSelectionIds],
     );
 
+    const onToggleSelection = useCallback(() => {
+      dispatch(
+        editorActions.toggleScriptEventSelectedId({
+          scriptEventId: id,
+          parentId,
+          parentKey,
+          parentType,
+        }),
+      );
+    }, [dispatch, id, parentId, parentKey, parentType]);
+
     const onFetchClipboard = useCallback(
       (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement>) => {
         onSelect(e.shiftKey);
@@ -425,11 +436,18 @@ const ScriptEditorEvent = React.memo(
     );
 
     const onMouseEnter = useCallback(() => {
-      dispatch(editorActions.selectScriptEvent({ eventId: id }));
-    }, [dispatch, id]);
+      dispatch(
+        editorActions.selectScriptEvent({
+          eventId: id,
+          parentId,
+          parentKey,
+          parentType,
+        }),
+      );
+    }, [dispatch, id, parentId, parentKey, parentType]);
 
     const onMouseLeave = useCallback(() => {
-      dispatch(editorActions.selectScriptEvent({ eventId: "" }));
+      dispatch(editorActions.clearScriptEvent());
     }, [dispatch]);
 
     const isExecuting = scriptEvent?.id === context.executingId;
@@ -439,35 +457,6 @@ const ScriptEditorEvent = React.memo(
         headerRef.current.scrollIntoView();
       }
     }, [isExecuting]);
-
-    const onKeyDown = useCallback(
-      (e: KeyboardEvent) => {
-        // Group selection with ctrl/cmd + g
-        if (
-          (e.ctrlKey || e.metaKey) &&
-          e.key === "g" &&
-          scriptEventSelectionIds[0] === id
-        ) {
-          dispatch(
-            entitiesActions.groupScriptEvents({
-              scriptEventIds: scriptEventSelectionIds,
-              parentId,
-              parentKey,
-              parentType,
-            }),
-          );
-          return;
-        }
-      },
-      [dispatch, id, parentId, parentKey, parentType, scriptEventSelectionIds],
-    );
-
-    useEffect(() => {
-      window.addEventListener("keydown", onKeyDown);
-      return () => {
-        window.removeEventListener("keydown", onKeyDown);
-      };
-    });
 
     if (!scriptEvent) {
       return null;
@@ -507,6 +496,7 @@ const ScriptEditorEvent = React.memo(
           <div ref={dragRef} title={description}>
             <ScriptEventHeader
               ref={headerRef}
+              scriptEventId={scriptEvent.id}
               isConditional={isConditional}
               isComment={Boolean(isComment)}
               isDisabled={Boolean(isDisabled)}
@@ -521,6 +511,8 @@ const ScriptEditorEvent = React.memo(
               onOpenMenu={onFetchClipboard}
               onContextMenu={onContextMenu}
               onToggle={!rename ? toggleOpen : undefined}
+              onToggleSelection={onToggleSelection}
+              onMouseEnter={onMouseEnter}
             >
               {isVisible && (
                 <>

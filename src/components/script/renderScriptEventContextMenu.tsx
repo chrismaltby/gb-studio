@@ -6,7 +6,12 @@ import l10n from "shared/lib/lang/l10n";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import settingsActions from "store/features/settings/settingsActions";
-import { MenuDivider, MenuItem, MenuItemIcon } from "ui/menu/Menu";
+import {
+  MenuAccelerator,
+  MenuDivider,
+  MenuItem,
+  MenuItemIcon,
+} from "ui/menu/Menu";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { CheckIcon } from "ui/icons/Icons";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -78,6 +83,7 @@ const renderScriptEventContextMenu = ({
             }}
           >
             {l10n("MENU_GROUP_EVENTS")}
+            <MenuAccelerator accelerator="CommandOrControl+G" />
           </MenuItem>,
           <MenuDivider key="div-group" />,
         ]
@@ -153,6 +159,7 @@ const renderScriptEventContextMenu = ({
             ? "MENU_DISABLE_EVENTS"
             : "MENU_DISABLE_EVENT",
       )}
+      <MenuAccelerator accelerator="CommandOrControl+/" />
     </MenuItem>,
 
     ...(hasElse
@@ -230,6 +237,7 @@ const renderScriptEventContextMenu = ({
       }}
     >
       {l10n("MENU_COPY_EVENT")}
+      <MenuAccelerator accelerator="CommandOrControl+C" />
     </MenuItem>,
 
     ...(clipboardFormat === ClipboardTypeScriptEvents
@@ -262,6 +270,7 @@ const renderScriptEventContextMenu = ({
             }}
           >
             {l10n("MENU_PASTE_EVENT_BEFORE")}
+            <MenuAccelerator accelerator="CommandOrControl+Shift+V" />
           </MenuItem>,
           <MenuItem
             key="paste-after"
@@ -278,6 +287,7 @@ const renderScriptEventContextMenu = ({
             }}
           >
             {l10n("MENU_PASTE_EVENT_AFTER")}
+            <MenuAccelerator accelerator="CommandOrControl+V" />
           </MenuItem>,
         ]
       : []),

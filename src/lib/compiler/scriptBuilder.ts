@@ -274,6 +274,7 @@ type ScriptBuilderRPNOperation =
   | ".SHL"
   | ".SHR"
   | ".RND"
+  | ".NEG"
   | ScriptBuilderComparisonOperator;
 
 type ScriptBuilderOverlayMoveSpeed =
@@ -353,6 +354,7 @@ const rpnUnaryOperators: ScriptBuilderRPNOperation[] = [
   ".B_NOT",
   ".ISQRT",
   ".RND",
+  ".NEG",
 ];
 
 // - Helpers --------------
@@ -553,6 +555,8 @@ const toScriptOperator = (
       return ".SHL";
     case ">>":
       return ".SHR";
+    case "neg":
+      return ".NEG";
   }
   assertUnreachable(operator);
 };
@@ -613,6 +617,8 @@ const valueFunctionToScriptOperator = (
       return ".B_NOT";
     case "rnd":
       return ".RND";
+    case "neg":
+      return ".NEG";
   }
   assertUnreachable(operator);
 };
@@ -633,6 +639,8 @@ const funToScriptOperator = (
       return ".ISQRT";
     case "rnd":
       return ".RND";
+    case "neg":
+      return ".SUB";
   }
   assertUnreachable(fun);
 };
@@ -1072,6 +1080,25 @@ class ScriptBuilder {
   ) => {
     this._addCmd("VM_PUSH_REFERENCE", addr, comment ? `; ${comment}` : "");
     this.stackPtr++;
+  };
+
+  _stackPushScriptValue = (value: ScriptValue) => {
+    this._addComment("Push Script Value");
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value),
+    );
+    if (rpnOps.length === 1 && rpnOps[0].type === "number") {
+      this._stackPushConst(rpnOps[0].value);
+    } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
+      this._stackPushVariable(rpnOps[0].value);
+    } else {
+      const localsLookup = this._performFetchOperations(fetchOps);
+      this._addComment(`-- Calculate value`);
+      const rpn = this._rpn();
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.stop();
+    }
+    this._addNL();
   };
 
   _stackPop = (num: number) => {
@@ -1919,29 +1946,41 @@ class ScriptBuilder {
     if (moveX && !moveY) {
       if (!lockDirX) {
         this._actorMoveToSetDirX(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToX(addr, attr);
     } else if (moveY && !moveX) {
       if (!lockDirY) {
         this._actorMoveToSetDirY(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToY(addr, attr);
     } else if (moveType === "horizontal") {
       if (!lockDirX) {
         this._actorMoveToSetDirX(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToX(addr, attr);
       if (!lockDirY) {
         this._actorMoveToSetDirY(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToY(addr, attr);
     } else if (moveType === "vertical") {
       if (!lockDirY) {
         this._actorMoveToSetDirY(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToY(addr, attr);
       if (!lockDirX) {
         this._actorMoveToSetDirX(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToX(addr, attr);
     } else if (moveType === "diagonal") {
@@ -1949,6 +1988,8 @@ class ScriptBuilder {
         this._actorMoveToSetDirY(addr);
       } else if (!lockDirX) {
         this._actorMoveToSetDirX(addr);
+      } else {
+        this._actorSetAnimMoving(addr);
       }
       this._actorMoveToXY(addr, attr);
     }
@@ -2003,6 +2044,10 @@ class ScriptBuilder {
 
   _actorSetAnimFrame = (addr: string) => {
     this._addCmd("VM_ACTOR_SET_ANIM_FRAME", addr);
+  };
+
+  _actorSetAnimMoving = (addr: string) => {
+    this._addCmd("VM_ACTOR_SET_ANIM_MOVING", addr);
   };
 
   _actorGetAnimFrame = (addr: string) => {

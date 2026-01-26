@@ -13,7 +13,14 @@ import {
 } from "react";
 import { StyledDropdownSubMenu } from "ui/buttons/style";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import { Menu, MenuItem, MenuItemProps } from "ui/menu/Menu";
+import {
+  extractMenuAccelerator,
+  Menu,
+  MenuItem,
+  MenuItemProps,
+  normalizeMenuAccelerator,
+  normalizeMenuEvent,
+} from "ui/menu/Menu";
 
 const emptyArr: React.ReactNode[] = [];
 
@@ -176,6 +183,20 @@ const useNestedMenu = (
     (e: React.KeyboardEvent<HTMLElement>) => {
       const { key } = e;
 
+      // Check for accelerator match first
+      const accel = normalizeMenuEvent(e);
+      const el = menuRef.current?.querySelector(
+        `[data-accelerator="${accel}"]`,
+      ) as HTMLDivElement | null;
+      if (el) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        el.click();
+        closeMenu();
+        return;
+      }
+
       if (onKeyDown?.(e)) {
         closeMenu();
         return;
@@ -304,8 +325,14 @@ const useNestedMenu = (
           return child;
         }
         const itemIndex = menuItemChildren.indexOf(child);
+
+        const accelerator = extractMenuAccelerator(child.props.children);
+
         return cloneElement(child, {
           "data-index": itemIndex,
+          "data-accelerator": accelerator
+            ? normalizeMenuAccelerator(accelerator)
+            : undefined,
           tabIndex: -1,
           role: "menuitem",
           onKeyDown: onMenuKeyDown,

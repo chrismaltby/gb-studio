@@ -30,8 +30,9 @@ import {
 import actions from "./clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
-import { copy, pasteAny } from "./clipboardHelpers";
+import { copy as rawCopy, pasteAny } from "./clipboardHelpers";
 import {
+  ClipboardType,
   ClipboardTypeActors,
   ClipboardTypeMetasprites,
   ClipboardTypeMetaspriteTiles,
@@ -462,6 +463,16 @@ const generateSceneInsertActions = (
 
 const clipboardMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
+    const copy = async (data: ClipboardType) => {
+      rawCopy(data);
+      const clipboard = await pasteAny();
+      if (clipboard) {
+        store.dispatch(clipboardActions.setClipboardData(clipboard));
+      } else {
+        store.dispatch(clipboardActions.clearClipboardData());
+      }
+    };
+
     if (actions.copyText.match(action)) {
       API.clipboard.writeText(action.payload);
     } else if (actions.copySpriteState.match(action)) {

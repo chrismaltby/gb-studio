@@ -4297,6 +4297,11 @@ const groupScriptEvents: CaseReducer<
     return;
   }
 
+  // Check that all script events belong to parent script
+  if (!action.payload.scriptEventIds.every((id) => script.includes(id))) {
+    return;
+  }
+
   // Use first id in list to determine insert position
   const insertId = action.payload.scriptEventIds[0];
   const insertIndex = insertId
