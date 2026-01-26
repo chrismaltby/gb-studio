@@ -532,6 +532,7 @@
   "FIELD_RESTART": "Restart",
   "FIELD_ONION_SKIN": "Onion Skin",
   "FIELD_SHOW_GRID": "Show Grid",
+  "FIELD_DARK_BACKGROUND": "Dark Background",
   "FIELD_PRECISION_SELECTION": "Precision Selection",
   "FIELD_ENABLED": "Enabled",
   "FIELD_ADD_FRAME": "Add Frame",

@@ -780,6 +780,8 @@ const MetaspriteEditor = ({
     (state) => state.project.present.settings.defaultMonoOBP1,
   );
 
+  const darkBackground = useAppSelector((state) => state.editor.darkBackground);
+
   const monoOBJPalettes = useMemo(() => {
     return [
       scene?.monoOBP0 || defaultMonoOBP0,
@@ -845,6 +847,7 @@ const MetaspriteEditor = ({
             zoom={zoom}
             showGrid={showSpriteGrid}
             gridSize={gridSize}
+            darkBackground={darkBackground}
             onClick={onDeselect}
           >
             {showOnionSkin && prevMetaspriteId && (
