@@ -194,6 +194,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where offscreen actors could appear onscreen while script is locked
 - Fix issue where copy/pasting hex colors in the palette editor could result in colors being remapped incorrectly when color correction was enabled
 - Fix issue where newly added scenes could default to using .mono.png tile images as the background image
+- Fix crash when selecting a scene with a deleted background image
 
 ## [4.1.3] - 2024-09-16
 

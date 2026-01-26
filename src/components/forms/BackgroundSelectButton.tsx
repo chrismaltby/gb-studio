@@ -305,7 +305,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
             <SpriteInfo>
               <SpriteInfoTitle>
                 <FormatFolderLabel label={background?.name} />
-                {isColor && background.monoOverrideId && (
+                {isColor && background?.monoOverrideId && (
                   <Pill
                     title={l10n("FIELD_MONO_OVERRIDE_DESC", {
                       filename: background.filename,
