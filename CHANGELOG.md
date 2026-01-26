@@ -78,6 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add copy (Ctrl/Cmd+C), paste (Ctrl/Cmd+V), paste before (Ctrl/Cmd+Shift+V), comment (Ctrl/Cmd+/) keyboard shortcuts to script event editor can be used when hovering mouse cursor over script event's title or when hoverring the "Add Event" button
 - Add ability to select multiple script events using a checkbox on the right-hand side of each event title. Previously this was only possible using Shift+Click. When multiple events are selected, copy, paste, comment, and group commands apply to all selected events.
 - Add ability to toggle between light and dark background color in sprite editor [@pau-tomas](https://github.com/pau-tomas)
+- Add ability to "Remove Unused" palettes, available from a new dropdown in the top-left of the Palettes page
 
 ### Changed
 

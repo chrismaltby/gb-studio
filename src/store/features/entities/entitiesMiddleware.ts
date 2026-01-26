@@ -52,6 +52,56 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
           ...action.payload,
         }),
       );
+    } else if (entitiesActions.removeUnusedPalettes.match(action)) {
+      const state = store.getState();
+      const eventDefs = selectScriptEventDefs(state);
+
+      const paletteIds = state.project.present.entities.palettes.ids;
+      const settings = state.project.present.settings;
+      const usedPaletteIds = new Set<string>();
+
+      const addUsedPaletteIds = (ids: string[]) => {
+        ids.forEach((pid) => usedPaletteIds.add(pid));
+      };
+
+      // Find Palettes referenced by settings
+      addUsedPaletteIds(settings.defaultBackgroundPaletteIds);
+      addUsedPaletteIds(settings.defaultSpritePaletteIds);
+
+      // Find Palettes referenced by Scenes
+      for (const sceneId of state.project.present.entities.scenes.ids) {
+        const scene = state.project.present.entities.scenes.entities[sceneId];
+        addUsedPaletteIds(scene.paletteIds);
+        addUsedPaletteIds(scene.spritePaletteIds);
+      }
+
+      // Find Palettes referenced by Script Events
+      for (const eventId of state.project.present.entities.scriptEvents.ids) {
+        const event =
+          state.project.present.entities.scriptEvents.entities[eventId];
+        const eventDef = eventDefs[event.command];
+        if (eventDef) {
+          const paletteFieldKeys = Object.values(eventDef.fieldsLookup)
+            .filter((f) => f.type === "palette")
+            .map((f) => f.key) as string[];
+          paletteFieldKeys.forEach((key) => {
+            const paletteId = event.args?.[key];
+            if (typeof paletteId === "string") {
+              usedPaletteIds.add(paletteId);
+            }
+          });
+        }
+      }
+
+      const unusedPaletteIds = paletteIds.filter(
+        (pid) => !usedPaletteIds.has(pid) && !pid.startsWith("default-"),
+      );
+
+      store.dispatch(
+        entitiesActions.removePalettes({
+          paletteIds: unusedPaletteIds,
+        }),
+      );
     }
 
     next(action);

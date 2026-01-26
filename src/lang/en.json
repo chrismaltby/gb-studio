@@ -1299,6 +1299,7 @@
   "FIELD_LOCK_DIRECTION_DESC": "Prevents the actor from changing facing direction along the selected axis while moving.",
   "FIELD_MOVEMENT": "Movement",
   "FIELD_OPTIONS": "Options",
+  "FIELD_REMOVE_UNUSED": "Remove Unused",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

@@ -20,6 +20,7 @@ import {
 } from "shared/lib/entities/buildEntityNavigatorItems";
 import { paletteName } from "shared/lib/entities/entitiesHelpers";
 import { Palette } from "shared/lib/resources/types";
+import { DropdownButton } from "ui/buttons/DropdownButton";
 
 interface NavigatorPalettesProps {
   height: number;
@@ -94,6 +95,10 @@ export const NavigatorPalettes = ({
     },
     [dispatch],
   );
+
+  const removeUnusedPalettes = useCallback(() => {
+    dispatch(entitiesActions.removeUnusedPalettes());
+  }, [dispatch]);
 
   const [renameId, setRenameId] = useState("");
 
@@ -215,6 +220,12 @@ export const NavigatorPalettes = ({
             >
               <SearchIcon />
             </Button>
+            <FixedSpacer width={5} />
+            <DropdownButton size="small" variant="transparent">
+              <MenuItem onClick={removeUnusedPalettes}>
+                {l10n("FIELD_REMOVE_UNUSED")}
+              </MenuItem>
+            </DropdownButton>
           </>
         }
       >

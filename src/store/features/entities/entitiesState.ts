@@ -3834,6 +3834,13 @@ const removePalette: CaseReducer<
   palettesAdapter.removeOne(state.palettes, action.payload.paletteId);
 };
 
+const removePalettes: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ paletteIds: string[] }>
+> = (state, action) => {
+  palettesAdapter.removeMany(state.palettes, action.payload.paletteIds);
+};
+
 /**************************************************************************
  * Custom Events
  */
@@ -4952,6 +4959,7 @@ const entitiesSlice = createSlice({
       },
     },
     removePalette,
+    removePalettes,
 
     /**************************************************************************
      * Custom Events
