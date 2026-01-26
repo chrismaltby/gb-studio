@@ -1161,6 +1161,23 @@ const changes: EngineChange[] = [
       "third-party/GBT_PLAYER/makelib.bat",
     ],
   },
+  {
+    version: "4.2.0-e31",
+    description: createDescription("Updates", [
+      "Fix issue in Platformer scenes where the wall slide state would not exit upon landing",
+      "Optimize actors / projectiles render functions by removing +8 offset",
+      "Optimize Bank 0 usage by removing unnecessary global variable initializations",
+    ]),
+    modifiedFiles: [
+      "src/core/actor.c",
+      "src/core/fade_manager.c",
+      "src/core/game_time.c",
+      "src/core/interrupts.c",
+      "src/core/projectiles.c",
+      "src/core/trigger.c",
+      "src/states/platform.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
