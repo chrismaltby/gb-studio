@@ -2048,6 +2048,8 @@
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO": "This plugin may be incompatible with your version of GB Studio",
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_DESC": "This plugin is listed as supporting versions {pluginSupportedVersion} but your are using version {version}.",
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_PRERELEASE_DESC": "This plugin is listed as supporting versions {pluginSupportedVersion} but your are using a prerelease version {version}.",
+  "DIALOG_REPLACE_MONO_TILES": "Replace Monochrome Tiles Image \"{name}\"?",
+  "DIALOG_REPLACE_MONO_TILES_DESCRIPTION": "Extracting palettes from this image will regenerate its .mono.png tiles image. An existing monochrome tiles image was found. Do you want to replace it?",
 
   "// 16": "Settings ----------------------------------------------------",
 

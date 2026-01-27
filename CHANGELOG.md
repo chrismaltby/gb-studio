@@ -126,6 +126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved GBVM performance during native calls [@untoxa](https://github.com/untoxa) and integer square root calculations [@Phidias618](https://github.com/Phidias618)
 - Improved GBVM actor and projectile render performance [@michel-iwaniec](https://github.com/michel-iwaniec)
 - Optimized GBVM Bank 0 usage by removing unnecessary global variable initializations [@Phidias618](https://github.com/Phidias618)
+- Extracting palettes from color images now automatically generates a matching .mono.png tiles image
 
 ### Fixed
 

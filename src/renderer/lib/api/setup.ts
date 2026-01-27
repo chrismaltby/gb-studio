@@ -265,6 +265,17 @@ const APISetup = {
         colorCorrection,
         autoTileFlipEnabled,
       ),
+    extractBackgroundMonoTiles: (
+      background: BackgroundAsset,
+      uiPalette: HexPalette | undefined,
+      colorCorrection: ColorCorrectionSetting,
+    ): Promise<BackgroundInfo> =>
+      ipcRenderer.invoke(
+        "project:extract-background-mono-tiles",
+        background,
+        uiPalette,
+        colorCorrection,
+      ),
     addFile: (filename: string): Promise<void> =>
       ipcRenderer.invoke("project:add-file", filename),
     loadProject: (): Promise<LoadProjectResult> =>

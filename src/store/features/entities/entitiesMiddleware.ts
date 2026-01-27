@@ -71,7 +71,15 @@ const entitiesMiddleware: Middleware<Dispatch, RootState> =
       // Find Palettes referenced by Scenes
       for (const sceneId of state.project.present.entities.scenes.ids) {
         const scene = state.project.present.entities.scenes.entities[sceneId];
-        addUsedPaletteIds(scene.paletteIds);
+        const background =
+          state.project.present.entities.backgrounds.entities[
+            scene.backgroundId
+          ];
+        if (background?.autoColor) {
+          usedPaletteIds.add(scene.paletteIds[7]); // UI Palette
+        } else {
+          addUsedPaletteIds(scene.paletteIds);
+        }
         addUsedPaletteIds(scene.spritePaletteIds);
       }
 
