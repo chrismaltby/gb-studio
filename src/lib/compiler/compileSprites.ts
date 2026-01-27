@@ -152,9 +152,9 @@ export const compileSprite = async (
     spriteMode,
   );
 
-  const fixedXOffset = spriteSheet.canvasOriginX;
+  const fixedXOffset = spriteSheet.canvasOriginX - 8;
   const fixedYOffset =
-    (spriteMode === "8x16" ? 0 : -8) + spriteSheet.canvasOriginY;
+    (spriteMode === "8x16" ? 0 : -8) + spriteSheet.canvasOriginY - 8;
 
   const animationDefs: SpriteTileData[][][] = spriteSheet.states
     .map((state) =>

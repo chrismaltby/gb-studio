@@ -10,7 +10,7 @@ import {
 } from "electron";
 import windowStateKeeper from "electron-window-state";
 import settings from "electron-settings";
-import Path from "path";
+import Path, { relative } from "path";
 import {
   copyFile,
   pathExists,
@@ -153,6 +153,15 @@ import { EngineSchema, loadEngineSchema } from "lib/project/loadEngineSchema";
 import { getROMFilename, getROMFileStem } from "shared/lib/helpers/filePaths";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { HexPalette } from "shared/lib/tiles/autoColor";
+import confirmReplaceMonoTiles, {
+  DeleteReplaceMonoTilesConfirmButton,
+} from "lib/electron/dialog/confirmReplaceMonoTiles";
+import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
+import { getMonoTilesImage } from "lib/helpers/getMonoTilesImage";
+import { readFileToIndexedImage } from "lib/tiles/readFileToTiles";
+import { tileDataIndexFn } from "shared/lib/tiles/tileData";
+import { isEqual } from "lodash";
+import { writeIndexedImagePNG } from "lib/helpers/writeIndexedImage";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1657,6 +1666,54 @@ ipcMain.handle(
       autoTileFlipEnabled,
       projectRoot,
     );
+  },
+);
+
+ipcMain.handle(
+  "project:extract-background-mono-tiles",
+  async (
+    _event,
+    background: BackgroundAsset,
+    uiPalette: HexPalette | undefined,
+    colorCorrection: ColorCorrectionSetting,
+  ) => {
+    const projectRoot = Path.dirname(projectPath);
+    const dmgFilename = monoOverrideForFilename(
+      assetFilename(projectRoot, "backgrounds", background),
+    );
+    const relativeFilename = relative(projectRoot, dmgFilename);
+    const monoAlreadyExists = await fileExists(dmgFilename);
+
+    const monoImage = await getMonoTilesImage(
+      background,
+      uiPalette,
+      colorCorrection,
+      projectRoot,
+    );
+
+    if (monoAlreadyExists) {
+      const existingMonoImage = await readFileToIndexedImage(
+        dmgFilename,
+        tileDataIndexFn,
+      );
+
+      const monoIsEqual = isEqual(monoImage, existingMonoImage);
+
+      if (monoIsEqual) {
+        // Exact image already exists - no need to write
+        return;
+      }
+
+      if (
+        confirmReplaceMonoTiles(relativeFilename) ===
+        DeleteReplaceMonoTilesConfirmButton.cancel
+      ) {
+        // Image differs, prompted to replace but cancel was selected
+        return;
+      }
+    }
+
+    await writeIndexedImagePNG(dmgFilename, monoImage);
   },
 );
 

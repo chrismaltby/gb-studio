@@ -76,6 +76,15 @@ const assetsMiddleware: Middleware<Dispatch, RootState> =
                 DMG_PALETTE;
           const uiPalette: HexPalette | undefined =
             uiPaletteId !== "auto" ? palette?.colors : undefined;
+
+          if (isExtracting) {
+            API.project.extractBackgroundMonoTiles(
+              background,
+              uiPalette,
+              colorCorrection,
+            );
+          }
+
           API.project
             .getBackgroundInfo(
               isExtracting ? { ...background, autoColor: true } : background,

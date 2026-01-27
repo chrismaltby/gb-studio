@@ -6,6 +6,7 @@ interface MetaspriteGridProps {
   width: number;
   height: number;
   showGrid: boolean;
+  darkBackground: boolean;
   gridSize: number;
   zoom: number;
   children: React.ReactNode;
@@ -38,6 +39,7 @@ const MetaspriteGrid = ({
   height,
   gridSize,
   showGrid,
+  darkBackground,
   zoom,
   onClick,
   children,
@@ -45,13 +47,18 @@ const MetaspriteGrid = ({
   // When canvas width is not 8 or a multiple of 16 then
   // an offset is needed to align grid lines correctly
   const offsetGridX = width % 16 !== 0 && width !== 8 ? `${4 * zoom}px` : "0";
+
+  const backgroundColor = darkBackground ? "#000" : "#fff";
+  const borderColor = darkBackground ? "#343434" : "#d4d4d4";
+  const lineColor = darkBackground ? "#343434" : "#d4d4d4";
+
   return (
     <div
       style={{
         position: "relative",
         width: width * zoom,
         height: height * zoom,
-        background: "#fff",
+        background: backgroundColor,
       }}
     >
       {showGrid && (
@@ -75,10 +82,12 @@ const MetaspriteGrid = ({
           left: 0,
           right: 0,
           bottom: 0,
-          border: `${1 / zoom}px solid #d4d4d4`,
+          border: `${1 / zoom}px solid ${borderColor}`,
           backgroundSize: `${gridSize * zoom}px ${gridSize * zoom}px`,
           backgroundPositionX: offsetGridX,
-          backgroundImage: showGrid ? generateGridBackground(zoom) : "none",
+          backgroundImage: showGrid
+            ? generateGridBackground(zoom, lineColor, borderColor)
+            : "none",
         }}
       />
       <div

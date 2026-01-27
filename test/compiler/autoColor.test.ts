@@ -86,7 +86,7 @@ const writeIndexedImagePNG = async (
 };
 
 describe("extractTilePaletteWithHint", () => {
-  test("should extract palette with hint and color correction off", () => {
+  test("should extract palette with hint for color correction being both on and off", () => {
     const pixels = new Uint8ClampedArray(8 * 8 * 4);
     const dmgPixels = new Uint8ClampedArray(8 * 8 * 4);
 
@@ -149,7 +149,17 @@ describe("extractTilePaletteWithHint", () => {
       tileDataIndexFn,
     );
 
-    const sparsePalette = extractTilePaletteWithHint(
+    const rawPalette = extractTilePaletteWithHint(
+      pixels,
+      width,
+      tileX,
+      tileY,
+      dmgIndexed,
+      "none",
+    );
+    expect(rawPalette).toEqual(["ff00ff", "9394fe", "00ff00", "ff0000"]);
+
+    const correctedPalette = extractTilePaletteWithHint(
       pixels,
       width,
       tileX,
@@ -157,7 +167,7 @@ describe("extractTilePaletteWithHint", () => {
       dmgIndexed,
       "default",
     );
-    expect(sparsePalette).toEqual(["ff00ff", "935fff", "00ff00", "ff1f00"]);
+    expect(correctedPalette).toEqual(["ff00ff", "9c7bff", "00ff00", "ff0000"]);
   });
 
   test("should extract palette with hint", () => {

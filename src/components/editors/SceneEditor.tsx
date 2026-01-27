@@ -654,7 +654,8 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     scene.colorModeOverride === "color";
   const showAutoTileFlipOverride =
     canAutoTileFlip &&
-    (background.autoTileFlipOverride !== undefined || autoTileFlipOverrideOpen);
+    (background?.autoTileFlipOverride !== undefined ||
+      autoTileFlipOverrideOpen);
   const onEditPaletteId = (index: number) => (paletteId: string) => {
     const paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
     paletteIds[index] = paletteId;

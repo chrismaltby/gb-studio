@@ -8,6 +8,7 @@ import {
   NextIcon,
   GridIcon,
   PauseIcon,
+  DarkBackgroundIcon,
 } from "ui/icons/Icons";
 import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import editorActions from "store/features/editor/editorActions";
@@ -37,6 +38,7 @@ const MetaspriteEditorToolsPanel = ({
   const play = useAppSelector((state) => state.editor.playSpriteAnimation);
   const showOnionSkin = useAppSelector((state) => state.editor.showOnionSkin);
   const showSpriteGrid = useAppSelector((state) => state.editor.showSpriteGrid);
+  const darkBackground = useAppSelector((state) => state.editor.darkBackground);
 
   const spriteAnimation = useAppSelector((state) =>
     spriteAnimationSelectors.selectById(state, selectedAnimationId),
@@ -73,6 +75,10 @@ const MetaspriteEditorToolsPanel = ({
   const toggleSpriteGrid = useCallback(() => {
     dispatch(editorActions.setShowSpriteGrid(!showSpriteGrid));
   }, [dispatch, showSpriteGrid]);
+
+  const toggleDarkBackground = useCallback(() => {
+    dispatch(editorActions.setDarkbackground(!darkBackground));
+  }, [dispatch, darkBackground]);
 
   useEffect(() => {
     if (play) {
@@ -137,6 +143,16 @@ const MetaspriteEditorToolsPanel = ({
         }`}
       >
         <GridIcon />
+      </Button>
+      <Button
+        variant="transparent"
+        onClick={toggleDarkBackground}
+        active={darkBackground}
+        title={`${l10n("FIELD_DARK_BACKGROUND")}${
+          darkBackground ? ` (${l10n("FIELD_DARK_BACKGROUND")})` : ""
+        }`}
+      >
+        <DarkBackgroundIcon />
       </Button>
       {/* <FloatingPanelDivider /> */}
       {/* <Button variant="transparent">

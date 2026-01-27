@@ -1,3 +1,8 @@
+import { createAction } from "@reduxjs/toolkit";
 import { actions } from "./entitiesState";
 
-export default actions;
+const removeUnusedPalettes = createAction("entities/removeUnusedPalettes");
+
+const allActions = { ...actions, removeUnusedPalettes };
+
+export default allActions;

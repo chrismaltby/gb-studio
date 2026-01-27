@@ -1,10 +1,10 @@
 import chroma from "chroma-js";
 import { TILE_SIZE } from "consts";
 import { IndexedImage } from "shared/lib/tiles/indexedImage";
-import { rgbToColorCorrectedHex } from "shared/lib/color/colorCorrection";
 import { ColorCorrectionSetting } from "shared/lib/resources/types";
 import { rgb2hex } from "shared/lib/helpers/color";
 import { tileDataIndexFn } from "./tileData";
+import { correctedRGBToCanonicalHex } from "shared/lib/color/reverseColorCorrection";
 
 export type VariableLengthHexPalette = string[];
 
@@ -105,6 +105,7 @@ export const autoPalette = (
         palettes[tilePaletteMap[ti]],
         recolorCache,
         indexedImage,
+        colorCorrection,
       );
     }
   }
@@ -231,7 +232,7 @@ const extractTilePalette = (
       if (!seenColorLookup[key]) {
         seenColorLookup[key] = true;
         const colorCorrectionFn =
-          colorCorrection === "default" ? rgbToColorCorrectedHex : rgb2hex;
+          colorCorrection === "default" ? correctedRGBToCanonicalHex : rgb2hex;
         const hex = colorCorrectionFn(pixels[i], pixels[i + 1], pixels[i + 2]);
         colors.push(hex);
         if (colors.length === 4) {
@@ -273,7 +274,7 @@ export const extractTilePaletteWithHint = (
       if (!seenColorLookup[key]) {
         seenColorLookup[key] = true;
         const colorCorrectionFn =
-          colorCorrection === "default" ? rgbToColorCorrectedHex : rgb2hex;
+          colorCorrection === "default" ? correctedRGBToCanonicalHex : rgb2hex;
         const hex = colorCorrectionFn(pixels[i], pixels[i + 1], pixels[i + 2]);
         colors[index] = hex;
         seenCount++;
@@ -311,12 +312,17 @@ const buildIndexedTile = (
   palette: VariableLengthHexPalette,
   recolorCache: Record<string, string>,
   indexedImage: IndexedImage,
+  colorCorrection: ColorCorrectionSetting,
 ): void => {
   const startX = tileX * TILE_SIZE;
   const endX = (tileX + 1) * TILE_SIZE;
   const startY = tileY * TILE_SIZE;
   const endY = (tileY + 1) * TILE_SIZE;
   const indexCache: Record<string, number> = {};
+
+  const colorCorrectionFn =
+    colorCorrection === "default" ? correctedRGBToCanonicalHex : rgb2hex;
+
   for (let yi = startY; yi < endY; yi++) {
     for (let xi = startX; xi < endX; xi++) {
       const ii = yi * width + xi;
@@ -330,7 +336,7 @@ const buildIndexedTile = (
         // Otherwise check image wide cache for palette + RGB to closest hex
         if (!recolorCache[key]) {
           recolorCache[key] = findClosestHexColor(
-            rgbToColorCorrectedHex(pixels[i], pixels[i + 1], pixels[i + 2]),
+            colorCorrectionFn(pixels[i], pixels[i + 1], pixels[i + 2]),
             palette,
           );
         }

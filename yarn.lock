@@ -5,13 +5,6 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"3x3-equation-solver@npm:^1.2.18":
-  version: 1.2.18
-  resolution: "3x3-equation-solver@npm:1.2.18"
-  checksum: 10c0/98315f6292f10bc5e2d8246cc9ec91270f6b02240e72170d899491ce581e51df376028135ad1fbc60393ba18493deed027dafeed77783922054958496c5522e6
-  languageName: node
-  linkType: hard
-
 "@aashutoshrathi/word-wrap@npm:^1.2.3":
   version: 1.2.6
   resolution: "@aashutoshrathi/word-wrap@npm:1.2.6"
@@ -10667,7 +10660,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "gb-studio@workspace:."
   dependencies:
-    3x3-equation-solver: "npm:^1.2.18"
     "@chromatic-com/storybook": "npm:^1.9.0"
     "@electron-forge/cli": "npm:^7.3.0"
     "@electron-forge/maker-deb": "npm:^7.3.0"
