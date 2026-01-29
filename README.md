@@ -108,6 +108,10 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 
 [GB Studio Documentation](https://www.gbstudio.dev/docs)
 
+## MCP Server (Community Tool)
+
+If you want to automate GB Studio project changes with an AI agent or scripts, I maintain an MCP (Model Context Protocol) server that exposes endpoints for project discovery, validation, inventory, and asset creation. It’s useful for turning prompts into playable prototypes and integrating GB Studio workflows into external tools. You can find it on npm here: [gbstudio-claude-mcp](https://www.npmjs.com/package/gbstudio-claude-mcp).
+
 ## Note For Translators
 
 If you'd like to help contribute new language localisations to GB Studio you can do so by submitting pull requests adding or updating the JSON files found here https://github.com/chrismaltby/gb-studio/tree/develop/src/lang
