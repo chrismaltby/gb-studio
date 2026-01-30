@@ -508,6 +508,8 @@
   "FIELD_INPUT_RUN_DESC": "The button that makes the player run when held.",
   "FIELD_INPUT_INTERACT": "Interact Button",
   "FIELD_INPUT_INTERACT_DESC": "The button used to interact with nearby actors.",
+  "FIELD_INPUT_FORCE_TRIGGER": "Force Trigger Button",
+  "FIELD_INPUT_FORCE_TRIGGER_DESC": "The button used to force trigger to run it onEnter script if the player is already inside the trigger.",
   "FIELD_INPUT_DESC": "The input button to check.",
   "FIELD_INPUT_MULTIPLE_DESC": "The input buttons to check.",
   "FIELD_ENABLE_SGB": "Enable Super GB Mode",

@@ -18,6 +18,22 @@
       "defaultValue": "INPUT_A"
     },
     {
+      "key": "INPUT_PLATFORM_FORCE_TRIGGER",
+      "sceneType": "PLATFORM",
+      "label": "FIELD_INPUT_FORCE_TRIGGER",
+      "description": "FIELD_INPUT_FORCE_TRIGGER_DESC",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "togglebuttons",
+      "options": [
+	    ["FALSE", "FIELD_NONE"],
+        ["INPUT_A_PRESSED", "A"],
+        ["INPUT_B_PRESSED", "B"],
+        ["INPUT_UP_PRESSED", "FIELD_DIRECTION_UP"]
+      ],
+      "cType": "define",
+      "defaultValue": "INPUT_UP"
+    },
+    {
       "key": "plat_walk_vel",
       "sceneType": "PLATFORM",
       "label": "FIELD_WALK_VEL",
