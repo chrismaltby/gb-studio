@@ -1650,7 +1650,8 @@ class ScriptBuilder {
       if (
         property === "actorPosition" ||
         property === "actorDirection" ||
-        property === "actorFrame"
+        property === "actorFrame" ||
+		property === "actorAnimState"
       ) {
         const targetValue = fetchOp.value.target || "player";
         const targetSymbol =
@@ -1689,6 +1690,13 @@ class ScriptBuilder {
             this._actorGetAnimFrame(localVar);
             break;
           }
+		  case "actorAnimState": {
+            localVar = this._declareLocal("actor_anim_state", 1, true);
+            const actorRef = this._declareLocal("actor", 4);
+            this.setActorId(actorRef, targetValue);
+            this._actorGetAnimState(actorRef, localVar);
+            break;		  
+		  }
           default: {
             assertUnreachable(fetchOp.value);
           }
@@ -2073,6 +2081,21 @@ class ScriptBuilder {
 
   _actorSetAnimState = (addr: string, state: string) => {
     this._addCmd("VM_ACTOR_SET_ANIM_SET", addr, state);
+  };
+  
+  _actorGetAnimState = (addr: string, dest: string) => {
+    this._addCmd("VM_ACTOR_GET_ANIM_SET", addr, dest);
+  };
+  
+  _actorGetAnimStateToVariable = (addr: string, variable: string) => {
+    const variableAlias = this.getVariableAlias(variable);
+    if (this._isIndirectVariable(variable)) {
+      const animStateDestVarRef = this._declareLocal("anim_state_dest_var", 1, true);
+      this._actorGetAnimState(addr, animStateDestVarRef);
+      this._setInd(variableAlias, animStateDestVarRef);
+    } else {
+      this._actorGetAnimState(addr, variableAlias);
+    }
   };
 
   _actorEmote = (addr: string, symbol: string) => {
@@ -3576,6 +3599,13 @@ extern void __mute_mask_${symbol};
     this._addComment(`Store Frame In Variable`);
     this._actorGetAnimFrame(actorRef);
     this._setVariable(variable, this._localRef(actorRef, 1));
+    this._addNL();
+  };
+  
+  actorGetAnimState = (variable: string) => {
+    const actorRef = this._declareLocal("actor", 4);
+    this._addComment(`Store Anim State In Variable`);
+    this._actorGetAnimStateToVariable(actorRef, variable);
     this._addNL();
   };
 

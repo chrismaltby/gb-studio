@@ -203,6 +203,7 @@ const validProperties = [
   "ydeadzone",
   "xoffset",
   "yoffset",
+  "animstate"
 ];
 
 export const isScriptValue = (value: unknown): value is ScriptValue => {
@@ -250,7 +251,7 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   // Is Direction
   if (scriptValue.type === "direction") {
     return typeof scriptValue.value === "string";
-  }
+  }  
   if (isValueOperation(scriptValue)) {
     return (
       (isScriptValue(scriptValue.valueA) || !scriptValue.valueA) &&
@@ -349,6 +350,10 @@ export type PrecompiledValueFetch = {
       }
     | {
         type: "actorFrame";
+        target: string | ScriptBuilderFunctionArg;
+      }
+	| {
+        type: "actorAnimState";
         target: string | ScriptBuilderFunctionArg;
       }
     | {
