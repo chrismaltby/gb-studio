@@ -1178,6 +1178,34 @@ const changes: EngineChange[] = [
       "src/states/platform.c",
     ],
   },
+  {
+    version: "4.2.0-e32",
+    description: createDescription("Updates", [
+      "Improve VM_RPN so compiler has ability to generate more efficient code",
+      "Split rendering from projectiles_update",
+      "only update/render projectiles when at least one projectile is active",
+      "Optimise projectile_launch by 200 t-cycles",
+      "Optimise actors_update, using static here is causing slower performance",
+      "Fix jitter correction in SHMUP scene when moving from an horizontal direction into a vertical direction without stopping moving",
+      "Fix issue where platformer was using air deceleration value when in the run state",
+      "Optimize VM_STEP by moving bank save / restore code to script_runner_update",
+      "Remove public declaration of VM_STEP, it must be called through the script runner",
+      "define the rest of the RPN operators, so there are no magic numbers anymore",
+      "fix typo in the .REF_MEM definition",
+      "Add setting for forced activation of triggers on input in platformer",
+    ]),
+    modifiedFiles: [
+      "include/projectiles.h",
+      "include/vm.h",
+      "include/vm.i",
+      "src/core/actor.c",
+      "src/core/core.c",
+      "src/core/projectiles.c",
+      "src/core/vm.c",
+      "src/states/platform.c",
+      "src/states/shmup.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
