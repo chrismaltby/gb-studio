@@ -7,16 +7,25 @@ import {
   avatarSelectors,
   fontSelectors,
 } from "store/features/entities/entitiesState";
-import { loadFont, drawFrame, drawFill, drawText } from "./TextPreviewHelper";
+import {
+  loadFont,
+  drawFrame,
+  drawFill,
+  drawText,
+  DrawTextStats,
+} from "./TextPreviewHelper";
 import { assetURL } from "shared/lib/helpers/assets";
 import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";
 import { FontData } from "shared/lib/helpers/fonts";
+import l10n from "shared/lib/lang/l10n";
+import styled from "styled-components";
 
 interface DialoguePreviewProps {
   text: string;
   avatarId?: string;
   showFrame?: boolean;
   showFill?: boolean;
+  showTileCount?: boolean;
   textX?: number;
   textY?: number;
   textHeight?: number;
@@ -25,11 +34,32 @@ interface DialoguePreviewProps {
   scale?: number;
 }
 
+const Wrapper = styled.div`
+  position: relative;
+
+  canvas {
+    display: block;
+  }
+`;
+
+const TileStats = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  color: ${(props) => props.theme.colors.button.text};
+  background: ${(props) => props.theme.colors.list.activeBackground};
+  font-size: 11px;
+  margin-top: 5px;
+  padding: 2px 4px;
+  border-radius: 2px;
+`;
+
 export const DialoguePreview: FC<DialoguePreviewProps> = ({
   text,
   avatarId,
   showFrame = true,
   showFill = true,
+  showTileCount = true,
   textX = 1,
   textY = 1,
   textHeight = 3,
@@ -53,6 +83,10 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
   const [avatarImage, setAvatarImage] = useState<HTMLCanvasElement>();
   const [fontsData, setFontsData] = useState<Record<string, FontData>>({});
   const [drawn, setDrawn] = useState<boolean>(false);
+  const [textStats, setTextStats] = useState<DrawTextStats>({
+    tileWidth: 0,
+    isApproximate: false,
+  });
   const ref = useRef<HTMLCanvasElement>(null);
   const isMounted = useRef(true);
 
@@ -169,7 +203,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
           if (avatarImage) {
             ctx.drawImage(avatarImage, 8, 8);
           }
-          drawText(
+          const stats = drawText(
             ctx,
             text,
             Math.max(0, 16 + 8 * textX),
@@ -179,8 +213,9 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
             defaultFontId,
             fonts[0]?.id,
           );
+          setTextStats(stats);
         } else {
-          drawText(
+          const stats = drawText(
             ctx,
             text,
             Math.max(0, 8 * textX),
@@ -190,6 +225,7 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
             defaultFontId,
             fonts[0]?.id,
           );
+          setTextStats(stats);
         }
       }
       setDrawn(true);
@@ -222,15 +258,24 @@ export const DialoguePreview: FC<DialoguePreviewProps> = ({
   }, []);
 
   return (
-    <canvas
-      ref={ref}
-      width={160}
-      height={48}
-      style={{
-        width: 160 * scale,
-        imageRendering: "pixelated",
-        opacity: drawn ? 1 : 0,
-      }}
-    />
+    <Wrapper>
+      <canvas
+        ref={ref}
+        width={160}
+        height={48}
+        style={{
+          width: 160 * scale,
+          imageRendering: "pixelated",
+          opacity: drawn ? 1 : 0,
+        }}
+      />
+      {showTileCount && (
+        <TileStats>
+          {textStats.isApproximate ? "~" : ""}
+          {textStats.tileWidth}{" "}
+          {l10n(textStats.tileWidth === 1 ? "FIELD_TILE" : "FIELD_TILES")}
+        </TileStats>
+      )}
+    </Wrapper>
   );
 };

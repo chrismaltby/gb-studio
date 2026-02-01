@@ -7,6 +7,11 @@ const DOLLAR_CHAR = 4;
 const HASH_CHAR = 3;
 const ZERO_CHAR = 16;
 
+export type DrawTextStats = {
+  tileWidth: number;
+  isApproximate: boolean;
+};
+
 const isTransparent = (r: number, g: number, b: number): boolean => {
   return (
     (r === 255 && b === 255 && g === 0) || (g === 255 && r === 0 && b === 0)
@@ -119,7 +124,7 @@ export const drawText = (
   fontsData: Record<string, FontData>,
   defaultFontId: string,
   fallbackFontId: string,
-) => {
+): DrawTextStats => {
   let drawX = 0;
   let drawY = 0;
   let leftX = 0;
@@ -131,8 +136,19 @@ export const drawText = (
   }
 
   if (!font) {
-    return;
+    return { tileWidth: 0, isApproximate: false };
   }
+
+  let pixelWidth = 0;
+  let isApproximate = false;
+
+  const incPixelWidth = (amount: number) => {
+    pixelWidth += amount;
+  };
+
+  const roundUpPixelWidth = () => {
+    pixelWidth = Math.ceil(pixelWidth / 8) * 8;
+  };
 
   const drawCharCode = (char: number) => {
     const lookupX = char % 16;
@@ -152,6 +168,7 @@ export const drawText = (
       8,
     );
     drawX += font.widths[char] ?? 0;
+    incPixelWidth(font.widths[char] ?? 0);
   };
 
   const textTokens = lexTextWithMapping(text, fontsData, font.id, false);
@@ -174,6 +191,7 @@ export const drawText = (
           drawX = leftX;
           drawY += 8;
           i += 4;
+          roundUpPixelWidth();
           continue;
         }
 
@@ -192,16 +210,26 @@ export const drawText = (
         drawCharCode(ZERO_CHAR);
       }
       drawCharCode(DOLLAR_CHAR);
+      roundUpPixelWidth();
+      isApproximate = true;
     } else if (token.type === "variable") {
       drawCharCode(DOLLAR_CHAR);
       drawCharCode(DOLLAR_CHAR);
       drawCharCode(DOLLAR_CHAR);
+      roundUpPixelWidth();
+      isApproximate = true;
     } else if (token.type === "char") {
       drawCharCode(HASH_CHAR);
+      roundUpPixelWidth();
+      isApproximate = true;
     } else if (token.type === "font") {
       const newFont = fontsData[token.fontId];
       if (newFont) {
         font = newFont;
+        if (font.isMono) {
+          drawX = Math.ceil(drawX / TILE_SIZE) * TILE_SIZE;
+          roundUpPixelWidth();
+        }
       }
     } else if (token.type === "gotoxy" && token.relative) {
       if (token.x > 0) {
@@ -215,10 +243,16 @@ export const drawText = (
         drawY = (Math.floor(drawY / TILE_SIZE) + token.y) * TILE_SIZE;
       }
       leftX = drawX;
+      roundUpPixelWidth();
     } else if (token.type === "gotoxy" && !token.relative) {
       drawX = (token.x - 1) * TILE_SIZE - xOffset;
       drawY = (token.y - 1) * TILE_SIZE - yOffset;
       leftX = drawX;
+      roundUpPixelWidth();
     }
   });
+
+  const tileWidth = Math.ceil(pixelWidth / TILE_SIZE);
+
+  return { tileWidth, isApproximate };
 };

@@ -531,6 +531,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
           textY={0}
           showFrame={false}
           showFill={false}
+          showTileCount={false}
           minHeight={0}
           maxHeight={18}
         />
