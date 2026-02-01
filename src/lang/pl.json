@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2142260128",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2144260201",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -508,6 +508,8 @@
   "FIELD_INPUT_RUN_DESC": "Przycisk przytrzymywany odpowiadający za bieg.",
   "FIELD_INPUT_INTERACT": "Przycisk interakcji",
   "FIELD_INPUT_INTERACT_DESC": "Przycisk odpowiadający za interakcję z pobliskimi aktorami.",
+  "FIELD_INPUT_FORCE_TRIGGER": "Przycisk wymuszenia wyzwalacza",
+  "FIELD_INPUT_FORCE_TRIGGER_DESC": "Przycisk wymuszający uruchomienie skryptu (wejście) wyzwalacza, jeżeli gracz znajduje się już wewnątrz jego obszaru.",
   "FIELD_INPUT_DESC": "Sprawdzenie naciśniętego przycisku.",
   "FIELD_INPUT_MULTIPLE_DESC": "Sprawdzenie naciśniętych przycisków.",
   "FIELD_ENABLE_SGB": "Włącz tryb Super GB",
@@ -1300,7 +1302,7 @@
   "FIELD_MOVEMENT": "Ruch",
   "FIELD_OPTIONS": "Opcje",
   "FIELD_REMOVE_UNUSED": "Usuń nieużyte",
-
+  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -2050,7 +2052,7 @@
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_PRERELEASE_DESC": "Ta wtyczka obsługuje wersje {pluginSupportedVersion}, ale używasz wersji przedpremierowej {version}.",
   "DIALOG_REPLACE_MONO_TILES": "Zastąpić obraz monochromatycznych tafli (tileset) \"{name}\"?",
   "DIALOG_REPLACE_MONO_TILES_DESCRIPTION": "Wyodrębnienie palet z tego obrazu spowoduje ponowne wygenerowanie obrazu tafli .mono.png. Wykryto istniejący obraz monochromatyczny tafli (tileset). Czy chcesz go zastąpić?",
-
+  
   "// 16": "Settings ----------------------------------------------------",
 
   "SETTINGS": "Ustawienia",
