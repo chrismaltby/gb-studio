@@ -4,9 +4,25 @@ const glob = require("glob").sync;
 
 const disallowedFiles = [".DS_Store"];
 
+const disallowedDirs = [
+  "appData/engine/gbvm/test",
+  "appData/engine/gbvm/examples",
+  "gbdk/examples",
+];
+
+const isAllowedPath = (inputPath, disallowedPaths) => {
+  const normalizedInput = Path.normalize(inputPath).replace(/\\/g, "/");
+  return !disallowedPaths.some((p) =>
+    normalizedInput.includes(Path.normalize(p).replace(/\\/g, "/")),
+  );
+};
+
 function fileFilter(src, dest) {
   const filename = Path.basename(src);
-  return disallowedFiles.indexOf(filename) === -1;
+  return (
+    disallowedFiles.indexOf(filename) === -1 &&
+    isAllowedPath(src, disallowedDirs)
+  );
 }
 
 function afterCopy(buildPath, electronVersion, platform, arch, callback) {
