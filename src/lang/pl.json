@@ -1302,7 +1302,7 @@
   "FIELD_MOVEMENT": "Ruch",
   "FIELD_OPTIONS": "Opcje",
   "FIELD_REMOVE_UNUSED": "Usuń nieużyte",
-  
+
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -2052,7 +2052,7 @@
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_PRERELEASE_DESC": "Ta wtyczka obsługuje wersje {pluginSupportedVersion}, ale używasz wersji przedpremierowej {version}.",
   "DIALOG_REPLACE_MONO_TILES": "Zastąpić obraz monochromatycznych tafli (tileset) \"{name}\"?",
   "DIALOG_REPLACE_MONO_TILES_DESCRIPTION": "Wyodrębnienie palet z tego obrazu spowoduje ponowne wygenerowanie obrazu tafli .mono.png. Wykryto istniejący obraz monochromatyczny tafli (tileset). Czy chcesz go zastąpić?",
-  
+
   "// 16": "Settings ----------------------------------------------------",
 
   "SETTINGS": "Ustawienia",
