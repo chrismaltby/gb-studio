@@ -501,6 +501,8 @@
   "FIELD_INPUT_RUN_DESC": "ボタンが押されている間、プレイヤーを走行させるボタン。",
   "FIELD_INPUT_INTERACT": "アクションボタン",
   "FIELD_INPUT_INTERACT_DESC": "近接しているアクターに対してアクションを行うボタン。",
+  "FIELD_INPUT_FORCE_TRIGGER": "トリガー再実行ボタン",
+  "FIELD_INPUT_FORCE_TRIGGER_DESC": "プレイヤーがすでにトリガー内にいる場合でも、トリガーの「接触した時」のスクリプトを再実行するボタン。",
   "FIELD_INPUT_DESC": "チェック対象の入力ボタン。",
   "FIELD_INPUT_MULTIPLE_DESC": "チェック対象の入力ボタン。",
   "FIELD_ENABLE_SGB": "Super GB モードの有効化",
