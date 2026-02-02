@@ -73,24 +73,10 @@
       }
     },
     {
-      "id": "7767557",
-      "type": "user",
-      "attributes": {
-        "full_name": "evan niedojadlo"
-      }
-    },
-    {
       "id": "93658267",
       "type": "user",
       "attributes": {
         "full_name": "Gumpy Function"
-      }
-    },
-    {
-      "id": "71689",
-      "type": "user",
-      "attributes": {
-        "full_name": "Michael Towns (gamebuoygames)"
       }
     },
     {
@@ -136,6 +122,13 @@
       },
       "id": "7794289",
       "type": "user"
+    },
+    {
+      "id": "7767557",
+      "type": "user",
+      "attributes": {
+        "full_name": "evan niedojadlo"
+      }
     },
     {
       "attributes": {
@@ -185,6 +178,13 @@
       },
       "id": "3319189",
       "type": "user"
+    },
+    {
+      "id": "71689",
+      "type": "user",
+      "attributes": {
+        "full_name": "Michael Towns (gamebuoygames)"
+      }
     },
     {
       "attributes": {

@@ -196,6 +196,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where copy/pasting hex colors in the palette editor could result in colors being remapped incorrectly when color correction was enabled
 - Fix issue where newly added scenes could default to using .mono.png tile images as the background image
 - Fix crash when selecting a scene with a deleted background image
+- Fix jitter in shoot em up scene when moving from an horizontal direction into a vertical direction without stopping moving [@Mico27](https://github.com/Mico27)
+- Fix issue in platformer scene type where run state was using air deceleration value
 
 ## [4.1.3] - 2024-09-16
 
