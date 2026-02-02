@@ -1206,6 +1206,27 @@ const changes: EngineChange[] = [
       "src/states/shmup.c",
     ],
   },
+  {
+    version: "4.2.0-e33",
+    description: createDescription("Updates", [
+      "Make actor_set_anim_idle NONBANKED, as this is heavily used by vm_actor_move_to_*",
+      "reduce stack use of actor_move_to ops by setting actor to static",
+      "When interrupting actor movement, vm_actor_move_cancel is now responsible for moving actor to nearest tile aligned position simplifying repeated logic in move_to instructions",
+      "Small overlapping_player optimization",
+      "New VM_LOAD_TEXT_EX instruction which accept format string as a parameter on the VM stack and work similar to the C sprintf(), expecting varargs on the VM stack",
+    ]),
+    modifiedFiles: [
+      "include/actor.h",
+      "include/ui.h",
+      "include/vm.i",
+      "include/vm_ui.h",
+      "src/core/actor.c",
+      "src/core/ui.c",
+      "src/core/vm_actor.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_ui.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
