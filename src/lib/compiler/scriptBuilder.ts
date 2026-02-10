@@ -5391,7 +5391,8 @@ extern void __mute_mask_${symbol};
       .operator(".LT")
       .stop();
     this._ifConst(".EQ", ".ARG0", 1, endLabel, 1);
-
+    // Wait 1 extra frame
+    this._idle();
     // Set next call time to sys_time + delay
     const localsLookup = this._performFetchOperations(fetchOps);
     const rpn = this._rpn();
@@ -5401,6 +5402,8 @@ extern void __mute_mask_${symbol};
       .operator(".ADD")
       .refSetVariable(timerVariable)
       .stop();
+    // Wait 1 extra frame
+    this._idle();
 
     this._compilePath(truePath);
 
