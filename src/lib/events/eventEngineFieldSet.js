@@ -60,7 +60,7 @@ const compile = (input, helpers) => {
 module.exports = {
   id,
   description: l10n("EVENT_ENGINE_FIELD_SET_DESC"),
-  references: ["/docs/settings/#engine-settings"],
+  references: ["/docs/settings#engine-settings"],
   autoLabel,
   groups,
   fields,
