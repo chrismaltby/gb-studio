@@ -53,7 +53,6 @@ const fields = [
     type: "constvalue",
     min: 0,
     max: 3600,
-    width: "50%",
     unitsField: "units",
     unitsDefault: "time",
     unitsAllowed: ["time", "frames"],
