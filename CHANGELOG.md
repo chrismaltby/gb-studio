@@ -198,6 +198,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix crash when selecting a scene with a deleted background image
 - Fix jitter in shoot em up scene when moving from an horizontal direction into a vertical direction without stopping moving [@Mico27](https://github.com/Mico27)
 - Fix issue in platformer scene type where run state was using air deceleration value
+- Fix issue where selecting some collision tiles while slope tiles are hidden selects the wrong tile
 
 ## [4.1.3] - 2024-09-16
 
