@@ -28,7 +28,7 @@ const fields = [
     key: "time",
     label: l10n("FIELD_TIME_INTERVAL"),
     description: l10n("FIELD_RATE_LIMIT_INTERVAL_DESC"),
-    type: "value",
+    type: "constvalue",
     min: 0,
     max: 60,
     step: 0.1,
@@ -50,7 +50,7 @@ const fields = [
     key: "frames",
     label: l10n("FIELD_TIME_INTERVAL"),
     description: l10n("FIELD_RATE_LIMIT_INTERVAL_DESC"),
-    type: "value",
+    type: "constvalue",
     min: 0,
     max: 3600,
     width: "50%",
@@ -77,10 +77,13 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { rateLimit } = helpers;
-  const duration =
-    input.units === "frames" ? (input.frames ?? 1) : (input.time ?? 0.5);
-  rateLimit(input.variable, duration, input.units ?? "time", input.true);
+  const { rateLimitConstValue } = helpers;
+  rateLimitConstValue(
+    input.units === "frames" ? input.frames : input.time,
+    input.units ?? "time",
+    input.variable,
+    input.true,
+  );
 };
 
 module.exports = {

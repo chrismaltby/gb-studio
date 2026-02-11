@@ -89,7 +89,6 @@ import {
   clampScriptValueConst,
   maskScriptValueConst,
   subScriptValueConst,
-  multiplyScriptValueConst,
 } from "shared/lib/scriptValue/helpers";
 import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
@@ -1820,6 +1819,14 @@ class ScriptBuilder {
   ) => {
     this._addCmd("VM_IF_CONST", operator, variable, value, `${label}$`, popNum);
     this.stackPtr -= popNum;
+  };
+
+  _rateLimitConst = (
+    frames: ScriptBuilderStackVariable,
+    variable: ScriptBuilderStackVariable,
+    label: string,
+  ) => {
+    this._addCmd("VM_RATE_LIMIT_CONST", frames, variable, `${label}$`);
   };
 
   _switch = (
@@ -5364,50 +5371,40 @@ extern void __mute_mask_${symbol};
     this._timerStop(timer);
   };
 
-  rateLimit = (
-    timerVariable: ScriptBuilderVariable,
-    delay: ScriptValue,
+  rateLimitConstValue = (
+    delay: ConstScriptValue,
     units: TimeUnitType,
+    timerVariable: ScriptBuilderStackVariable,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
   ) => {
     this._addComment(`Rate Limit`);
 
-    const loopId = this.getNextLabel();
     const endLabel = this.getNextLabel();
+    const variableAlias = this.getVariableAlias(timerVariable);
 
-    const [rpnOps, fetchOps] = precompileScriptValue(
-      optimiseScriptValue(
-        units === "time" ? multiplyScriptValueConst(delay, 60) : delay,
-      ),
-    );
+    let frames: ScriptBuilderStackVariable = 0;
+    if (delay.type === "number") {
+      frames = units === "time" ? Math.ceil(delay.value * 60) : delay.value;
+    } else if (delay.type === "constant") {
+      const symbol = this.getConstantSymbol(delay.value);
+      frames = units === "time" ? `^/(${symbol} * 60)/` : symbol;
+    }
 
-    // If next call time > sys_time, skip this call
-    this._label(loopId);
-    this._rpn() //
-      .refMem(".MEM_I16", "sys_time")
-      .refVariable(timerVariable)
-      .operator(".SUB")
-      .int16(0)
-      .operator(".LT")
-      .stop();
-    this._ifConst(".EQ", ".ARG0", 1, endLabel, 1);
-    // Wait 1 extra frame
-    this._idle();
-    // Set next call time to sys_time + delay
-    const localsLookup = this._performFetchOperations(fetchOps);
-    const rpn = this._rpn();
-    this._performValueRPN(rpn, rpnOps, localsLookup);
-    rpn //
-      .refMem(".MEM_I16", "sys_time")
-      .operator(".ADD")
-      .refSetVariable(timerVariable)
-      .stop();
-    // Wait 1 extra frame
-    this._idle();
+    if (this._isIndirectVariable(timerVariable)) {
+      this._stackPushInd(variableAlias);
+      this._rateLimitConst(frames, ".ARG0", endLabel);
+    } else {
+      this._rateLimitConst(frames, variableAlias, endLabel);
+    }
 
     this._compilePath(truePath);
 
     this._label(endLabel);
+
+    if (this._isIndirectVariable(timerVariable)) {
+      this._setInd(variableAlias, ".ARG0");
+      this._stackPop(1);
+    }
   };
 
   // --------------------------------------------------------------------------
