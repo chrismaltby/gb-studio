@@ -58,7 +58,7 @@ export const loadEngineSchema = async (
           fields = fields.concat(pluginEngine.fields);
         }
         if (pluginEngine.sceneTypes?.length) {
-          sceneTypes = sceneTypes.concat(pluginEngine.sceneTypes);
+          sceneTypes = pluginEngine.sceneTypes.concat(sceneTypes);
         }
         if (pluginEngine.consts) {
           consts = { ...consts, ...pluginEngine.consts }; // Plugin consts override existing ones
