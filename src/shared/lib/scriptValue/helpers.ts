@@ -670,6 +670,18 @@ export const precompileOptimisedScriptValue = (
           value: localName,
           offset: 1,
         });
+      } else if (input.property === "animstate") {
+        fetchOperations.push({
+          local: localName,
+          value: {
+            type: "actorAnimState",
+            target: input.target,
+          },
+        });
+        rpnOperations.push({
+          type: "local",
+          value: localName,
+        });
       } else {
         throw new Error(`Unsupported property type "${input.property}"`);
       }

@@ -162,6 +162,12 @@ export const PropertySelect = ({
             value: `${actorOption.value}:frame`,
             menuSpriteSheetId: "",
           },
+		  {
+            ...actorOption,
+            label: l10n("FIELD_ANIMATION_STATE"),
+            value: `${actorOption.value}:animstate`,
+            menuSpriteSheetId: "",
+          },
         ],
       };
     };

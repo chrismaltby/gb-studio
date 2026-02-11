@@ -81,6 +81,9 @@ export const getAutoLabel = (
       if (value === "frame") {
         return l10n("FIELD_ANIMATION_FRAME").replace(/ /g, "");
       }
+	  if (value === "animstate") {
+        return l10n("FIELD_ANIMATION_STATE").replace(/ /g, "");
+      }
       if (value === "xdeadzone") {
         return l10n("FIELD_DEADZONE_X").replace(/ /g, "");
       }
