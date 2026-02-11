@@ -1230,6 +1230,27 @@ const changes: EngineChange[] = [
       "src/core/vm_ui.c",
     ],
   },
+  {
+    version: "4.2.0-e34",
+    description: createDescription("Updates", [
+      "Add VM_RATE_LIMIT allowing portions of scripts to be skipped if this op was already called within last N frames",
+      "Fix description for the VM_MUSIC_MUTE, add channel constants like .MUTE_NOISE",
+      "Separate SINCOS table from math, make it static so it is duplicated into the each module where it is used, that bloat banked code a bit, but improve performance without wasting bank 0 space which is fine. sincos.h must not be used in the nonbanked code.",
+    ]),
+    modifiedFiles: [
+      "include/math.h",
+      "include/sincos.h",
+      "include/vm.h",
+      "include/vm.i",
+      "src/core/math.c",
+      "src/core/projectiles.c",
+      "src/core/vm.c",
+      "src/core/vm_instructions.c",
+      "src/core/vm_math.c",
+      "src/states/pointnclick.c",
+      "src/states/shmup.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {
