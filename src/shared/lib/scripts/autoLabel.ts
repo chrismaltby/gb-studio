@@ -159,7 +159,9 @@ export const getAutoLabel = (
     };
 
     if (
-      (fieldType === "value" || fieldType === "engineFieldValue") &&
+      (fieldType === "value" ||
+        fieldType === "constvalue" ||
+        fieldType === "engineFieldValue") &&
       isScriptValue(value)
     ) {
       return scriptValueToString(value, {
