@@ -23,6 +23,34 @@ const defaultSceneTypes: SceneTypeSchema[] = [
   { key: "LOGO", label: "GAMETYPE_LOGO" },
 ];
 
+export const mergeSceneTypes = (
+  sceneTypes: SceneTypeSchema[],
+  extraSceneTypes: Partial<SceneTypeSchema>[],
+): SceneTypeSchema[] => {
+  const baseMap = new Map<string, SceneTypeSchema>();
+
+  for (const scene of sceneTypes) {
+    baseMap.set(scene.key, scene);
+  }
+
+  for (const override of extraSceneTypes) {
+    if (!override.key) continue;
+
+    const base = baseMap.get(override.key);
+
+    if (base) {
+      baseMap.set(override.key, {
+        ...base,
+        ...override,
+      });
+    } else {
+      baseMap.set(override.key, override as SceneTypeSchema);
+    }
+  }
+
+  return Array.from(baseMap.values());
+};
+
 export const loadEngineSchema = async (
   projectRoot: string,
 ): Promise<EngineSchema> => {
@@ -47,6 +75,7 @@ export const loadEngineSchema = async (
   let sceneTypes =
     localEngine.sceneTypes || defaultEngine.sceneTypes || defaultSceneTypes;
   let consts = localEngine.consts || defaultEngine.consts || {};
+  let extraSceneTypes: Partial<SceneTypeSchema>[] = [];
 
   const enginePlugins = glob.sync(`${pluginsPath}/**/engine`);
   for (const enginePluginPath of enginePlugins) {
@@ -58,7 +87,7 @@ export const loadEngineSchema = async (
           fields = fields.concat(pluginEngine.fields);
         }
         if (pluginEngine.sceneTypes?.length) {
-          sceneTypes = pluginEngine.sceneTypes.concat(sceneTypes);
+          extraSceneTypes = extraSceneTypes.concat(pluginEngine.sceneTypes);
         }
         if (pluginEngine.consts) {
           consts = { ...consts, ...pluginEngine.consts }; // Plugin consts override existing ones
@@ -69,8 +98,7 @@ export const loadEngineSchema = async (
     }
   }
 
-  // Deduplicate sceneTypes by key
-  sceneTypes = uniqBy(sceneTypes, (s) => s.key);
+  sceneTypes = mergeSceneTypes(sceneTypes, extraSceneTypes);
 
   return {
     fields,
