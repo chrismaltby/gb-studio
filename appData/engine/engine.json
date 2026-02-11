@@ -2519,7 +2519,8 @@
           "mask": 31,
           "flag": 21,
           "name": "FIELD_COLLISION_SLOPE_TOP_LEFT",
-          "icon": "0F3F7F7FFCF8F0F0"
+          "icon": "0F3F7F7FFCF8F0F0",
+          "group": "corner"
         },
         {
           "key": "slope_tr",
@@ -2527,7 +2528,8 @@
           "mask": 31,
           "flag": 25,
           "name": "FIELD_COLLISION_SLOPE_TOP_RIGHT",
-          "icon": "F0FCFEFE3F1F0F0F"
+          "icon": "F0FCFEFE3F1F0F0F",
+          "group": "corner"
         },
         {
           "key": "slope_bl",
@@ -2535,7 +2537,8 @@
           "mask": 31,
           "flag": 22,
           "name": "FIELD_COLLISION_SLOPE_BOTTOM_LEFT",
-          "icon": "F0F0F8FC7F7F3F0F"
+          "icon": "F0F0F8FC7F7F3F0F",
+          "group": "corner"
         },
         {
           "key": "slope_br",
@@ -2543,8 +2546,9 @@
           "mask": 31,
           "flag": 26,
           "name": "FIELD_COLLISION_SLOPE_BOTTOM_RIGHT",
-          "icon": "0F0F1F3FFEFEFCF0"
-        }
+          "icon": "0F0F1F3FFEFEFCF0",
+          "group": "corner"
+        } 
       ]
     },
     {
