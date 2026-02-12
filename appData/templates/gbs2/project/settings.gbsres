@@ -34,6 +34,22 @@
   "defaultSpritePaletteId": "default-sprite",
   "defaultUIPaletteId": "default-ui",
   "playerPaletteId": "",
+  "defaultMonoBGP": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "defaultMonoOBP0": [
+    0,
+    1,
+    3
+  ],
+  "defaultMonoOBP1": [
+    0,
+    2,
+    3
+  ],
   "defaultFontId": "948c169c-8e4b-491c-a5f0-66898bbf45d9",
   "defaultCharacterEncoding": "",
   "defaultPlayerSprites": {

@@ -212,6 +212,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         return {
           ...tile,
           name: name,
+          index,
         };
       }),
     [collisionTileDefs],
@@ -580,12 +581,13 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                   }
                   return true;
                 })
-                .map((tileDef, tileTypeIndex) => {
+                .map((tileDef) => {
                   const selected = isCollisionTileActive(
                     selectedTileType,
                     tileDef,
                     namedCollisionTileDefs,
                   );
+                  const tileTypeIndex = tileDef.index;
                   return (
                     <Fragment key={tileTypeIndex}>
                       {tileTypeIndex > 0 &&

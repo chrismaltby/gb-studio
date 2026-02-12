@@ -1,5 +1,5 @@
 {
-  "version": "4.2.0-e33",
+  "version": "4.2.0-e34",
   "fields": [
     {
       "key": "INPUT_PLATFORM_INTERACT",
@@ -2381,78 +2381,6 @@
           "icon": "00000000C0F0FCFF",
           "extra": 2,
           "group": "slope"
-        },
-        {
-          "key": "spare_08",
-          "color": "#00800080",
-          "mask": 240,
-          "flag": 128,
-          "name": "FIELD_COLLISION_SPARE",
-          "icon": "FFFFC399C399C3FF",
-          "group": "spare"
-        },
-        {
-          "key": "spare_09",
-          "color": "#00800080",
-          "mask": 240,
-          "flag": 144,
-          "name": "FIELD_COLLISION_SPARE",
-          "icon": "FFFFC399C1F9C3FF",
-          "group": "spare"
-        },
-        {
-          "key": "spare_10",
-          "color": "#80000080",
-          "mask": 240,
-          "flag": 160,
-          "name": "FIELD_COLLISION_SPARE",
-          "icon": "FFFFC399819999FF",
-          "group": "spare"
-        },
-        {
-          "key": "spare_11",
-          "color": "#80000080",
-          "mask": 240,
-          "flag": 176,
-          "name": "FIELD_COLLISION_SPARE",
-          "icon": "FFFF8399839983FF",
-          "group": "spare"
-        },
-        {
-          "key": "spare_12",
-          "color": "#00008080",
-          "mask": 240,
-          "flag": 192,
-          "name": "FIELD_COLLISION_SPARE",
-          "icon": "FFFFC3999F99C3FF",
-          "group": "spare"
-        },
-        {
-          "key": "spare_13",
-          "color": "#00008080",
-          "mask": 240,
-          "flag": 208,
-          "name": "FIELD_COLLISION_SPARE",
-          "icon": "FFFF8399999983FF",
-          "group": "spare"
-        },
-        {
-          "key": "spare_14",
-          "color": "#80008080",
-          "mask": 240,
-          "flag": 224,
-          "name": "FIELD_COLLISION_SPARE",
-          "icon": "FFFF819F879F81FF",
-          "group": "spare"
-        },
-        {
-          "key": "spare_15",
-          "color": "#80008080",
-          "mask": 240,
-          "flag": 240,
-          "name": "FIELD_COLLISION_SPARE",
-          "icon": "FFFF819F879F9FFF",
-          "group": "spare"
         }
       ]
     },
@@ -2519,7 +2447,8 @@
           "mask": 31,
           "flag": 21,
           "name": "FIELD_COLLISION_SLOPE_TOP_LEFT",
-          "icon": "0F3F7F7FFCF8F0F0"
+          "icon": "0F3F7F7FFCF8F0F0",
+          "group": "corner"
         },
         {
           "key": "slope_tr",
@@ -2527,7 +2456,8 @@
           "mask": 31,
           "flag": 25,
           "name": "FIELD_COLLISION_SLOPE_TOP_RIGHT",
-          "icon": "F0FCFEFE3F1F0F0F"
+          "icon": "F0FCFEFE3F1F0F0F",
+          "group": "corner"
         },
         {
           "key": "slope_bl",
@@ -2535,7 +2465,8 @@
           "mask": 31,
           "flag": 22,
           "name": "FIELD_COLLISION_SLOPE_BOTTOM_LEFT",
-          "icon": "F0F0F8FC7F7F3F0F"
+          "icon": "F0F0F8FC7F7F3F0F",
+          "group": "corner"
         },
         {
           "key": "slope_br",
@@ -2543,8 +2474,9 @@
           "mask": 31,
           "flag": 26,
           "name": "FIELD_COLLISION_SLOPE_BOTTOM_RIGHT",
-          "icon": "0F0F1F3FFEFEFCF0"
-        }
+          "icon": "0F0F1F3FFEFEFCF0",
+          "group": "corner"
+        } 
       ]
     },
     {
