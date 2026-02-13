@@ -13,54 +13,67 @@ const spawn = (
   options: childProcess.SpawnOptions,
   { onLog = () => {}, onError = () => {} }: SpawnLogFns,
 ) => {
-  let complete = false;
   let code = 0;
 
   const child = childProcess.spawn(command, args, options);
+
+  // Ensure consistent encoding
+  child.stdout?.setEncoding("utf8");
+  child.stderr?.setEncoding("utf8");
+
+  let stdoutBuffer = "";
+  let stderrBuffer = "";
+
+  const processBuffer = (
+    buffer: string,
+    data: string,
+    cb: (line: string) => void,
+  ): string => {
+    buffer += data;
+
+    const lines = buffer.split(/\r?\n/);
+
+    // Keep last partial line in buffer
+    const remainder = lines.pop() ?? "";
+
+    for (const line of lines) {
+      cb(line);
+    }
+
+    return remainder;
+  };
+
+  child.stdout?.on("data", (data: string) => {
+    stdoutBuffer = processBuffer(stdoutBuffer, data, onLog);
+  });
+
+  child.stderr?.on("data", (data: string) => {
+    stderrBuffer = processBuffer(stderrBuffer, data, onError);
+  });
 
   child.on("error", (err) => {
     onError(err.toString());
   });
 
-  child.stdout?.on("data", (childData: string) => {
-    const lines = childData.toString().split("\n");
-    lines.forEach((line, lineIndex) => {
-      if (line.length === 0 && lineIndex === lines.length - 1) {
-        return;
-      }
-      onLog && onLog(line);
-    });
-  });
+  const completed = new Promise<void>((resolve, reject) => {
+    child.on("close", (childCode) => {
+      code = childCode ?? 0;
 
-  child.stderr?.on("data", (childData: string) => {
-    const lines = childData.toString().split("\n");
-    lines.forEach((line, lineIndex) => {
-      if (line.length === 0 && lineIndex === lines.length - 1) {
-        return;
-      }
-      onError && onError(line);
-    });
-  });
+      // Flush remaining buffered content
+      if (stdoutBuffer) onLog(stdoutBuffer);
+      if (stderrBuffer) onError(stderrBuffer);
 
-  child.on("close", async (childCode) => {
-    complete = true;
-    code = childCode ?? 0;
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(code);
+      }
+    });
   });
 
   return {
     child,
-    completed: new Promise<void>((resolve, reject) => {
-      const interval = setInterval(() => {
-        if (complete) {
-          clearInterval(interval);
-          if (code === 0) {
-            resolve();
-          } else {
-            reject(code);
-          }
-        }
-      }, 10);
-    }),
+    completed,
   };
 };
 
