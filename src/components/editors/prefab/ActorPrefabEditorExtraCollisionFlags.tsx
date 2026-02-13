@@ -10,6 +10,7 @@ import {
 } from "shared/lib/helpers/array";
 import { sceneSelectors } from "store/features/entities/entitiesState";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
+import uniqBy from "lodash/uniqBy";
 
 interface ActorPrefabEditorExtraCollisionFlagsProps {
   prefab: ActorPrefabNormalized;
@@ -26,7 +27,17 @@ export const ActorPrefabEditorExtraCollisionFlags: FC<
   );
 
   const extraActorCollisionFlags = useAppSelector((state) => {
-    if (!scene || !scene.type || !state.engine.sceneTypes) return [];
+    if (!scene || !scene.type || !state.engine.sceneTypes) {
+      return uniqBy(
+        state.engine.sceneTypes
+          .map((s) => s.extraActorCollisionFlags || [])
+          .flat(),
+        "key",
+      ).map((flagDef) => ({
+        ...flagDef,
+        clearFlags: [], // Can't reliably determine which flags should be cleared without knowing the scene type, so just don't clear any
+      }));
+    }
     const key = scene.type || "";
     const sceneType = state.engine.sceneTypes.find((s) => s.key === key);
     if (sceneType && sceneType.extraActorCollisionFlags)
