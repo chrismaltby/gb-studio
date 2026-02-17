@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2144260213",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2146260217",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1920,7 +1920,9 @@
   "WARNING_SPRITE_MODE_MISMATCH": "Grafika {sprite} jest używana w scenie {scene} z innym trybem grafiki ({sceneMode}) niż jej własny tryb ({spriteMode}). Może to powodować błędne wyświetlanie. Zmień tryb grafiki sceny lub użyj innej grafiki.",
   "WARNING_SCENE_TYPE_DISABLED": "Rodzja sceny \"{type}\" nie jest włączony",
   "WARNING_SCENE_TYPE_DISABLED_REMOVED_SCENES": "Rodzaj sceny \"{type}\" nie jest włączony - sceny {scenes} nie zostaną dołączone do gry",
-
+  "WARNING_FN_DEPRECATED": "\"{name}\" jest oznaczone jako przestarzałe i zostanie usunięte w jednej z przyszłych wersji.",
+  "WARNING_FN_DEPRECATED_REPLACEMENT": "Zamiast tego użyj \"{name}\" .",
+  
   "// 12": "Errors -------------------------------------------------------",
 
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Wprowadź nazwę projektu",
