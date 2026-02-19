@@ -1906,6 +1906,8 @@
   "WARNING_SPRITE_MODE_MISMATCH": "「{scene}」シーン（{sceneMode}）内のスプライト「{sprite}」（{spriteMode}）は、それぞれ異なるスプライトモードを使用しています。そのため、スプライトは正常に表示されません。シーンのスプライトモードを変更するか、他のスプライトを使用してください。",
   "WARNING_SCENE_TYPE_DISABLED": "シーンタイプ「{type}」は有効化されていません",
   "WARNING_SCENE_TYPE_DISABLED_REMOVED_SCENES": "シーンタイプ「{type}」は有効化されていないため、{scenes} のシーンがゲームに含まれていません",
+  "WARNING_FN_DEPRECATED": "「{name}」は非推奨であり、将来のリリースで削除される予定です。",
+  "WARNING_FN_DEPRECATED_REPLACEMENT": "代わりに「{name}」を使用してください。",
   "// 12": "Errors -------------------------------------------------------",
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "プロジェクト名を入力してください",
   "ERROR_PLEASE_ENTER_PROJECT_PATH": "プロジェクトパスを入力してください",
