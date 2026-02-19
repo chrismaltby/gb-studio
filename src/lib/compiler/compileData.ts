@@ -89,8 +89,7 @@ import {
   GlobalProjectiles,
   ScriptBuilderEntity,
   ScriptBuilderEntityType,
-  toProjectileHash,
-} from "./scriptBuilder";
+} from "./scriptBuilder/types";
 import {
   calculateAutoFadeEventId,
   isEmptyScript,
@@ -137,6 +136,7 @@ import { applyPrefabs } from "./applyPrefabs";
 import { EngineSchema } from "lib/project/loadEngineSchema";
 import { createLinkToResource } from "shared/lib/helpers/resourceLinks";
 import { difference } from "lodash";
+import { toProjectileHash } from "./scriptBuilder/helpers";
 
 type CompiledTilemapData = {
   symbol: string;

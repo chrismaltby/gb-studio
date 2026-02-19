@@ -2,7 +2,7 @@ import { compile } from "../../src/lib/events/eventFadeIn";
 
 test("Should be able to fade in", () => {
   const mockFadeIn = jest.fn();
-  const mockNextFrameAwait = jest.fn();
+  const mockIdle = jest.fn();
 
   compile(
     {
@@ -10,9 +10,9 @@ test("Should be able to fade in", () => {
     },
     {
       fadeIn: mockFadeIn,
-      nextFrameAwait: mockNextFrameAwait,
+      idle: mockIdle,
     },
   );
-  expect(mockNextFrameAwait).toBeCalled();
+  expect(mockIdle).toBeCalled();
   expect(mockFadeIn).toBeCalledWith(2);
 });

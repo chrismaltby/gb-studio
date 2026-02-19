@@ -1920,6 +1920,8 @@
   "WARNING_SPRITE_MODE_MISMATCH": "Sprite {sprite} is being used in a scene {scene} with a different sprite mode ({sceneMode}) than the sprite's mode ({spriteMode}). This will cause the sprite to not display correctly. Either change the scene's sprite mode or use a different sprite.",
   "WARNING_SCENE_TYPE_DISABLED": "Scene type \"{type}\" is not enabled",
   "WARNING_SCENE_TYPE_DISABLED_REMOVED_SCENES": "Scene type \"{type}\" is not enabled causing scenes {scenes} to not be included in game",
+  "WARNING_FN_DEPRECATED": "\"{name}\" is deprecated and will be removed in a future release.",
+  "WARNING_FN_DEPRECATED_REPLACEMENT": "Use \"{name}\" instead.",
 
   "// 12": "Errors -------------------------------------------------------",
 

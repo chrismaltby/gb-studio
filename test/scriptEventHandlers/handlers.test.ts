@@ -10,9 +10,8 @@ import {
   dummyPrecompiledSpriteSheet,
 } from "../dummydata";
 import { PrecompiledScene } from "lib/compiler/generateGBVMData";
-import ScriptBuilder, {
-  ScriptBuilderOptions,
-} from "lib/compiler/scriptBuilder";
+import ScriptBuilder from "lib/compiler/scriptBuilder/scriptBuilder";
+import { ScriptBuilderOptions } from "lib/compiler/scriptBuilder/types";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
 import l10n, { setL10NData } from "shared/lib/lang/l10n";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";

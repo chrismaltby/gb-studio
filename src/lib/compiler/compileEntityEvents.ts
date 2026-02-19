@@ -1,11 +1,12 @@
-import ScriptBuilder, {
+import {
   ScriptBuilderEntity,
   ScriptBuilderEntityType,
   ScriptBuilderOptions,
   ScriptOutput,
-} from "./scriptBuilder";
+} from "./scriptBuilder/types";
+import ScriptBuilder from "./scriptBuilder/scriptBuilder";
+import ScriptBuilderBase from "./scriptBuilder/scriptBuilderBase";
 import { PrecompiledScene } from "./generateGBVMData";
-import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { LATEST_PROJECT_VERSION } from "lib/project/migration/migrateProjectResources";
 import { ScriptEvent, SpriteModeSetting } from "shared/lib/resources/types";
 
@@ -18,21 +19,21 @@ type ScriptLocation = {
   scene: string;
 };
 
-type CompileEntityEventsOptions = Partial<ScriptBuilderOptions> & {
-  scriptEventHandlers: ScriptEventHandlers;
-  output: ScriptOutput;
-  branch: boolean;
-  loop: boolean;
-  lock: boolean;
-  isFunction: boolean;
-  scene: PrecompiledScene;
-  sceneIndex: number;
-  entity?: ScriptBuilderEntity;
-  entityType: string;
-  entityIndex: number;
-  debugEnabled: boolean;
-  warnings: (msg: string) => void;
-};
+type CompileEntityEventsOptions = Partial<ScriptBuilderOptions> &
+  Pick<ScriptBuilderOptions, "scene" | "scriptEventHandlers"> & {
+    output: ScriptOutput;
+    branch: boolean;
+    loop: boolean;
+    lock: boolean;
+    isFunction: boolean;
+    scene: PrecompiledScene;
+    sceneIndex: number;
+    entity?: ScriptBuilderEntity;
+    entityType: string;
+    entityIndex: number;
+    debugEnabled: boolean;
+    warnings: (msg: string) => void;
+  };
 
 const compileEntityEvents = (
   scriptSymbolName: string,
@@ -72,11 +73,11 @@ const compileEntityEvents = (
     ...options,
     scriptSymbolName,
     compileEvents: (
-      scriptBuilder: ScriptBuilder,
+      scriptBuilder: ScriptBuilderBase,
       childInput: ScriptEvent[],
     ) => {
       compileEventsWithScriptBuilder(
-        scriptBuilder,
+        scriptBuilder as ScriptBuilder,
         childInput,
         location,
         warnings,
@@ -146,6 +147,7 @@ export const compileEventsWithScriptBuilder = (
           // Skip events where all scene types are disabled
           continue;
         }
+        scriptBuilder.eventCommand = command;
         scriptEventHandlers[command]?.compile(
           { ...subInput[i].args, ...subInput[i].children },
           {

@@ -1,8 +1,8 @@
 import { precompileScriptValue } from "shared/lib/scriptValue/helpers";
 import { PrecompiledScene } from "../../src/lib/compiler/generateGBVMData";
-import ScriptBuilder, {
-  ScriptBuilderOptions,
-} from "../../src/lib/compiler/scriptBuilder";
+import ScriptBuilder from "../../src/lib/compiler/scriptBuilder/scriptBuilder";
+import ScriptBuilderBase from "../../src/lib/compiler/scriptBuilder/scriptBuilderBase";
+import { ScriptBuilderOptions } from "../../src/lib/compiler/scriptBuilder/types";
 import {
   dummyActorNormalized,
   dummyEngineFieldSchema,
@@ -12,6 +12,7 @@ import {
 } from "../dummydata";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
 import { Script, ScriptEvent } from "shared/lib/resources/types";
+import { DeprecatedAPI } from "lib/compiler/scriptBuilder/deprecatedAPI";
 
 const createTestScriptBuilder = async (
   sceneOverrides: Record<string, unknown> = {},
@@ -138,7 +139,7 @@ test("Should be able to move actor to new location", async () => {
       projectiles: [],
     } as unknown as PrecompiledScene,
   });
-  sb.actorMoveTo(5, 6, true, "horizontal");
+  (sb as unknown as DeprecatedAPI).actorMoveTo(5, 6, true, "horizontal");
   expect(output).toEqual([
     "        ; Actor Move To",
     "        VM_SET_CONST            ^/(.LOCAL_ACTOR + 1)/, 1280",
@@ -171,7 +172,7 @@ test("Should be able to wait for N frames to pass", async () => {
       projectiles: [],
     } as unknown as PrecompiledScene,
   });
-  sb.wait(20);
+  (sb as unknown as DeprecatedAPI).wait(20);
   expect(output).toEqual([
     "        ; Wait 20 Frames",
     "        VM_SET_CONST            .LOCAL_TMP0_WAIT_ARGS, 20",
@@ -212,7 +213,7 @@ test("Should be able to generate script string", async () => {
     } as unknown as PrecompiledScene,
   });
   sb.actorSetActive("actor2");
-  sb.actorMoveTo(5, 6, true, "horizontal");
+  (sb as unknown as DeprecatedAPI).actorMoveTo(5, 6, true, "horizontal");
   sb._packLocals();
   expect(sb.toScriptString("MY_SCRIPT", false)).toEqual(
     `.module MY_SCRIPT
@@ -393,7 +394,7 @@ test("Should be able to conditionally execute if variable is true with event arr
       projectiles: [],
     } as unknown as PrecompiledScene,
     // variables: ["0", "1"],
-    compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => {
+    compileEvents: (self: ScriptBuilderBase, events: ScriptEvent[]) => {
       if (events[0].id === "event1") {
         output.push("        VM_DEBUG                0");
         output.push('        .asciz "True Path"');
@@ -403,7 +404,7 @@ test("Should be able to conditionally execute if variable is true with event arr
       }
     },
   });
-  sb.ifVariableTrue(
+  (sb as unknown as DeprecatedAPI).ifVariableTrue(
     "1",
     [
       {
@@ -480,7 +481,7 @@ test("Should be able to conditionally execute if variable is true with function 
     } as unknown as PrecompiledScene,
     fonts: [dummyCompiledFont],
     // variables: ["0", "1"],
-    compileEvents: (self: ScriptBuilder, events: ScriptEvent[]) => {
+    compileEvents: (self: ScriptBuilderBase, events: ScriptEvent[]) => {
       if (events[0].id === "event1") {
         output.push("        VM_DEBUG        0");
         output.push('        .asciz "True Path"');
@@ -490,7 +491,7 @@ test("Should be able to conditionally execute if variable is true with function 
       }
     },
   });
-  sb.ifVariableTrue(
+  (sb as unknown as DeprecatedAPI).ifVariableTrue(
     "0",
     () => sb.textDialogue("Hello World"),
     () => sb.textDialogue("Goodbye World"),
@@ -577,18 +578,18 @@ test("Should be able to conditionally execute if variable is true with nested fu
     // variables: ["0", "1", "2"],
   });
 
-  sb.ifVariableTrue(
+  (sb as unknown as DeprecatedAPI).ifVariableTrue(
     "0",
     // 0 == True
     () =>
-      sb.ifVariableTrue(
+      (sb as unknown as DeprecatedAPI).ifVariableTrue(
         "1",
         () => sb.textDialogue("0=TRUE 1=TRUE"), // 1 == True
         () => sb.textDialogue("0=TRUE 1=FALSE"), // 1 == False
       ),
     // 0 == False
     () =>
-      sb.ifVariableTrue(
+      (sb as unknown as DeprecatedAPI).ifVariableTrue(
         "2",
         () => sb.textDialogue("0=FALSE 2=TRUE"), // 2 == True
         () => sb.textDialogue("0=FALSE 2=FALSE"), // 2 == False

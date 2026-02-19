@@ -416,7 +416,7 @@ _testname::
         VM_DEBUG        0
         .asciz "OnLoad Path"
 
-        ; Wait 1 Frames
+        ; Idle
         VM_IDLE
 
         ; Fade In
@@ -502,7 +502,7 @@ _testname::
 
         VM_JUMP                 2$
 1$:
-        ; Wait 1 Frames
+        ; Idle
         VM_IDLE
 
         ; Fade In
@@ -562,7 +562,7 @@ _testname::
 
         VM_JUMP                 2$
 1$:
-        ; Wait 1 Frames
+        ; Idle
         VM_IDLE
 
         ; Fade In

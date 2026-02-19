@@ -2,9 +2,9 @@ import glob from "glob";
 import { promisify } from "util";
 import { readFile, remove, writeFile } from "fs-extra";
 import { PrecompiledScene } from "lib/compiler/generateGBVMData";
-import ScriptBuilder, {
-  ScriptBuilderOptions,
-} from "lib/compiler/scriptBuilder";
+import ScriptBuilder from "lib/compiler/scriptBuilder/scriptBuilder";
+import ScriptBuilderBase from "lib/compiler/scriptBuilder/scriptBuilderBase";
+import { ScriptBuilderOptions } from "lib/compiler/scriptBuilder/types";
 import {
   dummyFontResource,
   dummyPrecompiledBackground,
@@ -575,11 +575,11 @@ describe("Compare output from trusted and untrusted plugin handlers", () => {
         scene: defaultScene,
         fonts: [dummyFontResource] as unknown as PrecompiledFontData[],
         compileEvents: (
-          scriptBuilder: ScriptBuilder,
+          scriptBuilder: ScriptBuilderBase,
           childInput: ScriptEvent[],
         ) => {
           compileEventsWithScriptBuilder(
-            scriptBuilder,
+            scriptBuilder as ScriptBuilder,
             childInput,
             {
               scriptType: "scene",

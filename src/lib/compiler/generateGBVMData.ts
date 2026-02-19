@@ -28,7 +28,7 @@ import {
   Trigger,
 } from "shared/lib/resources/types";
 import { VariableMapData } from "./compileData";
-import { GlobalProjectiles } from "./scriptBuilder";
+import { GlobalProjectiles } from "./scriptBuilder/types";
 import { pxToSubpx, tileToPx, tileToSubpx } from "shared/lib/helpers/subpixels";
 
 export interface PrecompiledBackground {

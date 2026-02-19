@@ -1,4 +1,4 @@
-import type { ScriptBuilderFunctionArg } from "lib/compiler/scriptBuilder";
+import type { ScriptBuilderFunctionArg } from "lib/compiler/scriptBuilder/types";
 import { ensureTypeGenerator } from "shared/types";
 
 export const valueAtomTypes = [

@@ -18,6 +18,7 @@
     "experimentalDecorators": true,
     "baseUrl": "src",
     "sourceMap": true,
+    "noImplicitOverride": true,
     "paths": {
       "store/*": [ "./store/*" ],
       "lib/*": [ "./lib/*" ],
