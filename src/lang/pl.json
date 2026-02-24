@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2146260217",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2154260224",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1302,6 +1302,13 @@
   "FIELD_MOVEMENT": "Ruch",
   "FIELD_OPTIONS": "Opcje",
   "FIELD_REMOVE_UNUSED": "Usuń nieużyte",
+  "FIELD_PROJECTILES_COLLISION_SPREAD": "Rozłożenie sprawdzania kolizji pocisków",
+  "FIELD_PROJECTILES_COLLISION_SPREAD_DESC": "Rozkłada sprawdzanie kolizji pocisków na kilka klatek, aby poprawić wydajność, gdy na ekranie znajduje się wiele pocisków.",
+  "FIELD_SPREAD_4": "W ciągu 4 klatek",
+  "FIELD_SPREAD_2": "W ciągu 2 klatek",
+  "FIELD_EVERY_FRAME_WITH_WARN": "W każda klatka (najdokładniejsze, najwolniejsze)",
+  "FIELD_TOUCHING_WALL": "Dotyka ściany",
+  "FIELD_PLATFORM_TOUCHING_WALL_DESC": "Określa, czy gracz aktualnie przylega do ściany w scenie platformowej.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -2076,6 +2083,7 @@
   "SETTINGS_COLOR": "Opcje koloru",
   "SETTINGS_BUILD": "Opcje kompilacji",
   "SETTINGS_SPRITE": "Opcje grafiki",
+  "SETTINGS_PROJECTILES": "Opcje pocisków",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 
