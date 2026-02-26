@@ -25,6 +25,7 @@ import { SceneSelect } from "components/forms/SceneSelect";
 import { SoundEffectSelect } from "components/forms/SoundEffectSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
+import { FontSelect } from "components/forms/FontSelect";
 import {
   castEventToBool,
   castEventToFloat,
@@ -755,6 +756,16 @@ const ScriptEventFormInput = ({
             (args[field.unitsField || ""] || field.unitsDefault) as UnitType
           }
           filters={field.filters}
+        />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "font") {
+    return (
+      <OffscreenSkeletonInput>
+        <FontSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
     );

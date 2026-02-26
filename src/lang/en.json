@@ -1470,6 +1470,8 @@
   "EVENT_OVERLAY_HIDE_DESC": "Hides the screen overlay.",
   "EVENT_OVERLAY_MOVE_TO": "Overlay Move To",
   "EVENT_OVERLAY_MOVE_TO_DESC": "Moves the overlay to a new position on the screen.",
+  "EVENT_SET_FONT": "Set Font",
+  "EVENT_SET_FONT_DESC": "Set the currently used font for text",
   "EVENT_AWAIT_INPUT": "Pause Script Until Button Pressed",
   "EVENT_AWAIT_INPUT_DESC": "Pauses the script until one of the specified joypad buttons are pressed.",
   "EVENT_MUSIC_PLAY": "Play Music Track",

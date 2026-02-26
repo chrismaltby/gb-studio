@@ -316,6 +316,8 @@ export const determineUsedAssets = ({
             }
           } else if (fieldType === "tileset" && typeof value === "string") {
             addTilesetById(value);
+          } else if (fieldType === "font" && typeof value === "string") {
+            addFontById(value);
           } else if (fieldType === "soundEffect" && typeof value === "string") {
             // Sounds
             addSoundById(value);

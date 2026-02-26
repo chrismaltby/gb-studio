@@ -30,6 +30,7 @@ import {
   sceneSelectors,
   spriteSheetSelectors,
   tilesetSelectors,
+  fontSelectors,
 } from "store/features/entities/entitiesState";
 import { useDebounce } from "ui/hooks/use-debounce";
 import { ScriptEditorContext } from "./ScriptEditorContext";
@@ -88,6 +89,7 @@ interface InstanciateOptions {
   defaultSpriteId: string;
   defaultEmoteId: string;
   defaultTilesetId: string;
+  defaultFontId: string;
   defaultEngineFieldId: string;
   defaultArgs?: Record<string, unknown>;
 }
@@ -107,6 +109,7 @@ const instanciateScriptEvent = (
     defaultSpriteId,
     defaultEmoteId,
     defaultTilesetId,
+    defaultFontId,
     defaultEngineFieldId,
     defaultArgs,
   }: InstanciateOptions,
@@ -167,6 +170,8 @@ const instanciateScriptEvent = (
           replaceValue = defaultEmoteId;
         } else if (defaultValue === "LAST_TILESET") {
           replaceValue = defaultTilesetId;
+        } else if (defaultValue === "LAST_FONT") {
+          replaceValue = defaultFontId;
         } else if (defaultValue === "LAST_ACTOR") {
           replaceValue = defaultActorId;
         } else if (defaultValue === "LAST_ENGINE_FIELD") {
@@ -576,6 +581,9 @@ const AddScriptEventMenu = ({
   const lastTilesetId = useAppSelector(
     (state) => tilesetSelectors.selectIds(state)[0],
   );
+  const lastFontId = useAppSelector(
+    (state) => fontSelectors.selectIds(state)[0],
+  );
   const lastEngineFieldId = useAppSelector(
     (state) => state.engine.defaultEngineFieldId,
   );
@@ -839,6 +847,7 @@ const AddScriptEventMenu = ({
               defaultSpriteId: String(lastSpriteId),
               defaultEmoteId: String(lastEmoteId),
               defaultTilesetId: String(lastTilesetId),
+              defaultFontId: String(lastFontId),
               defaultEngineFieldId: String(lastEngineFieldId),
               defaultArgs: {
                 ...defaultArgs,
@@ -867,6 +876,7 @@ const AddScriptEventMenu = ({
       lastSpriteId,
       lastEmoteId,
       lastTilesetId,
+      lastFontId,
       lastEngineFieldId,
       onBlur,
     ],

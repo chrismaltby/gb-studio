@@ -1779,6 +1779,10 @@ abstract class ScriptBuilderBase {
   _setTextLayer = (layer: ".TEXT_LAYER_BKG" | ".TEXT_LAYER_WIN") => {
     this._addCmd("VM_SWITCH_TEXT_LAYER", layer);
   };
+  
+  _setFont = (fontIndex: number) => {
+    this._addCmd("VM_SET_FONT", fontIndex);
+  };
 
   _choice = (
     variable: ScriptBuilderStackVariable,
