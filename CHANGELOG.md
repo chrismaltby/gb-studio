@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add support for creating Notes that can be positioned and resized in the World view with multiple color options
+- Add "Set Font" event to change the current default font from scripts [@Mico27](https://github.com/Mico27)
 
 ## [4.2.2] - 2026-02-24
 

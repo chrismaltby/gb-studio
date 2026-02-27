@@ -1519,10 +1519,10 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._setConstMemUInt8("overlay_cut_scanline", LYC_SYNC_VALUE);
     this._addNL();
   };
-  
-  setFont = (fontIndex = 0) => {
-    this._addComment("Set font");
-    this._setFont(fontIndex);
+
+  setFont = (fontId: string) => {
+    this._addComment("Set Font");
+    this._setFont(this._getFontSymbol(fontId));
     this._addNL();
   };
 

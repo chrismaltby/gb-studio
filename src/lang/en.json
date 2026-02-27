@@ -1311,6 +1311,7 @@
   "FIELD_EVERY_FRAME_WITH_WARN": "Every Frame (Most Precise, Slowest)",
   "FIELD_TOUCHING_WALL": "Is Touching Wall",
   "FIELD_PLATFORM_TOUCHING_WALL_DESC": "Whether the player is currently pressing against a wall in the platformer scene.",
+  "FIELD_FONT_DESC": "The font to use for drawing text.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
