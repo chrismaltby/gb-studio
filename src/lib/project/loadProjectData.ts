@@ -19,7 +19,8 @@ import {
   CompressedProjectResources,
   CompressedSceneResourceWithChildren,
   EngineFieldValuesResource,
-  FontMetadata,
+  FontResource,
+  FontResourceAsset,
   MusicResource,
   MusicResourceAsset,
   PaletteResource,
@@ -205,21 +206,12 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     });
   };
 
-  const mergeFontsWithResources = <
-    A extends Asset & {
-      id: string;
-      symbol: string;
-      name: string;
-    },
-    B extends string,
-  >(
-    assets: (A & FontMetadata)[],
-    resources: Omit<A & { _resourceType: B }, "inode" | "_v" | "plugin">[],
-    resourceType: B,
+  const mergeFontsWithResources = (
+    assets: FontResourceAsset[],
+    resources: FontResource[],
   ) => {
     return mergeAssetsWithResources(assets, resources, (asset, resource) => {
       return {
-        _resourceType: resourceType,
         ...asset,
         id: resource?.id ?? asset.id,
         symbol: resource?.symbol ?? asset.symbol,
@@ -333,7 +325,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     "sound",
   );
 
-  const fontResources = mergeFontsWithResources(fonts, resources.fonts, "font");
+  const fontResources = mergeFontsWithResources(fonts, resources.fonts);
 
   const musicResources = mergeAssetsWithResources<
     MusicResource,
