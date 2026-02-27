@@ -365,6 +365,13 @@ export const denormalizeEntities = (
       _v: undefined,
     });
 
+  const stripFontDerivedProperties = <T extends FontAsset>(
+    font: T,
+  ): Omit<T, "mapping" | "table"> => {
+    const { mapping: _mapping, table: _table, ...rest } = font;
+    return rest;
+  };
+
   const denormalizedEntityResources: ProjectEntityResources = {
     scenes: denormalizedEntities.scenes.map((scene, sceneIndex) => ({
       _index: sceneIndex,
@@ -395,7 +402,9 @@ export const denormalizeEntities = (
     palettes: denormalizedEntities.palettes.map(entityToResource("palette")),
     emotes: denormalizedEntities.emotes.map(entityToResource("emote")),
     avatars: denormalizedEntities.avatars.map(entityToResource("avatar")),
-    fonts: denormalizedEntities.fonts.map(entityToResource("font")),
+    fonts: denormalizedEntities.fonts.map((font) =>
+      entityToResource("font")(stripFontDerivedProperties(font)),
+    ),
     tilesets: denormalizedEntities.tilesets.map(entityToResource("tileset")),
     sounds: denormalizedEntities.sounds.map(entityToResource("sound")),
     engineFieldValues: entityToResource("engineFieldValues")(

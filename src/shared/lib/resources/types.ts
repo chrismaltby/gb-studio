@@ -601,6 +601,11 @@ export const FontResource = Type.Object({
   width: Type.Number(),
   height: Type.Number(),
   plugin: Type.Optional(Type.String()),
+});
+
+export type FontResource = Static<typeof FontResource>;
+
+export const FontMetadata = Type.Object({
   mapping: Type.Record(
     Type.String(),
     Type.Union([Type.Number(), Type.Array(Type.Number())]),
@@ -608,11 +613,11 @@ export const FontResource = Type.Object({
   table: Type.Array(Type.Number()),
 });
 
-export type FontResource = Static<typeof FontResource>;
+export type FontMetadata = Static<typeof FontMetadata>;
 
-export type Font = Omit<ExtractResource<FontResource>, "mapping" | "table">;
+export type Font = ExtractResource<FontResource>;
 
-export type FontResourceAsset = FontResource & AssetMetadata;
+export type FontResourceAsset = FontResource & AssetMetadata & FontMetadata;
 
 export type FontAsset = ExtractResource<FontResourceAsset>;
 
