@@ -581,6 +581,7 @@ export const dummyFontResource: FontResource = {
   width: 16,
   height: 16,
   mapping: {},
+  table: [],
 };
 
 export const dummyNoteResource: NoteResource = {

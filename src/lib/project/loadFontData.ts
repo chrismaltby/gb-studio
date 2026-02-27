@@ -36,20 +36,39 @@ const loadFontData =
 
       const metadataFilename = filename.replace(/\.png$/i, ".json");
       let mapping: Record<string, number> = {};
+      let table_mapping: Record<string, number> = {};
       let name: string = file.replace(/.png/i, "");
       try {
         const metadataFile = await readJson(metadataFilename);
-        if (
-          typeof metadataFile === "object" &&
-          metadataFile.mapping &&
-          typeof metadataFile.mapping === "object"
-        ) {
-          mapping = metadataFile.mapping;
+        if (typeof metadataFile === "object"){
+          if (metadataFile.mapping && typeof metadataFile.mapping === "object") {
+            mapping = metadataFile.mapping;
+          }
+          if (metadataFile.table && typeof metadataFile.table === "object") {
+            table_mapping = metadataFile.table;
+          }
           if (metadataFile.name) {
             name = metadataFile.name;
           }
         }
-      } catch (e) {}
+      } catch (e) {}      
+      
+      let table = (Array.from(Array(256)) as number[]).fill(-1);
+      
+      if (Object.keys(table_mapping).length){
+        //get highest mapped value
+        const mappingKeys = Object.keys(table_mapping).map((mappingKey)=> {return mappingKey.charCodeAt(0);});
+        const maxValue = Math.max(...mappingKeys) % 256;
+        //adjust the table size to fit table_mapping values
+        if (table.length < maxValue){
+            table = table.concat((Array.from(Array(maxValue - table.length)) as number[]).fill(-1));
+        }    
+        //modify the table with the table_mapping
+        Object.entries(table_mapping).forEach(([key, value]) => {
+            const tableIndex = key.charCodeAt(0) % 256; //get ascii value of mapped char
+            table[tableIndex] = value; //assign mapped value to table
+        });
+      }
 
       return {
         _resourceType: "font",
@@ -62,6 +81,7 @@ const loadFontData =
         width: size.width,
         height: size.height,
         mapping,
+        table,
         filename: file,
         inode,
       };

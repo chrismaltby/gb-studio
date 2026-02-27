@@ -605,11 +605,12 @@ export const FontResource = Type.Object({
     Type.String(),
     Type.Union([Type.Number(), Type.Array(Type.Number())]),
   ),
+  table: Type.Array(Type.Number()),
 });
 
 export type FontResource = Static<typeof FontResource>;
 
-export type Font = Omit<ExtractResource<FontResource>, "mapping">;
+export type Font = Omit<ExtractResource<FontResource>, "mapping" | "table">;
 
 export type FontResourceAsset = FontResource & AssetMetadata;
 
