@@ -119,17 +119,19 @@ export const readFileToFontData = async (
   ).concat(charKeys.map((key) => uniqueTileKeys.indexOf(key)));
   
   if (Object.keys(tableMapping).length){
-    //get highest mapped value
-    const mappingKeys = Object.keys(tableMapping).map((mappingKey)=> {return mappingKey.charCodeAt(0);});
-    const maxValue = Math.max(...mappingKeys) % 256;
-    //adjust the table size to fit tableMapping values
+    //get highest mapped char
+    const mappingKeys = Object.keys(tableMapping).map((mappingKey)=> {return mappingKey.charCodeAt(0);}).filter((charcode)=> {return charcode < 256;});
+    const maxValue = Math.max(...mappingKeys) + 1;
+    //adjust the table size to fit tableMapping
     if (table.length < maxValue){
-        table = table.concat((Array.from(Array(maxValue - table.length)) as number[]).fill(0));
+      table = table.concat((Array.from(Array(maxValue - table.length)) as number[]).fill(0));
     }    
     //modify the table with the tableMapping
     Object.entries(tableMapping).forEach(([key, value]) => {
-        const tableIndex = key.charCodeAt(0) % 256; //get ascii value of mapped char
-        table[tableIndex] = value; //assign mapped value to table
+        const tableIndex = key.charCodeAt(0); //get ascii value of mapped char
+        if (tableIndex < 256) {
+          table[tableIndex] = value; //assign mapped value to table
+        }
     });
   }
   const widths = uniqueTiles.map((tile) => tile.width);
