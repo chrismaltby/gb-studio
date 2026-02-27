@@ -50,7 +50,7 @@ export const readFileToFontData = async (
 
   const metadataFilename = filename.replace(/\.png$/i, ".json");
   let mapping: Record<string, number> = {};
-  let table_mapping: Record<string, number> = {};
+  let tableMapping: Record<string, number> = {};
   try {
     const metadataFile = await readJson(metadataFilename);
     if (typeof metadataFile === "object"){
@@ -64,7 +64,7 @@ export const readFileToFontData = async (
       metadataFile.table &&
       typeof metadataFile.table === "object"
       ) {
-      table_mapping = metadataFile.table;
+      tableMapping = metadataFile.table;
       }
     }
   } catch (e) {}
@@ -118,16 +118,16 @@ export const readFileToFontData = async (
     tileHeight < 16 ? (Array.from(Array(FIRST_CHAR)) as number[]).fill(0) : []
   ).concat(charKeys.map((key) => uniqueTileKeys.indexOf(key)));
   
-  if (Object.keys(table_mapping).length){
+  if (Object.keys(tableMapping).length){
     //get highest mapped value
-    const mappingKeys = Object.keys(table_mapping).map((mappingKey)=> {return mappingKey.charCodeAt(0);});
+    const mappingKeys = Object.keys(tableMapping).map((mappingKey)=> {return mappingKey.charCodeAt(0);});
     const maxValue = Math.max(...mappingKeys) % 256;
-    //adjust the table size to fit table_mapping values
+    //adjust the table size to fit tableMapping values
     if (table.length < maxValue){
         table = table.concat((Array.from(Array(maxValue - table.length)) as number[]).fill(0));
     }    
-    //modify the table with the table_mapping
-    Object.entries(table_mapping).forEach(([key, value]) => {
+    //modify the table with the tableMapping
+    Object.entries(tableMapping).forEach(([key, value]) => {
         const tableIndex = key.charCodeAt(0) % 256; //get ascii value of mapped char
         table[tableIndex] = value; //assign mapped value to table
     });
