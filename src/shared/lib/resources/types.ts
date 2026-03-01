@@ -156,6 +156,22 @@ const ScriptEventArgsOverride = Type.Object({
 
 export type ScriptEventArgsOverride = Static<typeof ScriptEventArgsOverride>;
 
+export const LabelColor = Type.Union([
+  Type.Literal("red"),
+  Type.Literal("orange"),
+  Type.Literal("yellow"),
+  Type.Literal("green"),
+  Type.Literal("blue"),
+  Type.Literal("purple"),
+  Type.Literal("gray"),
+]);
+
+export type LabelColor = Static<typeof LabelColor>;
+
+export const labelColorValues: LabelColor[] = LabelColor.anyOf.map(
+  (schema) => schema.const,
+);
+
 export const ActorResource = Type.Object({
   _resourceType: Type.Literal("actor"),
   _index: Type.Number(),
@@ -259,7 +275,7 @@ export const CompressedSceneResource = Type.Object({
   name: Type.String(),
   symbol: Type.String(),
   notes: Type.Optional(Type.String()),
-  labelColor: Type.Optional(Type.String()),
+  labelColor: Type.Optional(LabelColor),
   x: Type.Number(),
   y: Type.Number(),
   width: Type.Number(),
@@ -293,6 +309,22 @@ export const CompressedSceneResource = Type.Object({
 });
 
 export type CompressedSceneResource = Static<typeof CompressedSceneResource>;
+
+export const NoteResource = Type.Object({
+  _resourceType: Type.Literal("note"),
+  id: Type.String(),
+  labelColor: Type.Optional(LabelColor),
+  name: Type.String(),
+  content: Type.String(),
+  x: Type.Number(),
+  y: Type.Number(),
+  width: Type.Number(),
+  height: Type.Number(),
+});
+
+export type NoteResource = Static<typeof NoteResource>;
+
+export type Note = ExtractResource<NoteResource>;
 
 export const ProjectMetadataResource = Type.Object({
   _resourceType: Type.Literal("project"),
@@ -939,6 +971,7 @@ export type CompressedResource =
   | VariablesResource
   | EngineFieldValuesResource
   | SettingsResource
+  | NoteResource
   | ProjectMetadataResource;
 
 export type Resource =
@@ -971,6 +1004,7 @@ export type CompressedProjectResources = {
   variables: VariablesResource;
   engineFieldValues: EngineFieldValuesResource;
   settings: SettingsResource;
+  notes: NoteResource[];
   metadata: ProjectMetadataResource;
 };
 

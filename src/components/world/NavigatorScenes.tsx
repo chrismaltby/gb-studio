@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import {
   actorSelectors,
+  noteSelectors,
   sceneSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesState";
@@ -21,6 +22,7 @@ import styled from "styled-components";
 import {
   SceneNavigatorItem,
   buildSceneNavigatorItems,
+  notesInFolder,
   sceneParentFolders,
   scenesInFolder,
 } from "shared/lib/entities/buildSceneNavigatorItems";
@@ -29,6 +31,7 @@ import renderActorContextMenu from "./renderActorContextMenu";
 import renderTriggerContextMenu from "./renderTriggerContextMenu";
 import { assertUnreachable } from "shared/lib/helpers/assert";
 import renderSceneFolderContextMenu from "components/world/renderSceneFolderContextMenu";
+import renderNoteContextMenu from "components/world/renderNoteContextMenu";
 
 interface NavigatorScenesProps {
   height: number;
@@ -44,6 +47,8 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
   searchTerm,
 }) => {
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
+  const notes = useAppSelector((state) => noteSelectors.selectAll(state));
+
   const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state),
   );
@@ -106,23 +111,29 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
     sceneSelectors.selectById(state, sceneId),
   );
 
+  const note = useAppSelector((state) =>
+    noteSelectors.selectById(state, entityId),
+  );
+
   const openFolders = useMemo(() => {
     return [
       ...manuallyOpenedFolders,
       ...(scene ? sceneParentFolders(scene) : []),
+      ...(note ? sceneParentFolders(note) : []),
     ];
-  }, [manuallyOpenedFolders, scene]);
+  }, [manuallyOpenedFolders, scene, note]);
 
   const nestedSceneItems = useMemo(
     () =>
       buildSceneNavigatorItems(
         scenes,
+        notes,
         actorsLookup,
         triggersLookup,
         openFolders,
         searchTerm,
       ),
-    [scenes, actorsLookup, triggersLookup, openFolders, searchTerm],
+    [scenes, notes, actorsLookup, triggersLookup, openFolders, searchTerm],
   );
 
   useEffect(() => {
@@ -131,8 +142,11 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
     }
   }, [entityId, sceneId]);
 
+  const selectedNoteId = editorType === "note" ? entityId : undefined;
+
   const selectedId =
     folderId ||
+    selectedNoteId ||
     (editorType === "scene" || !openFolders.includes(sceneId)
       ? sceneId
       : entityId);
@@ -162,8 +176,17 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
       }
       dispatch(editorActions.setFocusSceneId(item.id));
       clearFolderSelection();
-    } else {
+    } else if (item.type === "note") {
+      if (addToSelection.current) {
+        dispatch(editorActions.toggleNoteSelectedId(id));
+      } else {
+        dispatch(editorActions.selectNote({ noteId: id }));
+      }
+      clearFolderSelection();
+    } else if (item.type === "folder") {
       setFolderId(id);
+    } else {
+      assertUnreachable(item);
     }
   };
 
@@ -184,6 +207,23 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
         dispatch(
           entitiesActions.editScene({
             sceneId: renameId,
+            changes: {
+              name,
+            },
+          }),
+        );
+      }
+      setRenameId("");
+    },
+    [dispatch, renameId],
+  );
+
+  const onRenameNoteComplete = useCallback(
+    (name: string) => {
+      if (renameId) {
+        dispatch(
+          entitiesActions.editNote({
+            noteId: renameId,
             changes: {
               name,
             },
@@ -264,10 +304,18 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
           triggerId: item.id,
           onRename: () => setRenameId(item.id),
         });
+      } else if (item.type === "note") {
+        return renderNoteContextMenu({
+          dispatch,
+          noteId: item.id,
+          onRename: () => setRenameId(item.id),
+          onClose,
+        });
       } else if (item.type === "folder") {
         return renderSceneFolderContextMenu({
           dispatch,
           scenes: scenesInFolder(item.id, scenes),
+          notes: notesInFolder(item.id, notes),
         });
       } else {
         assertUnreachable(item);
@@ -278,6 +326,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
       runSceneSelectionOnly,
       sceneSelectionIds,
       scenes,
+      notes,
       startDirection,
       startSceneId,
       colorsEnabled,
@@ -314,37 +363,69 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
           closeFolder(selectedId);
         }
       }}
-      children={({ item }) =>
-        item.type === "scene" || item.type === "folder" ? (
-          <EntityListItem
-            item={item}
-            type={item.type === "folder" ? "folder" : "scene"}
-            rename={item.type !== "folder" && renameId === item.id}
-            onRename={onRenameSceneComplete}
-            onRenameCancel={onRenameCancel}
-            renderContextMenu={renderContextMenu}
-            collapsable={item.type === "folder" || item.type === "scene"}
-            collapsed={!openFolders.includes(item.id)}
-            onToggleCollapse={() => toggleFolderOpen(item.id)}
-            nestLevel={item.nestLevel}
-            renderLabel={renderLabel}
-          />
-        ) : (
-          <EntityListItem
-            item={item}
-            type={item.type}
-            nestLevel={item.nestLevel}
-            rename={renameId === item.id}
-            onRename={
-              item.type === "actor"
-                ? onRenameActorComplete
-                : onRenameTriggerComplete
-            }
-            onRenameCancel={onRenameCancel}
-            renderContextMenu={renderContextMenu}
-          />
-        )
-      }
+      children={({ item }) => {
+        if (item.type === "scene") {
+          return (
+            <EntityListItem
+              item={item}
+              type={item.type}
+              rename={renameId === item.id}
+              onRename={onRenameSceneComplete}
+              onRenameCancel={onRenameCancel}
+              renderContextMenu={renderContextMenu}
+              collapsable
+              collapsed={!openFolders.includes(item.id)}
+              onToggleCollapse={() => toggleFolderOpen(item.id)}
+              nestLevel={item.nestLevel}
+              renderLabel={renderLabel}
+            />
+          );
+        } else if (item.type === "folder") {
+          return (
+            <EntityListItem
+              item={item}
+              type={item.type}
+              renderContextMenu={renderContextMenu}
+              collapsable
+              collapsed={!openFolders.includes(item.id)}
+              onToggleCollapse={() => toggleFolderOpen(item.id)}
+              nestLevel={item.nestLevel}
+              renderLabel={renderLabel}
+            />
+          );
+        } else if (item.type === "note") {
+          return (
+            <EntityListItem
+              item={item}
+              type={item.type}
+              rename={renameId === item.id}
+              onRename={onRenameNoteComplete}
+              onRenameCancel={onRenameCancel}
+              renderContextMenu={renderContextMenu}
+              nestLevel={(item.nestLevel ?? 0) + 1}
+              renderLabel={renderLabel}
+            />
+          );
+        } else if (item.type === "actor" || item.type === "trigger") {
+          return (
+            <EntityListItem
+              item={item}
+              type={item.type}
+              nestLevel={item.nestLevel}
+              rename={renameId === item.id}
+              onRename={
+                item.type === "actor"
+                  ? onRenameActorComplete
+                  : onRenameTriggerComplete
+              }
+              onRenameCancel={onRenameCancel}
+              renderContextMenu={renderContextMenu}
+            />
+          );
+        } else {
+          assertUnreachable(item);
+        }
+      }}
     />
   );
 };

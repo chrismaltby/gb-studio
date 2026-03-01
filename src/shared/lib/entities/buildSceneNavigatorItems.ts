@@ -3,7 +3,8 @@ import {
   SceneNormalized,
   TriggerNormalized,
 } from "./entitiesTypes";
-import { actorName, sceneName, triggerName } from "./entitiesHelpers";
+import { actorName, sceneName, triggerName, noteName } from "./entitiesHelpers";
+import { Note } from "shared/lib/resources/types";
 
 type Entity = {
   id: string;
@@ -23,6 +24,10 @@ export type SceneNavigatorItem = {
   | {
       type: "scene";
       scene: SceneNormalized;
+    }
+  | {
+      type: "note";
+      note: Note;
     }
   | {
       type: "actor";
@@ -45,7 +50,7 @@ const sortByName = (a: Entity, b: Entity) => {
   return collator.compare(a.name, b.name);
 };
 
-export const sceneParentFolders = (scene: SceneNormalized): string[] => {
+export const sceneParentFolders = (scene: SceneNormalized | Note): string[] => {
   const parts = scene.name.split(/[/\\]/).slice(0, -1);
   const folders: string[] = [];
   while (parts.length > 0) {
@@ -64,8 +69,14 @@ export const scenesInFolder = (
   return scenes.filter((scene) => scene.name.match(regex));
 };
 
+export const notesInFolder = (folder: string, notes: Note[]): Note[] => {
+  const regex = new RegExp("^" + folder.split(/[/\\]/).join("[/\\\\]"));
+  return notes.filter((scene) => scene.name.match(regex));
+};
+
 export const buildSceneNavigatorItems = (
   scenes: SceneNormalized[],
+  notes: Note[],
   actorsLookup: Record<string, ActorNormalized>,
   triggersLookup: Record<string, TriggerNormalized>,
   openFolders: string[],
@@ -85,6 +96,16 @@ export const buildSceneNavigatorItems = (
       return openFolders.includes(pathCheck);
     });
   };
+
+  const sceneAndNotes = [...scenes, ...notes]
+    .map((value) => {
+      if ("content" in value) {
+        return { ...value, name: noteName(value, notes.indexOf(value)) };
+      } else {
+        return { ...value, name: sceneName(value, scenes.indexOf(value)) };
+      }
+    })
+    .sort(sortByName);
 
   const addScene = (scene: SceneNormalized, nestLevel: number) => {
     result.push({
@@ -132,50 +153,68 @@ export const buildSceneNavigatorItems = (
     });
   };
 
+  const addNote = (note: Note, nestLevel: number) => {
+    result.push({
+      id: note.id,
+      type: "note",
+      name: note.name,
+      filename: note.name.replace(/.*[/\\]/, ""),
+      nestLevel,
+      labelColor: note.labelColor,
+      note,
+    });
+    if (!openFolders.includes(note.id)) {
+      return;
+    }
+  };
+
   if (searchTerm.length > 0) {
     const searchTermUpperCase = searchTerm.toLocaleUpperCase();
-    scenes
-      .map((scene, index) => ({ ...scene, name: sceneName(scene, index) }))
+    sceneAndNotes
       .filter((s) => s.name.toLocaleUpperCase().includes(searchTermUpperCase))
-      .sort(sortByName)
-      .forEach((scene) => {
-        addScene(scene, 0);
+      .forEach((value) => {
+        if ("content" in value) {
+          addNote(value, 0);
+        } else {
+          addScene(value, 0);
+        }
       });
     return result;
   }
 
-  scenes
-    .map((scene, index) => ({ ...scene, name: sceneName(scene, index) }))
-    .sort(sortByName)
-    .forEach((scene) => {
-      const path = scene.name;
-      const parts = path.split(/[\\/]/);
-      let currentPath = "";
+  sceneAndNotes.forEach((value) => {
+    const path = value.name;
+    const parts = path.split(/[\\/]/);
+    let currentPath = "";
 
-      parts.forEach((part, index) => {
-        const isLast = index === parts.length - 1;
-        currentPath += (currentPath ? "/" : "") + part;
-        if (isLast) {
-          const nestLevel = parts.length > 1 ? parts.length - 1 : 0;
-          if (!isVisible(currentPath, nestLevel)) {
-            return;
-          }
-          addScene(scene, nestLevel);
-        } else if (!uniqueFolders.has(currentPath)) {
-          if (!isVisible(currentPath, index)) {
-            return;
-          }
-          uniqueFolders.add(currentPath);
-          result.push({
-            id: currentPath,
-            type: "folder",
-            name: currentPath,
-            filename: part,
-            nestLevel: index,
-          });
+    parts.forEach((part, index) => {
+      const isLast = index === parts.length - 1;
+      currentPath += (currentPath ? "/" : "") + part;
+      if (isLast) {
+        const nestLevel = parts.length > 1 ? parts.length - 1 : 0;
+        if (!isVisible(currentPath, nestLevel)) {
+          return;
         }
-      });
+        if ("content" in value) {
+          addNote(value, nestLevel);
+        } else {
+          addScene(value, nestLevel);
+        }
+      } else if (!uniqueFolders.has(currentPath)) {
+        if (!isVisible(currentPath, index)) {
+          return;
+        }
+        uniqueFolders.add(currentPath);
+        result.push({
+          id: currentPath,
+          type: "folder",
+          name: currentPath,
+          filename: part,
+          nestLevel: index,
+        });
+      }
     });
+  });
 
   return result;
 };

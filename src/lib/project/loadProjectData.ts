@@ -139,6 +139,8 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       });
     });
 
+  const noteResources = resources.notes.map(addMissingEntityId);
+
   const scriptResources = resources.scripts.map(addMissingEntityId);
 
   const actorPrefabResources = resources.actorPrefabs.map(addMissingEntityId);
@@ -377,6 +379,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       variables: variablesResource,
       engineFieldValues: engineFieldValuesResource,
       settings: settingsResource,
+      notes: noteResources,
       metadata: resources.metadata,
     },
     modifiedSpriteIds,

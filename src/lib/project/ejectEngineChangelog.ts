@@ -1251,6 +1251,20 @@ const changes: EngineChange[] = [
       "src/states/shmup.c",
     ],
   },
+  {
+    version: "4.2.2-e1",
+    description: createDescription("Fixes", [
+      "Fix persistent actors flashing on-screen issue by delaying activation of persistent and pinned actors until scroll position is initialised",
+      "Add ability to configure how many frames projectile collisions are spread over (4 frames, 2 frames, test every frame)",
+    ]),
+    modifiedFiles: [
+      "include/actor.h",
+      "src/core/actor.c",
+      "src/core/core.c",
+      "src/core/data_manager.c",
+      "src/core/projectiles.c",
+    ],
+  },
 ];
 
 export const isKnownEngineVersion = (currentVersion: string): boolean => {

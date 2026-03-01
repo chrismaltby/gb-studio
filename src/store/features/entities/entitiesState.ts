@@ -77,6 +77,7 @@ import {
   normalizeSprite,
   getMetaspriteTilesForSpriteSheet,
   nextIndexedName,
+  defaultLocalisedNoteName,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import { isValueNumber } from "shared/lib/scriptValue/types";
@@ -104,6 +105,7 @@ import {
   MusicAsset,
   MusicResourceAsset,
   MusicSettings,
+  Note,
   ObjPalette,
   Palette,
   ScriptEventArgs,
@@ -127,6 +129,10 @@ const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
 const MIN_SCENE_WIDTH = 20;
 const MIN_SCENE_HEIGHT = 18;
+const MIN_NOTE_WIDTH = 20;
+const MIN_NOTE_HEIGHT = 3;
+const DEFAULT_NOTE_WIDTH = 20;
+const DEFAULT_NOTE_HEIGHT = 15;
 
 const scriptEventsAdapter = createEntityAdapter<ScriptEventNormalized>();
 const actorsAdapter = createEntityAdapter<ActorNormalized>();
@@ -167,6 +173,7 @@ const emotesAdapter = createEntityAdapter<EmoteAsset>({
 });
 const variablesAdapter = createEntityAdapter<Variable>();
 const constantsAdapter = createEntityAdapter<Constant>();
+const notesAdapter = createEntityAdapter<Note>();
 const engineFieldValuesAdapter = createEntityAdapter<EngineFieldValue>();
 
 export const initialState: EntitiesState = {
@@ -192,6 +199,7 @@ export const initialState: EntitiesState = {
   tilesets: tilesetsAdapter.getInitialState(),
   variables: variablesAdapter.getInitialState(),
   constants: constantsAdapter.getInitialState(),
+  notes: notesAdapter.getInitialState(),
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
 
@@ -261,8 +269,16 @@ const removeSelectedEntity =
     if (editorType === "scene") {
       if (sceneSelectionIds.length > 0) {
         dispatch(actions.removeScenes({ sceneIds: sceneSelectionIds }));
+        dispatch(actions.removeNotes({ noteIds: sceneSelectionIds }));
       } else {
         dispatch(actions.removeScene({ sceneId: scene }));
+      }
+    } else if (editorType === "note") {
+      if (sceneSelectionIds.length > 0) {
+        dispatch(actions.removeScenes({ sceneIds: sceneSelectionIds }));
+        dispatch(actions.removeNotes({ noteIds: sceneSelectionIds }));
+      } else {
+        dispatch(actions.removeNote({ noteId: entityId }));
       }
     } else if (editorType === "trigger") {
       dispatch(actions.removeTrigger({ sceneId: scene, triggerId: entityId }));
@@ -336,6 +352,7 @@ const loadProject: CaseReducer<
     state.engineFieldValues,
     data.entities.engineFieldValues || {},
   );
+  notesAdapter.setAll(state.notes, data.entities.notes || {});
 
   fixAllScenesWithModifiedBackgrounds(state);
   updateMonoOverrideIds(state);
@@ -891,52 +908,6 @@ const addScene: CaseReducer<
   scenesAdapter.addOne(state.scenes, newScene);
 };
 
-const moveScene: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    sceneId: string;
-    x: number;
-    y: number;
-    additionalSceneIds: string[];
-  }>
-> = (state, action) => {
-  const scene = localSceneSelectById(state, action.payload.sceneId);
-  const additionalScenes = action.payload.additionalSceneIds.map((id) =>
-    localSceneSelectById(state, id),
-  );
-  if (scene) {
-    const minSelectionX = Math.min(
-      ...additionalScenes.map((s) => (s ? s.x - scene.x : 0)),
-    );
-    const minSelectionY = Math.min(
-      ...additionalScenes.map((s) => (s ? s.y - scene.y : 0)),
-    );
-
-    // Based on full selection determine minX and minY for current scene
-    const newX = Math.max(MIN_SCENE_X - minSelectionX, action.payload.x);
-    const newY = Math.max(MIN_SCENE_Y - minSelectionY, action.payload.y);
-    const diffX = newX - scene.x;
-    const diffY = newY - scene.y;
-
-    // Move scene
-    scene.x = newX;
-    scene.y = newY;
-
-    // Move additionally selected scenes by same amount
-    for (const additionalSceneId of action.payload.additionalSceneIds) {
-      if (additionalSceneId !== action.payload.sceneId) {
-        const additionalScene = localSceneSelectById(state, additionalSceneId);
-        if (additionalScene) {
-          const newX = Math.max(MIN_SCENE_X, additionalScene.x + diffX);
-          const newY = Math.max(MIN_SCENE_Y, additionalScene.y + diffY);
-          additionalScene.x = newX;
-          additionalScene.y = newY;
-        }
-      }
-    }
-  }
-};
-
 const editScene: CaseReducer<
   EntitiesState,
   PayloadAction<{ sceneId: string; changes: Partial<SceneNormalized> }>
@@ -1060,6 +1031,129 @@ const removeScenes: CaseReducer<
   }>
 > = (state, action) => {
   scenesAdapter.removeMany(state.scenes, action.payload.sceneIds);
+};
+
+const moveWorldEntities: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    entityId: string;
+    additionalEntityIds: string[];
+    x: number;
+    y: number;
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.entityId);
+  const note = localNoteSelectById(state, action.payload.entityId);
+  const entity = scene || note;
+
+  const additionalEntities: (SceneNormalized | Note)[] =
+    action.payload.additionalEntityIds
+      .map(
+        (id) =>
+          localSceneSelectById(state, id) || localNoteSelectById(state, id),
+      )
+      .filter(Boolean);
+
+  if (entity) {
+    const minSelectionX = Math.min(
+      ...additionalEntities.map((e) => (e ? e.x - entity.x : 0)),
+    );
+    const minSelectionY = Math.min(
+      ...additionalEntities.map((e) => (e ? e.y - entity.y : 0)),
+    );
+
+    // Based on full selection determine minX and minY for current entity
+    const newX = Math.max(MIN_SCENE_X - minSelectionX, action.payload.x);
+    const newY = Math.max(MIN_SCENE_Y - minSelectionY, action.payload.y);
+    const diffX = newX - entity.x;
+    const diffY = newY - entity.y;
+
+    // Move entity
+    entity.x = newX;
+    entity.y = newY;
+
+    // Move additionally selected entities by same amount
+    for (const additionalEntity of additionalEntities) {
+      if (additionalEntity.id !== action.payload.entityId) {
+        if (additionalEntity) {
+          const newX = Math.max(MIN_SCENE_X, additionalEntity.x + diffX);
+          const newY = Math.max(MIN_SCENE_Y, additionalEntity.y + diffY);
+          additionalEntity.x = newX;
+          additionalEntity.y = newY;
+        }
+      }
+    }
+  }
+};
+
+/**************************************************************************
+ * Notes
+ */
+
+const addNote: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    noteId: string;
+    x: number;
+    y: number;
+  }>
+> = (state, action) => {
+  const notesTotal = localNoteSelectTotal(state);
+
+  const newNote: Note = {
+    name: defaultLocalisedNoteName(notesTotal),
+    id: action.payload.noteId,
+    x: Math.max(MIN_SCENE_X, action.payload.x),
+    y: Math.max(MIN_SCENE_Y, action.payload.y),
+    width: DEFAULT_NOTE_WIDTH,
+    height: DEFAULT_NOTE_HEIGHT,
+    content: "",
+  };
+
+  notesAdapter.addOne(state.notes, newNote);
+};
+
+const editNote: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ noteId: string; changes: Partial<Note> }>
+> = (state, action) => {
+  const note = state.notes.entities[action.payload.noteId];
+  const patch = { ...action.payload.changes };
+
+  if (!note) {
+    return;
+  }
+
+  if (patch.width !== undefined) {
+    patch.width = Math.max(MIN_NOTE_WIDTH, patch.width);
+  }
+
+  if (patch.height !== undefined) {
+    patch.height = Math.max(MIN_NOTE_HEIGHT, patch.height);
+  }
+
+  notesAdapter.updateOne(state.notes, {
+    id: action.payload.noteId,
+    changes: patch,
+  });
+};
+
+const removeNote: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    noteId: string;
+  }>
+> = (state, action) => {
+  notesAdapter.removeOne(state.notes, action.payload.noteId);
+};
+
+const removeNotes: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    noteIds: string[];
+  }>
+> = (state, action) => {
+  notesAdapter.removeMany(state.notes, action.payload.noteIds);
 };
 
 /**************************************************************************
@@ -4654,11 +4748,31 @@ const entitiesSlice = createSlice({
     setSceneSymbol,
     removeScene,
     removeScenes,
-    moveScene,
     paintCollision,
     paintSlopeCollision,
     paintColor,
     setSceneExtractedPalettes,
+    moveWorldEntities,
+
+    /**************************************************************************
+     * Notes
+     */
+
+    addNote: {
+      reducer: addNote,
+      prepare: (payload: { x: number; y: number }) => {
+        return {
+          payload: {
+            ...payload,
+            noteId: uuid(),
+          },
+        };
+      },
+    },
+
+    editNote,
+    removeNote,
+    removeNotes,
 
     /**************************************************************************
      * Actors
@@ -5232,6 +5346,11 @@ const localSceneSelectAll = (state: EntitiesState) =>
 
 const localSceneSelectTotal = (state: EntitiesState) => state.scenes.ids.length;
 
+const localNoteSelectById = (state: EntitiesState, id: string) =>
+  state.notes.entities[id];
+
+const localNoteSelectTotal = (state: EntitiesState) => state.notes.ids.length;
+
 const localActorSelectById = (state: EntitiesState, id: string) =>
   state.actors.entities[id];
 
@@ -5307,6 +5426,9 @@ export const triggerSelectors = triggersAdapter.getSelectors(
 );
 export const sceneSelectors = scenesAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.scenes,
+);
+export const noteSelectors = notesAdapter.getSelectors(
+  (state: RootState) => state.project.present.entities.notes,
 );
 export const actorPrefabSelectors = actorPrefabsAdapter.getSelectors(
   (state: RootState) => state.project.present.entities.actorPrefabs,
@@ -5398,28 +5520,38 @@ export const getLocalisedDMGPalette = () =>
     name: l10n("FIELD_PALETTE_DEFAULT_DMG"),
   }) as Palette;
 
-export const getMaxSceneRight = createSelector(
-  [sceneSelectors.selectAll],
-  (scenes) =>
-    scenes.reduce((memo, scene) => {
-      const sceneRight = scene.x + scene.width * 8;
-      if (sceneRight > memo) {
-        return sceneRight;
-      }
-      return memo;
-    }, 0),
+export const getMaxWorldRight = createSelector(
+  [sceneSelectors.selectAll, noteSelectors.selectAll],
+  (scenes, notes) => {
+    const maxSceneRight = scenes.reduce((memo, scene) => {
+      const right = scene.x + scene.width * 8;
+      return right > memo ? right : memo;
+    }, 0);
+
+    const maxNoteRight = notes.reduce((memo, note) => {
+      const right = note.x + note.width * 8;
+      return right > memo ? right : memo;
+    }, 0);
+
+    return Math.max(maxSceneRight, maxNoteRight);
+  },
 );
 
-export const getMaxSceneBottom = createSelector(
-  [sceneSelectors.selectAll],
-  (scenes) =>
-    scenes.reduce((memo, scene) => {
-      const sceneBottom = scene.y + scene.height * 8;
-      if (sceneBottom > memo) {
-        return sceneBottom;
-      }
-      return memo;
-    }, 0),
+export const getMaxWorldBottom = createSelector(
+  [sceneSelectors.selectAll, noteSelectors.selectAll],
+  (scenes, notes) => {
+    const maxSceneBottom = scenes.reduce((memo, scene) => {
+      const bottom = scene.y + scene.height * 8;
+      return bottom > memo ? bottom : memo;
+    }, 0);
+
+    const maxNoteBottom = notes.reduce((memo, note) => {
+      const bottom = note.y + note.height * 8;
+      return bottom > memo ? bottom : memo;
+    }, 0);
+
+    return Math.max(maxSceneBottom, maxNoteBottom);
+  },
 );
 
 export const getSceneActorIds = (state: RootState, { id }: { id: string }) =>

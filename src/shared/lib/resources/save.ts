@@ -10,6 +10,7 @@ import {
   EngineFieldValuesResource,
   FontResource,
   MusicResource,
+  NoteResource,
   PaletteResource,
   ScriptResource,
   SettingsResource,
@@ -24,6 +25,8 @@ import {
 import {
   getActorPrefabResourcePath,
   getActorResourcePath,
+  getNoteFolderPath,
+  getNoteResourcePath,
   getPaletteResourcePath,
   getSceneFolderPath,
   getSceneResourcePath,
@@ -179,6 +182,12 @@ export const buildResourceExportBuffer = (
       _index: sceneIndex,
     });
     sceneIndex++;
+  }
+
+  for (const note of projectResources.notes) {
+    const noteFolder = getUniquePath(getNoteFolderPath(note));
+    const noteFilename = getUniquePath(getNoteResourcePath(noteFolder));
+    writeResource<NoteResource>(noteFilename, "note", note);
   }
 
   for (const background of projectResources.backgrounds) {

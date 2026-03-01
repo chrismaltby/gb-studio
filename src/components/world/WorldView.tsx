@@ -18,8 +18,9 @@ import {
 } from "consts";
 import {
   sceneSelectors,
-  getMaxSceneRight,
-  getMaxSceneBottom,
+  getMaxWorldRight,
+  getMaxWorldBottom,
+  noteSelectors,
 } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -30,6 +31,7 @@ import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import { Selection } from "ui/document/Selection";
 import useResizeObserver from "ui/hooks/use-resize-observer";
+import NoteView from "components/world/NoteView";
 
 const MOUSE_ZOOM_SPEED = 0.5;
 
@@ -57,8 +59,8 @@ const NewSceneCursor = styled.div`
   position: absolute;
   cursor: pointer;
   background-color: rgba(3, 54, 99, 0.5);
-  width: 256px;
-  height: 256px;
+  width: 160px;
+  height: 144px;
   border-radius: 4px;
   z-index: 2000;
 `;
@@ -113,7 +115,14 @@ const WorldView = () => {
   const scenesLookup = useAppSelector((state) =>
     sceneSelectors.selectEntities(state),
   );
+  const notes = useAppSelector(
+    (state) => noteSelectors.selectIds(state) as string[],
+  );
+  const notesLookup = useAppSelector((state) =>
+    noteSelectors.selectEntities(state),
+  );
   const allSceneIds = useAppSelector(sceneSelectors.selectIds);
+  const allNoteIds = useAppSelector(noteSelectors.selectIds);
 
   const showConnections = useAppSelector(
     (state) =>
@@ -134,10 +143,10 @@ const WorldView = () => {
   const zoomRatio = useAppSelector((state) => (state.editor.zoom || 100) / 100);
 
   const scrollWidth = useAppSelector((state) =>
-    Math.max(viewportWidth / (zoomRatio ?? 1), getMaxSceneRight(state) + 20),
+    Math.max(viewportWidth / (zoomRatio ?? 1), getMaxWorldRight(state) + 20),
   );
   const scrollHeight = useAppSelector((state) =>
-    Math.max(viewportHeight / (zoomRatio ?? 1), getMaxSceneBottom(state) + 60),
+    Math.max(viewportHeight / (zoomRatio ?? 1), getMaxWorldBottom(state) + 60),
   );
 
   const focus = useAppSelector((state) => state.editor.worldFocus);
@@ -207,9 +216,11 @@ const WorldView = () => {
 
   //#region Keyboard handling
 
-  const onSelectAllScenes = useCallback(() => {
-    dispatch(editorActions.setSceneSelectionIds(allSceneIds));
-  }, [allSceneIds, dispatch]);
+  const onSelectAllWorldEntities = useCallback(() => {
+    dispatch(
+      editorActions.setSceneSelectionIds([...allSceneIds, ...allNoteIds]),
+    );
+  }, [allSceneIds, allNoteIds, dispatch]);
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -222,7 +233,7 @@ const WorldView = () => {
         return;
       }
       if ((e.ctrlKey || e.metaKey) && e.code === "KeyA") {
-        return onSelectAllScenes();
+        return onSelectAllWorldEntities();
       }
       if (e.ctrlKey || e.metaKey) {
         return;
@@ -235,7 +246,7 @@ const WorldView = () => {
         dispatch(entitiesActions.removeSelectedEntity());
       }
     },
-    [dispatch, focus, onSelectAllScenes, tool],
+    [dispatch, focus, onSelectAllWorldEntities, tool],
   );
 
   const onKeyUp = useCallback(
@@ -401,6 +412,23 @@ const WorldView = () => {
 
   //#endregion Add Scene
 
+  //#region Add Note
+
+  const onAddNote = useCallback(() => {
+    if (!hoverState) {
+      return;
+    }
+    dispatch(
+      entitiesActions.addNote({
+        ...hoverState,
+      }),
+    );
+    dispatch(editorActions.setTool({ tool: "select" }));
+    setHoverState(undefined);
+  }, [dispatch, hoverState]);
+
+  //#endregion Add Note
+
   //#region World Resize
 
   const onWindowResizeThrottled = useMemo(
@@ -446,10 +474,10 @@ const WorldView = () => {
       dragState.current.offsetX = e.pageX - boundingRect.x;
       dragState.current.offsetY = e.pageY - boundingRect.y;
 
-      if (tool === "scene") {
+      if (tool === "scene" || tool === "note") {
         setHoverState({
-          x: x / zoomRatio - 128,
-          y: y / zoomRatio - 128,
+          x: x / zoomRatio - 80,
+          y: y / zoomRatio - 72,
         });
       }
     },
@@ -561,6 +589,8 @@ const WorldView = () => {
         if (selection.current) {
           const rect = selection.current;
           const scenes = Object.values(scenesLookup) as SceneNormalized[];
+          const notes = Object.values(notesLookup);
+
           const selectedSceneIds = scenes
             .filter((scene) => {
               return (
@@ -572,13 +602,29 @@ const WorldView = () => {
               );
             })
             .map((s) => s.id);
-          dispatch(editorActions.addSceneSelectionIds(selectedSceneIds));
+          const selectedNoteIds = notes
+            .filter((note) => {
+              return (
+                note.x + note.width * TILE_SIZE >= rect.x &&
+                note.x <= rect.x + rect.width &&
+                note.y + note.height * TILE_SIZE + SCENE_VERTICAL_PADDING >=
+                  rect.y &&
+                note.y <= rect.y + rect.height
+              );
+            })
+            .map((s) => s.id);
+          dispatch(
+            editorActions.addSceneSelectionIds([
+              ...selectedSceneIds,
+              ...selectedNoteIds,
+            ]),
+          );
         }
 
         setSelectionEnd(point);
       }
     },
-    [dispatch, scenesLookup, scrollRef, zoomRatio],
+    [dispatch, scenesLookup, notesLookup, scrollRef, zoomRatio],
   );
 
   const onEndMultiSelection = useCallback(
@@ -698,6 +744,15 @@ const WorldView = () => {
           />
         ))}
 
+        {notes.map((noteId, index) => (
+          <NoteView
+            key={noteId}
+            id={noteId}
+            index={index}
+            editable={!dragMode}
+          />
+        ))}
+
         {showConnections && (
           <Connections
             width={scrollWidth}
@@ -717,6 +772,16 @@ const WorldView = () => {
           />
         )}
 
+        {tool === "note" && hoverState && (
+          <NewSceneCursor
+            onClick={onAddNote}
+            style={{
+              left: hoverState.x,
+              top: hoverState.y,
+            }}
+          />
+        )}
+
         {selectionStart && selectionEnd && (
           <Selection
             style={{
@@ -728,8 +793,7 @@ const WorldView = () => {
           />
         )}
       </WorldContent>
-
-      {loaded && scenes.length === 0 && <WorldHelp />}
+      {loaded && scenes.length === 0 && notes.length === 0 && <WorldHelp />}
     </Wrapper>
   );
 };

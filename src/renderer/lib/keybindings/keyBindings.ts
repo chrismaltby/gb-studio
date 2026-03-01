@@ -21,13 +21,13 @@ export type KeyWhen =
 
 export type KeyBinding =
   | {
-      key: string;
+      code: string;
       command: "editOffsetField";
       args: "+" | "-" | number | null;
       when: KeyWhen;
     }
   | {
-      key: string;
+      code: string;
       command: keyof Omit<KeyCommands, "editOffsetField">;
       args: number | null;
       when: KeyWhen;
@@ -35,10 +35,10 @@ export type KeyBinding =
 
 let keyBindings: KeyBinding[] = [];
 
-export const getKeys = (key: string, when: KeyWhen, cmds: KeyCommands) => {
-  const pressedKey = keyBindings
+export const getKeys = (code: string, when: KeyWhen, cmds: KeyCommands) => {
+  const pressedKey = [...keyBindings]
     .reverse()
-    .filter((k) => k.key === key && k.when === when)[0];
+    .filter((k) => k.code === code && k.when === when)[0];
 
   if (pressedKey) {
     if (pressedKey.command === "editOffsetField") {

@@ -13,6 +13,17 @@ const CONCURRENT_RESOURCE_SAVE_COUNT = 8;
 
 const globAsync = promisify(glob);
 
+// Normalize paths to ensure consistent comparison and file operations with unicode across different OSes
+// Note: Only use on relative paths (never full OS paths)
+const normalizeResourcePath = (p: string): string => {
+  if (Path.isAbsolute(p)) {
+    throw new Error(
+      "normalizeResourcePath must only be used with project-relative paths",
+    );
+  }
+  return pathToPosix(p).normalize("NFC");
+};
+
 interface SaveProjectDataOptions {
   progress?: (completed: number, total: number) => void;
 }
@@ -38,27 +49,37 @@ const saveProjectData = async (
       await globAsync(
         Path.join(projectFolder, "{project,assets,plugins}", "**/*.gbsres"),
       )
-    ).map((path) => pathToPosix(Path.relative(projectFolder, path))),
+    ).map((absolutePath) =>
+      normalizeResourcePath(Path.relative(projectFolder, absolutePath)),
+    ),
   );
-  const expectedResourcePaths: Set<string> = new Set(patch.paths);
+
+  const expectedResourcePaths: Set<string> = new Set(
+    patch.paths.map(normalizeResourcePath),
+  );
 
   const resourceDirPaths = uniq(
-    writeBuffer.map(({ path }) => Path.dirname(path)),
+    writeBuffer.map(({ path }) => normalizeResourcePath(Path.dirname(path))),
   );
 
   await promiseLimit(
     CONCURRENT_RESOURCE_SAVE_COUNT,
-    resourceDirPaths.map((path) => async () => {
-      await ensureDir(Path.join(projectFolder, path));
+    resourceDirPaths.map((relativeDir) => async () => {
+      await ensureDir(Path.join(projectFolder, relativeDir));
     }),
   );
 
   notifyProgress();
 
+  // Write files using normalized resource paths
   await promiseLimit(
     CONCURRENT_RESOURCE_SAVE_COUNT,
     writeBuffer.map(({ path, data }) => async () => {
-      await writeFileWithBackupAsync(Path.join(projectFolder, path), data);
+      const normalizedPath = normalizeResourcePath(path);
+      await writeFileWithBackupAsync(
+        Path.join(projectFolder, normalizedPath),
+        data,
+      );
       completedCount++;
       notifyProgress();
     }),
@@ -74,8 +95,8 @@ const saveProjectData = async (
   );
 
   // Remove previous project files that are no longer needed
-  for (const path of resourceDiff) {
-    const removePath = Path.join(projectFolder, path);
+  for (const relativePath of resourceDiff) {
+    const removePath = Path.join(projectFolder, relativePath);
     await remove(removePath);
   }
 };

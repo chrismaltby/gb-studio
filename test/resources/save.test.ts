@@ -23,6 +23,7 @@ import {
   dummyTilesetResource,
   dummyTriggerResource,
   dummyVariablesResource,
+  dummyNoteResource,
 } from "../dummydata";
 
 describe("save.ts", () => {
@@ -168,6 +169,13 @@ describe("save.ts", () => {
         ...dummyEngineFieldValuesResource,
         engineFieldValues: [{ id: "field1", value: "someValue" }],
       },
+      notes: [
+        {
+          ...dummyNoteResource,
+          id: "note1",
+          name: "Note 1",
+        },
+      ],
       metadata: {
         _resourceType: "project",
         name: "",
@@ -181,7 +189,7 @@ describe("save.ts", () => {
     it("should build resource export buffer correctly", () => {
       const buffer = buildResourceExportBuffer(mockProjectResources);
 
-      expect(buffer).toHaveLength(19);
+      expect(buffer).toHaveLength(20);
 
       // Verify one of the encoded resources
       const actorResource = buffer.find((file) =>

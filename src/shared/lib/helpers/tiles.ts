@@ -12,7 +12,7 @@ export const resizeTiles = (
     return tiles;
   }
 
-  const outputTiles = new Array(newWidth * newHeight).fill(0);
+  const outputTiles: number[] = new Array(newWidth * newHeight).fill(0);
 
   const rowsToCopy = Math.min(initialHeight, newHeight);
   const colsToCopy = Math.min(initialWidth, newWidth);
@@ -21,7 +21,10 @@ export const resizeTiles = (
     for (let col = 0; col < colsToCopy; col++) {
       const oldIndex = row * initialWidth + col;
       const newIndex = row * newWidth + col;
-      outputTiles[newIndex] = tiles[oldIndex];
+      const oldValue = tiles[oldIndex];
+      if (oldValue !== undefined) {
+        outputTiles[newIndex] = oldValue;
+      }
     }
   }
 

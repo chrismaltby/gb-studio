@@ -80,10 +80,24 @@
       }
     },
     {
+      "id": "204048643",
+      "type": "user",
+      "attributes": {
+        "full_name": "Gortyn Code"
+      }
+    },
+    {
       "id": "93658267",
       "type": "user",
       "attributes": {
         "full_name": "Gumpy Function"
+      }
+    },
+    {
+      "id": "3495903",
+      "type": "user",
+      "attributes": {
+        "full_name": "HvK Labs"
       }
     },
     {
@@ -105,13 +119,6 @@
       "type": "user",
       "attributes": {
         "full_name": "MsRiaCayde"
-      }
-    },
-    {
-      "id": "3495903",
-      "type": "user",
-      "attributes": {
-        "full_name": "thavok"
       }
     }
   ],

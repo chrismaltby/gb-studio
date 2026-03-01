@@ -58,6 +58,7 @@ import {
   FontAsset,
   MetaspriteTile,
   MusicAsset,
+  Note,
   Palette,
   ProjectEntityResources,
   Scene,
@@ -96,6 +97,7 @@ interface NormalizedEntities {
   scripts: Record<EntityId, ScriptNormalized>;
   variables: Record<EntityId, Variable>;
   constants: Record<EntityId, Constant>;
+  notes: Record<EntityId, Note>;
   engineFieldValues: Record<EntityId, EngineFieldValue>;
 }
 
@@ -117,6 +119,7 @@ interface NormalizedResult {
   tilesets: EntityId[];
   variables: EntityId[];
   constants: EntityId[];
+  notes: EntityId[];
   variableResources: EntityId[];
   engineFieldValues: EntityId[];
 }
@@ -148,6 +151,7 @@ interface DenormalizedEntities {
   };
   actorPrefabs: ActorPrefab[];
   triggerPrefabs: TriggerPrefab[];
+  notes: Note[];
 }
 
 const inodeToAssetCache: Record<string, Asset> = {};
@@ -218,6 +222,7 @@ const sceneSchema = new schema.Entity("scenes", {
   playerHit2Script: [scriptEventSchema],
   playerHit3Script: [scriptEventSchema],
 });
+const noteSchema = new schema.Entity("notes");
 const scriptsSchema = new schema.Entity("scripts", {
   script: [scriptEventSchema],
 });
@@ -247,6 +252,7 @@ const resourcesSchema = {
   variables: variablesResourceSchema,
   scripts: [scriptsSchema],
   palettes: [palettesSchema],
+  notes: [noteSchema],
   engineFieldValues: engineFieldValuesResourceSchema,
 };
 
@@ -275,6 +281,7 @@ export const denormalizeEntities = (
     avatars: state.avatars.ids,
     emotes: state.emotes.ids,
     tilesets: state.tilesets.ids,
+    notes: state.notes.ids,
     variables: "variables",
     engineFieldValues: "engineFieldValues",
   };
@@ -334,6 +341,7 @@ export const denormalizeEntities = (
     },
     variables: state.variables.entities as Record<EntityId, Variable>,
     constants: state.constants.entities as Record<EntityId, Constant>,
+    notes: state.notes.entities as Record<EntityId, Note>,
     engineFieldValueResources: {
       engineFieldValues: { engineFieldValues: state.engineFieldValues.ids },
     },
@@ -393,6 +401,7 @@ export const denormalizeEntities = (
     engineFieldValues: entityToResource("engineFieldValues")(
       denormalizedEntities.engineFieldValues,
     ),
+    notes: denormalizedEntities.notes.map(entityToResource("note")),
     variables: entityToResource("variables")(denormalizedEntities.variables),
   };
 
@@ -630,6 +639,10 @@ export const sceneName = (scene: NamedEntity, sceneIndex: number) => {
   return scene.name || defaultLocalisedSceneName(sceneIndex);
 };
 
+export const noteName = (note: NamedEntity, noteIndex: number) => {
+  return note.name || defaultLocalisedNoteName(noteIndex);
+};
+
 export const customEventName = (
   customEvent: NamedEntity,
   customEventIndex: number,
@@ -680,6 +693,8 @@ const defaultLocalisedTriggerName = (triggerIndex: number) =>
   `${l10n("TRIGGER")} ${triggerIndex + 1}`;
 export const defaultLocalisedSceneName = (sceneIndex: number) =>
   `${l10n("SCENE")} ${sceneIndex + 1}`;
+export const defaultLocalisedNoteName = (sceneIndex: number) =>
+  `${l10n("NOTE")} ${sceneIndex + 1}`;
 export const defaultLocalisedCustomEventName = (customEventIndex: number) =>
   `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
 export const defaultLocalisedConstantName = (constantIndex: number) =>

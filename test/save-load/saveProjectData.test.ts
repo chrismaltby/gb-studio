@@ -203,4 +203,122 @@ describe("saveProjectData", () => {
     );
     expect(remove).not.toHaveBeenCalled();
   });
+
+  it("should not delete Japanese scene files when dakuten differs only by normalization", async () => {
+    /**
+     * "だくてんのあるシーン"
+     *
+     * NFC form:
+     *   だ (single codepoint)
+     *
+     * NFD form:
+     *   た + ゙ (combining dakuten)
+     */
+    const nfcName = "project/だくてんのあるシーン__0.gbsres";
+    const nfdName = "project/だくてんのあるシーン__0.gbsres";
+
+    expect(nfcName).not.toBe(nfdName);
+
+    const mockExistingPaths = [nfdName].map((path) =>
+      Path.join(mockProjectFolder, path),
+    );
+
+    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
+      callback(null, mockExistingPaths);
+    });
+
+    const unicodePatch: WriteResourcesPatch = {
+      data: [
+        {
+          path: nfcName,
+          checksum: "checksum",
+          data: "{}",
+        },
+      ],
+      paths: [nfcName],
+      metadata: mockPatch.metadata,
+    };
+
+    await saveProjectData(mockProjectPath, unicodePatch);
+
+    expect(remove).not.toHaveBeenCalled();
+  });
+
+  it("should not delete resources when unicode differs only by normalization (NFD vs NFC)", async () => {
+    /**
+     * "é" represented two ways:
+     * NFC  -> "Café"
+     * NFD  -> "Cafe\u0301"
+     */
+    const nfcName = "project/Café__0.gbsres";
+    const nfdName = "project/Cafe\u0301__0.gbsres";
+
+    const mockExistingPaths = [nfdName].map((path) =>
+      Path.join(mockProjectFolder, path),
+    );
+
+    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
+      callback(null, mockExistingPaths);
+    });
+
+    const unicodePatch: WriteResourcesPatch = {
+      data: [
+        {
+          path: nfcName,
+          checksum: "checksum",
+          data: "{}",
+        },
+      ],
+      paths: [nfcName],
+      metadata: mockPatch.metadata,
+    };
+
+    await saveProjectData(mockProjectPath, unicodePatch);
+
+    expect(remove).not.toHaveBeenCalled();
+  });
+
+  it("should normalize resource paths before writing files", async () => {
+    const nfdName = "project/Cafe\u0301__0.gbsres";
+    const nfcName = "project/Café__0.gbsres";
+
+    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
+      callback(null, []);
+    });
+
+    const unicodePatch: WriteResourcesPatch = {
+      data: [
+        {
+          path: nfdName,
+          checksum: "checksum",
+          data: "{}",
+        },
+      ],
+      paths: [nfdName],
+      metadata: mockPatch.metadata,
+    };
+
+    await saveProjectData(mockProjectPath, unicodePatch);
+
+    expect(writeFileWithBackupAsync).toHaveBeenCalledWith(
+      Path.join(mockProjectFolder, nfcName),
+      "{}",
+    );
+  });
+
+  it("should throw if a patch contains absolute resource paths", async () => {
+    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
+      callback(null, []);
+    });
+
+    const badPatch: WriteResourcesPatch = {
+      data: [],
+      paths: ["/absolute/path.gbsres"],
+      metadata: mockPatch.metadata,
+    };
+
+    await expect(saveProjectData(mockProjectPath, badPatch)).rejects.toThrow(
+      "normalizeResourcePath must only be used with project-relative paths",
+    );
+  });
 });

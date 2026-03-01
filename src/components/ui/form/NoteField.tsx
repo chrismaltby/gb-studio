@@ -1,10 +1,21 @@
 import React, { FC } from "react";
 import l10n from "shared/lib/lang/l10n";
-import styled from "styled-components";
+import { LabelColor } from "shared/lib/resources/types";
+import styled, { css } from "styled-components";
 
-const Wrapper = styled.div`
+export const noteColorStyles = css<{ $color?: LabelColor }>`
+  ${({ $color }) =>
+    $color &&
+    css`
+      --note-bg-color: var(--note-bg-color-${$color});
+      --note-border-color: var(--note-border-color-${$color});
+    `}
+`;
+
+const Wrapper = styled.div<{ $color?: LabelColor }>`
   position: relative;
   width: 100%;
+  ${noteColorStyles}
 `;
 
 const ContentSize = styled.div`
@@ -38,9 +49,9 @@ const Textarea = styled.textarea`
   position: absolute;
   top: 0;
   left: 0;
-  background-color: #bef0f3;
-  border: 1px solid #61bae4;
-  border-radius: 0;
+  background-color: var(--note-bg-color);
+  border: 1px solid var(--note-border-color);
+  border-radius: 4px;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -55,15 +66,17 @@ const Textarea = styled.textarea`
   overflow: hidden;
 
   &:focus {
-    box-shadow: 0 0 0px 2px #2686b3 !important;
+    box-shadow: 0 0 0px 2px var(--note-border-color) !important;
   }
 `;
 
-type NoteFieldProps = React.ComponentProps<typeof Textarea>;
+type NoteFieldProps = React.ComponentProps<typeof Textarea> & {
+  color?: LabelColor;
+};
 
 export const NoteField: FC<NoteFieldProps> = (props) => {
   return (
-    <Wrapper>
+    <Wrapper $color={props.color}>
       <ContentSize>{props.value} </ContentSize>
       <Textarea placeholder={`${l10n("FIELD_NOTES")}...`} {...props} />
     </Wrapper>

@@ -12,6 +12,7 @@ import {
   FontResource,
   MinimalResource,
   MusicResource,
+  NoteResource,
   PaletteResource,
   ProjectMetadataResource,
   ScriptResource,
@@ -80,6 +81,7 @@ interface ResourceLookup {
   sounds: ResourceWithPath<SoundResource>[];
   variables: ResourceWithPath<VariablesResource>[];
   engineFieldValues: ResourceWithPath<EngineFieldValuesResource>[];
+  notes: ResourceWithPath<NoteResource>[];
   settings: ResourceWithPath<Partial<SettingsResource>>[];
 }
 
@@ -129,6 +131,7 @@ export const loadProjectResources = async (
     sounds: [],
     variables: [],
     engineFieldValues: [],
+    notes: [],
     settings: [],
   };
   const cast =
@@ -190,6 +193,7 @@ export const loadProjectResources = async (
     cast(SoundResource, resourcesLookup.sounds),
     cast(VariablesResource, resourcesLookup.variables),
     cast(EngineFieldValuesResource, resourcesLookup.engineFieldValues),
+    cast(NoteResource, resourcesLookup.notes),
     partial(SettingsResource, resourcesLookup.settings),
   ] as const;
 
@@ -280,6 +284,7 @@ export const loadProjectResources = async (
     sounds: extractDataArray(resourcesLookup.sounds),
     music: extractDataArray(resourcesLookup.music),
     palettes: extractDataArray(resourcesLookup.palettes),
+    notes: extractDataArray(resourcesLookup.notes),
     variables: variablesResource,
     engineFieldValues: engineFieldValuesResource,
     settings: settingsResource,

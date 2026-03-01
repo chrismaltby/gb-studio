@@ -7,7 +7,7 @@ import {
   PaintIcon,
   ListIcon,
 } from "ui/icons/Icons";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import { Tool } from "store/features/editor/editorState";
 import editorActions from "store/features/editor/editorActions";
@@ -66,6 +66,8 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
         setTool("colors");
       } else if (e.code === "KeyS") {
         setTool("scene");
+      } else if (e.code === "KeyN") {
+        setTool("note");
       } else if (e.code === "KeyE") {
         setTool("eraser");
       } else if (e.code === "KeyV") {
@@ -102,6 +104,13 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       e.stopPropagation();
       setTool("scene");
+    },
+    [setTool],
+  );
+  const setToolNote = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.stopPropagation();
+      setTool("note");
     },
     [setTool],
   );
@@ -159,6 +168,13 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
           title={`${l10n("TOOL_ADD_SCENE_LABEL")} (s)`}
         >
           {l10n("SCENE")}
+        </MenuItem>
+        <MenuDivider />
+        <MenuItem
+          onClick={setToolNote}
+          title={`${l10n("TOOL_ADD_NOTE_LABEL")} (n)`}
+        >
+          {l10n("NOTE")}
         </MenuItem>
       </DropdownButton>
       <Button

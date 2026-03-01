@@ -615,7 +615,7 @@ export const SongTracker = ({
       }
 
       if (currentFocus && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        getKeys(e.key, currentFocus, {
+        getKeys(e.code, currentFocus, {
           editNoteField,
           editInstrumentField,
           editEffectCodeField,

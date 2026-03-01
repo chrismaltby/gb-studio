@@ -78,4 +78,10 @@ describe("resizeTiles", () => {
     const output = resizeTiles(input, 2, 2, -1, -1);
     expect(output).toEqual([]);
   });
+
+  it("should leave missing tiles as 0 when input array is shorter than initialWidth * initialHeight", () => {
+    const input = [1];
+    const output = resizeTiles(input, 2, 2, 3, 2);
+    expect(output).toEqual([1, 0, 0, 0, 0, 0]);
+  });
 });

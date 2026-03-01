@@ -51,6 +51,7 @@ import {
   FontResource,
   MusicAsset,
   MusicResource,
+  NoteResource,
   Palette,
   PaletteResource,
   ProjectResources,
@@ -582,6 +583,17 @@ export const dummyFontResource: FontResource = {
   mapping: {},
 };
 
+export const dummyNoteResource: NoteResource = {
+  _resourceType: "note",
+  id: "note1",
+  name: "Note 1",
+  content: "Lorem Ipsum",
+  x: 0,
+  y: 0,
+  width: 20,
+  height: 18,
+};
+
 export const dummySettingsResource: SettingsResource = {
   _resourceType: "settings",
   startSceneId: "scene1",
@@ -732,6 +744,7 @@ export const dummyProjectResources: ProjectResources = {
     _resourceType: "engineFieldValues",
     engineFieldValues: [],
   },
+  notes: [],
   settings: {
     _resourceType: "settings",
     startSceneId: "",

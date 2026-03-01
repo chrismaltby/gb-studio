@@ -19,6 +19,7 @@ import {
   FolderFilledIcon,
   SceneIcon,
   ConstantIcon,
+  NoteIcon,
 } from "ui/icons/Icons";
 import {
   StyledEntityIcon,
@@ -56,6 +57,7 @@ type EntityListItemProps<T extends EntityListItemData> = {
     | "wave"
     | "noise"
     | "palette"
+    | "note"
     | "script";
   icon?: ReactNode;
   nestLevel?: number;
@@ -165,6 +167,11 @@ export const EntityListItem = <T extends EntityListItemData>({
       {type === "scene" && (
         <StyledEntityIcon>
           <SceneIcon />
+        </StyledEntityIcon>
+      )}
+      {type === "note" && (
+        <StyledEntityIcon>
+          <NoteIcon />
         </StyledEntityIcon>
       )}
       {type === "actor" && (

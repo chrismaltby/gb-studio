@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 const Wrapper = styled.div`
   position: fixed;
+  pointer-events: none;
 `;
 
 const WorldHelpArrow = styled.div`

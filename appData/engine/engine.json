@@ -1,5 +1,5 @@
 {
-  "version": "4.2.0-e34",
+  "version": "4.2.2-e1",
   "fields": [
     {
       "key": "INPUT_PLATFORM_INTERACT",
@@ -1466,6 +1466,17 @@
       "runtimeOnly": true
     },
     {
+      "key": "plat_wall_col",
+      "sceneType": "PLATFORM",
+      "label": "FIELD_TOUCHING_WALL",
+      "description": "FIELD_PLATFORM_TOUCHING_WALL_DESC",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "number",
+      "cType": "UBYTE",
+      "defaultValue": 0,
+      "runtimeOnly": true
+    },
+    {
       "key": "plat_next_state",
       "sceneType": "PLATFORM",
       "label": "FIELD_PLATFORM_STATE",
@@ -1583,6 +1594,20 @@
       ],
       "cType": "UBYTE",
       "defaultValue": 0
+    },
+    {
+      "key": "PROJECTILES_COLLISION_SPREAD",
+      "label": "FIELD_PROJECTILES_COLLISION_SPREAD",
+      "description": "FIELD_PROJECTILES_COLLISION_SPREAD_DESC",
+      "group": "SETTINGS_PROJECTILES",
+      "type": "select",
+      "options": [
+        ["SPREAD_4", "FIELD_SPREAD_4"],
+        ["SPREAD_2", "FIELD_SPREAD_2"],
+        ["EVERY_FRAME", "FIELD_EVERY_FRAME_WITH_WARN"]
+      ],
+      "cType": "define",
+      "defaultValue": "SPREAD_4"
     },
     {
       "key": "INPUT_ADVENTURE_INTERACT",

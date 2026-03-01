@@ -11,6 +11,7 @@
   "PROJECT": "Project",
   "CUSTOM_EVENT": "Script",
   "CONSTANT": "Constant",
+  "NOTE": "Note",
 
   "// 2": "Navigator ------------------------------------------------",
   "NAV_GAME_WORLD": "Game World",
@@ -47,6 +48,7 @@
   "TOOL_ADD_ACTOR_LABEL": "Add Actor",
   "TOOL_ADD_TRIGGER_LABEL": "Add Trigger",
   "TOOL_ADD_SCENE_LABEL": "Add Scene",
+  "TOOL_ADD_NOTE_LABEL": "Add Note",
   "TOOL_ERASER_LABEL": "Eraser",
   "TOOL_COLLISIONS_LABEL": "Collisions",
   "TOOL_COLORS_LABEL": "Colorize",
@@ -1302,6 +1304,14 @@
   "FIELD_MOVEMENT": "Movement",
   "FIELD_OPTIONS": "Options",
   "FIELD_REMOVE_UNUSED": "Remove Unused",
+  "FIELD_PROJECTILES_COLLISION_SPREAD": "Projectile Collisions Spread",
+  "FIELD_PROJECTILES_COLLISION_SPREAD_DESC": "Distribute projectile collision checks across multiple frames to improve performance when many projectiles are on screen.",
+  "FIELD_SPREAD_4": "Over 4 Frames",
+  "FIELD_SPREAD_2": "Over 2 Frames",
+  "FIELD_EVERY_FRAME_WITH_WARN": "Every Frame (Most Precise, Slowest)",
+  "FIELD_TOUCHING_WALL": "Is Touching Wall",
+  "FIELD_PLATFORM_TOUCHING_WALL_DESC": "Whether the player is currently pressing against a wall in the platformer scene.",
+  "FIELD_FONT_DESC": "The font to use for drawing text.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1461,6 +1471,8 @@
   "EVENT_OVERLAY_HIDE_DESC": "Hides the screen overlay.",
   "EVENT_OVERLAY_MOVE_TO": "Overlay Move To",
   "EVENT_OVERLAY_MOVE_TO_DESC": "Moves the overlay to a new position on the screen.",
+  "EVENT_SET_FONT": "Set Font",
+  "EVENT_SET_FONT_DESC": "Set the currently used font for text",
   "EVENT_AWAIT_INPUT": "Pause Script Until Button Pressed",
   "EVENT_AWAIT_INPUT_DESC": "Pauses the script until one of the specified joypad buttons are pressed.",
   "EVENT_MUSIC_PLAY": "Play Music Track",
@@ -1884,6 +1896,7 @@
   "MENU_PROJECT_PLUGINS": "Project Plugins...",
   "MENU_PLAY_WINDOW": "Play Window",
   "MENU_MUTE_AUDIO": "Mute Audio",
+  "MENU_DELETE_NOTE": "Delete Note",
 
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -2076,6 +2089,7 @@
   "SETTINGS_COLOR": "Color Options",
   "SETTINGS_BUILD": "Build Options",
   "SETTINGS_SPRITE": "Sprite Options",
+  "SETTINGS_PROJECTILES": "Projectiles Options",
 
   "// 17 ": "Palettes ---------------------------------------------------",
 

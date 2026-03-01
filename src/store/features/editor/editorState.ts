@@ -4,6 +4,7 @@ import {
   UnknownAction,
   createSelector,
   ThunkDispatch,
+  Draft,
 } from "@reduxjs/toolkit";
 import {
   BRUSH_8PX,
@@ -35,6 +36,7 @@ export type Tool =
   | "collisions"
   | "colors"
   | "scene"
+  | "note"
   | "eraser"
   | "select";
 
@@ -48,6 +50,7 @@ export type EditorSelectionType =
   | "customEvent"
   | "variable"
   | "constant"
+  | "note"
   | "actorPrefab"
   | "triggerPrefab";
 
@@ -242,6 +245,43 @@ export const initialState: EditorState = {
   prefabId: "",
 };
 
+const toggleEntitySelection = (
+  state: Draft<EditorState>,
+  payload: string,
+  config:
+    | { focusKey: "scene"; typeValue: "scene" }
+    | { focusKey: "entityId"; typeValue: "note" },
+) => {
+  const { focusKey, typeValue } = config;
+
+  // If toggling currently focused entity → reset to world
+  if (state[focusKey] === payload) {
+    state[focusKey] = "";
+    state.type = "world";
+    state.worldFocus = true;
+
+    state.sceneSelectionIds = state.sceneSelectionIds.filter((id) => {
+      return id !== payload;
+    });
+
+    return;
+  }
+
+  const index = state.sceneSelectionIds.indexOf(payload);
+
+  if (index === -1) {
+    state.sceneSelectionIds.push(payload);
+
+    if (state.type !== typeValue) {
+      state[focusKey] = payload;
+      state.type = typeValue;
+      state.worldFocus = true;
+    }
+  } else {
+    state.sceneSelectionIds.splice(index, 1);
+  }
+};
+
 const toggleScriptEventSelectedId =
   (action: {
     scriptEventId: string;
@@ -358,6 +398,7 @@ const editorSlice = createSlice({
 
     selectWorld: (state, _action: PayloadAction<void>) => {
       state.scene = "";
+      state.entityId = "";
       state.type = "world";
       state.worldFocus = true;
       state.sceneSelectionIds = [];
@@ -433,6 +474,16 @@ const editorSlice = createSlice({
         state.sceneSelectionIds = [action.payload.sceneId];
       }
       state.scriptEventSelectionIds = [];
+    },
+
+    selectNote: (state, action: PayloadAction<{ noteId: string }>) => {
+      state.type = "note";
+      state.scene = "";
+      state.entityId = action.payload.noteId;
+      state.searchTerm = "";
+      if (!state.sceneSelectionIds.includes(state.entityId)) {
+        state.sceneSelectionIds = [action.payload.noteId];
+      }
     },
 
     selectActorPrefab: (
@@ -959,28 +1010,17 @@ const editorSlice = createSlice({
     },
 
     toggleSceneSelectedId: (state, action: PayloadAction<string>) => {
-      // If toggling focused scene id then remove scene selection
-      if (state.scene === action.payload) {
-        state.scene = "";
-        state.type = "world";
-        state.worldFocus = true;
-        state.sceneSelectionIds = state.sceneSelectionIds.filter((id) => {
-          return action.payload.indexOf(id) === -1;
-        });
-      } else {
-        const index = state.sceneSelectionIds.indexOf(action.payload);
-        if (index === -1) {
-          state.sceneSelectionIds.push(action.payload);
-          // If not currently in scene mode switch to selecting this scene
-          if (state.type !== "scene") {
-            state.scene = action.payload;
-            state.type = "scene";
-            state.worldFocus = true;
-          }
-        } else {
-          state.sceneSelectionIds.splice(index, 1);
-        }
-      }
+      toggleEntitySelection(state, action.payload, {
+        focusKey: "scene",
+        typeValue: "scene",
+      });
+    },
+
+    toggleNoteSelectedId: (state, action: PayloadAction<string>) => {
+      toggleEntitySelection(state, action.payload, {
+        focusKey: "entityId",
+        typeValue: "note",
+      });
     },
 
     clearSceneSelectionIds: (state) => {
@@ -1036,6 +1076,14 @@ const editorSlice = createSlice({
         if (!state.sceneSelectionIds.includes(state.scene)) {
           state.sceneSelectionIds = [action.payload.sceneId];
         }
+        state.scriptEventSelectionIds = [];
+      })
+      .addCase(entitiesActions.addNote, (state, action) => {
+        state.type = "note";
+        state.scene = "";
+        state.entityId = action.payload.noteId;
+        state.worldFocus = true;
+        state.sceneSelectionIds = [action.payload.noteId];
         state.scriptEventSelectionIds = [];
       })
       .addCase(entitiesActions.addMetasprite, (state, action) => {

@@ -355,6 +355,15 @@ abstract class ScriptBuilderBase {
     return index;
   };
 
+  _getFontSymbol = (fontId: string) => {
+    const { fonts } = this.options;
+    const font = fonts.find((f) => f.id === fontId);
+    if (!font?.symbol) {
+      return "0";
+    }
+    return font.symbol.toUpperCase();
+  };
+
   resolveActorId(id: ScriptBuilderVariable): ResolvedActorId {
     if (typeof id === "number") {
       return { type: "number", value: id };
@@ -1778,6 +1787,10 @@ abstract class ScriptBuilderBase {
 
   _setTextLayer = (layer: ".TEXT_LAYER_BKG" | ".TEXT_LAYER_WIN") => {
     this._addCmd("VM_SWITCH_TEXT_LAYER", layer);
+  };
+
+  _setFont = (fontRef: number | string) => {
+    this._addCmd("VM_SET_FONT", fontRef);
   };
 
   _choice = (

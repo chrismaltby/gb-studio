@@ -564,7 +564,7 @@ export const InstrumentSubpatternEditor = ({
       // }
 
       if (currentFocus && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        getKeys(e.key, currentFocus, {
+        getKeys(e.code, currentFocus, {
           editOffsetField,
           editJumpField,
           editEffectCodeField,

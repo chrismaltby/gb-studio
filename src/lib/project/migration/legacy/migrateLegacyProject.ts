@@ -151,6 +151,7 @@ export const migrateLegacyProject = (
       _resourceType: "engineFieldValues",
       engineFieldValues: migratedProject.engineFieldValues,
     }),
+    notes: [],
     settings: encodeResource(SettingsResource)({
       _resourceType: "settings",
       ...defaultProjectSettings,

@@ -79,6 +79,7 @@ import { ColorModeOverrideSelect } from "components/forms/ColorModeOverrideSelec
 import {
   ActorDirection,
   ColorModeOverrideSetting,
+  labelColorValues,
   MonoBGPPalette,
   MonoOBJPalette,
   SceneBoundsRect,
@@ -738,18 +739,12 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                   <div style={{ display: "flex" }}>
                     <div style={{ marginRight: 5 }}>
                       <LabelButton
-                        onClick={() => onChangeSceneProp("labelColor", "")}
+                        onClick={() =>
+                          onChangeSceneProp("labelColor", undefined)
+                        }
                       />
                     </div>
-                    {[
-                      "red",
-                      "orange",
-                      "yellow",
-                      "green",
-                      "blue",
-                      "purple",
-                      "gray",
-                    ].map((color) => (
+                    {labelColorValues.map((color) => (
                       <div
                         key={color}
                         style={{ marginRight: color === "gray" ? 0 : 5 }}
@@ -841,6 +836,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                     <FormRow>
                       <NoteField
                         value={scene.notes || ""}
+                        color={scene.labelColor}
                         onChange={onChangeNotes}
                       />
                     </FormRow>

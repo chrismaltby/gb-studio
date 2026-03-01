@@ -1223,7 +1223,7 @@ ipcMain.handle("set-ui-scale", (_, scale: number) => {
 
 ipcMain.handle("set-tracker-keybindings", (_, value: number) => {
   settings.set("trackerKeyBindings", value);
-  sendToProjectWindow("keybindings-update", value);
+  sendToProjectWindow("setting:tracker-keybindings:changed", value);
 });
 
 ipcMain.handle("music:open", async (_event, sfx?: string) => {

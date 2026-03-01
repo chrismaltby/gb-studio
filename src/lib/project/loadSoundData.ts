@@ -46,11 +46,11 @@ const loadSoundData =
       name: file,
       symbol: toValidSymbol(`sound_${file}`),
       type,
-      numEffects,
       _v: Date.now(),
       ...resource,
       filename: file,
       inode,
+      numEffects,
     };
   };
 

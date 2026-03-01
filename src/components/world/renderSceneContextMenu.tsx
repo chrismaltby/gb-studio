@@ -6,6 +6,7 @@ import l10n from "shared/lib/lang/l10n";
 import {
   ActorDirection,
   ColorModeOverrideSetting,
+  labelColorValues,
 } from "shared/lib/resources/types";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -64,26 +65,25 @@ const renderSceneContextMenu = ({
       <div style={{ display: "flex" }}>
         <div style={{ marginRight: 5 }}>
           <LabelButton
-            onClick={() =>
+            onClick={() => {
               editSelectedScenes({
-                labelColor: "",
-              })
-            }
+                labelColor: undefined,
+              });
+              onClose?.();
+            }}
           />
         </div>
-        {["red", "orange", "yellow", "green", "blue", "purple", "gray"].map(
-          (color) => (
-            <div key={color} style={{ marginRight: color === "gray" ? 0 : 5 }}>
-              <LabelButton
-                color={color}
-                onClick={() => {
-                  editSelectedScenes({ labelColor: color });
-                  onClose?.();
-                }}
-              />
-            </div>
-          ),
-        )}
+        {labelColorValues.map((color) => (
+          <div key={color} style={{ marginRight: color === "gray" ? 0 : 5 }}>
+            <LabelButton
+              color={color}
+              onClick={() => {
+                editSelectedScenes({ labelColor: color });
+                onClose?.();
+              }}
+            />
+          </div>
+        ))}
       </div>
     </MenuSection>,
     <MenuDivider key="div-direction" />,

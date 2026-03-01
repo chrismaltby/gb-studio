@@ -9,6 +9,33 @@ new FontFace("Public Pixel", `url("${pixelFont}")`).load().then((font) => {
 });
 
 const GlobalStyle = createGlobalStyle`
+  :root {
+    --note-bg-color-red: hsl(0deg 69% 85%);
+    --note-border-color-red: hsl(0deg 71% 64%);
+
+    --note-bg-color-orange: hsl(28deg 100% 77%);
+    --note-border-color-orange: hsl(28deg 71% 64%);
+
+    --note-bg-color-yellow:  hsl(58deg 69% 85%);
+    --note-border-color-yellow: hsl(58deg 71% 64%);
+
+    --note-bg-color-green: hsl(120deg 69% 85%);
+    --note-border-color-green: hsl(120deg 65% 52%);
+
+    --note-bg-color-blue: hsl(183deg 69% 85%);
+    --note-border-color-blue: hsl(183deg 71% 64%);
+
+    --note-bg-color-purple: hsl(280deg 69% 85%);
+    --note-border-color-purple: hsl(280deg 71% 64%);
+
+    --note-bg-color-gray: hsl(0deg 0% 85%);
+    --note-border-color-gray: hsl(0deg 0% 64%);
+
+    --note-bg-color: var(--note-bg-color-blue);
+    --note-border-color: var(--note-border-color-blue);
+  }
+  
+
   @font-face {
       font-family: 'Public Pixel';
       src: url('${pixelFont}') format('woff2');

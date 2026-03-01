@@ -9,6 +9,7 @@ import { VariableEditor } from "./VariableEditor";
 import { ActorPrefabEditor } from "./ActorPrefabEditor";
 import { TriggerPrefabEditor } from "./TriggerPrefabEditor";
 import { ConstantEditor } from "./ConstantEditor";
+import { NoteEditor } from "components/editors/NoteEditor";
 
 const EditorSidebar = () => {
   const type = useAppSelector((state) => state.editor.type);
@@ -41,6 +42,9 @@ const EditorSidebar = () => {
   }
   if (type === "constant") {
     return <ConstantEditor id={entityId} />;
+  }
+  if (type === "note") {
+    return <NoteEditor id={entityId} />;
   }
   return <div />;
 };

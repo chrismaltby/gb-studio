@@ -74,9 +74,14 @@ export const Navigator = () => {
     direction: "vertical",
   });
 
-  const onAddScene = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const onAddScene = (e: React.MouseEvent) => {
     e.stopPropagation();
     dispatch(editorActions.setTool({ tool: "scene" }));
+  };
+
+  const onAddNote = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(editorActions.setTool({ tool: "note" }));
   };
 
   const onAddCustomEvent = (
@@ -186,14 +191,16 @@ export const Navigator = () => {
           collapsed={Math.floor(splitSizes[SCENES_PANE]) <= COLLAPSED_SIZE}
           buttons={
             <>
-              <Button
+              <DropdownButton
                 variant="transparent"
                 size="small"
                 title={l10n("TOOL_ADD_SCENE_LABEL")}
-                onClick={onAddScene}
+                label={<PlusIcon />}
+                showArrow={false}
               >
-                <PlusIcon />
-              </Button>
+                <MenuItem onClick={onAddScene}>{l10n("SCENE")}</MenuItem>
+                <MenuItem onClick={onAddNote}>{l10n("NOTE")}</MenuItem>
+              </DropdownButton>
               <FixedSpacer width={5} />
               <Button
                 variant={scenesSearchEnabled ? "primary" : "transparent"}

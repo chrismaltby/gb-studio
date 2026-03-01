@@ -30,6 +30,7 @@ import type {
   Variable,
   ScriptEvent,
   Script,
+  Note,
 } from "shared/lib/resources/types";
 
 export type UnionVariableValue = {
@@ -231,6 +232,7 @@ export interface EntitiesState {
   tilesets: EntityState<TilesetAsset, string>;
   variables: EntityState<Variable, string>;
   constants: EntityState<Constant, string>;
+  notes: EntityState<Note, string>;
   engineFieldValues: EntityState<EngineFieldValue, string>;
 }
 
