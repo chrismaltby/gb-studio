@@ -3,6 +3,7 @@ import Path from "path";
 import { promisify } from "util";
 import { ensureDir, copyFile, readFile, pathExists } from "fs-extra";
 import { checksumString } from "lib/helpers/checksum";
+import { getCacheRoot } from "lib/helpers/cache";
 
 const globAsync = promisify(glob);
 
@@ -94,7 +95,7 @@ export const cacheObjData = async (
   tmpPath: string,
   env: NodeJS.ProcessEnv,
 ) => {
-  const cacheRoot = Path.normalize(`${tmpPath}/_gbscache/obj`);
+  const cacheRoot = Path.join(getCacheRoot(tmpPath), "obj");
   const buildObjRoot = Path.normalize(`${buildRoot}/obj`);
   const buildSrcRoot = Path.normalize(`${buildRoot}/src`);
   const buildIncludeRoot = Path.normalize(`${buildRoot}/include`);
@@ -143,7 +144,7 @@ export const fetchCachedObjData = async (
   tmpPath: string,
   env: NodeJS.ProcessEnv,
 ) => {
-  const cacheRoot = Path.normalize(`${tmpPath}/_gbscache/obj`);
+  const cacheRoot = Path.join(getCacheRoot(tmpPath), "obj");
   const buildObjRoot = Path.normalize(`${buildRoot}/obj`);
   const buildSrcRoot = Path.normalize(`${buildRoot}/src`);
   const buildIncludeRoot = Path.normalize(`${buildRoot}/include`);

@@ -1,10 +1,7 @@
 import fs from "fs-extra";
-import rimraf from "rimraf";
-import { promisify } from "util";
+import { rimraf as rmdir } from "rimraf";
 import { buildToolsRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
-
-const rmdir = promisify(rimraf);
 
 let inFlightPromise: Promise<string> | null = null;
 let cachedPath: string | null = null;

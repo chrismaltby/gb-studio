@@ -70,6 +70,7 @@ import {
   VariablesResource,
 } from "shared/lib/resources/types";
 import { compressProjectResources } from "shared/lib/resources/compression";
+import { PluginMetadata } from "lib/pluginManager/types";
 
 export const dummySceneNormalized: SceneNormalized = {
   id: "",
@@ -710,6 +711,17 @@ export const dummyEngineFieldSchema: EngineFieldSchema = {
   group: "Engine Fields",
   type: "number",
   defaultValue: 0,
+};
+
+export const dummyPluginMetadata: PluginMetadata = {
+  id: "plugin1",
+  type: "enginePlugin",
+  name: "Test Plugin",
+  version: "1.0.0",
+  author: "Test Author",
+  description: "Test Description",
+  gbsVersion: ">=4.2.2",
+  filename: "",
 };
 
 export const dummyProjectResources: ProjectResources = {

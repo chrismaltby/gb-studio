@@ -162,6 +162,7 @@ import { readFileToIndexedImage } from "lib/tiles/readFileToTiles";
 import { tileDataIndexFn } from "shared/lib/tiles/tileData";
 import { isEqual } from "lodash";
 import { writeIndexedImagePNG } from "lib/helpers/writeIndexedImage";
+import { clearAppCache } from "lib/helpers/cache";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -204,6 +205,7 @@ let musicWindowInitialized = false;
 let debuggerInitData: DebuggerInitData | null = null;
 let stopWatchingFn: (() => void) | null = null;
 let scriptEventHandlers: ScriptEventHandlers = {};
+let firstBuild = true;
 
 const themeManager = new ThemeManager(process.platform);
 const l10nManager = new L10nManager();
@@ -1199,8 +1201,8 @@ ipcMain.handle("create-project", async (_event, input: CreateProjectInput) =>
 );
 
 ipcMain.handle("build:delete-cache", async (_event) => {
-  const cacheRoot = Path.normalize(`${getTmp()}/_gbscache`);
-  await remove(cacheRoot);
+  const tmpPath = getTmp();
+  await clearAppCache(tmpPath);
 });
 
 ipcMain.handle("project:update-project-window-menu", (_event, settings) => {
@@ -1399,13 +1401,20 @@ ipcMain.handle(
     const { exportBuild, buildType } = options;
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
-    const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
+    const tmpPath = getTmp();
+    const outputRoot = Path.join(tmpPath, buildUUID);
     const colorMode = project.settings.colorMode;
     const sgbEnabled =
       project.settings.sgbEnabled && project.settings.colorMode !== "color";
     const debuggerEnabled =
       options.debugEnabled || project.settings.debuggerEnabled;
     const colorOnly = project.settings.colorMode === "color";
+
+    if (firstBuild) {
+      await clearAppCache(tmpPath);
+      firstBuild = false;
+    }
+
     const progress = (message: string) => {
       if (
         message !== "'" &&
@@ -1435,7 +1444,7 @@ ipcMain.handle(
         projectRoot,
         outputRoot,
         romFilename,
-        tmpPath: getTmp(),
+        tmpPath,
         debugEnabled: debuggerEnabled,
         progress,
         warnings,
@@ -2299,6 +2308,7 @@ const openProject = async (newProjectPath: string): Promise<boolean> => {
   scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
 
   keepOpen = true;
+  firstBuild = true;
 
   if (projectWindow) {
     projectWindow.close();

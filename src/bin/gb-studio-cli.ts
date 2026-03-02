@@ -1,8 +1,7 @@
 import { copy, readFile, writeFile } from "fs-extra";
 import Path from "path";
 import os from "os";
-import rimraf from "rimraf";
-import { promisify } from "util";
+import { rimraf as rmdir } from "rimraf";
 import { program } from "commander";
 import { binjgbRoot } from "consts";
 import initElectronL10N from "lib/lang/initElectronL10N";
@@ -12,8 +11,6 @@ import { buildRunner } from "lib/compiler/buildRunner";
 import { BuildType } from "lib/compiler/buildWorker";
 import { loadEngineSchema } from "lib/project/loadEngineSchema";
 import { getROMFilename } from "shared/lib/helpers/filePaths";
-
-const rmdir = promisify(rimraf);
 
 declare const VERSION: string;
 

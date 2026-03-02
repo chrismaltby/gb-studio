@@ -2,7 +2,7 @@ import { app } from "electron";
 import { mkdir } from "fs-extra";
 import { join, relative, dirname } from "path";
 import glob from "glob";
-import rimraf from "rimraf";
+import { rimraf as rmdir } from "rimraf";
 import { promisify } from "util";
 import { InstalledPluginData } from "./types";
 import { readJSON } from "fs-extra";
@@ -10,8 +10,6 @@ import { guardAssetWithinProject } from "lib/helpers/assets";
 import confirmDeletePlugin from "lib/electron/dialog/confirmDeletePlugin";
 import { removeEmptyFoldersBetweenPaths } from "lib/helpers/fs/removeEmptyFoldersBetweenPaths";
 import { pathToPosix } from "shared/lib/helpers/path";
-
-const rmdir = promisify(rimraf);
 
 const globAsync = promisify(glob);
 

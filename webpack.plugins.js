@@ -17,6 +17,7 @@ const plugins = [
     GIT_VERSION: JSON.stringify(gitRevisionPlugin.version()),
     COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
     VERSION: JSON.stringify(pkg.version),
+    RELEASE_VERSION: JSON.stringify(pkg.version.replace(/-rc.*/, "")),
     DOCS_URL: JSON.stringify(docsUrl),
   }),
 ];
@@ -32,7 +33,7 @@ if (!process.env.NO_TYPE_CHECKING) {
       typescript: {
         memoryLimit: 4096,
       },
-    })
+    }),
   );
 }
 

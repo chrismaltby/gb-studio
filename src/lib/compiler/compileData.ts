@@ -926,11 +926,22 @@ export const precompileScenes = (
     });
 
     const eventSpriteIds: string[] = [];
+
+    const defaultPlayerSpriteSheetId = defaultPlayerSprites[scene.type];
     const playerSpriteSheetId = scene.playerSpriteSheetId
       ? scene.playerSpriteSheetId
-      : defaultPlayerSprites[scene.type];
+      : defaultPlayerSpriteSheetId;
 
     let playerSprite = usedSprites.find((s) => s.id === playerSpriteSheetId);
+
+    if (!playerSprite && scene.type !== "LOGO") {
+      // Fallback to default player sprite for scene type
+      // This will happen in the case where the scene override is pointing
+      // to a sprite that no longer exists
+      playerSprite = usedSprites.find(
+        (s) => s.id === defaultPlayerSpriteSheetId,
+      );
+    }
 
     if (!playerSprite && scene.type !== "LOGO") {
       warnings(

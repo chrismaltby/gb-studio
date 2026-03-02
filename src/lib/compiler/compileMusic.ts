@@ -6,6 +6,7 @@ import ensureBuildTools from "./ensureBuildTools";
 import { exportToC, loadUGESong } from "shared/lib/uge/ugeHelper";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { envWith } from "lib/helpers/cli/env";
+import { getCacheRoot } from "lib/helpers/cache";
 
 export interface PrecompiledMusicTrack {
   id: string;
@@ -37,9 +38,6 @@ interface CompileModTrackOptions {
 
 interface CompileHugeTrackOptions {
   projectRoot: string;
-  buildToolsPath: string;
-  buildToolsVersion: string;
-  cacheRoot: string;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
 }
@@ -142,8 +140,8 @@ const compileModTracks = async (
   }: CompileMusicOptions,
 ): Promise<void> => {
   const buildToolsPath = await ensureBuildTools(tmpPath);
-  const cacheRoot = Path.normalize(`${tmpPath}/_gbscache/music`);
-  ensureDir(cacheRoot);
+  const cacheRoot = Path.join(getCacheRoot(tmpPath), "music");
+  await ensureDir(cacheRoot);
   const buildToolsVersion = await readFile(
     `${buildToolsPath}/tools_version`,
     "utf8",
@@ -182,27 +180,15 @@ const compileUgeTrack = async (
 const compileUgeTracks = async (
   tracks: PrecompiledMusicTrack[],
   {
-    tmpPath,
     projectRoot,
     output,
     progress = (_msg) => {},
     warnings = (_msg) => {},
   }: CompileMusicOptions,
 ): Promise<void> => {
-  const buildToolsPath = await ensureBuildTools(tmpPath);
-  const cacheRoot = Path.normalize(`${tmpPath}/_gbscache/music`);
-  ensureDir(cacheRoot);
-  const buildToolsVersion = await readFile(
-    `${buildToolsPath}/tools_version`,
-    "utf8",
-  );
-
   for (const track of tracks) {
     output[`music/${track.dataName}_Data.c`] = await compileUgeTrack(track, {
       projectRoot,
-      buildToolsPath,
-      buildToolsVersion,
-      cacheRoot,
       progress,
       warnings,
     });

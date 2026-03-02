@@ -1,24 +1,22 @@
 import fs from "fs-extra";
-import rimraf from "rimraf";
-import { promisify } from "util";
+import { rimraf as rmdir } from "rimraf";
 import Path from "path";
 import { defaultEngineMetaPath, defaultEngineRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
-import ejectEngineChangelog, {
-  isKnownEngineVersion,
-} from "lib/project/ejectEngineChangelog";
+import ejectEngineChangelog from "lib/project/ejectEngineChangelog";
 import {
   buildMakeDotBuildFile,
   makefileInjectToolsPath,
 } from "./buildMakeScript";
 import ensureBuildTools from "./ensureBuildTools";
-import glob from "glob";
 import l10n from "shared/lib/lang/l10n";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import { readEngineVersion, readEngineVersionLegacy } from "lib/project/engine";
 import { ProjectResources } from "shared/lib/resources/types";
 import { isFilePathWithinFolder } from "lib/helpers/path";
 import { EngineSchema } from "lib/project/loadEngineSchema";
+import { pathToPosix } from "shared/lib/helpers/path";
+import { applyEnginePlugins } from "lib/compiler/enginePlugins";
 
 const engineIgnore = [
   ".git",
@@ -32,8 +30,6 @@ const engineIgnore = [
   "scheme.png",
   "scheme2.png",
 ];
-
-const rmdir = promisify(rimraf);
 
 type EjectOptions = {
   engineSchema: EngineSchema;
@@ -60,7 +56,6 @@ const ejectBuild = async ({
   warnings = (_msg) => {},
 }: EjectOptions) => {
   const localCorePath = `${projectRoot}/assets/engine`;
-  const pluginsPath = `${projectRoot}/plugins`;
   const buildToolsPath = await ensureBuildTools(tmpPath);
   const { settings } = projectData;
   const colorEnabled = settings.colorMode !== "mono";
@@ -126,10 +121,13 @@ const ejectBuild = async ({
   );
   const usedFiles = usedSceneTypes
     .map((sceneType) => sceneType.files ?? [])
-    .flat();
+    .flat()
+    .map((path) => pathToPosix(path));
+
   const unusedFiles = unusedSceneTypes
     .map((sceneType) => sceneType.files ?? [])
     .flat()
+    .map((path) => pathToPosix(path))
     .filter((file) => !usedFiles.includes(file));
 
   for (const filename of unusedFiles) {
@@ -148,42 +146,14 @@ const ejectBuild = async ({
     }
   }
 
-  progress(
-    l10n("COMPILER_LOOKING_FOR_ENGINE_PLUGINS", { path: "plugins/*/engine" }),
-  );
-  const enginePlugins = glob.sync(`${pluginsPath}/**/engine`);
-  for (const enginePluginPath of enginePlugins) {
-    progress(
-      l10n("COMPILER_USING_ENGINE_PLUGIN", {
-        path: Path.relative(pluginsPath, enginePluginPath),
-      }),
-    );
-    const pluginName = Path.basename(Path.dirname(enginePluginPath));
-    try {
-      const pluginEngineMetaPath = `${enginePluginPath}/engine.json`;
-      const pluginEngineVersion = await readEngineVersion(pluginEngineMetaPath);
-      if (!pluginEngineVersion || !isKnownEngineVersion(pluginEngineVersion)) {
-        throw new Error("Missing plugin engine version");
-      }
-      if (pluginEngineVersion !== expectedEngineVersion) {
-        warnings(
-          `${l10n("WARNING_ENGINE_PLUGIN_OUT_OF_DATE", {
-            pluginName,
-            pluginEngineVersion,
-            expectedEngineVersion,
-          })}`,
-        );
-      }
-    } catch (e) {
-      warnings(
-        `${l10n("WARNING_ENGINE_PLUGIN_MISSING_MANIFEST", {
-          pluginName,
-          expectedEngineVersion,
-        })}`,
-      );
-    }
-    await copy(enginePluginPath, outputRoot);
-  }
+  await applyEnginePlugins({
+    progress,
+    warnings,
+    expectedEngineVersion,
+    outputRoot,
+    projectRoot,
+    unusedFiles,
+  });
 
   // Modify engineField defines for any engine fields that define a "file" field
   await Promise.all(

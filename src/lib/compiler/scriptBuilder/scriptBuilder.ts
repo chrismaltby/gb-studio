@@ -1520,6 +1520,12 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
+  setFont = (fontId: string) => {
+    this._addComment("Set Font");
+    this._setFont(this._getFontSymbol(fontId));
+    this._addNL();
+  };
+
   overlayShow = (color = "white", x = 0, y = 0) => {
     this._addComment("Overlay Show");
     this._overlayShow(x, y, color === "white" ? 1 : 0);

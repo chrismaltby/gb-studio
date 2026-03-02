@@ -1,10 +1,7 @@
 import fs from "fs-extra";
-import rimraf from "rimraf";
-import { promisify } from "util";
+import { rimraf as rmdir } from "rimraf";
 import { defaultEngineMetaPath, defaultEngineRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
-
-const rmdir = promisify(rimraf);
 
 const ejectEngineToDir = async (ejectPath: string) => {
   const engineSrcPath = `${defaultEngineRoot}/src`;
