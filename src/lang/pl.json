@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2160260227",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2165260302",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1935,6 +1935,10 @@
   "WARNING_SCENE_TYPE_DISABLED_REMOVED_SCENES": "Rodzaj sceny \"{type}\" nie jest włączony - sceny {scenes} nie zostaną dołączone do gry",
   "WARNING_FN_DEPRECATED": "\"{name}\" jest oznaczone jako przestarzałe i zostanie usunięte w jednej z przyszłych wersji.",
   "WARNING_FN_DEPRECATED_REPLACEMENT": "Zamiast tego użyj \"{name}\" .",
+  "WARNING_FAILED_TO_APPLY_PATCH": "Nie można zastosować poprawki: \"{filename}\"",
+  "WARNING_PLUGIN_MODIFIED_OUTSIDE_ENGINE_ROOT": "Wtyczka próbowała zmodyfikować plik poza katalogiem głównym silnika \"{filename}\"",
+  "WARNING_PLUGIN_OVERWROTE_FILE": "Wtyczka \"{pluginName}\" nadpisała plik \"{filename}\", który został już wcześniej zapisany przez \"{previousPlugin}\"",
+  "WARNING_PLUGIN_PATCH_CONFLICT_OVERWRITTEN": "Wtyczka \"{pluginName}\" nie mogła zastosować poprawki do \"{filename}\", ponieważ plik został wcześniej nadpisany przez \"{previousPlugin}\"",
 
   "// 12": "Errors -------------------------------------------------------",
 
@@ -2144,6 +2148,7 @@
   "COMPILER_LOCAL_ENGINE_NOT_FOUND": "Lokalny silnik nie znaleziony, używanie domyślnego silnika",
   "COMPILER_LOOKING_FOR_ENGINE_PLUGINS": "Wyszukiwanie wtyczek silnika w {path}",
   "COMPILER_USING_ENGINE_PLUGIN": "Używanie wtyczki silnika: {path}",
+  "COMPILER_USING_ENGINE_PLUGIN_VERSION": "Używana wersja: {path}",
 
   "// 21": "Messages -----------------------------------------------------",
 
