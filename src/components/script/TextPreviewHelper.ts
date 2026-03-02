@@ -134,13 +134,13 @@ export const drawText = (
   if (!font) {
     return;
   }
-  
+
   const tileHeight = Math.floor(font.img.height / 8);
-    
-  const drawCharCode = (charCode: number) => {    
+
+  const drawCharCode = (charCode: number) => {
     let charIndex = font.table[charCode];
-    if (charIndex == -1){
-       charIndex = (charCode - (tileHeight < 16 ? 32 : 0)) % font.widths.length;
+    if (charIndex === -1) {
+      charIndex = (charCode - (tileHeight < 16 ? 32 : 0)) % font.widths.length;
     }
     const lookupX = charIndex % 16;
     const lookupY = Math.floor(charIndex / 16);
