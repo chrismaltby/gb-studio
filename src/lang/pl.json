@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2165260302",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2166260303",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1897,6 +1897,7 @@
   "MENU_PLAY_WINDOW": "Okno gry",
   "MENU_MUTE_AUDIO": "Wycisz audio",
   "MENU_DELETE_NOTE": "Usuń notatkę",
+  "MENU_DELETE_SELECTION": "Usuń zaznaczenie",
 
   "// 11": "Warnings -----------------------------------------------------",
 
