@@ -44,6 +44,17 @@ const RangeThumb = styled.div<RangeThumbProps>`
       : ""}
 `;
 
+const clampAndSnap = (
+  value: number,
+  min: number,
+  max: number,
+  step: number,
+) => {
+  const clamped = Math.min(Math.max(value, min), max);
+  const snapped = Math.round((clamped - min) / step) * step + min;
+  return Number(snapped.toFixed(10));
+};
+
 export const Slider: FC<SliderProps> = ({
   labelledBy,
   value,
@@ -54,13 +65,15 @@ export const Slider: FC<SliderProps> = ({
 }) => {
   const themeContext = useContext(ThemeContext);
 
+  const safeValue = clampAndSnap(value ?? 0, min, max, step ?? 1);
+
   return (
     <Range
       labelledBy={labelledBy}
       min={min}
       max={max}
       step={step}
-      values={[value]}
+      values={[safeValue]}
       onChange={(values) => onChange?.(values[0])}
       renderTrack={({ props, children }) => (
         <RangeInner

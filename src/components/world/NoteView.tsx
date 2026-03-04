@@ -345,9 +345,10 @@ const NoteView = memo(({ id, index, editable }: NoteViewProps) => {
     return renderNoteContextMenu({
       dispatch,
       noteId: id,
+      additionalSceneIds: sceneSelectionIds,
       onClose: onContextMenuClose,
     });
-  }, [dispatch, id, onContextMenuClose]);
+  }, [dispatch, id, onContextMenuClose, sceneSelectionIds]);
 
   const onContextMenu = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

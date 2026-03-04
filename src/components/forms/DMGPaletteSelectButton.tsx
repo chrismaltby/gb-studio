@@ -91,7 +91,7 @@ const LabelInner = styled.div`
 `;
 
 const Button = styled.button<{
-  variant?: DMGPaletteSelectButtonVariant;
+  $variant?: DMGPaletteSelectButtonVariant;
 }>`
   display: flex;
   position: relative;
@@ -117,7 +117,7 @@ const Button = styled.button<{
   }
 
   ${(props) =>
-    props.variant === "default"
+    props.$variant === "default"
       ? `
         margin-bottom: 10px;
       `
@@ -240,7 +240,7 @@ export const DMGPaletteSelectButton = ({
         title={
           label ? `${l10n("FIELD_MONOCHROME_PALETTE")}: ${label}` : undefined
         }
-        variant={variant}
+        $variant={variant}
       >
         <PaletteBlock
           type={isSpritePalette ? "sprite" : "tile"}

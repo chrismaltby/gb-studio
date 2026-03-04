@@ -15,6 +15,15 @@ export const PluginType = Type.Union(
 
 export type PluginType = Static<typeof PluginType>;
 
+export const PluginEngineAltRule = Type.Object({
+  when: Type.Object({
+    gbsVersion: Type.Optional(Type.String()),
+    engineVersion: Type.Optional(Type.String()),
+    additionalPlugins: Type.Optional(Type.Array(Type.String())),
+  }),
+  use: Type.String(),
+});
+
 export const PluginMetadata = Type.Object({
   id: Type.String(),
   type: PluginType,
@@ -27,6 +36,7 @@ export const PluginMetadata = Type.Object({
   url: Type.Optional(Type.String()),
   images: Type.Optional(Type.Array(Type.String())),
   filename: Type.String(),
+  engineAltRules: Type.Optional(Type.Array(PluginEngineAltRule)),
 });
 
 export type PluginMetadata = Static<typeof PluginMetadata>;

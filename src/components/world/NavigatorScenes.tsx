@@ -308,6 +308,7 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
         return renderNoteContextMenu({
           dispatch,
           noteId: item.id,
+          additionalSceneIds: sceneSelectionIds,
           onRename: () => setRenameId(item.id),
           onClose,
         });

@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAppSelector } from "store/hooks";
 import { ActorNormalized } from "shared/lib/entities/entitiesTypes";
 import {
@@ -18,7 +24,12 @@ import { actorName } from "shared/lib/entities/entitiesHelpers";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
-import { components, SingleValue } from "react-select";
+import {
+  components,
+  GroupBase,
+  SingleValue,
+  SingleValueProps,
+} from "react-select";
 import { ActorDirection } from "shared/lib/resources/types";
 
 interface ActorSelectProps {
@@ -206,6 +217,63 @@ export const ActorSelect = ({
     );
   }, [options, value]);
 
+  const formatOptionLabel = useCallback(
+    (option: ActorOption) => {
+      return option.spriteSheetId ? (
+        <OptionLabelWithPreview
+          preview={
+            <SpriteSheetCanvas
+              spriteSheetId={option.spriteSheetId}
+              direction={direction || option.direction}
+              frame={frame}
+            />
+          }
+        >
+          {option.label}
+        </OptionLabelWithPreview>
+      ) : (
+        option.label
+      );
+    },
+    [direction, frame],
+  );
+
+  const SingleValue = useCallback(
+    (props: SingleValueProps<ActorOption, false, GroupBase<ActorOption>>) => {
+      return currentValue?.spriteSheetId ? (
+        <SingleValueWithPreview
+          preview={
+            <SpriteSheetCanvas
+              spriteSheetId={currentValue.spriteSheetId}
+              direction={direction || currentValue.direction}
+              frame={frame}
+            />
+          }
+        >
+          {currentValue?.label}
+        </SingleValueWithPreview>
+      ) : (
+        <components.SingleValue {...props}>
+          {currentValue?.label}
+        </components.SingleValue>
+      );
+    },
+    [
+      currentValue?.direction,
+      currentValue?.label,
+      currentValue?.spriteSheetId,
+      direction,
+      frame,
+    ],
+  );
+
+  const selectComponents = useMemo(
+    () => ({
+      SingleValue,
+    }),
+    [SingleValue],
+  );
+
   return (
     <Select
       name={name}
@@ -216,43 +284,8 @@ export const ActorSelect = ({
           onChange?.(newValue.value);
         }
       }}
-      formatOptionLabel={(option: ActorOption) => {
-        return option.spriteSheetId ? (
-          <OptionLabelWithPreview
-            preview={
-              <SpriteSheetCanvas
-                spriteSheetId={option.spriteSheetId}
-                direction={direction || option.direction}
-                frame={frame}
-              />
-            }
-          >
-            {option.label}
-          </OptionLabelWithPreview>
-        ) : (
-          option.label
-        );
-      }}
-      components={{
-        SingleValue: (props) =>
-          currentValue?.spriteSheetId ? (
-            <SingleValueWithPreview
-              preview={
-                <SpriteSheetCanvas
-                  spriteSheetId={currentValue.spriteSheetId}
-                  direction={direction || currentValue.direction}
-                  frame={frame}
-                />
-              }
-            >
-              {currentValue?.label}
-            </SingleValueWithPreview>
-          ) : (
-            <components.SingleValue {...props}>
-              {currentValue?.label}
-            </components.SingleValue>
-          ),
-      }}
+      formatOptionLabel={formatOptionLabel}
+      components={selectComponents}
     />
   );
 };

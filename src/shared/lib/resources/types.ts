@@ -525,6 +525,7 @@ export const SpriteResource = Type.Object({
   numTiles: Type.Number(),
   plugin: Type.Optional(Type.String()),
   checksum: Type.String(),
+  notes: Type.Optional(Type.String()),
   width: Type.Number(),
   height: Type.Number(),
   canvasOriginX: Type.Number(),
@@ -601,17 +602,23 @@ export const FontResource = Type.Object({
   width: Type.Number(),
   height: Type.Number(),
   plugin: Type.Optional(Type.String()),
-  mapping: Type.Record(
-    Type.String(),
-    Type.Union([Type.Number(), Type.Array(Type.Number())]),
-  ),
 });
 
 export type FontResource = Static<typeof FontResource>;
 
-export type Font = Omit<ExtractResource<FontResource>, "mapping">;
+export const FontMetadata = Type.Object({
+  mapping: Type.Record(
+    Type.String(),
+    Type.Union([Type.Number(), Type.Array(Type.Number())]),
+  ),
+  table: Type.Array(Type.Number()),
+});
 
-export type FontResourceAsset = FontResource & AssetMetadata;
+export type FontMetadata = Static<typeof FontMetadata>;
+
+export type Font = ExtractResource<FontResource>;
+
+export type FontResourceAsset = FontResource & AssetMetadata & FontMetadata;
 
 export type FontAsset = ExtractResource<FontResourceAsset>;
 

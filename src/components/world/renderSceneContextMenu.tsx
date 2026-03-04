@@ -9,6 +9,7 @@ import {
   labelColorValues,
 } from "shared/lib/resources/types";
 import buildGameActions from "store/features/buildGame/buildGameActions";
+import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import settingsActions from "store/features/settings/settingsActions";
 import { LabelButton } from "ui/buttons/LabelButton";
@@ -214,17 +215,23 @@ const renderSceneContextMenu = ({
     <MenuDivider key="div-delete" />,
     <MenuItem
       key="delete"
-      onClick={() =>
-        additionalSceneIds.length > 1
-          ? dispatch(
-              entitiesActions.removeScenes({ sceneIds: additionalSceneIds }),
-            )
-          : dispatch(entitiesActions.removeScene({ sceneId }))
-      }
+      onClick={() => {
+        if (additionalSceneIds.length > 1) {
+          dispatch(
+            entitiesActions.removeScenes({ sceneIds: additionalSceneIds }),
+          );
+          dispatch(
+            entitiesActions.removeNotes({ noteIds: additionalSceneIds }),
+          );
+          dispatch(editorActions.selectWorld());
+        } else {
+          dispatch(entitiesActions.removeScene({ sceneId }));
+        }
+      }}
     >
       {l10n(
         additionalSceneIds.length > 1
-          ? "MENU_DELETE_SCENES"
+          ? "MENU_DELETE_SELECTION"
           : "MENU_DELETE_SCENE",
       )}
     </MenuItem>,

@@ -164,6 +164,7 @@ export interface EditorState {
   slopePreview?: SlopePreview;
   showScriptUses: boolean;
   prefabId: string;
+  settingsScrollTop: number;
 }
 
 export const initialState: EditorState = {
@@ -243,6 +244,7 @@ export const initialState: EditorState = {
   slopePreview: undefined,
   showScriptUses: false,
   prefabId: "",
+  settingsScrollTop: 0,
 };
 
 const toggleEntitySelection = (
@@ -1047,6 +1049,10 @@ const editorSlice = createSlice({
     setPrefabId: (state, action: PayloadAction<string>) => {
       state.prefabId = action.payload;
     },
+
+    setSettingsScrollTop: (state, action: PayloadAction<number>) => {
+      state.settingsScrollTop = action.payload;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -1057,6 +1063,9 @@ const editorSlice = createSlice({
         state.worldFocus = true;
         state.sceneSelectionIds = [action.payload.sceneId];
         state.scriptEventSelectionIds = [];
+      })
+      .addCase(entitiesActions.removeScene, (state) => {
+        state.sceneSelectionIds = [];
       })
       .addCase(entitiesActions.addActor, (state, action) => {
         state.type = "actor";
@@ -1085,6 +1094,9 @@ const editorSlice = createSlice({
         state.worldFocus = true;
         state.sceneSelectionIds = [action.payload.noteId];
         state.scriptEventSelectionIds = [];
+      })
+      .addCase(entitiesActions.removeNote, (state) => {
+        state.sceneSelectionIds = [];
       })
       .addCase(entitiesActions.addMetasprite, (state, action) => {
         state.selectedMetaspriteId = action.payload.metaspriteId;

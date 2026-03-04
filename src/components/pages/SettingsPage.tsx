@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useCallback, useRef, useState } from "react";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import {
@@ -59,6 +59,9 @@ import SceneTypesSettingsCard from "components/settings/SceneTypesSettingsCard";
 import { AutoTileFlipSelect } from "components/forms/AutoTileFlipSelect";
 import { DMGPaletteSelectButton } from "components/forms/DMGPaletteSelectButton";
 import { defaultProjectSettings } from "consts";
+import editorActions from "store/features/editor/editorActions";
+import { useRestoreScroll } from "ui/hooks/use-restore-scroll";
+import { useSaveScroll } from "ui/hooks/use-save-scroll";
 
 const SettingsPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -303,6 +306,23 @@ const SettingsPage: FC = () => {
     [dispatch],
   );
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const settingsScrollTop = useAppSelector(
+    (state) => state.editor.settingsScrollTop,
+  );
+
+  useSaveScroll(
+    scrollRef,
+    (scrollTop) => {
+      dispatch(editorActions.setSettingsScrollTop(scrollTop));
+    },
+    250,
+  );
+
+  useRestoreScroll(scrollRef, settingsScrollTop, {
+    behavior: "auto",
+  });
+
   return (
     <SettingsPageWrapper>
       {showMenu && (
@@ -359,7 +379,7 @@ const SettingsPage: FC = () => {
           </SearchableCard>
         </SettingsMenuColumn>
       )}
-      <SettingsContentColumn>
+      <SettingsContentColumn ref={scrollRef}>
         <SearchableCard
           searchTerm={searchTerm}
           searchMatches={[

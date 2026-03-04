@@ -2,6 +2,7 @@ import React, { Dispatch } from "react";
 import { UnknownAction } from "redux";
 import l10n from "shared/lib/lang/l10n";
 import { labelColorValues, Note } from "shared/lib/resources/types";
+import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { LabelButton } from "ui/buttons/LabelButton";
 import { MenuDivider, MenuItem, MenuSection } from "ui/menu/Menu";
@@ -9,12 +10,14 @@ import { MenuDivider, MenuItem, MenuSection } from "ui/menu/Menu";
 interface NoteContextMenuProps {
   dispatch: Dispatch<UnknownAction>;
   noteId: string;
+  additionalSceneIds: string[];
   onRename?: () => void;
   onClose?: () => void;
 }
 
 const renderNoteContextMenu = ({
   noteId,
+  additionalSceneIds,
   onRename,
   dispatch,
   onClose,
@@ -65,9 +68,25 @@ const renderNoteContextMenu = ({
     <MenuDivider key="div-delete" />,
     <MenuItem
       key="delete"
-      onClick={() => dispatch(entitiesActions.removeNote({ noteId }))}
+      onClick={() => {
+        if (additionalSceneIds.length > 1) {
+          dispatch(
+            entitiesActions.removeScenes({ sceneIds: additionalSceneIds }),
+          );
+          dispatch(
+            entitiesActions.removeNotes({ noteIds: additionalSceneIds }),
+          );
+          dispatch(editorActions.selectWorld());
+        } else {
+          dispatch(entitiesActions.removeNote({ noteId }));
+        }
+      }}
     >
-      {l10n("MENU_DELETE_NOTE")}
+      {l10n(
+        additionalSceneIds.length > 1
+          ? "MENU_DELETE_SELECTION"
+          : "MENU_DELETE_NOTE",
+      )}
     </MenuItem>,
   ];
 };

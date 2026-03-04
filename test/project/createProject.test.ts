@@ -2,10 +2,7 @@ import { existsSync } from "fs";
 import getTmp from "lib/helpers/getTmp";
 import createProject from "lib/project/createProject";
 import { dirname, join } from "path";
-import rimraf from "rimraf";
-import { promisify } from "util";
-
-const rmdir = promisify(rimraf);
+import { rimraf as rmdir } from "rimraf";
 
 describe("createProject", () => {
   const tmpDir = getTmp();

@@ -6,6 +6,7 @@ export interface FontData {
   isMono: boolean;
   widths: number[];
   mapping: Record<string, number | number[]>;
+  table: number[];
 }
 
 export const resolveMapping = (

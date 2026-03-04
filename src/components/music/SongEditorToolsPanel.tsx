@@ -123,9 +123,9 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
 
   const toggleView = useCallback(() => {
     if (view === "tracker") {
-      dispatch(trackerActions.toggleView("roll"));
+      dispatch(trackerActions.setViewAndSave("roll"));
     } else {
-      dispatch(trackerActions.toggleView("tracker"));
+      dispatch(trackerActions.setViewAndSave("tracker"));
     }
   }, [dispatch, view]);
 

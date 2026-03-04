@@ -19,12 +19,14 @@ import { TRACKER_REDO, TRACKER_UNDO } from "consts";
 import API from "renderer/lib/api";
 import { NavigationSection } from "store/features/navigation/navigationState";
 import { isZoomSection } from "store/features/editor/editorHelpers";
+import trackerActions from "store/features/tracker/trackerActions";
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
 
 if (projectPath) {
   store.dispatch(projectActions.openProject(projectPath));
+  store.dispatch(trackerActions.initViewFromSaved());
   initKeyBindings();
 }
 

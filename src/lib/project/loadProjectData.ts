@@ -19,6 +19,8 @@ import {
   CompressedProjectResources,
   CompressedSceneResourceWithChildren,
   EngineFieldValuesResource,
+  FontResource,
+  FontResourceAsset,
   MusicResource,
   MusicResourceAsset,
   PaletteResource,
@@ -204,6 +206,21 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     });
   };
 
+  const mergeFontsWithResources = (
+    assets: FontResourceAsset[],
+    resources: FontResource[],
+  ) => {
+    return mergeAssetsWithResources(assets, resources, (asset, resource) => {
+      return {
+        ...asset,
+        id: resource?.id ?? asset.id,
+        symbol: resource?.symbol ?? asset.symbol,
+        mapping: asset.mapping,
+        table: asset.table,
+      };
+    });
+  };
+
   const backgroundResources = mergeAssetsWithResources<
     CompressedBackgroundResource,
     CompressedBackgroundResourceAsset
@@ -308,11 +325,7 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     "sound",
   );
 
-  const fontResources = mergeAssetIdAndSymbolsWithResources(
-    fonts,
-    resources.fonts,
-    "font",
-  );
+  const fontResources = mergeFontsWithResources(fonts, resources.fonts);
 
   const musicResources = mergeAssetsWithResources<
     MusicResource,

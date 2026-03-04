@@ -16,6 +16,7 @@ import { promisify } from "util";
 import { envWith } from "lib/helpers/cli/env";
 import { readEngineVersion } from "lib/project/engine";
 import { defaultEngineMetaPath } from "consts";
+import { clearAppCacheOlderThan } from "lib/helpers/cache";
 
 const psTreeAsync = promisify(psTree);
 
@@ -95,6 +96,9 @@ const makeBuild = async ({
   }
 
   env.GBDK_COMPILER_PRESET = String(settings.compilerPreset);
+
+  // Clear old cached data before fetching new data
+  await clearAppCacheOlderThan(tmpPath, 24 * 60 * 60 * 1000); // 24 hours
 
   // Populate /obj with cached data
   await fetchCachedObjData(buildRoot, tmpPath, env);

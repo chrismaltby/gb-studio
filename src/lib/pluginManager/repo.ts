@@ -12,8 +12,7 @@ import l10n from "shared/lib/lang/l10n";
 import { createWriteStream, remove } from "fs-extra";
 import getTmp from "lib/helpers/getTmp";
 import AdmZip from "adm-zip";
-import rimraf from "rimraf";
-import { promisify } from "util";
+import { rimraf as rmdir } from "rimraf";
 import confirmDeletePlugin from "lib/electron/dialog/confirmDeletePlugin";
 import { removeEmptyFoldersBetweenPaths } from "lib/helpers/fs/removeEmptyFoldersBetweenPaths";
 import { satisfies } from "semver";
@@ -24,8 +23,6 @@ import { guardAssetWithinProject } from "lib/helpers/assets";
 import { OFFICIAL_REPO_URL } from "consts";
 import { isGlobalPluginType } from "shared/lib/plugins/pluginHelpers";
 import { ensureGlobalPluginsPath } from "./globalPlugins";
-
-const rmdir = promisify(rimraf);
 
 declare const VERSION: string;
 
@@ -208,6 +205,17 @@ export const addPluginToProject = async (
       res.body?.pipe(fileStream);
       res.body?.on("error", reject);
       fileStream.on("finish", resolve);
+    });
+
+    // Clean up any existing files from previous version of plugin
+    // Keep any .gbsres files as removing them could unlink assets
+    await rmdir(outputPath, {
+      filter: (file) => {
+        if (file.endsWith(".gbsres") || file.endsWith(".gbsres.bak")) {
+          return false;
+        }
+        return true;
+      },
     });
 
     // Extract plugin

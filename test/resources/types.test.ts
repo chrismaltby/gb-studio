@@ -472,7 +472,6 @@ describe("TypeBox Schemas", () => {
       filename: "filename",
       width: 16,
       height: 16,
-      mapping: {},
     };
     const invalidFont = {
       _resourceType: "font",

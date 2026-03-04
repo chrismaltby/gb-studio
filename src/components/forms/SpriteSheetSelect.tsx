@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
 import { spriteSheetSelectors } from "store/features/entities/entitiesState";
@@ -126,44 +126,54 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
     }
   };
 
+  const formatOptionLabel = useCallback(
+    (option: SpriteSheetOption) => (
+      <OptionLabelWithPreview
+        preview={
+          <SpriteSheetCanvas
+            spriteSheetId={option.value}
+            direction={direction}
+            frame={frame}
+          />
+        }
+        info={option.spriteMode !== defaultSpriteMode ? option.spriteMode : ""}
+      >
+        <FormatFolderLabel label={option.label} />
+      </OptionLabelWithPreview>
+    ),
+    [direction, frame, defaultSpriteMode],
+  );
+
+  const SingleValue = useCallback(() => {
+    return (
+      <SingleValueWithPreview
+        preview={
+          <SpriteSheetCanvas
+            spriteSheetId={value || ""}
+            direction={direction}
+            frame={frame}
+          />
+        }
+      >
+        <FormatFolderLabel label={currentValue?.label} />
+      </SingleValueWithPreview>
+    );
+  }, [value, direction, frame, currentValue]);
+
+  const selectComponents = useMemo(
+    () => ({
+      SingleValue,
+    }),
+    [SingleValue],
+  );
+
   return (
     <Select
       value={currentValue}
       options={options}
       onChange={onSelectChange}
-      formatOptionLabel={(option: SpriteSheetOption) => {
-        return (
-          <OptionLabelWithPreview
-            preview={
-              <SpriteSheetCanvas
-                spriteSheetId={option.value}
-                direction={direction}
-                frame={frame}
-              />
-            }
-            info={
-              option.spriteMode !== defaultSpriteMode ? option.spriteMode : ""
-            }
-          >
-            <FormatFolderLabel label={option.label} />
-          </OptionLabelWithPreview>
-        );
-      }}
-      components={{
-        SingleValue: () => (
-          <SingleValueWithPreview
-            preview={
-              <SpriteSheetCanvas
-                spriteSheetId={value || ""}
-                direction={direction}
-                frame={frame}
-              />
-            }
-          >
-            <FormatFolderLabel label={currentValue?.label} />
-          </SingleValueWithPreview>
-        ),
-      }}
+      formatOptionLabel={formatOptionLabel}
+      components={selectComponents}
       {...selectProps}
     />
   );

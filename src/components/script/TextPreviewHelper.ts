@@ -3,9 +3,9 @@ import { assetURL } from "shared/lib/helpers/assets";
 import { TILE_SIZE } from "consts";
 import { FontAsset } from "shared/lib/resources/types";
 
-const DOLLAR_CHAR = 4;
-const HASH_CHAR = 3;
-const ZERO_CHAR = 16;
+const DOLLAR_CHAR = 36;
+const HASH_CHAR = 35;
+const ZERO_CHAR = 48;
 
 const isTransparent = (r: number, g: number, b: number): boolean => {
   return (
@@ -107,6 +107,7 @@ export const loadFont = async (font: FontAsset): Promise<FontData> => {
     isMono,
     widths,
     mapping: font.mapping,
+    table: font.table,
   };
 };
 
@@ -134,9 +135,15 @@ export const drawText = (
     return;
   }
 
-  const drawCharCode = (char: number) => {
-    const lookupX = char % 16;
-    const lookupY = Math.floor(char / 16);
+  const tileHeight = Math.floor(font.img.height / 8);
+
+  const drawCharCode = (charCode: number) => {
+    let charIndex = font.table[charCode];
+    if (charIndex === -1) {
+      charIndex = (charCode - (tileHeight < 16 ? 32 : 0)) % font.widths.length;
+    }
+    const lookupX = charIndex % 16;
+    const lookupY = Math.floor(charIndex / 16);
     if (drawY >= maxHeight * 8) {
       return;
     }
@@ -144,14 +151,14 @@ export const drawText = (
       font.img,
       lookupX * 8,
       lookupY * 8,
-      font.widths[char],
+      font.widths[charIndex],
       8,
       drawX + xOffset,
       drawY + yOffset,
-      font.widths[char],
+      font.widths[charIndex],
       8,
     );
-    drawX += font.widths[char] ?? 0;
+    drawX += font.widths[charIndex] ?? 0;
   };
 
   const textTokens = lexTextWithMapping(text, fontsData, font.id, false);
@@ -177,13 +184,7 @@ export const drawText = (
           continue;
         }
 
-        const tileHeight = Math.floor(font.img.height / 8);
-
-        const code = char.codePointAt(0) ?? 0;
-        const charIndex =
-          (code - (tileHeight < 16 ? 32 : 0)) % font.widths.length;
-
-        drawCharCode(charIndex);
+        drawCharCode(char.codePointAt(0) ?? 0);
 
         i++;
       }

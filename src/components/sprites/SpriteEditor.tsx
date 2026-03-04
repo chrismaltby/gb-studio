@@ -67,6 +67,7 @@ import {
 } from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
+import { NoteField } from "ui/form/NoteField";
 
 interface SpriteEditorProps {
   id: string;
@@ -102,6 +103,8 @@ export const SpriteEditor = ({
   const clipboardFormat = useAppSelector(
     (state) => state.clipboard.data?.format,
   );
+  const [notesOpen, setNotesOpen] = useState<boolean>(!!sprite?.notes);
+
   const replaceSpriteTileMode = useAppSelector(
     (state) => state.editor.replaceSpriteTileMode,
   );
@@ -231,6 +234,12 @@ export const SpriteEditor = ({
         castEventToInt(e, 0) - canvasDefaultOriginY,
       ),
     [canvasDefaultOriginY, onChangeSpriteSheetProp],
+  );
+
+  const onChangeNotes = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+      onChangeSpriteSheetProp("notes", e.currentTarget.value),
+    [onChangeSpriteSheetProp],
   );
 
   const onChangeCanvasWidth = useCallback(
@@ -514,6 +523,10 @@ export const SpriteEditor = ({
     setSpriteModeOverrideOpen(true);
   }, [defaultSpriteMode, onChangeSpriteMode]);
 
+  const onAddNotes = useCallback(() => {
+    setNotesOpen(true);
+  }, []);
+
   if (!sprite || !spriteState || !animation) {
     return null;
   }
@@ -521,6 +534,7 @@ export const SpriteEditor = ({
   const isDefaultState = sprite.states.indexOf(spriteStateId) === 0;
   const showAutodetect =
     sprite.spriteMode !== "8x8" && isDefaultState && sprite.height === 16;
+  const showNotes = sprite.notes || notesOpen;
 
   return (
     <Sidebar onClick={selectSidebar}>
@@ -545,12 +559,15 @@ export const SpriteEditor = ({
           menuDirection="right"
           onMouseDown={onFetchClipboard}
         >
+          {!metaspriteTile && !showNotes && (
+            <MenuItem onClick={onAddNotes}>{l10n("FIELD_ADD_NOTES")}</MenuItem>
+          )}
           {!metaspriteTile && !showSymbols && (
             <MenuItem onClick={() => setShowSymbols(true)}>
               {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
             </MenuItem>
           )}
-          {!showSpriteModeOverride && (
+          {!metaspriteTile && !showSpriteModeOverride && (
             <MenuItem onClick={onOverrideSpriteMode}>
               {l10n("FIELD_SET_SPRITE_MODE_OVERRIDE")}
             </MenuItem>
@@ -798,6 +815,19 @@ export const SpriteEditor = ({
                   <SymbolEditorWrapper>
                     <SpriteSymbolsEditor id={sprite.id} />
                   </SymbolEditorWrapper>
+                  <FormDivider />
+                </>
+              )}
+              {showNotes && (
+                <>
+                  <FormContainer>
+                    <FormRow>
+                      <NoteField
+                        value={sprite.notes || ""}
+                        onChange={onChangeNotes}
+                      />
+                    </FormRow>
+                  </FormContainer>
                   <FormDivider />
                 </>
               )}

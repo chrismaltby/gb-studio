@@ -1,10 +1,7 @@
 import { dirname, resolve } from "path";
 import { isFilePathWithinFolder } from "lib/helpers/path";
 import { lstat, readdir } from "fs-extra";
-import rimraf from "rimraf";
-import { promisify } from "util";
-
-const rmdir = promisify(rimraf);
+import { rimraf as rmdir } from "rimraf";
 
 export const removeEmptyFoldersBetweenPaths = async (
   basePath: string,

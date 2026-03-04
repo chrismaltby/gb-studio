@@ -15,6 +15,7 @@ import {
   TOOL_COLLISIONS,
   TOOL_ERASER,
   TILE_SIZE,
+  TOOL_SELECT,
 } from "consts";
 import {
   sceneSelectors,
@@ -32,6 +33,8 @@ import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import { Selection } from "ui/document/Selection";
 import useResizeObserver from "ui/hooks/use-resize-observer";
 import NoteView from "components/world/NoteView";
+import { ContextMenu } from "ui/menu/ContextMenu";
+import renderWorldContextMenu from "components/world/renderWorldContextMenu";
 
 const MOUSE_ZOOM_SPEED = 0.5;
 
@@ -156,6 +159,8 @@ const WorldView = () => {
   const defaultSceneTypeId = useAppSelector(
     (state) => state.project.present.settings.defaultSceneTypeId,
   );
+
+  const selectedIds = useAppSelector((state) => state.editor.sceneSelectionIds);
 
   const matchingScenes = searchTerm
     ? scenes.filter((scene, sceneIndex) => {
@@ -711,6 +716,67 @@ const WorldView = () => {
 
   //#endregion Event Listeners
 
+  //#region Context Menu
+
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    menu: JSX.Element[];
+  }>();
+
+  const onContextMenuClose = useCallback(() => {
+    setContextMenu(undefined);
+  }, []);
+
+  const renderContextMenu = useCallback(() => {
+    return renderWorldContextMenu({
+      dispatch,
+      selectedIds,
+      // sceneId: id,
+      // additionalSceneIds: sceneSelectionIds,
+      // startSceneId,
+      // startDirection,
+      // hoverX,
+      // hoverY,
+      // colorsEnabled: gbcEnabled,
+      // colorModeOverride: scene.colorModeOverride,
+      // runSceneSelectionOnly,
+      // onClose: onContextMenuClose,
+    });
+  }, [
+    dispatch,
+    selectedIds,
+    // hoverX,
+    // hoverY,
+    // id,
+    // sceneSelectionIds,
+    // startDirection,
+    // startSceneId,
+    // runSceneSelectionOnly,
+    // gbcEnabled,
+    // scene.colorModeOverride,
+    // onContextMenuClose,
+  ]);
+
+  const onContextMenu = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (tool !== TOOL_SELECT) {
+        return;
+      }
+      if (!renderContextMenu) {
+        return;
+      }
+      const menu = renderContextMenu();
+      if (!menu) {
+        return;
+      }
+      setContextMenu({ x: e.pageX, y: e.pageY, menu });
+    },
+    [renderContextMenu, tool],
+  );
+
+  //#endregion Context Menu
+
   return (
     <Wrapper
       ref={scrollRef}
@@ -733,6 +799,7 @@ const WorldView = () => {
           ref={worldRef}
           style={{ width: scrollWidth, height: scrollHeight }}
           onMouseDown={startWorldDrag}
+          onContextMenu={onContextMenu}
         />
 
         {scenes.map((sceneId, index) => (
@@ -794,6 +861,15 @@ const WorldView = () => {
         )}
       </WorldContent>
       {loaded && scenes.length === 0 && notes.length === 0 && <WorldHelp />}
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={onContextMenuClose}
+        >
+          {contextMenu.menu}
+        </ContextMenu>
+      )}
     </Wrapper>
   );
 };

@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add support for creating Notes that can be positioned and resized in the World view with multiple color options
 - Add "Set Font" event to change the current default font from scripts [@Mico27](https://github.com/Mico27)
+- Allow engine plugins to define multiple alternate versions with rules based on the current engine version, and other installed plugins.
+- Allow engine plugins to provide `.patch` files in unified diff format to modify existing engine files instead of replacing them entirely.
+- Add right-click context menu in World view to quickly add scenes, add notes, and delete selection
+- Add support for adding notes to sprites in Sprite Editor
+
+### Changed
+
+- Improve warning messages when multiple engine plugins modify the same files.
+- Clear build cache on the first build after opening a project to prevent stale data issues
+- Preserve scroll position in the Settings section when navigating away and returning
+- Preference for Piano Roll or Tracker view in the Music Editor is now preserved when reopening projects
+- Add support for custom character code to tile index mappings in font JSON files [@Mico27](https://github.com/Mico27)
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+
+### Fixed
+
+- Fix issue where scenes with deleted sprite overrides would use a random sprite instead of the scene type's default sprite
 
 ## [4.2.2] - 2026-02-24
 

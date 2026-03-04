@@ -76,6 +76,7 @@ export const SettingsContentColumn = styled.div`
   box-sizing: border-box;
   padding-bottom: 50vh;
   scroll-behavior: smooth;
+  overflow-anchor: none;
 
   & > * {
     max-width: 980px;

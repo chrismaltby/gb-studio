@@ -1897,6 +1897,7 @@
   "MENU_PLAY_WINDOW": "Play Window",
   "MENU_MUTE_AUDIO": "Mute Audio",
   "MENU_DELETE_NOTE": "Delete Note",
+  "MENU_DELETE_SELECTION": "Delete Selection",
 
   "// 11": "Warnings -----------------------------------------------------",
 
@@ -1935,6 +1936,10 @@
   "WARNING_SCENE_TYPE_DISABLED_REMOVED_SCENES": "Scene type \"{type}\" is not enabled causing scenes {scenes} to not be included in game",
   "WARNING_FN_DEPRECATED": "\"{name}\" is deprecated and will be removed in a future release.",
   "WARNING_FN_DEPRECATED_REPLACEMENT": "Use \"{name}\" instead.",
+  "WARNING_FAILED_TO_APPLY_PATCH": "Failed to apply patch: \"{filename}\"",
+  "WARNING_PLUGIN_MODIFIED_OUTSIDE_ENGINE_ROOT": "Plugin attempted to modify a file outside of engine root \"{filename}\"",
+  "WARNING_PLUGIN_OVERWROTE_FILE": "Plugin \"{pluginName}\" overwrote \"{filename}\" which was already written by \"{previousPlugin}\"",
+  "WARNING_PLUGIN_PATCH_CONFLICT_OVERWRITTEN": "Plugin \"{pluginName}\" could not patch \"{filename}\" because it was already overwritten by plugin \"{previousPlugin}\"",
 
   "// 12": "Errors -------------------------------------------------------",
 
@@ -2144,6 +2149,7 @@
   "COMPILER_LOCAL_ENGINE_NOT_FOUND": "Local engine not found, using default engine",
   "COMPILER_LOOKING_FOR_ENGINE_PLUGINS": "Looking for engine plugins in {path}",
   "COMPILER_USING_ENGINE_PLUGIN": "Using engine plugin: {path}",
+  "COMPILER_USING_ENGINE_PLUGIN_VERSION": "Using version: {path}",
 
   "// 21": "Messages -----------------------------------------------------",
 
