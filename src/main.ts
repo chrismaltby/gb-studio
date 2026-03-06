@@ -163,6 +163,7 @@ import { tileDataIndexFn } from "shared/lib/tiles/tileData";
 import { isEqual } from "lodash";
 import { writeIndexedImagePNG } from "lib/helpers/writeIndexedImage";
 import { clearAppCache } from "lib/helpers/cache";
+import { ensureNonEmptyBasename } from "shared/lib/helpers/path";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1101,12 +1102,18 @@ ipcMain.handle(
     if (!filename || filename.length === 0) {
       return false;
     }
+    // Prevent moving plugin assets
+    if (asset.plugin) {
+      return false;
+    }
     const projectRoot = Path.dirname(projectPath);
     const originalFilename = assetFilename(projectRoot, assetType, asset);
-    const newFilename = assetFilename(projectRoot, assetType, {
-      ...asset,
-      filename,
-    });
+    const newFilename = ensureNonEmptyBasename(
+      assetFilename(projectRoot, assetType, {
+        ...asset,
+        filename,
+      }),
+    );
 
     // Check project has permission to access this asset
     guardAssetWithinProject(originalFilename, projectRoot);
@@ -1148,6 +1155,11 @@ ipcMain.handle(
   async (_event, assetType: AssetType, asset: Asset): Promise<boolean> => {
     const projectRoot = Path.dirname(projectPath);
     const filename = assetFilename(projectRoot, assetType, asset);
+
+    // Prevent removing plugin assets
+    if (asset.plugin) {
+      return false;
+    }
 
     // Check project has permission to access this asset
     guardAssetWithinProject(filename, projectRoot);

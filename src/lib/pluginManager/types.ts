@@ -37,6 +37,7 @@ export const PluginMetadata = Type.Object({
   images: Type.Optional(Type.Array(Type.String())),
   filename: Type.String(),
   engineAltRules: Type.Optional(Type.Array(PluginEngineAltRule)),
+  order: Type.Optional(Type.Number({ default: 0 })),
 });
 
 export type PluginMetadata = Static<typeof PluginMetadata>;

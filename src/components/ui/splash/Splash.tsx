@@ -161,6 +161,7 @@ interface SplashTemplateSelectProps {
   templatePlugins: TemplatePlugin[];
   name: string;
   value: string;
+  disabled?: boolean;
   onChange: (newValue: string) => void;
 }
 
@@ -195,6 +196,10 @@ const SplashTemplateButton = styled.input.attrs({
   &:focus {
     box-shadow: 0 0 0px 4px ${(props) => props.theme.colors.highlight};
   }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 `;
 
 const SplashTemplateLabel = styled.label`
@@ -218,6 +223,11 @@ const SplashTemplateLabel = styled.label`
   ${SplashTemplateButton}:checked + & {
     border: 2px solid ${(props) => props.theme.colors.highlight};
     box-shadow: 0 0 0px 2px ${(props) => props.theme.colors.highlight};
+  }
+
+  ${SplashTemplateButton}:disabled + & {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 `;
 
@@ -260,6 +270,7 @@ export const SplashTemplateSelect: FC<SplashTemplateSelectProps> = ({
   templatePlugins,
   name,
   value,
+  disabled,
   onChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -292,6 +303,7 @@ export const SplashTemplateSelect: FC<SplashTemplateSelectProps> = ({
               value={template.id}
               checked={template.id === value}
               onChange={() => onChange(template.id)}
+              disabled={disabled}
             />
             <SplashTemplateLabel
               htmlFor={`${name}_${template.id}`}
@@ -321,6 +333,7 @@ export const SplashTemplateSelect: FC<SplashTemplateSelectProps> = ({
               checked={selectedPlugin.id === value}
               onChange={() => onChange(selectedPlugin.id)}
               onClick={() => setIsOpen(true)}
+              disabled={disabled}
             />
             <SplashTemplateLabel
               htmlFor={`${name}_${selectedPlugin.id}`}

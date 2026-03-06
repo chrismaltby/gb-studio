@@ -271,7 +271,11 @@ export const NavigatorBackgrounds = ({
               rename={item.type === "file" && renameId === item.id}
               onRename={onRenameBackgroundComplete}
               onRenameCancel={onRenameCancel}
-              renderContextMenu={renderContextMenu}
+              renderContextMenu={
+                item.type === "file" && !item.asset?.plugin
+                  ? renderContextMenu
+                  : undefined
+              }
               collapsable={item.type === "folder"}
               collapsed={!isFolderOpen(item.name)}
               onToggleCollapse={() => toggleFolderOpen(item.name)}
@@ -334,7 +338,11 @@ export const NavigatorBackgrounds = ({
               rename={item.type === "file" && renameId === item.id}
               onRename={onRenameTilesetComplete}
               onRenameCancel={onRenameCancel}
-              renderContextMenu={renderTilesetContextMenu}
+              renderContextMenu={
+                item.type === "file" && !item.asset?.plugin
+                  ? renderTilesetContextMenu
+                  : undefined
+              }
               collapsable={item.type === "folder"}
               collapsed={!isFolderOpen(item.name)}
               onToggleCollapse={() => toggleFolderOpen(item.name)}

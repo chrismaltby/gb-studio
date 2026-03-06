@@ -4,6 +4,7 @@ import styled, { css } from "styled-components";
 
 interface StyledEntityListItemProps {
   $nestLevel?: number;
+  $isOver?: boolean;
 }
 
 interface StyledNavigatorArrowProps {
@@ -22,6 +23,14 @@ export const StyledEntityListItem = styled.div<StyledEntityListItemProps>`
   width: 100%;
   color: ${(props) => props.theme.colors.list.text};
   padding-left: ${(props) => (props.$nestLevel || 0) * 15}px;
+
+  ${(props) =>
+    props.$isOver &&
+    css`
+      background: ${(props) => props.theme.colors.list.selectedBackground};
+      outline: 5px solid
+        ${(props) => props.theme.colors.list.selectedBackground};
+    `}
 `;
 
 export const StyledNavigatorArrow = styled.span<StyledNavigatorArrowProps>`
@@ -111,3 +120,26 @@ export const StyledSortableList = styled.div<StyledSortableListProps>`
 `;
 
 // #endregion SortableList
+
+// #region ListWithDropzone
+
+export const StyledListWithDropzoneWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+interface StyledListDropzoneProps {
+  $isOver?: boolean;
+}
+
+export const StyledListDropzone = styled.div<StyledListDropzoneProps>`
+  flex-grow: 1;
+
+  ${(props) =>
+    props.$isOver &&
+    css`
+      background: ${props.theme.colors.list.selectedBackground};
+    `}
+`;
+
+// #endregion ListWithDropzone

@@ -5,6 +5,8 @@ import {
   ensureEntitySymbolsUnique,
   getMetaspriteTilesForSpriteSheet,
   nextIndexedName,
+  applyReparentFolderToCollection,
+  applyReparentEntityToCollection,
 } from "shared/lib/entities/entitiesHelpers";
 import {
   ActorPrefabNormalized,
@@ -443,5 +445,234 @@ describe("nextIndexedName", () => {
     const existingNames = ["Palette", "Palette 1", "Palette 3"];
     const nextName = nextIndexedName("Palette", existingNames);
     expect(nextName).toBe("Palette 2");
+  });
+});
+
+describe("applyReparentFolderToCollection", () => {
+  type Entity = { name: string };
+
+  test("should not allow moving a single file path", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "folder/file.txt" },
+      b: { name: "folder/other.txt" },
+    };
+
+    applyReparentFolderToCollection(collection, "folder/file.txt", "newFolder");
+
+    expect(collection.a.name).toBe("folder/file.txt");
+    expect(collection.b.name).toBe("folder/other.txt");
+  });
+
+  test("should move all files within folder", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a" },
+      b: { name: "a/file.txt" },
+      c: { name: "a/sub/file2.txt" },
+      d: { name: "other/file3.txt" },
+    };
+
+    applyReparentFolderToCollection(collection, "a", "x");
+
+    expect(collection.a.name).toBe("a");
+    expect(collection.b.name).toBe("x/a/file.txt");
+    expect(collection.c.name).toBe("x/a/sub/file2.txt");
+    expect(collection.d.name).toBe("other/file3.txt");
+  });
+
+  test("should move nested folder and its contents correctly", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "root/a" },
+      b: { name: "root/a/file.txt" },
+      c: { name: "root/a/sub/file2.txt" },
+    };
+
+    applyReparentFolderToCollection(collection, "root/a", "x/y");
+
+    expect(collection.a.name).toBe("root/a");
+    expect(collection.b.name).toBe("x/y/a/file.txt");
+    expect(collection.c.name).toBe("x/y/a/sub/file2.txt");
+  });
+
+  test("should allow moving folder to root", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a" },
+      b: { name: "a/file.txt" },
+    };
+
+    applyReparentFolderToCollection(collection, "a", "");
+
+    expect(collection.a.name).toBe("a");
+    expect(collection.b.name).toBe("a/file.txt");
+  });
+
+  test("should do nothing if draggedPath does not match anything", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a/file.txt" },
+      b: { name: "b/file.txt" },
+    };
+
+    applyReparentFolderToCollection(collection, "x", "y");
+
+    expect(collection.a.name).toBe("a/file.txt");
+    expect(collection.b.name).toBe("b/file.txt");
+  });
+
+  test("should ignore undefined entries in collection", () => {
+    const collection: Record<string, Entity | undefined> = {
+      a: { name: "a/file.txt" },
+      b: undefined,
+    };
+
+    applyReparentFolderToCollection(collection, "a", "x");
+
+    expect(collection.a?.name).toBe("x/a/file.txt");
+  });
+
+  test("should normalize during reparenting", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "\\a//file.txt" },
+    };
+
+    applyReparentFolderToCollection(collection, "a", "x");
+
+    expect(collection.a.name).toBe("x/a/file.txt");
+  });
+
+  test("should not partially match similar prefixes", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "folderA/file.txt" },
+    };
+
+    applyReparentFolderToCollection(collection, "folder", "x");
+
+    expect(collection.a.name).toBe("folderA/file.txt");
+  });
+
+  test("should not allow moving folder into itself", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a/file.txt" },
+    };
+
+    applyReparentFolderToCollection(collection, "a", "a");
+
+    expect(collection.a.name).toBe("a/file.txt");
+  });
+
+  test("should not allow moving folder into its descendant", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a/file.txt" },
+    };
+
+    applyReparentFolderToCollection(collection, "a", "a/b");
+
+    expect(collection.a.name).toBe("a/file.txt");
+  });
+});
+
+describe("applyReparentEntityToCollection", () => {
+  type Entity = { name: string };
+
+  test("should move named entity to new folder", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a/file.txt" },
+      b: { name: "other/file2.txt" },
+    };
+
+    applyReparentEntityToCollection(collection, "a", "x");
+
+    expect(collection.a.name).toBe("x/file.txt");
+    expect(collection.b.name).toBe("other/file2.txt");
+  });
+
+  test("should move named entity to deep folder", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a/file.txt" },
+    };
+
+    applyReparentEntityToCollection(collection, "a", "x/y/z");
+
+    expect(collection.a.name).toBe("x/y/z/file.txt");
+  });
+
+  test("should move named entity to root (empty path)", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a/file.txt" },
+    };
+
+    applyReparentEntityToCollection(collection, "a", "");
+
+    expect(collection.a.name).toBe("file.txt");
+  });
+
+  test("should normalize during reparenting", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "\\a//sub\\file.txt" },
+    };
+
+    applyReparentEntityToCollection(collection, "a", "\\x//y\\");
+
+    expect(collection.a.name).toBe("x/y/file.txt");
+  });
+
+  test("should handle unnamed entity (trailing slash)", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a/" },
+    };
+
+    applyReparentEntityToCollection(collection, "a", "x");
+
+    expect(collection.a.name).toBe("x/");
+  });
+
+  test("should handle unnamed entity moved to deep folder", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a/" },
+    };
+
+    applyReparentEntityToCollection(collection, "a", "x/y");
+
+    expect(collection.a.name).toBe("x/y/");
+  });
+
+  test("should handle unnamed entity moved to root", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a/" },
+    };
+
+    applyReparentEntityToCollection(collection, "a", "");
+
+    expect(collection.a.name).toBe("");
+  });
+
+  test("should do nothing if id does not exist", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a/file.txt" },
+    };
+
+    applyReparentEntityToCollection(collection, "missing", "x");
+
+    expect(collection.a.name).toBe("a/file.txt");
+  });
+
+  test("should do nothing if entry is undefined", () => {
+    const collection: Record<string, Entity | undefined> = {
+      a: undefined,
+    };
+
+    applyReparentEntityToCollection(collection, "a", "x");
+
+    expect(collection.a).toBeUndefined();
+  });
+
+  test("should only affect the specified id", () => {
+    const collection: Record<string, Entity> = {
+      a: { name: "a/file.txt" },
+      b: { name: "b/file.txt" },
+    };
+
+    applyReparentEntityToCollection(collection, "a", "x");
+
+    expect(collection.a.name).toBe("x/file.txt");
+    expect(collection.b.name).toBe("b/file.txt");
   });
 });

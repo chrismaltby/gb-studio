@@ -17,12 +17,14 @@ type Entity = { id: string; name: string };
 export const projectResourcesFolder = "project";
 
 const entityToFilePath = (entity: Entity, fallbackName: string): string => {
-  return (
-    `${stripInvalidPathCharacters(entity.name || "")
-      .toLocaleLowerCase()
-      .replace(/\\/g, "/")
-      .replace(/\s+/g, "_")}` || fallbackName
-  );
+  const path = `${stripInvalidPathCharacters(entity.name || "")
+    .toLocaleLowerCase()
+    .replace(/\\/g, "/")
+    .replace(/\s+/g, "_")}`;
+  if (path.endsWith("/")) {
+    return `${path}${fallbackName}`;
+  }
+  return path || fallbackName;
 };
 
 const actorToFileName = (actor: Entity): string => {

@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
-import { throttle } from "lodash";
+import { debounce } from "lodash";
 
 export function useSaveScroll<T extends HTMLElement>(
   ref: React.RefObject<T>,
   onSave: (scrollTop: number) => void,
-  throttleMs = 200,
+  delayMs = 200,
 ) {
   const onSaveRef = useRef(onSave);
 
@@ -16,23 +16,23 @@ export function useSaveScroll<T extends HTMLElement>(
     const el = ref.current;
     if (!el) return;
 
-    const throttled = throttle(
+    const debounced = debounce(
       (scrollTop: number) => {
         onSaveRef.current(scrollTop);
       },
-      throttleMs,
-      { leading: true, trailing: true },
+      delayMs,
+      { trailing: true },
     );
 
     const handleScroll = () => {
-      throttled(el.scrollTop);
+      debounced(el.scrollTop);
     };
 
     el.addEventListener("scroll", handleScroll);
 
     return () => {
       el.removeEventListener("scroll", handleScroll);
-      throttled.cancel();
+      debounced.flush();
     };
-  }, [ref, throttleMs]);
+  }, [ref, delayMs]);
 }

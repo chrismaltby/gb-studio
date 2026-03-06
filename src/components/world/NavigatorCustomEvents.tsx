@@ -6,7 +6,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import { ScriptNormalized } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { EntityListItem } from "ui/lists/EntityListItem";
+import { EntityListItemDnD } from "ui/lists/EntityListItemDnD";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import {
   EntityNavigatorItem,
@@ -16,11 +16,17 @@ import {
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import { customEventName } from "shared/lib/entities/entitiesHelpers";
 import { CheckIcon, BlankIcon } from "ui/icons/Icons";
+import ItemTypes from "renderer/lib/dnd/itemTypes";
+import { getParentPath } from "shared/lib/helpers/virtualFilesystem";
+import { useFlatListReparentDnD } from "ui/hooks/use-flatlist-reparent-dnd";
+import { assertUnreachable } from "shared/lib/helpers/assert";
 
 interface NavigatorCustomEventsProps {
   height: number;
   searchTerm: string;
 }
+
+const ACCEPT_TYPES = [ItemTypes.CUSTOM_EVENT, ItemTypes.CUSTOM_EVENT_FOLDER];
 
 export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
   height,
@@ -164,6 +170,34 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
     [toggleFolderOpen],
   );
 
+  const { onDropOntoItem, flatListDropzone } = useFlatListReparentDnD<
+    EntityNavigatorItem<ScriptNormalized>
+  >({
+    onReparent: (item, { dropFolder }) => {
+      if (item.type === "folder") {
+        dispatch(
+          entitiesActions.reparentCustomEventsFolder({
+            fromPath: item.name,
+            toPath: dropFolder,
+          }),
+        );
+      } else if (item.type === "entity") {
+        dispatch(
+          entitiesActions.reparentCustomEvent({
+            customEventId: item.id,
+            toPath: dropFolder,
+          }),
+        );
+      } else {
+        assertUnreachable(item.type);
+      }
+    },
+    acceptTypes: ACCEPT_TYPES,
+    getName: (item) => item.name,
+    getDropFolder: (target) =>
+      target.type === "folder" ? target.name : getParentPath(target.name),
+  });
+
   return (
     <FlatList
       selectedId={selectedId}
@@ -180,8 +214,9 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
           }
         }
       }}
+      outerElementType={flatListDropzone}
       children={({ item }) => (
-        <EntityListItem
+        <EntityListItemDnD
           item={item}
           type={item.type === "folder" ? "folder" : "script"}
           rename={item.type === "entity" && renameId === item.id}
@@ -195,6 +230,13 @@ export const NavigatorCustomEvents: FC<NavigatorCustomEventsProps> = ({
           onToggleCollapse={() => toggleFolderOpen(item.name)}
           nestLevel={item.nestLevel}
           renderLabel={renderLabel}
+          dragType={
+            item.type === "folder"
+              ? ItemTypes.CUSTOM_EVENT_FOLDER
+              : ItemTypes.CUSTOM_EVENT
+          }
+          acceptTypes={ACCEPT_TYPES}
+          onDrop={onDropOntoItem}
         />
       )}
     />

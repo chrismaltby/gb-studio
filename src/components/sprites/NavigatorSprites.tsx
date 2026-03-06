@@ -489,7 +489,11 @@ export const NavigatorSprites = ({
               rename={item.type === "file" && renameId === item.id}
               onRename={onRenameSpriteComplete}
               onRenameCancel={onRenameCancel}
-              renderContextMenu={renderContextMenu}
+              renderContextMenu={
+                item.type === "file" && !item.asset?.plugin
+                  ? renderContextMenu
+                  : undefined
+              }
               collapsable={item.type === "folder"}
               collapsed={!isFolderOpen(item.name)}
               onToggleCollapse={() => toggleFolderOpen(item.name)}

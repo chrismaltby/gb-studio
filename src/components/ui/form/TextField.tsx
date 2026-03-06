@@ -14,6 +14,7 @@ interface TextFieldProps {
   readonly maxLength?: number;
   readonly onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   readonly additionalRight?: ReactNode;
+  readonly disabled?: boolean;
 }
 
 const AdditionalWrapper = styled.div`
@@ -43,6 +44,7 @@ export const TextField: FC<TextFieldProps> = ({
   value = "",
   onChange,
   additionalRight,
+  disabled,
 }) => (
   <FormField
     name={name}
@@ -60,6 +62,7 @@ export const TextField: FC<TextFieldProps> = ({
           displaySize={size}
           onChange={onChange}
           style={{ paddingRight: 60 }}
+          disabled={disabled}
         />
         <AdditionalRight>{additionalRight}</AdditionalRight>
       </AdditionalWrapper>
@@ -71,6 +74,7 @@ export const TextField: FC<TextFieldProps> = ({
         placeholder={placeholder}
         displaySize={size}
         onChange={onChange}
+        disabled={disabled}
       />
     )}
   </FormField>

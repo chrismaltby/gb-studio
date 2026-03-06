@@ -3,6 +3,7 @@ import { constantSelectors } from "store/features/entities/entitiesState";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import { EntityListItem } from "ui/lists/EntityListItem";
+import { EntityListItemDnD } from "ui/lists/EntityListItemDnD";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
@@ -16,6 +17,10 @@ import {
   buildEntityNavigatorItems,
 } from "shared/lib/entities/buildEntityNavigatorItems";
 import useToggleableList from "ui/hooks/use-toggleable-list";
+import ItemTypes from "renderer/lib/dnd/itemTypes";
+import { useFlatListReparentDnD } from "ui/hooks/use-flatlist-reparent-dnd";
+import { assertUnreachable } from "shared/lib/helpers/assert";
+import { getParentPath } from "shared/lib/helpers/virtualFilesystem";
 
 interface NavigatorConstantsProps {
   height: number;
@@ -29,6 +34,8 @@ interface ConstantItem extends Constant {
 const ConstantValueLabel = styled.span`
   opacity: 0.5;
 `;
+
+const ACCEPT_TYPES = [ItemTypes.CONSTANT, ItemTypes.CONSTANT_FOLDER];
 
 const isEngineConstantId = (id: string) => id.startsWith("engine::");
 
@@ -231,6 +238,34 @@ export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
     [constantsLookup, toggleFolderOpen],
   );
 
+  const { onDropOntoItem } = useFlatListReparentDnD<
+    EntityNavigatorItem<ConstantItem>
+  >({
+    onReparent: (item, { dropFolder }) => {
+      if (item.type === "folder") {
+        dispatch(
+          entitiesActions.reparentConstantsFolder({
+            fromPath: item.name,
+            toPath: dropFolder,
+          }),
+        );
+      } else if (item.type === "entity") {
+        dispatch(
+          entitiesActions.reparentConstant({
+            constantId: item.id,
+            toPath: dropFolder,
+          }),
+        );
+      } else {
+        assertUnreachable(item.type);
+      }
+    },
+    acceptTypes: ACCEPT_TYPES,
+    getName: (item) => item.name,
+    getDropFolder: (target) =>
+      target.type === "folder" ? target.name : getParentPath(target.name),
+  });
+
   return (
     <FlatList
       selectedId={selectedId}
@@ -247,29 +282,61 @@ export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
           }
         }
       }}
-      children={({ item }) => (
-        <EntityListItem
-          type={item.type === "folder" ? "folder" : "constant"}
-          item={item}
-          rename={
-            item.type === "entity" &&
-            renameId === item.id &&
-            !isEngineConstantId(item.id)
-          }
-          onRename={onRenameComplete}
-          onRenameCancel={onRenameCancel}
-          renderContextMenu={
-            item.type === "entity" && !isEngineConstantId(item.id)
-              ? renderContextMenu
-              : undefined
-          }
-          collapsable={item.type === "folder"}
-          collapsed={!isFolderOpen(item.id) && searchTerm.length === 0}
-          onToggleCollapse={() => toggleFolderOpen(item.id)}
-          nestLevel={item.nestLevel}
-          renderLabel={renderLabel}
-        />
-      )}
+      children={({ item }) => {
+        if (isEngineConstantId(item.id)) {
+          return (
+            <EntityListItem
+              type={"constant"}
+              item={item}
+              nestLevel={item.nestLevel}
+              renderLabel={renderLabel}
+            />
+          );
+        } else if (item.id === "engine_constants") {
+          return (
+            <EntityListItem
+              type={"folder"}
+              item={item}
+              collapsable
+              collapsed={!isFolderOpen(item.id) && searchTerm.length === 0}
+              onToggleCollapse={() => toggleFolderOpen(item.id)}
+              nestLevel={item.nestLevel}
+              renderLabel={renderLabel}
+            />
+          );
+        } else {
+          return (
+            <EntityListItemDnD
+              type={item.type === "folder" ? "folder" : "constant"}
+              item={item}
+              rename={
+                item.type === "entity" &&
+                renameId === item.id &&
+                !isEngineConstantId(item.id)
+              }
+              onRename={onRenameComplete}
+              onRenameCancel={onRenameCancel}
+              renderContextMenu={
+                item.type === "entity" && !isEngineConstantId(item.id)
+                  ? renderContextMenu
+                  : undefined
+              }
+              collapsable={item.type === "folder"}
+              collapsed={!isFolderOpen(item.id) && searchTerm.length === 0}
+              onToggleCollapse={() => toggleFolderOpen(item.id)}
+              nestLevel={item.nestLevel}
+              renderLabel={renderLabel}
+              dragType={
+                item.type === "folder"
+                  ? ItemTypes.CONSTANT_FOLDER
+                  : ItemTypes.CONSTANT
+              }
+              acceptTypes={ACCEPT_TYPES}
+              onDrop={onDropOntoItem}
+            />
+          );
+        }
+      }}
     />
   );
 };

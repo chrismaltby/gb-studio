@@ -11,7 +11,8 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import { FixedSpacer, FlexGrow, FlexRow } from "ui/spacing/Spacing";
 import PaletteBlock from "components/forms/PaletteBlock";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
+import { EntityListItemDnD } from "ui/lists/EntityListItemDnD";
+import { EntityListSearch } from "ui/lists/EntityListItem";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import useToggleableList from "ui/hooks/use-toggleable-list";
 import {
@@ -21,11 +22,17 @@ import {
 import { paletteName } from "shared/lib/entities/entitiesHelpers";
 import { Palette } from "shared/lib/resources/types";
 import { DropdownButton } from "ui/buttons/DropdownButton";
+import { useFlatListReparentDnD } from "ui/hooks/use-flatlist-reparent-dnd";
+import { assertUnreachable } from "shared/lib/helpers/assert";
+import ItemTypes from "renderer/lib/dnd/itemTypes";
+import { getParentPath } from "shared/lib/helpers/virtualFilesystem";
 
 interface NavigatorPalettesProps {
   height: number;
   selectedId: string;
 }
+
+const ACCEPT_TYPES = [ItemTypes.PALETTE, ItemTypes.PALETTE_FOLDER];
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
@@ -197,6 +204,34 @@ export const NavigatorPalettes = ({
     setPalettesSearchEnabled(!palettesSearchEnabled);
   }, [palettesSearchEnabled]);
 
+  const { onDropOntoItem, flatListDropzone } = useFlatListReparentDnD<
+    EntityNavigatorItem<Palette>
+  >({
+    onReparent: (item, { dropFolder }) => {
+      if (item.type === "folder") {
+        dispatch(
+          entitiesActions.reparentPalettesFolder({
+            fromPath: item.name,
+            toPath: dropFolder,
+          }),
+        );
+      } else if (item.type === "entity") {
+        dispatch(
+          entitiesActions.reparentPalette({
+            paletteId: item.id,
+            toPath: dropFolder,
+          }),
+        );
+      } else {
+        assertUnreachable(item.type);
+      }
+    },
+    acceptTypes: ACCEPT_TYPES,
+    getName: (item) => item.name,
+    getDropFolder: (target) =>
+      target.type === "folder" ? target.name : getParentPath(target.name),
+  });
+
   return (
     <Pane style={{ height }}>
       <SplitPaneHeader
@@ -247,6 +282,7 @@ export const NavigatorPalettes = ({
         items={nestedPaletteItems}
         setSelectedId={setSelectedId}
         height={height - (showPalettesSearch ? 60 : 30)}
+        outerElementType={flatListDropzone}
         onKeyDown={(e: KeyboardEvent, item) => {
           listenForRenameStart(e);
           if (item?.type === "folder") {
@@ -259,7 +295,7 @@ export const NavigatorPalettes = ({
         }}
       >
         {({ item }) => (
-          <EntityListItem
+          <EntityListItemDnD
             item={item}
             type={item.type === "folder" ? "folder" : "palette"}
             rename={
@@ -279,6 +315,13 @@ export const NavigatorPalettes = ({
             onToggleCollapse={() => toggleFolderOpen(item.name)}
             nestLevel={item.nestLevel}
             renderLabel={renderLabel}
+            dragType={
+              item.type === "folder"
+                ? ItemTypes.PALETTE_FOLDER
+                : ItemTypes.PALETTE
+            }
+            acceptTypes={ACCEPT_TYPES}
+            onDrop={onDropOntoItem}
           />
         )}
       </FlatList>

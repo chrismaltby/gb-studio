@@ -63,6 +63,7 @@ type EntityListItemProps<T extends EntityListItemData> = {
   nestLevel?: number;
   collapsed?: boolean;
   collapsable?: boolean;
+  isOver?: boolean;
   onToggleCollapse?: () => void;
   onContextMenu?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   renderContextMenu?: (
@@ -98,179 +99,194 @@ export const EntityListSearch = styled.input`
   }
 `;
 
-export const EntityListItem = <T extends EntityListItemData>({
-  item,
-  type,
-  icon,
-  nestLevel,
-  collapsable,
-  collapsed,
-  onToggleCollapse,
-  renderContextMenu,
-  renderLabel,
-  ...props
-}: EntityListItemProps<T>) => {
-  const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
-    menu: JSX.Element[];
-  }>();
+export const EntityListItem = React.forwardRef(
+  <T extends EntityListItemData>(
+    {
+      item,
+      type,
+      icon,
+      nestLevel,
+      collapsable,
+      collapsed,
+      isOver,
+      onToggleCollapse,
+      renderContextMenu,
+      renderLabel,
+      ...props
+    }: EntityListItemProps<T>,
+    ref: React.ForwardedRef<HTMLDivElement>,
+  ) => {
+    const [contextMenu, setContextMenu] = useState<{
+      x: number;
+      y: number;
+      menu: JSX.Element[];
+    }>();
 
-  const onContextMenuClose = useCallback(() => {
-    setContextMenu(undefined);
-  }, []);
+    const onContextMenuClose = useCallback(() => {
+      setContextMenu(undefined);
+    }, []);
 
-  const onContextMenu = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (!renderContextMenu) {
-        return;
-      }
-      const menu = renderContextMenu(item, onContextMenuClose);
-      if (!menu) {
-        return;
-      }
-      setContextMenu({ x: e.pageX, y: e.pageY, menu });
-    },
-    [item, renderContextMenu, onContextMenuClose],
-  );
+    const onContextMenu = useCallback(
+      (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (!renderContextMenu) {
+          return;
+        }
+        const menu = renderContextMenu(item, onContextMenuClose);
+        if (!menu) {
+          return;
+        }
+        setContextMenu({ x: e.pageX, y: e.pageY, menu });
+      },
+      [item, renderContextMenu, onContextMenuClose],
+    );
 
-  const onRenameComplete = useCallback(
-    (newValue: string) => {
+    const onRenameComplete = useCallback(
+      (newValue: string) => {
+        if (props.rename) {
+          props.onRename(newValue, item);
+        }
+      },
+      [item, props],
+    );
+    const onRenameCancel = useCallback(() => {
       if (props.rename) {
-        props.onRename(newValue, item);
+        props.onRenameCancel(item);
       }
-    },
-    [item, props],
-  );
-  const onRenameCancel = useCallback(() => {
-    if (props.rename) {
-      props.onRenameCancel(item);
-    }
-  }, [item, props]);
+    }, [item, props]);
 
-  return (
-    <StyledEntityListItem $nestLevel={nestLevel} onContextMenu={onContextMenu}>
-      {collapsable && (
-        <StyledNavigatorArrow
-          $open={!collapsed}
-          onClick={() => onToggleCollapse?.()}
-        >
-          <ArrowIcon />
-        </StyledNavigatorArrow>
-      )}
-      {type === "custom" && icon && <StyledEntityIcon>{icon}</StyledEntityIcon>}
-      {type === "folder" && (
-        <StyledEntityIcon>
-          <FolderFilledIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "scene" && (
-        <StyledEntityIcon>
-          <SceneIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "note" && (
-        <StyledEntityIcon>
-          <NoteIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "actor" && (
-        <StyledEntityIcon>
-          <ActorIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "trigger" && (
-        <StyledEntityIcon>
-          <TriggerIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "variable" && (
-        <StyledEntityIcon>
-          <VariableIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "constant" && (
-        <StyledEntityIcon>
-          <ConstantIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "sprite" && (
-        <StyledEntityIcon>
-          <SpriteIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "animation" && (
-        <StyledEntityIcon>
-          <AnimationIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "background" && (
-        <StyledEntityIcon>
-          <BackgroundIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "song" && (
-        <StyledEntityIcon>
-          <SongIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "duty" && (
-        <StyledEntityIcon>
-          <DutyIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "wave" && (
-        <StyledEntityIcon>
-          <WaveIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "noise" && (
-        <StyledEntityIcon>
-          <NoiseIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "palette" && (
-        <StyledEntityIcon>
-          <PaletteIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "script" && (
-        <StyledEntityIcon>
-          <CodeIcon />
-        </StyledEntityIcon>
-      )}
-      {type === "sound" && (
-        <StyledEntityIcon>
-          <SoundIcon />
-        </StyledEntityIcon>
-      )}
-      {props.rename ? (
-        <RenameInput
-          autoFocus
-          value={item.name}
-          onRenameComplete={onRenameComplete}
-          onRenameCancel={onRenameCancel}
-        />
-      ) : (
-        <StyledEntityLabel>
-          {renderLabel ? renderLabel(item) : item.name}
-          {item.warning && (
-            <StyledEntityWarningLabel>
-              ({item.warning})
-            </StyledEntityWarningLabel>
-          )}
-        </StyledEntityLabel>
-      )}
-      {item.labelColor && <StyledEntityLabelColor $color={item.labelColor} />}
-      {contextMenu && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          onClose={onContextMenuClose}
-        >
-          {contextMenu.menu}
-        </ContextMenu>
-      )}
-    </StyledEntityListItem>
-  );
-};
+    return (
+      <StyledEntityListItem
+        $nestLevel={nestLevel}
+        $isOver={isOver}
+        onContextMenu={onContextMenu}
+        ref={ref}
+      >
+        {collapsable && (
+          <StyledNavigatorArrow
+            $open={!collapsed}
+            onClick={() => onToggleCollapse?.()}
+          >
+            <ArrowIcon />
+          </StyledNavigatorArrow>
+        )}
+        {type === "custom" && icon && (
+          <StyledEntityIcon>{icon}</StyledEntityIcon>
+        )}
+        {type === "folder" && (
+          <StyledEntityIcon>
+            <FolderFilledIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "scene" && (
+          <StyledEntityIcon>
+            <SceneIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "note" && (
+          <StyledEntityIcon>
+            <NoteIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "actor" && (
+          <StyledEntityIcon>
+            <ActorIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "trigger" && (
+          <StyledEntityIcon>
+            <TriggerIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "variable" && (
+          <StyledEntityIcon>
+            <VariableIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "constant" && (
+          <StyledEntityIcon>
+            <ConstantIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "sprite" && (
+          <StyledEntityIcon>
+            <SpriteIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "animation" && (
+          <StyledEntityIcon>
+            <AnimationIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "background" && (
+          <StyledEntityIcon>
+            <BackgroundIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "song" && (
+          <StyledEntityIcon>
+            <SongIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "duty" && (
+          <StyledEntityIcon>
+            <DutyIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "wave" && (
+          <StyledEntityIcon>
+            <WaveIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "noise" && (
+          <StyledEntityIcon>
+            <NoiseIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "palette" && (
+          <StyledEntityIcon>
+            <PaletteIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "script" && (
+          <StyledEntityIcon>
+            <CodeIcon />
+          </StyledEntityIcon>
+        )}
+        {type === "sound" && (
+          <StyledEntityIcon>
+            <SoundIcon />
+          </StyledEntityIcon>
+        )}
+        {props.rename ? (
+          <RenameInput
+            autoFocus
+            value={item.name}
+            onRenameComplete={onRenameComplete}
+            onRenameCancel={onRenameCancel}
+          />
+        ) : (
+          <StyledEntityLabel>
+            {renderLabel ? renderLabel(item) : item.name}
+            {item.warning && (
+              <StyledEntityWarningLabel>
+                ({item.warning})
+              </StyledEntityWarningLabel>
+            )}
+          </StyledEntityLabel>
+        )}
+        {item.labelColor && <StyledEntityLabelColor $color={item.labelColor} />}
+        {contextMenu && (
+          <ContextMenu
+            x={contextMenu.x}
+            y={contextMenu.y}
+            onClose={onContextMenuClose}
+          >
+            {contextMenu.menu}
+          </ContextMenu>
+        )}
+      </StyledEntityListItem>
+    );
+  },
+) as <T extends EntityListItemData>(
+  props: EntityListItemProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> },
+) => JSX.Element;

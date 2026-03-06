@@ -13,8 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add "Set Font" event to change the current default font from scripts [@Mico27](https://github.com/Mico27)
 - Allow engine plugins to define multiple alternate versions with rules based on the current engine version, and other installed plugins.
 - Allow engine plugins to provide `.patch` files in unified diff format to modify existing engine files instead of replacing them entirely.
+- Allow engine plugins to define an `order` field to control the order plugins are applied (negative values apply earlier, positive values apply later, default `0`)
 - Add right-click context menu in World view to quickly add scenes, add notes, and delete selection
 - Add support for adding notes to sprites in Sprite Editor
+- Add support for dragging and dropping entities between folders in the navigator panels
 
 ### Changed
 
@@ -29,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix issue where scenes with deleted sprite overrides would use a random sprite instead of the scene type's default sprite
+- Fix issue where renaming an asset to a name ending with a `/` would cause the file to be missing when reloading project
+- Fix issue where plugin assets could be renamed or deleted from the IDE
 
 ## [4.2.2] - 2026-02-24
 

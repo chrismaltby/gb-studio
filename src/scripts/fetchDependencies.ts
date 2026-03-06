@@ -1,12 +1,22 @@
-import { remove, writeFile, ensureDir } from "fs-extra";
+import {
+  remove,
+  writeFile,
+  ensureDir,
+  createReadStream,
+  pathExists,
+  readJSON,
+} from "fs-extra";
 import Path from "path";
 import AdmZip from "adm-zip";
 import spawn from "../../src/lib/helpers/cli/spawn";
+import { createHash } from "crypto";
 
 const buildToolsRoot = Path.join(
   Path.normalize(`${__dirname}/../../`),
   "buildTools",
 );
+
+const lockPath = Path.join(buildToolsRoot, "dependencies.lock");
 
 const dependencies = {
   "darwin-arm64": {
@@ -53,6 +63,8 @@ const archs = Object.keys(dependencies) as Array<Arch>;
 const localArch = `${process.platform}-${process.arch}`;
 
 const fetchAll = process.argv.includes("--all");
+const updateLock = process.argv.includes("--update-lock");
+
 const fetchArch =
   process.argv
     .find((arg) => arg.startsWith("--arch="))
@@ -78,7 +90,24 @@ const extractZip = async (
   console.log("✅ Done");
 };
 
-export const fetchGBDKDependency = async (arch: Arch) => {
+export const sha256File = async (filePath: string): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const hash = createHash("sha256");
+    const stream = createReadStream(filePath);
+    stream.on("error", reject);
+    hash.on("error", reject);
+    stream
+      .pipe(hash)
+      .setEncoding("hex")
+      .on("finish", () => {
+        resolve(hash.read());
+      });
+  });
+
+export const fetchGBDKDependency = async (
+  arch: Arch,
+  expectedChecksum?: string,
+) => {
   console.log(`Fetching GBDK for arch=${arch}`);
   const { url, type } = dependencies[arch].gbdk;
   console.log(`URL=${url}`);
@@ -90,6 +119,14 @@ export const fetchGBDKDependency = async (arch: Arch) => {
   await writeFile(tmpPath, data);
   console.log(`Written to "${tmpPath}"`);
 
+  const checksum = await sha256File(tmpPath);
+
+  if (expectedChecksum && checksum !== expectedChecksum && !updateLock) {
+    throw new Error(
+      `Checksum mismatch for ${arch}. Expected: ${expectedChecksum}, Got: ${checksum}.`,
+    );
+  }
+
   const gbdkArchPath = Path.join(buildToolsRoot, arch);
   await ensureDir(gbdkArchPath);
 
@@ -100,17 +137,40 @@ export const fetchGBDKDependency = async (arch: Arch) => {
   }
 
   await remove(tmpPath);
+
+  return checksum;
 };
 
 const main = async () => {
+  let lockFile: { gbdk: Record<string, string> } = { gbdk: {} };
+  if (!updateLock && (await pathExists(lockPath))) {
+    lockFile = await readJSON(lockPath);
+  }
+
   await ensureDir(buildToolsRoot);
   for (const arch of archs) {
     if (fetchAll || arch === fetchArch) {
-      await fetchGBDKDependency(arch);
+      const checksum = await fetchGBDKDependency(arch, lockFile.gbdk[arch]);
+      lockFile.gbdk[arch] = checksum;
     }
   }
+
+  await writeFile(lockPath, JSON.stringify(lockFile, null, 2));
 };
 
 main().catch((e) => {
   console.error(`❌ Error: `, e);
+  if (
+    e instanceof Error &&
+    e.message &&
+    e.message.includes("Checksum mismatch")
+  ) {
+    console.log("");
+    console.log("A new release of GBDK may have been published.");
+    console.log("To update lock file with new checksums run:");
+    console.log("");
+    console.log(`${process.argv.join(" ")} --update-lock`);
+    console.log("");
+  }
+  process.exit(1);
 });

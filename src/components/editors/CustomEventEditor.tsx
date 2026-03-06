@@ -34,12 +34,8 @@ import { FlexGrow } from "ui/spacing/Spacing";
 import CachedScroll from "ui/util/CachedScroll";
 import { ScriptUsesList } from "components/editors/script/ScriptUsesList";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
+import { customEventName } from "shared/lib/entities/entitiesHelpers";
 import styled from "styled-components";
-
-const customEventName = (
-  customEvent: ScriptNormalized,
-  customEventIndex: number,
-) => (customEvent.name ? customEvent.name : `Script ${customEventIndex + 1}`);
 
 interface CustomEventEditorProps {
   id: string;

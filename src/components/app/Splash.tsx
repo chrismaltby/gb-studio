@@ -335,6 +335,7 @@ const Splash = () => {
                   size="large"
                   value={name}
                   onChange={onChangeName}
+                  disabled={creating}
                 />
               </FormRow>
               <FormRow>
@@ -346,10 +347,15 @@ const Splash = () => {
                   value={path}
                   onChange={onChangePath}
                   additionalRight={
-                    <Button onClick={onSelectFolder} type="button">
+                    <Button
+                      onClick={onSelectFolder}
+                      type="button"
+                      disabled={creating}
+                    >
                       <DotsIcon />
                     </Button>
                   }
+                  disabled={creating}
                 />
               </FormRow>
               <FormRow>
@@ -363,6 +369,7 @@ const Splash = () => {
                     templatePlugins={templatePlugins}
                     value={templateId}
                     onChange={setTemplateId}
+                    disabled={creating}
                   />
                 </FormField>
               </FormRow>

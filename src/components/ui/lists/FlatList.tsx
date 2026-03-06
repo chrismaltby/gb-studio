@@ -12,7 +12,7 @@ import { ThemeInterface } from "ui/theme/ThemeInterface";
 import { ListItem } from "./ListItem";
 import { getEventNodeName } from "renderer/lib/helpers/dom";
 
-interface FlatListItem {
+export interface FlatListItem {
   id: string;
   name: string;
 }
@@ -40,6 +40,9 @@ interface FlatListProps<T extends FlatListItem> {
   readonly highlightIds?: string[];
   readonly setSelectedId?: (id: string, item: T) => void;
   readonly onKeyDown?: (e: KeyboardEvent, item?: T) => void;
+  readonly outerElementType?: React.ComponentType<
+    React.HTMLAttributes<HTMLDivElement>
+  >;
   readonly children: (props: {
     selected: boolean;
     item: T;
@@ -87,6 +90,7 @@ export const FlatList = <T extends FlatListItem>({
   selectedId,
   highlightIds,
   setSelectedId,
+  outerElementType,
   height,
   onKeyDown,
   children,
@@ -237,6 +241,7 @@ export const FlatList = <T extends FlatListItem>({
             index: number;
           }) => ReactNode,
         }}
+        outerElementType={outerElementType}
       >
         {Row}
       </List>

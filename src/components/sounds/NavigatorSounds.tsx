@@ -180,7 +180,11 @@ export const NavigatorSounds = ({
             rename={item.type === "file" && renameId === item.id}
             onRename={onRenameComplete}
             onRenameCancel={onRenameCancel}
-            renderContextMenu={renderContextMenu}
+            renderContextMenu={
+              item.type === "file" && !item.asset?.plugin
+                ? renderContextMenu
+                : undefined
+            }
             renderLabel={renderLabel}
             collapsable={item.type === "folder"}
             collapsed={!isFolderOpen(item.name)}

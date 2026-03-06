@@ -236,7 +236,9 @@ export const NavigatorModSongs = ({
                 onRename={onRenameSongComplete}
                 onRenameCancel={onRenameCancel}
                 renderContextMenu={
-                  item.type === "file" ? renderContextMenu : undefined
+                  item.type === "file" && !item.asset?.plugin
+                    ? renderContextMenu
+                    : undefined
                 }
                 collapsable={item.type === "folder"}
                 collapsed={!isFolderOpen(item.name)}

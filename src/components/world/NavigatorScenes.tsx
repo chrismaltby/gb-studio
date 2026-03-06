@@ -32,6 +32,10 @@ import renderTriggerContextMenu from "./renderTriggerContextMenu";
 import { assertUnreachable } from "shared/lib/helpers/assert";
 import renderSceneFolderContextMenu from "components/world/renderSceneFolderContextMenu";
 import renderNoteContextMenu from "components/world/renderNoteContextMenu";
+import { EntityListItemDnD } from "ui/lists/EntityListItemDnD";
+import ItemTypes from "renderer/lib/dnd/itemTypes";
+import { getParentPath } from "shared/lib/helpers/virtualFilesystem";
+import { useFlatListReparentDnD } from "ui/hooks/use-flatlist-reparent-dnd";
 
 interface NavigatorScenesProps {
   height: number;
@@ -41,6 +45,8 @@ interface NavigatorScenesProps {
 const StartSceneLabel = styled.div`
   font-weight: bold;
 `;
+
+const ACCEPT_TYPES = [ItemTypes.SCENE, ItemTypes.NOTE, ItemTypes.WORLD_FOLDER];
 
 export const NavigatorScenes: FC<NavigatorScenesProps> = ({
   height,
@@ -349,6 +355,44 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
     [startSceneId, toggleFolderOpen],
   );
 
+  const { onDropOntoItem, flatListDropzone } =
+    useFlatListReparentDnD<SceneNavigatorItem>({
+      onReparent: (item, { dropFolder }) => {
+        if (item.type === "folder") {
+          dispatch(
+            entitiesActions.reparentWorldFolder({
+              fromPath: item.name,
+              toPath: dropFolder,
+            }),
+          );
+        } else if (item.type === "scene") {
+          dispatch(
+            entitiesActions.reparentScene({
+              sceneId: item.id,
+              toPath: dropFolder,
+            }),
+          );
+        } else if (item.type === "note") {
+          dispatch(
+            entitiesActions.reparentNote({
+              noteId: item.id,
+              toPath: dropFolder,
+            }),
+          );
+        } else if (item.type === "actor" || item.type === "trigger") {
+          // Ignore
+        } else {
+          assertUnreachable(item);
+        }
+      },
+      acceptTypes: ACCEPT_TYPES,
+      isReparentable: (item) =>
+        item.type === "folder" || item.type === "scene" || item.type === "note",
+      getName: (item) => item.name,
+      getDropFolder: (target) =>
+        target.type === "folder" ? target.name : getParentPath(target.name),
+    });
+
   return (
     <FlatList
       selectedId={selectedId}
@@ -364,10 +408,11 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
           closeFolder(selectedId);
         }
       }}
+      outerElementType={flatListDropzone}
       children={({ item }) => {
         if (item.type === "scene") {
           return (
-            <EntityListItem
+            <EntityListItemDnD
               item={item}
               type={item.type}
               rename={renameId === item.id}
@@ -379,11 +424,14 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
               onToggleCollapse={() => toggleFolderOpen(item.id)}
               nestLevel={item.nestLevel}
               renderLabel={renderLabel}
+              dragType={ItemTypes.SCENE}
+              acceptTypes={ACCEPT_TYPES}
+              onDrop={onDropOntoItem}
             />
           );
         } else if (item.type === "folder") {
           return (
-            <EntityListItem
+            <EntityListItemDnD
               item={item}
               type={item.type}
               renderContextMenu={renderContextMenu}
@@ -392,11 +440,14 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
               onToggleCollapse={() => toggleFolderOpen(item.id)}
               nestLevel={item.nestLevel}
               renderLabel={renderLabel}
+              dragType={ItemTypes.WORLD_FOLDER}
+              acceptTypes={ACCEPT_TYPES}
+              onDrop={onDropOntoItem}
             />
           );
         } else if (item.type === "note") {
           return (
-            <EntityListItem
+            <EntityListItemDnD
               item={item}
               type={item.type}
               rename={renameId === item.id}
@@ -405,6 +456,9 @@ export const NavigatorScenes: FC<NavigatorScenesProps> = ({
               renderContextMenu={renderContextMenu}
               nestLevel={(item.nestLevel ?? 0) + 1}
               renderLabel={renderLabel}
+              dragType={ItemTypes.NOTE}
+              acceptTypes={ACCEPT_TYPES}
+              onDrop={onDropOntoItem}
             />
           );
         } else if (item.type === "actor" || item.type === "trigger") {

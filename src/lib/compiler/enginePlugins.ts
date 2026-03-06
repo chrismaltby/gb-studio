@@ -26,6 +26,12 @@ type ApplyEnginePluginOptions = {
   warnings: (msg: string) => void;
 };
 
+type EnginePluginEntry = {
+  enginePluginPath: string;
+  pluginName: string;
+  order: number;
+};
+
 /**
  * Scans a plugin's engine files and warns if any would overwrite files already
  * written by a previously processed plugin. Updates writtenByPlugin in-place.
@@ -60,6 +66,40 @@ export const warnOnPluginFileCollisions = async (
   }
 };
 
+export const buildSortedEnginePluginList = async (
+  pluginsPath: string,
+): Promise<EnginePluginEntry[]> => {
+  const enginePluginPaths = await globAsync(`${pluginsPath}/**/engine`);
+  const enginePlugins: EnginePluginEntry[] = [];
+
+  for (const enginePluginPath of enginePluginPaths) {
+    const enginePluginDir = Path.dirname(enginePluginPath);
+    const pluginName = Path.relative(pluginsPath, enginePluginDir);
+    const pluginJsonPath = Path.join(enginePluginDir, "plugin.json");
+
+    let order = 0;
+
+    try {
+      const pluginJson = await readJSON(pluginJsonPath);
+      const pluginData = Value.Cast(PluginMetadata, pluginJson);
+      order = pluginData.order ?? 0;
+    } catch {
+      order = 0;
+    }
+
+    enginePlugins.push({
+      enginePluginPath,
+      pluginName,
+      order,
+    });
+  }
+
+  // Sort so lower order runs first, higher order runs last
+  enginePlugins.sort((a, b) => a.order - b.order);
+
+  return enginePlugins;
+};
+
 export const applyEnginePlugins = async ({
   progress,
   warnings,
@@ -78,23 +118,20 @@ export const applyEnginePlugins = async ({
   const posixRelativePluginPaths = pluginPaths.map((p) =>
     pathToPosix(Path.relative(pluginsPath, Path.dirname(p))),
   );
+
   const releaseVersion = RELEASE_VERSION.replace(/-rc.*/, "");
-  const enginePlugins = await globAsync(`${pluginsPath}/**/engine`);
 
-  // Track which relative paths have already been written and by which plugin
+  const enginePlugins = await buildSortedEnginePluginList(pluginsPath);
   const writtenByPlugin = new Map<string, string>();
-
   const allPatches: PatchInfo[] = [];
 
-  for (const enginePluginPath of enginePlugins) {
-    const enginePluginDir = Path.dirname(enginePluginPath);
-    const pluginName = Path.relative(pluginsPath, enginePluginDir);
-
+  for (const { enginePluginPath, pluginName } of enginePlugins) {
     progress(
       l10n("COMPILER_USING_ENGINE_PLUGIN", {
         path: pluginName,
       }),
     );
+
     const pluginJsonPath = Path.join(
       Path.dirname(enginePluginPath),
       "plugin.json",
