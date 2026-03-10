@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2166260303",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2170260310",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1312,7 +1312,8 @@
   "FIELD_TOUCHING_WALL": "Dotyka ściany",
   "FIELD_PLATFORM_TOUCHING_WALL_DESC": "Określa, czy gracz aktualnie przylega do ściany w scenie platformowej.",
   "FIELD_FONT_DESC": "Czcionka używana do wyświetlania tekstu.",
-
+  "FIELD_CONVERT_TO_UGE": "Konwertuj do edytowalnego plik .uge ",
+  
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",
@@ -2072,7 +2073,10 @@
   "DIALOG_PLUGIN_INCOMPATIBLE_WITH_YOUR_GBSTUDIO_PRERELEASE_DESC": "Ta wtyczka obsługuje wersje {pluginSupportedVersion}, ale używasz wersji przedpremierowej {version}.",
   "DIALOG_REPLACE_MONO_TILES": "Zastąpić obraz monochromatycznych tafli (tileset) \"{name}\"?",
   "DIALOG_REPLACE_MONO_TILES_DESCRIPTION": "Wyodrębnienie palet z tego obrazu spowoduje ponowne wygenerowanie obrazu tafli .mono.png. Wykryto istniejący obraz monochromatyczny tafli (tileset). Czy chcesz go zastąpić?",
-
+  "DIALOG_CONVERT_MOD_REPLACE": "Znaleziono istniejący plik .uge ",
+  "DIALOG_CONVERT_MOD_REPLACE_DESCRIPTION": "Plik .uge o nazwie \"{filename}\" już istnieje. Czy chcesz go zastąpić?",
+  "DIALOG_UGE_REPLACE": "Zastąp plik .uge",
+  
   "// 16": "Settings ----------------------------------------------------",
 
   "SETTINGS": "Ustawienia",
