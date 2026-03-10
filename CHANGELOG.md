@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add right-click context menu in World view to quickly add scenes, add notes, and delete selection
 - Add support for adding notes to sprites in Sprite Editor
 - Add support for dragging and dropping entities between folders in the navigator panels
+- Ukrainian localisation. [@AmakerGame](https://github.com/AmakerGame)
 
 ### Changed
 
