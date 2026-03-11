@@ -3,7 +3,7 @@ import {
   DutyInstrument,
   WaveInstrument,
   NoiseInstrument,
-} from "store/features/trackerDocument/trackerDocumentTypes";
+} from "shared/lib/uge/types";
 import emulator from "./emulator";
 import {
   note2freq,

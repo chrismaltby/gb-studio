@@ -89,12 +89,6 @@ module.exports = {
           chunks: "initial",
           priority: 2,
         },
-        "vendor-scriptracker": {
-          name: "vendor-scriptracker",
-          test: /[\\/]src[\\/]lib[\\/]vendor[\\/]scriptracker[\\/]/,
-          chunks: "all",
-          priority: 2,
-        },
         "vendor-hotloader": {
           name: "vendor-hotloader",
           test: /[\\/]node_modules[\\/]@hot-loader[\\/]/,
@@ -127,7 +121,7 @@ module.exports = {
       "contributors.json": Path.join(__dirname, "contributors.json"),
       "contributors-external.json": Path.join(
         __dirname,
-        "contributors-external.json"
+        "contributors-external.json",
       ),
       "patrons.json": Path.join(__dirname, "patrons.json"),
       "#my-quickjs-variant": require.resolve(

@@ -1,12 +1,12 @@
-import { PatternCell } from "shared/lib/uge/song/PatternCell";
+import { PatternCell, SubPatternCell } from "shared/lib/uge/types";
 import { noteStringsForClipboard } from "shared/lib/music/constants";
-import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
 import {
   renderNote,
   renderInstrument,
   renderEffect,
   renderEffectParam,
 } from "./helpers";
+import { createPatternCell, createSubPatternCell } from "shared/lib/uge/song";
 
 export const NO_CHANGE_ON_PASTE = -9;
 
@@ -77,7 +77,7 @@ export const parsePatternToClipboard = (
         if (selectedCells.indexOf(i) > -1) {
           parsed.push(patternCelltoString(pattern[i][channelId]));
         } else {
-          parsed.push(patternCelltoString(new PatternCell()));
+          parsed.push(patternCelltoString(createPatternCell()));
         }
       }
     }
@@ -135,7 +135,7 @@ export const parseClipboardToPattern = (clipboard: string) => {
         const channel = r.substring(1).split("|");
         return channel.map((c, j) => {
           console.log(`CELL ${j}:`, c);
-          const patternCell = new PatternCell();
+          const patternCell = createPatternCell();
           const cellString = [
             c.substring(0, 3),
             c.substring(3, 5),
@@ -232,7 +232,7 @@ export const parseClipboardToSubPattern = (clipboard: string) => {
         const channel = r.substring(1).split("|");
         return channel.map((c, j) => {
           console.log(`CELL ${j}:`, c);
-          const patternCell = new SubPatternCell();
+          const patternCell = createSubPatternCell();
           const cellString = [
             c.substring(0, 3),
             c.substring(3, 5),

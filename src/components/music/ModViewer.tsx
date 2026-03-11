@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import musicActions from "store/features/music/musicActions";
@@ -10,9 +10,12 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import electronActions from "store/features/electron/electronActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { assetPath } from "shared/lib/helpers/assets";
+import { FixedSpacer } from "ui/spacing/Spacing";
+import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 
 interface ModViewerProps {
   trackId: string;
+  allowConvertToUge?: boolean;
 }
 
 const ContentWrapper = styled.div`
@@ -67,11 +70,12 @@ const TrackSettings = styled.div`
   padding: 20px;
 `;
 
-const ModViewer = ({ trackId }: ModViewerProps) => {
+const ModViewer = ({ trackId, allowConvertToUge }: ModViewerProps) => {
   const dispatch = useAppDispatch();
   const track = useAppSelector((state) =>
     musicSelectors.selectById(state, trackId),
   );
+  const allMusic = useAppSelector(musicSelectors.selectAll);
   const playing = useAppSelector((state) => state.music.playing);
 
   const onPlay = useCallback(() => {
@@ -104,6 +108,24 @@ const ModViewer = ({ trackId }: ModViewerProps) => {
     }
   }, [dispatch, track]);
 
+  const onConvert = useCallback(() => {
+    if (track && allowConvertToUge) {
+      dispatch(
+        trackerDocumentActions.convertModToUgeSong({
+          asset: track,
+          allMusic,
+        }),
+      );
+    }
+  }, [dispatch, track, allMusic, allowConvertToUge]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      dispatch(musicActions.pauseMusic());
+    };
+  }, [dispatch]);
+
   if (!track) {
     return <div />;
   }
@@ -129,6 +151,14 @@ const ModViewer = ({ trackId }: ModViewerProps) => {
             onChange={onChangeSpeedConversion}
             checked={track.settings?.disableSpeedConversion ?? false}
           />
+          {allowConvertToUge && (
+            <>
+              <FixedSpacer height={20} />
+              <Button onClick={onConvert}>
+                {l10n("FIELD_CONVERT_TO_UGE")}
+              </Button>
+            </>
+          )}
         </TrackSettings>
       </TrackContainer>
       <PillWrapper>

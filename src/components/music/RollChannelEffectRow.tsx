@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import styled, { css } from "styled-components";
-import { PatternCell } from "shared/lib/uge/song/PatternCell";
+import { PatternCell } from "shared/lib/uge/types";
 import trackerActions from "store/features/tracker/trackerActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";

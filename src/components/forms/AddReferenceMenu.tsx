@@ -352,9 +352,6 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const tracks = useAppSelector((state) => musicSelectors.selectAll(state));
   const sounds = useAppSelector((state) => soundSelectors.selectAll(state));
-  const musicDriver = useAppSelector(
-    (state) => state.project.present.settings.musicDriver,
-  );
 
   useEffect(() => {
     const allOptions = ([] as (EventOptGroup | EventOption)[]).concat([
@@ -374,14 +371,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
       },
       {
         label: l10n("FIELD_SONGS"),
-        options: tracks
-          .filter(
-            (track) =>
-              (musicDriver === "huge" && track.type === "uge") ||
-              (musicDriver !== "huge" && track.type !== "uge"),
-          )
-          .map(musicToOption)
-          .sort(sortAlphabeticallyByLabel),
+        options: tracks.map(musicToOption).sort(sortAlphabeticallyByLabel),
       },
       {
         label: l10n("MENU_SFX"),
@@ -425,7 +415,6 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
     backgrounds,
     tracks,
     variablesLookup,
-    musicDriver,
     sprites,
     emotes,
     fonts,

@@ -7,12 +7,14 @@ import { exportToC, loadUGESong } from "shared/lib/uge/ugeHelper";
 import { assetFilename } from "shared/lib/helpers/assets";
 import { envWith } from "lib/helpers/cli/env";
 import { getCacheRoot } from "lib/helpers/cache";
+import { convertMODDataToUGESong } from "shared/lib/uge/mod2uge/import";
 
 export interface PrecompiledMusicTrack {
   id: string;
   name: string;
   dataName: string;
   filename: string;
+  type?: string;
   settings: {
     disableSpeedConversion?: boolean;
   };
@@ -21,7 +23,6 @@ export interface PrecompiledMusicTrack {
 interface CompileMusicOptions {
   tmpPath: string;
   projectRoot: string;
-  engine: "gbt" | "huge";
   output: Record<string, string>;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
@@ -129,7 +130,7 @@ const compileModTrack = async (
   return output;
 };
 
-const compileModTracks = async (
+const _compileModTracks = async (
   tracks: PrecompiledMusicTrack[],
   {
     tmpPath,
@@ -167,9 +168,14 @@ const compileUgeTrack = async (
   track: PrecompiledMusicTrack,
   { projectRoot }: CompileHugeTrackOptions,
 ): Promise<string> => {
-  const ugePath = assetFilename(projectRoot, "music", track);
-  const data = await readFile(ugePath);
-  const song = loadUGESong(new Uint8Array(data).buffer);
+  const filePath = assetFilename(projectRoot, "music", track);
+  const data = await readFile(filePath);
+
+  const song =
+    track.type === "uge"
+      ? loadUGESong(data)
+      : convertMODDataToUGESong(data, !track.settings.disableSpeedConversion);
+
   if (song) {
     return exportToC(song, track.dataName);
   } else {
@@ -214,9 +220,5 @@ export const compileMusicTracks = (
   tracks: PrecompiledMusicTrack[],
   options: CompileMusicOptions,
 ) => {
-  if (options.engine === "gbt") {
-    return compileModTracks(tracks, options);
-  } else {
-    return compileUgeTracks(tracks, options);
-  }
+  return compileUgeTracks(tracks, options);
 };

@@ -9,7 +9,6 @@ const globAsync = promisify(glob);
 type BuildOptions = {
   colorEnabled: boolean;
   sgb: boolean;
-  musicDriver: string;
   debug: boolean;
   platform: string;
   batteryless: boolean;
@@ -23,7 +22,6 @@ export const getBuildCommands = async (
   {
     colorEnabled,
     sgb,
-    musicDriver,
     debug,
     platform,
     batteryless,
@@ -42,10 +40,7 @@ export const getBuildCommands = async (
       : `../_gbstools/gbdk/bin/lcc`;
 
   for (const file of buildFiles) {
-    if (musicDriver === "huge" && file.indexOf("GBT_PLAYER") !== -1) {
-      continue;
-    }
-    if (musicDriver !== "huge" && file.indexOf("HUGE_TRACKER") !== -1) {
+    if (file.indexOf("GBT_PLAYER") !== -1) {
       continue;
     }
 
@@ -73,11 +68,7 @@ export const getBuildCommands = async (
         buildArgs.push("-DSGB");
       }
 
-      if (musicDriver === "huge") {
-        buildArgs.push("-DHUGE_TRACKER");
-      } else {
-        buildArgs.push("-DGBT_PLAYER");
-      }
+      buildArgs.push("-DHUGE_TRACKER");
 
       if (batteryless) {
         buildArgs.push("-DBATTERYLESS");
@@ -143,7 +134,6 @@ export const buildLinkFlags = (
   color = false,
   sgb = false,
   colorOnly = false,
-  musicDriver = "gbtplayer",
   batteryless = false,
   debug = false,
   targetPlatform = "gb",
@@ -182,12 +172,8 @@ export const buildLinkFlags = (
     targetPlatform === "pocket" ? ["-msm83:ap"] : [],
     // Debug emulicious
     debug ? ["-Wf--debug", "-Wl-m", "-Wl-w", "-Wl-y"] : [],
-    // Music Driver
-    musicDriver === "huge"
-      ? // hugetracker
-        ["-Wl-lhUGEDriver.lib"]
-      : // gbtplayer
-        ["-Wl-lgbt_player.lib", "-Wb-reserve=1:800"],
+    // Music Driver hugetracker
+    ["-Wl-lhUGEDriver.lib"],
     // Batteryless cart
     batteryless
       ? [
@@ -221,7 +207,6 @@ export const buildMakeDotBuildFile = ({
   color = false,
   sgb = false,
   batteryless = false,
-  musicDriver = "gbtplayer",
 }) => {
   return (
     `settings: ` +
@@ -229,7 +214,7 @@ export const buildMakeDotBuildFile = ({
       .concat(
         color ? ["CGB"] : ["DMG"],
         sgb ? ["SGB"] : [],
-        musicDriver === "huge" ? ["hUGE"] : ["GBT"],
+        ["hUGE"],
         cartType === "mbc3" ? ["MBC3"] : ["MBC5"],
         batteryless ? ["batteryless"] : [],
       )

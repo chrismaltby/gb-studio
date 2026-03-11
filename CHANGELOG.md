@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add right-click context menu in World view to quickly add scenes, add notes, and delete selection
 - Add support for adding notes to sprites in Sprite Editor
 - Add support for dragging and dropping entities between folders in the navigator panels
+- Add ability to also use `.mod` music files in projects using the `.uge` hUGETracker music format
+- Add ability to convert `.mod` files to `.uge` to enable editing in the Music Editor
+- Ukrainian localisation. [@AmakerGame](https://github.com/AmakerGame)
 
 ### Changed
 
@@ -25,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Preserve scroll position in the Settings section when navigating away and returning
 - Preference for Piano Roll or Tracker view in the Music Editor is now preserved when reopening projects
 - Add support for custom character code to tile index mappings in font JSON files [@Mico27](https://github.com/Mico27)
+- No longer need to specify music driver in settings, hUGEDriver will be used with automatic conversion for `.mod` files
+- Music Editor now centres the piano roll on C5 when opening a file
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 

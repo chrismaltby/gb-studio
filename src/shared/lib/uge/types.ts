@@ -1,6 +1,3 @@
-/* eslint-disable camelcase */
-import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
-
 export type DutyInstrument = {
   index: number;
   name: string;
@@ -38,4 +35,35 @@ export type NoiseInstrument = {
   noise_macro?: number[];
   subpattern_enabled: boolean;
   subpattern: SubPatternCell[];
+};
+
+export type PatternCell = {
+  note: number | null;
+  instrument: number | null;
+  effectcode: number | null;
+  effectparam: number | null;
+};
+
+export type SubPatternCell = {
+  note: number | null;
+  jump: number | null;
+  effectcode: number | null;
+  effectparam: number | null;
+};
+
+export type Song = {
+  version: number;
+  name: string;
+  artist: string;
+  comment: string;
+  filename: string;
+  duty_instruments: DutyInstrument[];
+  wave_instruments: WaveInstrument[];
+  noise_instruments: NoiseInstrument[];
+  waves: Uint8Array[];
+  ticks_per_row: number;
+  timer_enabled: boolean;
+  timer_divider: number;
+  patterns: PatternCell[][][];
+  sequence: number[];
 };

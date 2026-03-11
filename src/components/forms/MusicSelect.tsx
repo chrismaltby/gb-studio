@@ -48,6 +48,13 @@ const PlayPauseTrack = ({ musicId }: PlayPauseTrackProps) => {
     [dispatch, musicId, musicPlaying],
   );
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      dispatch(musicActions.pauseMusic());
+    };
+  }, [dispatch]);
+
   return (
     <Button
       size="small"
@@ -66,32 +73,23 @@ export const MusicSelect = ({
   ...selectProps
 }: MusicSelectProps) => {
   const tracks = useAppSelector((state) => musicSelectors.selectAll(state));
-  const musicDriver = useAppSelector(
-    (state) => state.project.present.settings.musicDriver,
-  );
-
   const [options, setOptions] = useState<OptGroup[]>([]);
   const [currentValue, setCurrentValue] = useState<Option>();
 
   useEffect(() => {
-    const driverTracks = tracks.filter(
-      (track) =>
-        (musicDriver === "huge" && track.type === "uge") ||
-        (musicDriver !== "huge" && track.type !== "uge"),
-    );
-    const plugins = uniq(driverTracks.map((s) => s.plugin || "")).sort();
+    const plugins = uniq(tracks.map((s) => s.plugin || "")).sort();
     setOptions(
       plugins.map((pluginKey) => ({
         label: pluginKey,
-        options: driverTracks
+        options: tracks
           .filter((track) => (track.plugin || "") === pluginKey)
           .map((track) => ({
-            label: track.name,
+            label: track.filename,
             value: track.id,
           })),
       })),
     );
-  }, [tracks, musicDriver]);
+  }, [tracks]);
 
   useEffect(() => {
     let option: Option | null = null;

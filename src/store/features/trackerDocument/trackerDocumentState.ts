@@ -7,18 +7,19 @@ import {
   createAction,
 } from "@reduxjs/toolkit";
 import cloneDeep from "lodash/cloneDeep";
-import { PatternCell } from "shared/lib/uge/song/PatternCell";
-import { Song } from "shared/lib/uge/song/Song";
-import { RootState } from "store/configureStore";
 import {
+  Song,
+  PatternCell,
+  SubPatternCell,
   DutyInstrument,
   NoiseInstrument,
   WaveInstrument,
-} from "./trackerDocumentTypes";
-import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
+} from "shared/lib/uge/types";
+import { RootState } from "store/configureStore";
 import { InstrumentType } from "store/features/editor/editorState";
 import API from "renderer/lib/api";
 import { MusicResourceAsset } from "shared/lib/resources/types";
+import { createPatternCell, createSong } from "shared/lib/uge/song";
 
 interface TrackerDocumentState {
   status: "loading" | "error" | "loaded" | null;
@@ -401,10 +402,10 @@ const trackerSlice = createSlice({
         const pattern = [];
         for (let n = 0; n < 64; n++)
           pattern.push([
-            new PatternCell(),
-            new PatternCell(),
-            new PatternCell(),
-            new PatternCell(),
+            createPatternCell(),
+            createPatternCell(),
+            createPatternCell(),
+            createPatternCell(),
           ]);
         newPatterns.push(pattern);
 
@@ -433,10 +434,10 @@ const trackerSlice = createSlice({
       const pattern = [];
       for (let n = 0; n < 64; n++)
         pattern.push([
-          new PatternCell(),
-          new PatternCell(),
-          new PatternCell(),
-          new PatternCell(),
+          createPatternCell(),
+          createPatternCell(),
+          createPatternCell(),
+          createPatternCell(),
         ]);
       newPatterns.push(pattern);
 
@@ -476,7 +477,7 @@ const trackerSlice = createSlice({
       .addCase(loadSongFile.rejected, (state, action) => {
         console.error(action.error);
         state.status = "error";
-        state.song = new Song();
+        state.song = createSong();
         state.error = action.error.message;
       })
       .addCase(loadSongFile.fulfilled, (state, action) => {

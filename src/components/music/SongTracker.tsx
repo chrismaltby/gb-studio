@@ -6,8 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import styled from "styled-components";
-import { PatternCell } from "shared/lib/uge/song/PatternCell";
-import { Song } from "shared/lib/uge/song/Song";
+import { Song, PatternCell } from "shared/lib/uge/types";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
@@ -27,6 +26,7 @@ import { clamp, cloneDeep, mergeWith } from "lodash";
 import API from "renderer/lib/api";
 import { MusicDataPacket } from "shared/lib/music/types";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { createPatternCell } from "shared/lib/uge/song";
 
 function getSelectedTrackerFields(
   selectionRect: SelectionRect | undefined,
@@ -295,7 +295,8 @@ export const SongTracker = ({
             newPattern[i][newChannelId] = newPattern[i - 1][newChannelId];
           }
         }
-        newPattern[uninsert ? 63 : startRow][newChannelId] = new PatternCell();
+        newPattern[uninsert ? 63 : startRow][newChannelId] =
+          createPatternCell();
         dispatch(
           trackerDocumentActions.editPattern({
             patternId: patternId,

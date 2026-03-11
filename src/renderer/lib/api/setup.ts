@@ -15,7 +15,7 @@ import type {
 } from "store/features/buildGame/buildGameActions";
 import type { SettingsState } from "store/features/settings/settingsState";
 import type { BackgroundInfo } from "lib/helpers/validation";
-import type { Song } from "shared/lib/uge/song/Song";
+import type { Song } from "shared/lib/uge/types";
 import type { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
 import type { NavigationSection } from "store/features/navigation/navigationState";
 import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
@@ -34,6 +34,7 @@ import {
   CompressedBackgroundResourceAsset,
   EmoteResourceAsset,
   FontResourceAsset,
+  MusicAsset,
   MusicResourceAsset,
   ProjectResources,
   SoundResourceAsset,
@@ -328,6 +329,8 @@ const APISetup = {
       ipcRenderer.send("music:data-receive", data),
     playUGE: (filename: string): Promise<void> =>
       ipcRenderer.invoke("music:play-uge", filename),
+    playMOD: (filename: string, speedConversion: boolean): Promise<void> =>
+      ipcRenderer.invoke("music:play-mod", filename, speedConversion),
   },
   soundfx: {
     playWav: (filename: string): Promise<void> =>
@@ -344,6 +347,8 @@ const APISetup = {
       ipcRenderer.invoke("tracker:load", path),
     saveUGEFile: (song: Song): Promise<void> =>
       ipcRenderer.invoke("tracker:save", song),
+    convertModToUge: (asset: MusicAsset): Promise<MusicResourceAsset> =>
+      ipcRenderer.invoke("tracker:convert-mod", asset),
   },
   sprite: {
     compileSprite: (

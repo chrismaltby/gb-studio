@@ -29,6 +29,7 @@ import type { RootState } from "store/configureStore";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import { selectScriptIds } from "store/features/entities/entitiesState";
 import { Variable } from "shared/lib/resources/types";
+import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 
 export type Tool =
   | "triggers"
@@ -1221,6 +1222,13 @@ const editorSlice = createSlice({
       .addCase(addNewSongFile.fulfilled, (state, action) => {
         state.selectedSongId = action.payload.data.id;
       })
+      // When adding a importing song file jump to it in navigator
+      .addCase(
+        trackerDocumentActions.convertModToUgeSong.fulfilled,
+        (state, action) => {
+          state.selectedSongId = action.payload.data.id;
+        },
+      )
       // When grouping script events remove selection
       .addCase(entitiesActions.groupScriptEvents, (state) => {
         state.scriptEventSelectionIds = [];

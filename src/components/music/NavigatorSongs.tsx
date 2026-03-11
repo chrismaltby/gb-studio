@@ -9,14 +9,13 @@ import {
   DutyInstrument,
   NoiseInstrument,
   WaveInstrument,
-} from "store/features/trackerDocument/trackerDocumentTypes";
+} from "shared/lib/uge/types";
 import { Button } from "ui/buttons/Button";
 import { ArrowLeftRightIcon, PlusIcon, SearchIcon } from "ui/icons/Icons";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import useSplitPane from "ui/hooks/use-split-pane";
 import styled from "styled-components";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
-import { NoSongsMessage } from "./NoSongsMessage";
 import { requestAddNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import trackerActions from "store/features/tracker/trackerActions";
 import API from "renderer/lib/api";
@@ -103,10 +102,6 @@ const sortByIndex = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.id, b.id);
 };
 
-export const ugeFilter = (s: MusicAsset) => {
-  return s.type && s.type === "uge";
-};
-
 export const NavigatorSongs = ({
   height,
   defaultFirst,
@@ -124,7 +119,7 @@ export const NavigatorSongs = ({
   );
   const navigationId = useAppSelector((state) => state.editor.selectedSongId);
   const selectedSongId = defaultFirst
-    ? songsLookup[navigationId]?.id || allSongs.filter(ugeFilter)[0]?.id
+    ? songsLookup[navigationId]?.id || allSongs[0]?.id
     : navigationId;
 
   const {
@@ -139,12 +134,7 @@ export const NavigatorSongs = ({
   const [songsSearchEnabled, setSongsSearchEnabled] = useState(false);
 
   const nestedSongItems = useMemo(
-    () =>
-      buildAssetNavigatorItems(
-        allSongs.filter(ugeFilter),
-        openFolders,
-        songsSearchTerm,
-      ),
+    () => buildAssetNavigatorItems(allSongs, openFolders, songsSearchTerm),
     [allSongs, openFolders, songsSearchTerm],
   );
 
@@ -555,7 +545,7 @@ export const NavigatorSongs = ({
           </FlatList>
         ) : (
           <EmptyState>
-            <NoSongsMessage type="uge" />
+            <h2>{l10n("MESSAGE_NO_SONGS_FOUND")}</h2>
           </EmptyState>
         )}
       </Pane>

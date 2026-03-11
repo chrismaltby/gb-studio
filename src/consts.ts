@@ -25,6 +25,7 @@ export const defaultEngineMetaPath = normalize(`${enginesRoot}/engine.json`);
 export const buildToolsRoot = normalize(`${rootDir}/buildTools`);
 export const binjgbRoot = normalize(`${rootDir}/appData/wasm/binjgb`);
 export const projectTemplatesRoot = normalize(`${rootDir}/appData/templates`);
+export const musicTemplatesRoot = normalize(`${rootDir}/appData/music`);
 export const localesRoot = normalize(`${rootDir}/src/lang`);
 export const eventsRoot = normalize(`${rootDir}/src/lib/events`);
 export const assetsRoot = normalize(`${rootDir}/src/assets`);

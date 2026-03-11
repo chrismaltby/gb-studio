@@ -8,14 +8,14 @@ import { Input } from "ui/form/Input";
 import { InstrumentDutyEditor } from "./InstrumentDutyEditor";
 import { InstrumentWaveEditor } from "./InstrumentWaveEditor";
 import { InstrumentNoiseEditor } from "./InstrumentNoiseEditor";
-import { Song } from "shared/lib/uge/song/Song";
-import { castEventToInt } from "renderer/lib/helpers/castEventValue";
-import l10n from "shared/lib/lang/l10n";
 import {
+  Song,
   DutyInstrument,
   NoiseInstrument,
   WaveInstrument,
-} from "store/features/trackerDocument/trackerDocumentTypes";
+} from "shared/lib/uge/types";
+import { castEventToInt } from "renderer/lib/helpers/castEventValue";
+import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { MenuItem } from "ui/menu/Menu";
 import { PatternCellEditor } from "./PatternCellEditor";

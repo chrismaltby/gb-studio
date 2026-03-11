@@ -10,7 +10,6 @@ import { PaletteSelect } from "components/forms/PaletteSelect";
 import { Button } from "ui/buttons/Button";
 import {
   ColorModeSetting,
-  MusicDriverSetting,
   SettingsState,
   SpriteModeSetting,
 } from "store/features/settings/settingsState";
@@ -36,7 +35,6 @@ import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { SearchableCard } from "ui/cards/SearchableCard";
 import { FontSelect } from "components/forms/FontSelect";
 import { ColorAnimationText } from "components/settings/ColorAnimationText";
-import { MusicDriverSelect } from "components/forms/MusicDriverSelect";
 import { FormInfo } from "ui/form/FormInfo";
 import electronActions from "store/features/electron/electronActions";
 import CartSettingsEditor from "components/settings/CartSettingsEditor";
@@ -104,7 +102,6 @@ const SettingsPage: FC = () => {
     defaultMonoOBP0,
     defaultMonoOBP1,
     defaultFontId,
-    musicDriver,
     openBuildLogOnWarnings,
     generateDebugFilesEnabled,
     openBuildFolderOnExport,
@@ -177,11 +174,6 @@ const SettingsPage: FC = () => {
 
   const onChangeDefaultFontId = useCallback(
     (e: string) => onChangeSettingProp("defaultFontId", e),
-    [onChangeSettingProp],
-  );
-
-  const onChangeMusicDriver = useCallback(
-    (e: MusicDriverSetting) => onChangeSettingProp("musicDriver", e),
     [onChangeSettingProp],
   );
 
@@ -360,9 +352,6 @@ const SettingsPage: FC = () => {
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsUI")}>
               {l10n("MENU_UI_ELEMENTS")}
-            </SettingsMenuItem>
-            <SettingsMenuItem onClick={onMenuItem("settingsMusic")}>
-              {l10n("SETTINGS_MUSIC")}
             </SettingsMenuItem>
             <SettingsMenuItem onClick={onMenuItem("settingsControls")}>
               {l10n("SETTINGS_CONTROLS")}
@@ -799,35 +788,6 @@ const SettingsPage: FC = () => {
                   openAsset("ui/frame.png");
                 }}
               />
-            </SettingRowInput>
-          </SearchableSettingRow>
-        </SearchableCard>
-
-        <SearchableCard
-          searchTerm={searchTerm}
-          searchMatches={[l10n("SETTINGS_MUSIC"), l10n("FIELD_MUSIC_FORMAT")]}
-        >
-          <CardAnchor id="settingsMusic" />
-          <CardHeading>{l10n("SETTINGS_MUSIC")}</CardHeading>
-
-          <SearchableSettingRow
-            searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_MUSIC_FORMAT")]}
-          >
-            <SettingRowLabel>{l10n("FIELD_MUSIC_FORMAT")}</SettingRowLabel>
-            <SettingRowInput>
-              <FormField name="musicDriver">
-                <MusicDriverSelect
-                  name="musicDriver"
-                  value={musicDriver || ""}
-                  onChange={onChangeMusicDriver}
-                />
-                {musicDriver !== "gbt" ? (
-                  <FormInfo>{l10n("FIELD_HUGE_DRIVER_NOTE")}</FormInfo>
-                ) : (
-                  <FormInfo>{l10n("FIELD_GBT_PLAYER_NOTE")}</FormInfo>
-                )}
-              </FormField>
             </SettingRowInput>
           </SearchableSettingRow>
         </SearchableCard>

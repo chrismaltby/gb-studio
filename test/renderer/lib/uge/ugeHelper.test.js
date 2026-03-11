@@ -8,8 +8,7 @@ import { readFile } from "fs-extra";
 
 test("should convert noise macro from uge 5 files into uge 6 subpattern", async () => {
   const data = await readFile(`${__dirname}/song_template_v5.uge`);
-  const dataArray = new Uint8Array(data).buffer;
-  const song = loadUGESong(dataArray);
+  const song = loadUGESong(data);
 
   expect(song.version).toBe(6);
   expect(song.noise_instruments[11].subpattern_enabled).toBe(true);
@@ -20,8 +19,7 @@ test("should convert noise macro from uge 5 files into uge 6 subpattern", async 
 
 test("should load uge 6 files and return a Song object", async () => {
   const data = await readFile(`${__dirname}/song_template_v6.uge`);
-  const dataArray = new Uint8Array(data).buffer;
-  const song = loadUGESong(dataArray);
+  const song = loadUGESong(data);
 
   expect(song.version).toBe(6);
   expect(song.duty_instruments[0].name).toBe("Fade Out 25% Pulse");
@@ -29,20 +27,18 @@ test("should load uge 6 files and return a Song object", async () => {
 
 test("should save a file correctly", async () => {
   const data = await readFile(`${__dirname}/song_template_v6.uge`);
-  const dataArray = new Uint8Array(data).buffer;
-  const song = loadUGESong(dataArray);
+  const song = loadUGESong(data);
 
   expect(song.version).toBe(6);
 
   const savedData = saveUGESong(song);
 
-  expect(savedData).toStrictEqual(dataArray);
+  expect(savedData).toStrictEqual(data);
 });
 
 test("should export the song to C", async () => {
   const data = await readFile(`${__dirname}/song_template_v6.uge`);
-  const dataArray = new Uint8Array(data).buffer;
-  const song = loadUGESong(dataArray);
+  const song = loadUGESong(data);
 
   expect(song.version).toBe(6);
 

@@ -1,5 +1,5 @@
 import l10n from "shared/lib/lang/l10n";
-import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
+import { SubPatternCell } from "shared/lib/uge/types";
 import React, {
   useCallback,
   useEffect,
@@ -26,6 +26,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import { Position } from "./SongTracker";
 import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { createSubPatternCell } from "shared/lib/uge/song";
 
 const CHANNEL_FIELDS = 4;
 const ROW_SIZE = CHANNEL_FIELDS * 1;
@@ -342,7 +343,7 @@ export const InstrumentSubpatternEditor = ({
             newSubPattern[i] = newSubPattern[i - 1];
           }
         }
-        newSubPattern[uninsert ? 63 : startRow] = new SubPatternCell();
+        newSubPattern[uninsert ? 63 : startRow] = createSubPatternCell();
         dispatch(
           trackerDocumentActions.editSubPattern({
             instrumentId: instrumentId,

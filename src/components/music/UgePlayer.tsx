@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Song } from "shared/lib/uge/song/Song";
+import { Song } from "shared/lib/uge/types";
 import trackerActions from "store/features/tracker/trackerActions";
 import API from "renderer/lib/api";
 import { MusicDataPacket } from "shared/lib/music/types";

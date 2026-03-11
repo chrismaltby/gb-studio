@@ -1,5 +1,6 @@
 import {
   remove,
+  readdir,
   writeFile,
   ensureDir,
   createReadStream,
@@ -64,6 +65,7 @@ const localArch = `${process.platform}-${process.arch}`;
 
 const fetchAll = process.argv.includes("--all");
 const updateLock = process.argv.includes("--update-lock");
+const why = process.argv.includes("--why");
 
 const fetchArch =
   process.argv
@@ -104,6 +106,61 @@ export const sha256File = async (filePath: string): Promise<string> =>
       });
   });
 
+const listFilesRecursive = async (
+  root: string,
+  dir = root,
+  result: string[] = [],
+): Promise<string[]> => {
+  const entries = await readdir(dir, { withFileTypes: true });
+  for (const e of entries) {
+    const full = Path.join(dir, e.name);
+    if (e.isDirectory()) {
+      await listFilesRecursive(root, full, result);
+    } else {
+      result.push(Path.relative(root, full));
+    }
+  }
+  return result;
+};
+
+const hashFolder = async (root: string): Promise<Record<string, string>> => {
+  const files = await listFilesRecursive(root);
+  const hashes: Record<string, string> = {};
+  for (const file of files) {
+    const full = Path.join(root, file);
+    hashes[file] = await sha256File(full);
+  }
+  return hashes;
+};
+
+const diffFolders = async (oldDir: string, newDir: string) => {
+  const oldHashes = await hashFolder(oldDir);
+  const newHashes = await hashFolder(newDir);
+
+  const added: string[] = [];
+  const removed: string[] = [];
+  const modified: string[] = [];
+
+  const oldFiles = new Set(Object.keys(oldHashes));
+  const newFiles = new Set(Object.keys(newHashes));
+
+  for (const file of newFiles) {
+    if (!oldFiles.has(file)) {
+      added.push(file);
+    } else if (oldHashes[file] !== newHashes[file]) {
+      modified.push(file);
+    }
+  }
+
+  for (const file of oldFiles) {
+    if (!newFiles.has(file)) {
+      removed.push(file);
+    }
+  }
+
+  return { added, removed, modified };
+};
+
 export const fetchGBDKDependency = async (
   arch: Arch,
   expectedChecksum?: string,
@@ -122,6 +179,38 @@ export const fetchGBDKDependency = async (
   const checksum = await sha256File(tmpPath);
 
   if (expectedChecksum && checksum !== expectedChecksum && !updateLock) {
+    if (why) {
+      console.log("⚠️  Checksum mismatch. Investigating differences...");
+
+      const tmpExtract = Path.join(buildToolsRoot, `tmp_extract_${arch}`);
+      await ensureDir(tmpExtract);
+
+      if (type === "targz") {
+        await extractTarGz(tmpPath, tmpExtract);
+      } else {
+        await extractZip(tmpPath, tmpExtract);
+      }
+
+      const existingDir = Path.join(buildToolsRoot, arch);
+
+      if (await pathExists(existingDir)) {
+        const diff = await diffFolders(existingDir, tmpExtract);
+
+        if (diff.added.length) console.log("\n➕ Added files:");
+        diff.added.forEach((f) => console.log("  +", f));
+
+        if (diff.removed.length) console.log("\n➖ Removed files:");
+        diff.removed.forEach((f) => console.log("  -", f));
+
+        if (diff.modified.length) console.log("\n✏️ Modified files:");
+        diff.modified.forEach((f) => console.log("  *", f));
+      } else {
+        console.log("No existing directory to compare against.");
+      }
+
+      await remove(tmpExtract);
+    }
+
     throw new Error(
       `Checksum mismatch for ${arch}. Expected: ${expectedChecksum}, Got: ${checksum}.`,
     );

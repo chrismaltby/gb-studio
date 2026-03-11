@@ -105,7 +105,6 @@ import {
   FontResourceAsset,
   MetaspriteTile,
   MusicAsset,
-  MusicResourceAsset,
   MusicSettings,
   Note,
   ObjPalette,
@@ -126,6 +125,7 @@ import {
   sortSubsetStringArray,
 } from "shared/lib/helpers/array";
 import { resizeTiles } from "shared/lib/helpers/tiles";
+import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -593,7 +593,7 @@ const loadDetectedSprite: CaseReducer<
 const loadMusic: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: MusicResourceAsset;
+    data: MusicAsset;
   }>
 > = (state, action) => {
   upsertAssetEntity(state.music, musicAdapter, action.payload.data, [
@@ -5421,7 +5421,8 @@ const entitiesSlice = createSlice({
       .addCase(projectActions.renameAsset.fulfilled, renamedAsset)
       .addCase(spriteActions.detectSpriteComplete, loadDetectedSprite)
       .addCase(projectActions.reloadAssets, reloadAssets)
-      .addCase(addNewSongFile.fulfilled, loadMusic),
+      .addCase(addNewSongFile.fulfilled, loadMusic)
+      .addCase(trackerDocumentActions.convertModToUgeSong.fulfilled, loadMusic),
 });
 
 export const actions = {

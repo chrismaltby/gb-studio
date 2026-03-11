@@ -80,14 +80,8 @@ const makeBuild = async ({
     env.BATTERYLESS = "true";
   }
   env.COLOR_MODE = settings.colorMode;
-  env.MUSIC_DRIVER = settings.musicDriver;
   if (debug) {
     env.DEBUG = "true";
-  }
-  if (settings.musicDriver === "huge") {
-    env.MUSIC_DRIVER = "HUGE_TRACKER";
-  } else {
-    env.MUSIC_DRIVER = "GBT_PLAYER";
   }
   if (settings.cartType === "mbc3") {
     env.RUMBLE_ENABLE = "0x20";
@@ -107,7 +101,6 @@ const makeBuild = async ({
   const makeCommands = await getBuildCommands(buildRoot, {
     colorEnabled,
     sgb: sgbEnabled,
-    musicDriver: settings.musicDriver,
     batteryless: batterylessEnabled,
     debug,
     platform: process.platform,
@@ -182,7 +175,6 @@ const makeBuild = async ({
     colorEnabled,
     sgbEnabled,
     colorOnly,
-    settings.musicDriver,
     batterylessEnabled,
     debug,
     targetPlatform,

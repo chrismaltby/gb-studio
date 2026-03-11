@@ -239,7 +239,6 @@ const ejectBuild = async ({
     color: colorEnabled,
     sgb: settings.sgbEnabled,
     batteryless: settings.batterylessEnabled,
-    musicDriver: settings.musicDriver,
   });
   await fs.writeFile(`${outputRoot}/Makefile.build`, makeDotBuildFile);
 };

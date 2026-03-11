@@ -1,6 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { PatternCell } from "shared/lib/uge/song/PatternCell";
+import { PatternCell } from "shared/lib/uge/types";
 import {
   renderNote,
   renderInstrument,

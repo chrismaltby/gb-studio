@@ -108,10 +108,7 @@ import { compileSound } from "./sounds/compileSound";
 import { readFileToTilesData } from "lib/tiles/readFileToTiles";
 import l10n from "shared/lib/lang/l10n";
 import type { Reference } from "components/forms/ReferencesSelect";
-import type {
-  MusicDriverSetting,
-  SettingsState,
-} from "store/features/settings/settingsState";
+import type { SettingsState } from "store/features/settings/settingsState";
 import { ensureNumber, ensureString, ensureTypeGenerator } from "shared/types";
 import { walkSceneScripts, walkScenesScripts } from "shared/lib/scripts/walk";
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
@@ -764,13 +761,8 @@ const precompileMusic = (
   scenes: Scene[],
   customEventsLookup: Record<string, Script>,
   music: Music[],
-  musicDriver: MusicDriverSetting,
 ) => {
   const usedMusicIds: string[] = [];
-  const driverMusic =
-    musicDriver === "huge"
-      ? music.filter((track) => track.type === "uge")
-      : music.filter((track) => track.type !== "uge");
 
   walkScenesScripts(
     scenes,
@@ -802,19 +794,6 @@ const precompileMusic = (
   const usedMusic: PrecompiledMusicTrack[] = music
     .filter((track) => {
       return usedMusicIds.indexOf(track.id) > -1;
-    })
-    .map((track) => {
-      // If wrong driver needed, fallback to first driver track
-      if (
-        (musicDriver === "huge" && track.type === "uge") ||
-        (musicDriver !== "huge" && track.type !== "uge")
-      ) {
-        return track;
-      }
-      return {
-        ...driverMusic[0],
-        id: track.id,
-      };
     })
     .filter((track) => track.symbol)
     .map((track) => {
@@ -1258,7 +1237,6 @@ const precompile = async (
     projectData.scenes,
     customEventsLookup,
     projectData.music,
-    projectData.settings.musicDriver,
   );
 
   progress(`${l10n("COMPILER_PREPARING_FONTS")}...`);
@@ -2024,13 +2002,11 @@ const compile = async (
     startDirection,
     startMoveSpeed = 1,
     startAnimSpeed = 15,
-    musicDriver,
   } = projectData.settings;
 
   // Add music data
   output["music_data.h"] = compileMusicHeader(precompiled.usedMusic);
   await compileMusicTracks(precompiled.usedMusic, {
-    engine: musicDriver,
     output,
     tmpPath,
     projectRoot,

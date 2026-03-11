@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import styled, { css } from "styled-components";
-import { Song } from "shared/lib/uge/song/Song";
+import { Song, PatternCell } from "shared/lib/uge/types";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SequenceEditor } from "./SequenceEditor";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
@@ -9,7 +9,6 @@ import { RollChannel } from "./RollChannel";
 import { RollChannelGrid } from "./RollChannelGrid";
 import { RollChannelSelectionArea } from "./RollChannelSelectionArea";
 import trackerActions from "store/features/tracker/trackerActions";
-import { PatternCell } from "shared/lib/uge/song/PatternCell";
 import { cloneDeep } from "lodash";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
@@ -24,6 +23,7 @@ import { RollChannelHover } from "./RollChannelHover";
 import API from "renderer/lib/api";
 import { MusicDataPacket } from "shared/lib/music/types";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { createPatternCell } from "shared/lib/uge/song";
 
 const CELL_SIZE = 16;
 const MAX_NOTE = 71;
@@ -459,7 +459,11 @@ export const SongPianoRoll = ({
         for (const i of selectedPatternCells) {
           const newPatternColumn = cloneDeep(pattern[i]);
           const newPatternCell = !clonePatternCells
-            ? newPatternColumn.splice(selectedChannel, 1, new PatternCell())[0]
+            ? newPatternColumn.splice(
+                selectedChannel,
+                1,
+                createPatternCell(),
+              )[0]
             : { ...newPatternColumn[selectedChannel] };
           if (newPattern[i + deltaX]) {
             newPatternCell.note =
@@ -472,7 +476,7 @@ export const SongPianoRoll = ({
             newPattern[i + deltaX][selectedChannel] = newPatternCell;
           } else if (i + deltaX < 0 || i + deltaX >= 64) {
             if (selectedPatternCells.indexOf(i - deltaX) === -1) {
-              newPattern[i][selectedChannel] = new PatternCell();
+              newPattern[i][selectedChannel] = createPatternCell();
             }
           }
         }
@@ -818,7 +822,7 @@ export const SongPianoRoll = ({
           console.log(newPattern, selectedPatternCells, selectedChannel);
           selectedPatternCells.forEach((i) => {
             console.log(newPattern[i]);
-            newPattern[i].splice(selectedChannel, 1, new PatternCell());
+            newPattern[i].splice(selectedChannel, 1, createPatternCell());
           });
           dispatch(trackerActions.setSelectedPatternCells([]));
           console.log(patternId, newPattern);
@@ -899,7 +903,7 @@ export const SongPianoRoll = ({
       console.log(newPattern, selectedPatternCells, selectedChannel);
       selectedPatternCells.forEach((i) => {
         console.log(newPattern[i]);
-        newPattern[i].splice(selectedChannel, 1, new PatternCell());
+        newPattern[i].splice(selectedChannel, 1, createPatternCell());
       });
       dispatch(trackerActions.setSelectedPatternCells([]));
       console.log(patternId, newPattern);
@@ -956,10 +960,10 @@ export const SongPianoRoll = ({
               return row;
             }
             return [
-              new PatternCell(),
-              new PatternCell(),
-              new PatternCell(),
-              new PatternCell(),
+              createPatternCell(),
+              createPatternCell(),
+              createPatternCell(),
+              createPatternCell(),
             ];
           });
 
@@ -1002,6 +1006,12 @@ export const SongPianoRoll = ({
     selectedChannel,
     ...visibleChannels.filter((c) => c !== selectedChannel),
   ].reverse();
+
+  const c5Ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    c5Ref.current?.scrollIntoView({ block: "center" });
+  }, []);
 
   return (
     <div
@@ -1110,6 +1120,7 @@ export const SongPianoRoll = ({
                     <PianoKey
                       $color="white"
                       $highlight={hoverNote === MAX_NOTE - (i * 12 + 11)}
+                      ref={8 - i === 5 ? c5Ref : null}
                     >
                       C{8 - i}
                     </PianoKey>

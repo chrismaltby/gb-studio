@@ -5,7 +5,7 @@ import {
   FormRow,
   FormSectionTitle,
 } from "ui/form/layout/FormLayout";
-import { PatternCell } from "shared/lib/uge/song/PatternCell";
+import { PatternCell } from "shared/lib/uge/types";
 import { Select, OptionLabelWithInfo } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { SliderField } from "ui/form/SliderField";
