@@ -83,10 +83,13 @@ export const autoPalette = (
     }
   }
 
+  const isNES = true;
+  const sharedBgColor = isNES ? mostCommonColor(allPalettes) : undefined;
+
   // As some tiles may overlap it's possible to compress them further
   // mapping table maps original palette index to indexed in compressed list
   const { palettes, mappingTable } = setUIPalette(
-    compressPalettes(allPalettes),
+    compressPalettes(allPalettes, sharedBgColor),
     uiPalette,
   );
 
@@ -385,7 +388,10 @@ const findClosestHexColor = (
  * Compress array of hex palettes by merging overlapping palettes
  * builds a mapping table from old palette to new index
  */
-export const compressPalettes = (allPalettes: VariableLengthHexPalette[]) => {
+export const compressPalettes = (
+  allPalettes: VariableLengthHexPalette[],
+  sharedHex?: string,
+) => {
   let outPalettes = [...allPalettes];
   // let labPalettes = allPalettes.map((palette) => palette.map((hex) => ({hex, chroma:chroma(hex)})));
   const originIndices: number[][] = allPalettes.map((_, index) => [index]); // Tracks original indices for each new palette
@@ -419,6 +425,45 @@ export const compressPalettes = (allPalettes: VariableLengthHexPalette[]) => {
   // Sort palettes by lightness
   outPalettes = outPalettes.map(sortHexPalette);
 
+  // Convert to fixed palettes
+  let filledPalettes = fillVariablePalettes(outPalettes);
+
+  // NES Shared color
+  if (sharedHex) {
+    filledPalettes = filledPalettes.map((palette) => {
+      const out = [...palette] as HexPalette;
+
+      let sharedIndex = out.indexOf(sharedHex);
+
+      // If palette doesn't contain shared color
+      // Find closest color and replace it
+      if (sharedIndex === -1) {
+        let closestIndex = 0;
+        let minDistance = Infinity;
+
+        for (let i = 0; i < 4; i++) {
+          const d = manhattanHexDistance(out[i], sharedHex);
+          if (d < minDistance) {
+            minDistance = d;
+            closestIndex = i;
+          }
+        }
+
+        out[closestIndex] = sharedHex;
+        sharedIndex = closestIndex;
+      }
+
+      // Move shared color to slot 0
+      if (sharedIndex !== 0) {
+        const temp = out[0];
+        out[0] = sharedHex;
+        out[sharedIndex] = temp;
+      }
+
+      return out;
+    });
+  }
+
   // Generate mapping table
   const mappingTable = new Array(allPalettes.length)
     .fill(0)
@@ -429,7 +474,7 @@ export const compressPalettes = (allPalettes: VariableLengthHexPalette[]) => {
     });
   });
 
-  return { palettes: fillVariablePalettes(outPalettes), mappingTable };
+  return { palettes: filledPalettes, mappingTable };
 };
 
 /**
@@ -704,4 +749,27 @@ export const setUIPalette = (
   });
 
   return { palettes: outPalettes, mappingTable: outMapping };
+};
+
+const mostCommonColor = (palettes: VariableLengthHexPalette[]): string => {
+  const counts: Record<string, number> = {};
+
+  for (const palette of palettes) {
+    for (const hex of palette) {
+      counts[hex] = (counts[hex] ?? 0) + 1;
+    }
+  }
+
+  let bestColor = "";
+  let bestCount = -1;
+
+  for (const hex in counts) {
+    const count = counts[hex];
+    if (count > bestCount) {
+      bestCount = count;
+      bestColor = hex;
+    }
+  }
+
+  return bestColor;
 };
