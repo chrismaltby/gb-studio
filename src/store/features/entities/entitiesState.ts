@@ -5599,9 +5599,6 @@ const localBackgroundSelectById = (state: EntitiesState, id: string) =>
 const localBackgroundSelectAll = (state: EntitiesState) =>
   state.backgrounds.ids.map((id) => state.backgrounds.entities[id]);
 
-const localBackgroundSelectIds = (state: EntitiesState) =>
-  state.backgrounds.ids;
-
 const localPaletteSelectTotal = (state: EntitiesState) =>
   state.palettes.ids.length;
 

@@ -24,7 +24,7 @@
     "test": "jest --maxWorkers=2",
     "coverage": "jest --coverage --runInBand || true",
     "missing-translations": "node src/lang/list_missing.js",
-    "make:cli": "webpack --config webpack.cli.config.js",
+    "make:cli": "webpack --config ./src/apps/gb-studio-cli/webpack.cli.config.js",
     "start:cli": "env NO_TYPE_CHECKING=1 npm run make:cli && node out/cli/gb-studio-cli",
     "start:cli:profile": "env NO_TYPE_CHECKING=1 npm run make:cli && time node --prof out/cli/gb-studio-cli",
     "flamegraph": "node --prof-process --preprocess -j isolate*.log | flamebearer",
@@ -42,7 +42,7 @@
   "author": "GB Studio",
   "license": "MIT",
   "config": {
-    "forge": "./forge.config.js"
+    "forge": "./src/apps/gb-studio/forge.config.js"
   },
   "bin": {
     "gb-studio-cli": "./out/cli/gb-studio-cli.js"
@@ -51,6 +51,8 @@
     "@jitl/quickjs-singlefile-browser-release-sync": "^0.31.0",
     "@jitl/quickjs-singlefile-cjs-debug-sync": "^0.31.0",
     "@jitl/quickjs-singlefile-cjs-release-sync": "^0.31.0",
+    "@mediabunny/flac-encoder": "^1.39.2",
+    "@mediabunny/mp3-encoder": "^1.39.2",
     "@octokit/rest": "^16.25.4",
     "@reduxjs/toolkit": "^2.2.7",
     "@sinclair/typebox": "^0.32.35",
@@ -77,6 +79,7 @@
     "hash-wasm": "^4.12.0",
     "image-size": "^1.0.0",
     "lodash": "^4.17.23",
+    "mediabunny": "^1.39.2",
     "node-fetch": "^3.3.2",
     "node-gzip": "^1.1.2",
     "normalizr": "^3.6.2",

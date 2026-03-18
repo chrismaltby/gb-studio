@@ -154,6 +154,17 @@ export const TRACKER_REDO = "TRACKER_REDO";
 export const OVERLAY_SPEED_INSTANT = -3;
 export const OVERLAY_SPEED_DEFAULT = -1;
 
+export const PIANO_ROLL_CELL_SIZE = 14;
+export const TRACKER_PATTERN_LENGTH = 64;
+export const OCTAVE_SIZE = 12;
+export const TOTAL_OCTAVES = 6;
+export const TOTAL_NOTES = TOTAL_OCTAVES * OCTAVE_SIZE;
+export const PIANO_ROLL_PIANO_WIDTH = 30;
+export const PIANO_ROLL_HEADER_HEIGHT = 40;
+export const PIANO_ROLL_FOOTER_HEIGHT = 20;
+export const MIN_OCTAVE = 3;
+export const MAX_OCTAVE = 8;
+
 // Errors
 export const ERR_PROJECT_EXISTS = "ERR_PROJECT_EXISTS";
 

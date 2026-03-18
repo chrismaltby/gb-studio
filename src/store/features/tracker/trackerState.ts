@@ -1,6 +1,9 @@
 /* eslint-disable camelcase */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import editorActions from "store/features/editor/editorActions";
+import type { MusicExportFormat } from "shared/lib/music/types";
+import clamp from "shared/lib/helpers/clamp";
+import { MAX_EXPORT_LOOPS, MIN_EXPORT_LOOPS } from "shared/lib/music/constants";
 
 export type PianoRollToolType = "pencil" | "eraser" | "selection" | null;
 
@@ -10,6 +13,7 @@ interface TrackerState {
   // status: "loading" | "error" | "loaded" | null,
   // error?: string;
   playing: boolean;
+  exporting: boolean;
   playerReady: boolean;
   // song?: Song;
   octaveOffset: number;
@@ -22,18 +26,22 @@ interface TrackerState {
   visibleChannels: number[];
   hoverNote: number | null;
   hoverColumn: number | null;
+  hoverSequence: number | null;
   startPlaybackPosition: [number, number];
   defaultStartPlaybackPosition: [number, number];
   selectedPatternCells: number[];
   selection: [number, number, number, number];
   selectedEffectCell: number | null;
   subpatternEditorFocus: boolean;
+  exportFormat: MusicExportFormat;
+  exportLoopCount: number;
 }
 
 export const initialState: TrackerState = {
   // status: null,
   // error: "",
   playing: false,
+  exporting: false,
   playerReady: false,
   // song: null,
   octaveOffset: 0,
@@ -46,12 +54,15 @@ export const initialState: TrackerState = {
   visibleChannels: [0, 1, 2, 3],
   hoverNote: null,
   hoverColumn: null,
+  hoverSequence: null,
   startPlaybackPosition: [0, 0],
   defaultStartPlaybackPosition: [0, 0],
   selectedPatternCells: [],
   selection: [-1, -1, -1, -1],
   selectedEffectCell: null,
   subpatternEditorFocus: false,
+  exportFormat: "mp3",
+  exportLoopCount: 1,
 };
 
 const trackerSlice = createSlice({
@@ -69,17 +80,29 @@ const trackerSlice = createSlice({
       state.playing = false;
       state.startPlaybackPosition = [...state.defaultStartPlaybackPosition];
     },
+    setExporting: (state, action: PayloadAction<boolean>) => {
+      state.exporting = action.payload;
+      if (action.payload) {
+        state.playing = false;
+      }
+    },
     playerReady: (state, _action: PayloadAction<boolean>) => {
       state.playerReady = _action.payload;
     },
     setView: (state, action: PayloadAction<TrackerViewType>) => {
       state.view = action.payload;
     },
-    setHoverNote: (state, action: PayloadAction<number | null>) => {
-      state.hoverNote = action.payload;
-    },
-    setHoverColumn: (state, action: PayloadAction<number | null>) => {
-      state.hoverColumn = action.payload;
+    setHover: (
+      state,
+      action: PayloadAction<{
+        note: number | null;
+        column: number | null;
+        sequenceId: number | null;
+      }>,
+    ) => {
+      state.hoverNote = action.payload.note;
+      state.hoverColumn = action.payload.column;
+      state.hoverSequence = action.payload.sequenceId;
     },
     setTool: (state, _action: PayloadAction<PianoRollToolType>) => {
       state.tool = _action.payload;
@@ -122,6 +145,20 @@ const trackerSlice = createSlice({
     setSubpatternEditorFocus: (state, _action: PayloadAction<boolean>) => {
       console.log("FOCUS:", _action.payload);
       state.subpatternEditorFocus = _action.payload;
+    },
+    setExportSettings: (
+      state,
+      action: PayloadAction<{
+        format: MusicExportFormat;
+        loopCount: number;
+      }>,
+    ) => {
+      state.exportFormat = action.payload.format;
+      state.exportLoopCount = clamp(
+        Math.floor(action.payload.loopCount),
+        MIN_EXPORT_LOOPS,
+        MAX_EXPORT_LOOPS,
+      );
     },
   },
   extraReducers: (builder) =>

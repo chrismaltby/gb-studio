@@ -541,7 +541,7 @@
   "FIELD_LINK_CLOSE": "关闭当前链接会话。",
   "FIELD_LINK_JOIN": "加入链接会话。",
   "FIELD_LINK_HOST": "主持链接会话。",
-  "FIELD_TEST_INSTRUMENT": "测试仪器 (C5)",
+  "FIELD_TEST_INSTRUMENT": "测试仪器",
   "FIELD_DIRECTION_OFFSET": "方向偏移",
   "FIELD_CURSOR_IMAGE": "光标图像",
   "FIELD_FRAME_IMAGE": "帧图像",

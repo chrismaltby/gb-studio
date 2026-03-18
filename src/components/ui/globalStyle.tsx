@@ -33,8 +33,26 @@ const GlobalStyle = createGlobalStyle`
 
     --note-bg-color: var(--note-bg-color-blue);
     --note-border-color: var(--note-border-color-blue);
+
+    // Island Joy 16 Palette by Kerrie Lake
+    // https://lospec.com/palette-list/island-joy-16
+
+    --instrument-0-color: #6df7c1;
+    --instrument-1-color: #11adc1;
+    --instrument-2-color: #606c81;
+    --instrument-3-color: #393457;
+    --instrument-4-color: #1e8875;
+    --instrument-5-color: #5bb361;
+    --instrument-6-color: #a1e55a;
+    --instrument-7-color: #f7e476;
+    --instrument-8-color: #f99252;
+    --instrument-9-color: #cb4d68;
+    --instrument-10-color: #6a3771;
+    --instrument-11-color: #c92464;
+    --instrument-12-color: #f48cb6;
+    --instrument-13-color: #f7b69e;
+    --instrument-14-color: #9b9c82;
   }
-  
 
   @font-face {
       font-family: 'Public Pixel';
@@ -187,69 +205,66 @@ const GlobalStyle = createGlobalStyle`
     background: #00bcd4;
   }
 
-  // Island Joy 16 Palette by Kerrie Lake
-  // https://lospec.com/palette-list/island-joy-16
-
   .label--instrument-0 {
-    background: #6df7c1;
+    background: var(--instrument-0-color);
   }
 
   .label--instrument-1 {
-    background: #11adc1;
+    background: var(--instrument-1-color);
   }
 
   .label--instrument-2 {
-    background: #606c81;
+    background: var(--instrument-2-color);
   }
 
   .label--instrument-3 {
-    background: #393457;
+    background: var(--instrument-3-color);
   }
 
   .label--instrument-4 {
-   background: #1e8875;
-  }
+    background: var(--instrument-4-color);
+  } 
 
   .label--instrument-5 {
-   background: #5bb361;
+    background: var(--instrument-5-color);
   }
-
+    
   .label--instrument-6 {
-    background: #a1e55a;
+    background: var(--instrument-6-color);
   }
 
   .label--instrument-7 {
-    background: #f7e476;
+    background: var(--instrument-7-color);
   }
 
   .label--instrument-8 {
-    background: #f99252;
+    background: var(--instrument-8-color);
   }
 
   .label--instrument-9 {
-    background: #cb4d68;
+    background: var(--instrument-9-color);
   }
-
+    
   .label--instrument-10 {
-    background: #6a3771;
+    background: var(--instrument-10-color);
   }
-
+  
   .label--instrument-11 {
-    background: #c92464;
+    background: var(--instrument-11-color);
   }
 
   .label--instrument-12 {
-    background: #f48cb6;
+    background: var(--instrument-12-color);
   }
 
   .label--instrument-13 {
-    background: #f7b69e;
+    background: var(--instrument-13-color);
   }
 
   .label--instrument-14 {
-    background: #9b9c82;
+    background: var(--instrument-14-color);
   }
-
+  
   .MentionsInput__suggestions {
     background-color: transparent !important;
     z-index: 1000 !important;

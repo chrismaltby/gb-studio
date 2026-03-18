@@ -455,7 +455,7 @@
   "FIELD_LINK_CLOSE": "Terminar sessão link actual.",
   "FIELD_LINK_JOIN": "Juntar a sessão link existente.",
   "FIELD_LINK_HOST": "Iniciar uma sessão link.",
-  "FIELD_TEST_INSTRUMENT": "Testar Instrumento (C5)",
+  "FIELD_TEST_INSTRUMENT": "Testar Instrumento",
   "FIELD_DIRECTION_OFFSET": "Deslocamento de Direcção",
   "FIELD_CURSOR_IMAGE": "Imagem de Cursor",
   "FIELD_FRAME_IMAGE": "Imagem de Frame",

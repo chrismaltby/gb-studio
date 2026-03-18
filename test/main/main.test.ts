@@ -1,12 +1,12 @@
 import electron, { BrowserWindow } from "electron";
-import { createPreferences, createSplash } from "../../src/main";
+import { createPreferences, createSplash } from "../../src/apps/gb-studio/main";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 
 jest.mock("electron");
 jest.mock("fs-extra");
 jest.mock("lib/helpers/updateChecker");
 jest.mock("lib/project/createProject");
-jest.mock("../../src/menu");
+jest.mock("../../src/apps/gb-studio/menu");
 
 const mockedElectron = jest.mocked(electron);
 const mockedCheckForUpdate = jest.mocked(checkForUpdate);

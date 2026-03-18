@@ -27,8 +27,18 @@ import {
   NR24,
   AUD3_WAVE_RAM,
 } from "shared/lib/music/constants";
+import compiler from "./compiler";
 
 let previewTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+const getRamAddress = (sym: string) => {
+  return compiler.getRamSymbols().indexOf(sym);
+};
+
+const isPlayerPaused = () => {
+  const isPlayerPausedAddr = getRamAddress("is_player_paused");
+  return emulator.readMem(isPlayerPausedAddr) === 1;
+};
 
 export const playNotePreview = (
   note: number,
@@ -37,16 +47,28 @@ export const playNotePreview = (
   square2: boolean,
   waves: Uint8Array[] = [],
 ) => {
-  console.log(note, instrument, square2);
+  emulator.writeMem(NR12, 0);
+  emulator.writeMem(NR22, 0);
+  emulator.writeMem(NR30, 0);
+  emulator.writeMem(NR42, 0);
 
   switch (type) {
     case "duty":
+      if (isPlayerPaused()) {
+        emulator.setChannel(0, false);
+      }
       previewDutyInstrument(note, instrument as DutyInstrument, square2);
       break;
     case "wave":
+      if (isPlayerPaused()) {
+        emulator.setChannel(2, false);
+      }
       previewWaveInstrument(note, instrument as WaveInstrument, waves);
       break;
     case "noise":
+      if (isPlayerPaused()) {
+        emulator.setChannel(3, false);
+      }
       previewNoiseInstrument(note, instrument as NoiseInstrument);
       break;
     default:
@@ -61,7 +83,7 @@ export const playNotePreview = (
     emulator.writeMem(NR22, 0);
     emulator.writeMem(NR30, 0);
     emulator.writeMem(NR42, 0);
-  }, 2000);
+  }, 500);
 };
 
 function previewDutyInstrument(

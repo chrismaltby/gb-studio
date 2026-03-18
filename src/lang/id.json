@@ -546,7 +546,7 @@
   "FIELD_LINK_CLOSE": "Tutup sesi tautan saat ini.",
   "FIELD_LINK_JOIN": "Bergabung dengan sesi tautan.",
   "FIELD_LINK_HOST": "Menjadi host sesi tautan.",
-  "FIELD_TEST_INSTRUMENT": "Uji Instrumen (C5)",
+  "FIELD_TEST_INSTRUMENT": "Uji Instrumen",
   "FIELD_DIRECTION_OFFSET": "Offset Arah",
   "FIELD_CURSOR_IMAGE": "Gambar Kursor",
   "FIELD_FRAME_IMAGE": "Gambar Frame",

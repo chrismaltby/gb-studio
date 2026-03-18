@@ -577,7 +577,7 @@
   "FIELD_LINK_CLOSE": "Fermer la session link courante.",
   "FIELD_LINK_JOIN": "Rejoindre une session link.",
   "FIELD_LINK_HOST": "Héberger une session link.",
-  "FIELD_TEST_INSTRUMENT": "Tester l’instrument (C5)",
+  "FIELD_TEST_INSTRUMENT": "Tester l’instrument",
   "FIELD_DIRECTION_OFFSET": "Décalage de direction",
   "FIELD_CURSOR_IMAGE": "Image du curseur",
   "FIELD_FRAME_IMAGE": "Image du cadre",

@@ -20,6 +20,8 @@ import debug from "./features/debugger/debuggerState";
 import { TRACKER_REDO, TRACKER_UNDO } from "consts";
 
 let lastEntityUndoStateTime = 0;
+let lastTrackerUndoStateTime = 0;
+
 const UNDO_THROTTLE = 300;
 
 const rootReducer = combineReducers({
@@ -37,13 +39,26 @@ const rootReducer = combineReducers({
   trackerDocument: undoable(trackerDocument, {
     limit: 20,
     initTypes: ["@@TRACKER_INIT"],
-    filter: (action, _currentState, _previousHistory) => {
-      return (
+    filter: (action, currentState, previousHistory) => {
+      if (
         action.type.startsWith("tracker/loadSong/fulfilled") ||
-        action.type.startsWith("tracker/edit") ||
-        action.type.startsWith("tracker/transpose") ||
         action.type.startsWith("tracker/addSequence") ||
         action.type.startsWith("tracker/removeSequence")
+      ) {
+        return true;
+      }
+
+      const shouldStoreUndo =
+        currentState !== previousHistory.present &&
+        Date.now() > lastTrackerUndoStateTime + UNDO_THROTTLE;
+      if (!shouldStoreUndo) {
+        return false;
+      }
+      lastTrackerUndoStateTime = Date.now();
+      return (
+        action.type.startsWith("tracker/edit") ||
+        action.type.startsWith("tracker/transpose") ||
+        action.type.startsWith("tracker/moveSequence")
       );
     },
     ignoreInitialState: true,

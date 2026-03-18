@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for dragging and dropping entities between folders in the navigator panels
 - Add ability to also use `.mod` music files in projects using the `.uge` hUGETracker music format
 - Add ability to convert `.mod` files to `.uge` to enable editing in the Music Editor
+- Add ability to solo channels in Music Editor
+- Add support for dragging and dropping to reorder patterns in Music Editor
+- Add ability to test multiple octaves for instruments in sidebar
+- Add step selection to tracker toolbar in Music Editor
+- Add ability to export songs from the Music Editor as MP3, FLAC, or WAV
 - Ukrainian localisation. [@AmakerGame](https://github.com/AmakerGame)
 
 ### Changed
@@ -32,12 +37,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Music Editor now centres the piano roll on C5 when opening a file
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Piano Roll view in the Music Editor now displays the full song at once
+- Patterns in the Music Editor are now color-coded to improve organisation
+- Notes in the Piano Roll without an instrument now use the previously set instrument color with a striped pattern
+- Editing or changing instruments in the Music Editor now plays a preview note
 
 ### Fixed
 
 - Fix issue where scenes with deleted sprite overrides would use a random sprite instead of the scene type's default sprite
 - Fix issue where renaming an asset to a name ending with a `/` would cause the file to be missing when reloading project
 - Fix issue where plugin assets could be renamed or deleted from the IDE
+- Fixed crash in the Music Editor Tracker view when adding notes past the end of a pattern
+- Fixed issue where loading a new song retained the previous song's mute state
+- Fixed issue where the Music Editor would not automatically display the first song if it was a `.mod` file
+- Fix issue where "Test Instrument" in Music Editor would not work if instrument's channel was muted
 
 ## [4.2.2] - 2026-02-24
 

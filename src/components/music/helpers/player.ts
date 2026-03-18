@@ -1,8 +1,13 @@
+import type { MusicExportFormat } from "shared/lib/music/types";
 import compiler from "./compiler";
 import storage from "./storage";
 import emulator from "./emulator";
 import { Song, SubPatternCell } from "shared/lib/uge/types";
 import { lo, hi } from "shared/lib/helpers/8bit";
+import {
+  ERROR_AUDIO_ENCODE_FAILED,
+  ERROR_TIMED_OUT,
+} from "shared/lib/music/constants";
 
 export type PlaybackPosition = [number, number];
 
@@ -13,10 +18,25 @@ let romFile: Uint8Array;
 
 let currentSequence = -1;
 let currentRow = -1;
+let isExporting = false;
 
 const channels = [false, false, false, false];
 
 let onIntervalCallback = (_updateData: PlaybackPosition) => {};
+
+const exportMaxRenderSeconds = 60 * 10;
+
+type RenderedSongAudio = {
+  leftChunks: Float32Array[];
+  rightChunks: Float32Array[];
+  sampleRate: number;
+};
+
+type MediabunnyModule = typeof import("mediabunny");
+
+let mp3EncoderRegistered = false;
+let flacEncoderRegistered = false;
+let mediabunnyModulePromise: Promise<MediabunnyModule> | null = null;
 
 const getRamAddress = (sym: string) => {
   return compiler.getRamSymbols().indexOf(sym);
@@ -24,6 +44,13 @@ const getRamAddress = (sym: string) => {
 
 const getRomAddress = (sym: string) => {
   return compiler.getRomSymbols().indexOf(sym);
+};
+
+const getMediabunny = async () => {
+  if (!mediabunnyModulePromise) {
+    mediabunnyModulePromise = import("mediabunny");
+  }
+  return mediabunnyModulePromise;
 };
 
 const isPlayerPaused = () => {
@@ -87,14 +114,17 @@ const initPlayer = (onInit: (file: Uint8Array) => void, sfx?: string) => {
     if (!file) return;
 
     romFile = file;
+    emulator.init(romFile);
     if (onInit) {
       onInit(file);
     }
-    emulator.init(romFile);
 
     const doResumePlayerAddr = getRamAddress("do_resume_player");
 
     const updateTracker = () => {
+      if (isExporting) {
+        return;
+      }
       emulator.step("run");
       console.log(
         "RUN",
@@ -111,8 +141,30 @@ const initPlayer = (onInit: (file: Uint8Array) => void, sfx?: string) => {
 };
 
 const setChannel = (channel: number, muted: boolean) => {
-  channels[channel] = emulator.setChannel(channel, muted);
-  return channels;
+  const unmutedChannels = channels.filter((i) => !i);
+  if (unmutedChannels.length <= 1) {
+    // Unmute all channels except selected one
+    for (let i = 0; i < channels.length; i++) {
+      channels[i] = emulator.setChannel(i, i === channel);
+    }
+  } else {
+    // Mute selected
+    channels[channel] = emulator.setChannel(channel, muted);
+  }
+  return [...channels];
+};
+
+const setSolo = (channel: number, enabled: boolean) => {
+  if (enabled) {
+    for (let i = 0; i < channels.length; i++) {
+      channels[i] = emulator.setChannel(i, i !== channel);
+    }
+  } else {
+    for (let i = 0; i < channels.length; i++) {
+      channels[i] = emulator.setChannel(i, false);
+    }
+  }
+  return [...channels];
 };
 
 const loadSong = (song: Song) => {
@@ -287,6 +339,230 @@ const updateRom = (song: Song) => {
   patchRom(romFile, song, addr);
 
   emulator.updateRom(romFile);
+};
+
+const renderSongAudio = async (
+  song: Song,
+  loopCount = 1,
+): Promise<RenderedSongAudio> => {
+  const leftChunks: Float32Array[] = [];
+  const rightChunks: Float32Array[] = [];
+  let sampleRate = 44100;
+  const targetLoopCount = Math.max(1, Math.floor(loopCount));
+  let reachedTargetLoopCount = false;
+  let capturedSamples = 0;
+  let lastPosition = "0:0";
+  const visitedPositions = new Map<string, number>();
+
+  emulator.setAudioCapture((left, right, captureSampleRate) => {
+    sampleRate = captureSampleRate;
+    leftChunks.push(left);
+    rightChunks.push(right);
+    capturedSamples += left.length;
+  });
+  emulator.resetAudio();
+
+  const ticksPerRowAddr = getRamAddress("ticks_per_row");
+  const currentOrderAddr = getRamAddress("current_order");
+  const rowAddr = getRamAddress("row");
+  const orderCntAddr = getRamAddress("order_cnt");
+  const previousChannels = [...channels];
+
+  try {
+    updateRom(song);
+    stop([0, 0]);
+    setStartPosition([0, 0]);
+
+    emulator.writeMem(ticksPerRowAddr, song.ticks_per_row);
+    emulator.writeMem(orderCntAddr, song.sequence.length * 2);
+    emulator.setChannel(0, false);
+    emulator.setChannel(1, false);
+    emulator.setChannel(2, false);
+    emulator.setChannel(3, false);
+
+    if (isPlayerPaused()) {
+      doResume();
+    }
+
+    visitedPositions.set(lastPosition, 1);
+
+    while (
+      !reachedTargetLoopCount &&
+      capturedSamples < exportMaxRenderSeconds * sampleRate
+    ) {
+      emulator.step("frame");
+
+      const currentSequence = emulator.readMem(currentOrderAddr) / 2;
+      const currentRow = emulator.readMem(rowAddr);
+      const currentPosition = `${currentSequence}:${currentRow}`;
+
+      if (currentPosition !== lastPosition) {
+        const nextVisitCount = (visitedPositions.get(currentPosition) ?? 0) + 1;
+
+        if (nextVisitCount > targetLoopCount) {
+          reachedTargetLoopCount = true;
+          break;
+        }
+
+        visitedPositions.set(currentPosition, nextVisitCount);
+        lastPosition = currentPosition;
+      }
+    }
+  } finally {
+    stop([0, 0]);
+    emulator.setChannel(0, previousChannels[0]);
+    emulator.setChannel(1, previousChannels[1]);
+    emulator.setChannel(2, previousChannels[2]);
+    emulator.setChannel(3, previousChannels[3]);
+    emulator.removeAudioCapture();
+    emulator.resetAudio();
+  }
+
+  if (!reachedTargetLoopCount) {
+    throw new Error(ERROR_TIMED_OUT);
+  }
+
+  return {
+    leftChunks,
+    rightChunks,
+    sampleRate,
+  };
+};
+
+const interleaveAudioChunks = (
+  leftChunks: Float32Array[],
+  rightChunks: Float32Array[],
+) => {
+  const sampleCount = leftChunks.reduce(
+    (memo, chunk) => memo + chunk.length,
+    0,
+  );
+  const interleaved = new Float32Array(sampleCount * 2);
+  let offset = 0;
+
+  for (let chunkIndex = 0; chunkIndex < leftChunks.length; chunkIndex++) {
+    const left = leftChunks[chunkIndex];
+    const right = rightChunks[chunkIndex];
+    for (let i = 0; i < left.length; i++) {
+      interleaved[offset++] = left[i];
+      interleaved[offset++] = right[i];
+    }
+  }
+
+  return interleaved;
+};
+
+const ensureAudioEncoder = async (
+  format: MusicExportFormat,
+  sampleRate: number,
+) => {
+  const mediabunny = await getMediabunny();
+  const options = {
+    numberOfChannels: 2,
+    sampleRate,
+    bitrate: mediabunny.QUALITY_HIGH,
+  } as const;
+  const codec = format === "wav" ? "pcm-s16" : format;
+  const nativeSupported = await mediabunny.canEncodeAudio(codec, options);
+
+  if (nativeSupported) {
+    return codec;
+  }
+
+  if (format === "mp3") {
+    if (!mp3EncoderRegistered) {
+      const { registerMp3Encoder } = await import("@mediabunny/mp3-encoder");
+      registerMp3Encoder();
+      mp3EncoderRegistered = true;
+    }
+  } else if (!flacEncoderRegistered) {
+    const { registerFlacEncoder } = await import("@mediabunny/flac-encoder");
+    registerFlacEncoder();
+    flacEncoderRegistered = true;
+  }
+
+  const supportedAfterRegister = await mediabunny.canEncodeAudio(
+    codec,
+    options,
+  );
+
+  if (!supportedAfterRegister) {
+    throw new Error(ERROR_AUDIO_ENCODE_FAILED);
+  }
+
+  return codec;
+};
+
+const encodeAudio = async (
+  audio: RenderedSongAudio,
+  format: MusicExportFormat,
+) => {
+  const mediabunny = await getMediabunny();
+  const codec = await ensureAudioEncoder(format, audio.sampleRate);
+
+  const target = new mediabunny.BufferTarget();
+
+  let outputFormat;
+
+  if (format === "wav") {
+    outputFormat = new mediabunny.WavOutputFormat();
+  } else if (format === "mp3") {
+    outputFormat = new mediabunny.Mp3OutputFormat();
+  } else {
+    outputFormat = new mediabunny.FlacOutputFormat();
+  }
+
+  const output = new mediabunny.Output({
+    format: outputFormat,
+    target,
+  });
+
+  const source =
+    format === "wav"
+      ? new mediabunny.AudioSampleSource({ codec })
+      : new mediabunny.AudioSampleSource({
+          codec,
+          bitrate: mediabunny.QUALITY_HIGH,
+        });
+
+  output.addAudioTrack(source);
+  await output.start();
+
+  const audioSample = new mediabunny.AudioSample({
+    format: "f32",
+    sampleRate: audio.sampleRate,
+    numberOfChannels: 2,
+    timestamp: 0,
+    data: interleaveAudioChunks(audio.leftChunks, audio.rightChunks),
+  });
+
+  try {
+    await source.add(audioSample);
+    await output.finalize();
+  } finally {
+    audioSample.close();
+  }
+
+  if (!target.buffer) {
+    throw new Error(ERROR_AUDIO_ENCODE_FAILED);
+  }
+
+  return new Uint8Array(target.buffer);
+};
+
+const exportSong = async (
+  song: Song,
+  format: MusicExportFormat,
+  loopCount = 1,
+) => {
+  isExporting = true;
+  try {
+    const audio = await renderSongAudio(song, loopCount);
+    const data = await encodeAudio(audio, format);
+    return data;
+  } finally {
+    isExporting = false;
+  }
 };
 
 function patchRom(targetRomFile: Uint8Array, song: Song, startAddr: number) {
@@ -503,12 +779,14 @@ const player = {
   playSound,
   stop,
   setChannel,
+  setSolo,
   setStartPosition,
   getCurrentSong,
   setOnIntervalCallback: (cb: (position: PlaybackPosition) => void) => {
     onIntervalCallback = cb;
   },
   reset,
+  exportSong,
 };
 
 export default player;

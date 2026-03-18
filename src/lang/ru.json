@@ -526,7 +526,7 @@
   "FIELD_LINK_CLOSE": "Закрыть текущий сеанс связи",
   "FIELD_LINK_JOIN": "Присоединиться к сеансу связи",
   "FIELD_LINK_HOST": "Разместить сеанс связи",
-  "FIELD_TEST_INSTRUMENT": "Тестовый инструмент (C5)",
+  "FIELD_TEST_INSTRUMENT": "Тестовый инструмент",
   "FIELD_DIRECTION_OFFSET": "Смещение направления",
   "FIELD_CURSOR_IMAGE": "Изображение курсора",
   "FIELD_FRAME_IMAGE": "Изображение рамки",

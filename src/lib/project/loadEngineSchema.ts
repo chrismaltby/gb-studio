@@ -1,7 +1,6 @@
 import Path from "path";
 import { readJSON, pathExists } from "fs-extra";
 import glob from "glob";
-import uniqBy from "lodash/uniqBy";
 import { defaultEngineMetaPath } from "consts";
 import type {
   SceneTypeSchema,

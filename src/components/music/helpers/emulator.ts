@@ -28,13 +28,23 @@ type Emulator = {
   _get_audio_buffer_capacity: (emu: Emu) => number;
 };
 
+type AudioCaptureListener = (
+  left: Float32Array,
+  right: Float32Array,
+  sampleRate: number,
+) => void;
+
 let emu: Emu;
 let romPtr: number;
 let romSize = 0;
 let audioCtx: AudioContext;
 let audioTime: number;
+let audioCaptureListener: AudioCaptureListener | undefined;
 
 const audioBufferSize = 2048;
+
+let masterGain: GainNode;
+const activeSources = new Set<AudioBufferSourceNode>();
 
 /* see: 
   https://gist.github.com/surma/b2705b6cca29357ebea1c9e6e15684cc
@@ -58,7 +68,11 @@ const init = (romData: Uint8Array) => {
   console.log("INIT EMULATOR");
   if (isAvailable()) destroy();
 
-  if (typeof audioCtx == "undefined") audioCtx = new AudioContext();
+  if (typeof audioCtx == "undefined") {
+    audioCtx = new AudioContext();
+    masterGain = audioCtx.createGain();
+    masterGain.connect(audioCtx.destination);
+  }
 
   let requiredSize = ((romData.length - 1) | 0x3fff) + 1;
   if (requiredSize < 0x8000) requiredSize = 0x8000;
@@ -149,29 +163,83 @@ const setChannel = (channel: number, muted: boolean) => {
 };
 
 function processAudioBuffer() {
-  if (audioTime < audioCtx.currentTime) audioTime = audioCtx.currentTime;
+  if (audioTime < audioCtx.currentTime) {
+    audioTime = audioCtx.currentTime;
+  }
 
   const inputBuffer = new Uint8Array(
     Module.HEAP8.buffer,
     Module._get_audio_buffer_ptr(emu),
     Module._get_audio_buffer_capacity(emu),
   );
+
   const volume = 0.5;
-  const buffer = audioCtx.createBuffer(2, audioBufferSize, audioCtx.sampleRate);
-  const channel0 = buffer.getChannelData(0);
-  const channel1 = buffer.getChannelData(1);
+  const channel0 = new Float32Array(audioBufferSize);
+  const channel1 = new Float32Array(audioBufferSize);
 
   for (let i = 0; i < audioBufferSize; i++) {
     channel0[i] = (inputBuffer[2 * i] * volume) / 255;
     channel1[i] = (inputBuffer[2 * i + 1] * volume) / 255;
   }
-  const bufferSource = audioCtx.createBufferSource();
-  bufferSource.buffer = buffer;
-  bufferSource.connect(audioCtx.destination);
-  bufferSource.start(audioTime);
+
+  if (audioCaptureListener) {
+    audioCaptureListener?.(channel0, channel1, audioCtx.sampleRate);
+  } else {
+    const buffer = audioCtx.createBuffer(
+      2,
+      audioBufferSize,
+      audioCtx.sampleRate,
+    );
+
+    buffer.getChannelData(0).set(channel0);
+    buffer.getChannelData(1).set(channel1);
+
+    playBuffer(buffer, audioTime);
+  }
+
   const bufferSec = audioBufferSize / audioCtx.sampleRate;
   audioTime += bufferSec;
 }
+
+const playBuffer = (buffer: AudioBuffer, time: number) => {
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+
+  source.connect(masterGain);
+
+  source.start(time);
+
+  activeSources.add(source);
+
+  source.onended = () => {
+    activeSources.delete(source);
+    source.disconnect();
+  };
+};
+
+const stopAllAudio = () => {
+  for (const source of activeSources) {
+    try {
+      source.stop(audioCtx.currentTime);
+    } catch {}
+    source.disconnect();
+  }
+  activeSources.clear();
+};
+
+const resetAudio = () => {
+  stopAllAudio();
+  masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+  audioTime = audioCtx.currentTime;
+};
+
+const setAudioCapture = (listener: AudioCaptureListener) => {
+  audioCaptureListener = listener;
+};
+
+const removeAudioCapture = () => {
+  audioCaptureListener = undefined;
+};
 
 const emulator = {
   init,
@@ -180,6 +248,9 @@ const emulator = {
   step,
   updateRom,
   setChannel,
+  resetAudio,
+  setAudioCapture,
+  removeAudioCapture,
 };
 
 export default emulator;

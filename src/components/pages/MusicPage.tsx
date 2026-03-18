@@ -15,15 +15,15 @@ import {
   SplitPaneVerticalDivider,
 } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
-import { NavigatorSongs } from "components/music/NavigatorSongs";
-import { SongTracker } from "components/music/SongTracker";
+import { NavigatorSongs } from "components/music/navigator/NavigatorSongs";
+import { SongTracker } from "components/music/tracker/SongTracker";
 import { musicSelectors } from "store/features/entities/entitiesState";
 import { SongEditor } from "components/music/SongEditor";
-import SongEditorToolsPanel from "components/music/SongEditorToolsPanel";
-import SongEditorRightToolsPanel from "components/music/SongEditorRightToolsPanel";
+import SongEditorToolsPanel from "components/music/toolbar/SongEditorToolsPanel";
+import SongEditorRightToolsPanel from "components/music/toolbar/SongEditorRightToolsPanel";
 import { loadSongFile } from "store/features/trackerDocument/trackerDocumentState";
-import { SongPianoRoll } from "components/music/SongPianoRoll";
-import ModViewer from "components/music/ModViewer";
+import { SongPianoRoll } from "components/music/piano/SongPianoRoll";
+import ModViewer from "components/music/mod/ModViewer";
 import l10n from "shared/lib/lang/l10n";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { UgePlayer } from "components/music/UgePlayer";
@@ -68,8 +68,8 @@ const ErrorDescription = styled.div`
   padding-top: 5px;
 `;
 
-const MIN_WIDTH_FOR_RIGHT_PANEL = 630;
-const MIN_WIDTH_FOR_FULL_SIZE_RIGHT_PANEL = 710;
+const MIN_WIDTH_FOR_RIGHT_PANEL = 670;
+const MIN_WIDTH_FOR_FULL_SIZE_RIGHT_PANEL = 790;
 
 const MusicPage = () => {
   const dispatch = useAppDispatch();
@@ -135,6 +135,7 @@ const MusicPage = () => {
 
   useEffect(() => {
     if (selectedSongPath !== "" && selectedSongType === "uge") {
+      setChannelStatus([false, false, false, false]);
       dispatch({ type: "@@TRACKER_INIT" });
       dispatch(loadSongFile(selectedSongPath));
       dispatch(trackerActions.init());
@@ -311,7 +312,7 @@ const MusicPage = () => {
         </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
-      {selectedSongType === "mod" ? (
+      {selectedSongType === "mod" && viewSong ? (
         <div
           style={{
             flex: "1 1 0",
@@ -326,7 +327,7 @@ const MusicPage = () => {
           }}
         >
           <div style={{ flexGrow: 1, position: "relative" }}>
-            <ModViewer trackId={selectedSongId} allowConvertToUge />
+            <ModViewer trackId={viewSong.id} allowConvertToUge />
           </div>
         </div>
       ) : (
@@ -355,16 +356,17 @@ const MusicPage = () => {
               >
                 <div style={{ position: "relative", height: "60px" }}>
                   <SongEditorToolsPanel selectedSong={viewSong} />
-                  {documentWidth > MIN_WIDTH_FOR_RIGHT_PANEL && (
-                    <SongEditorRightToolsPanel
-                      channelStatus={channelStatus}
-                      size={
-                        documentWidth > MIN_WIDTH_FOR_FULL_SIZE_RIGHT_PANEL
-                          ? "medium"
-                          : "small"
-                      }
-                    />
-                  )}
+                  {documentWidth > MIN_WIDTH_FOR_RIGHT_PANEL &&
+                    view === "roll" && (
+                      <SongEditorRightToolsPanel
+                        channelStatus={channelStatus}
+                        size={
+                          documentWidth > MIN_WIDTH_FOR_FULL_SIZE_RIGHT_PANEL
+                            ? "medium"
+                            : "small"
+                        }
+                      />
+                    )}
                 </div>
                 <SplitPaneVerticalDivider />
                 {renderGridView()}

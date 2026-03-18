@@ -19,7 +19,7 @@ import type { Song } from "shared/lib/uge/types";
 import type { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
 import type { NavigationSection } from "store/features/navigation/navigationState";
 import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
-import type { MenuZoomType } from "menu";
+import type { MenuZoomType } from "shared/lib/menu/types";
 import type { DebuggerDataPacket } from "shared/lib/debugger/types";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
 import type { UsageData } from "lib/compiler/romUsage";
@@ -358,10 +358,6 @@ const APISetup = {
       ipcRenderer.invoke("sprite:compile", spriteData, defaultSpriteMode),
   },
   clipboard: {
-    addPasteInPlaceListener: (listener: () => void) =>
-      ipcRenderer.on("paste-in-place", listener),
-    removePasteInPlaceListener: (listener: () => void) =>
-      ipcRenderer.removeListener("paste-in-place", listener),
     readText: (): Promise<string> => ipcRenderer.invoke("clipboard:read-text"),
     readBuffer: async (format: string): Promise<Buffer> =>
       Buffer.from(await ipcRenderer.invoke("clipboard:read-buffer", format)),
@@ -459,6 +455,10 @@ const APISetup = {
       data: createSubscribeAPI<
         (event: IpcRendererEvent, data: MusicDataPacket) => void
       >("music:data"),
+      response:
+        createSubscribeAPI<
+          (event: IpcRendererEvent, data: MusicDataReceivePacket) => void
+        >("music:response"),
     },
     debugger: {
       data: createSubscribeAPI<

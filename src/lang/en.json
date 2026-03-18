@@ -591,7 +591,7 @@
   "FIELD_LINK_CLOSE": "Close the current link session.",
   "FIELD_LINK_JOIN": "Join a link session.",
   "FIELD_LINK_HOST": "Host a link session.",
-  "FIELD_TEST_INSTRUMENT": "Test Instrument (C5)",
+  "FIELD_TEST_INSTRUMENT": "Test Instrument",
   "FIELD_DIRECTION_OFFSET": "Direction Offset",
   "FIELD_CURSOR_IMAGE": "Cursor Image",
   "FIELD_FRAME_IMAGE": "Frame Image",
@@ -1313,6 +1313,14 @@
   "FIELD_PLATFORM_TOUCHING_WALL_DESC": "Whether the player is currently pressing against a wall in the platformer scene.",
   "FIELD_FONT_DESC": "The font to use for drawing text.",
   "FIELD_CONVERT_TO_UGE": "Convert To Editable .uge File",
+  "FIELD_PATTERN": "Pattern",
+  "FIELD_MUTE_CHANNEL": "Mute Channel",
+  "FIELD_SOLO_CHANNEL": "Solo Channel",
+  "FIELD_OCTAVE": "Octave",
+  "FIELD_EXPORT_SONG": "Export Song",
+  "FIELD_EXPORTING": "Exporting...",
+  "FIELD_FILE_FORMAT": "File Format",
+  "FIELD_LOOPS": "Loops",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1965,6 +1973,9 @@
   "ERROR_UNABLE_TO_REMOVE_PLUGIN": "Unable to remove plugin",
   "ERROR_UNABLE_TO_INSTALL_PLUGIN": "Unable to install plugin",
   "ERROR_FILE_DOESNT_BELONG_TO_CURRENT_PLUGIN": "Attempt to access \"{file}\". This file does not belong to the plugin which is trying to access it. Plugins can only access files in the `plugins/<PLUGIN_NAME>/events/` folder.",
+  "ERROR_EXPORT_FILE_FAILED": "Export {filetype} failed",
+  "ERROR_TIMED_OUT": "Operation timed out",
+  "ERROR_AUDIO_ENCODE_FAILED": "Unable to encode audio",
 
   "// 13": "Splash -------------------------------------------------------",
 

@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Song } from "shared/lib/uge/types";
 import trackerActions from "store/features/tracker/trackerActions";
 import API from "renderer/lib/api";
-import { MusicDataPacket } from "shared/lib/music/types";
+import { MusicDataReceivePacket } from "shared/lib/music/types";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 
 interface UgePlayerProps {
@@ -12,6 +12,11 @@ interface UgePlayerProps {
 
 export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
   const dispatch = useAppDispatch();
+  const currentSongRef = useRef<Song | null>(data);
+
+  useEffect(() => {
+    currentSongRef.current = data;
+  }, [data]);
 
   useEffect(() => {
     API.music.openMusic();
@@ -21,15 +26,16 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
   }, []);
 
   const play = useAppSelector((state) => state.tracker.playing);
+  const exporting = useAppSelector((state) => state.tracker.exporting);
 
   useEffect(() => {
-    const listener = (_event: unknown, d: MusicDataPacket) => {
+    const listener = (_event: unknown, d: MusicDataReceivePacket) => {
       switch (d.action) {
         case "initialized":
-          if (data) {
+          if (currentSongRef.current) {
             API.music.sendToMusicWindow({
               action: "load-song",
-              song: data,
+              song: currentSongRef.current,
             });
           }
           break;
@@ -44,26 +50,28 @@ export const UgePlayer = ({ data, onChannelStatusUpdate }: UgePlayerProps) => {
       }
     };
 
-    const unsubscribeMusicData = API.events.music.data.subscribe(listener);
+    const unsubscribeMusicData = API.events.music.response.subscribe(listener);
 
     return () => {
       unsubscribeMusicData();
     };
-  }, [onChannelStatusUpdate, play, data, dispatch]);
+  }, [onChannelStatusUpdate, dispatch]);
 
   useEffect(() => {
-    if (play && data) {
-      console.log("PLAY");
+    if (exporting) {
+      return;
+    }
+    if (play && currentSongRef.current) {
       API.music.sendToMusicWindow({
         action: "play",
-        song: data,
+        song: currentSongRef.current,
       });
     } else {
       API.music.sendToMusicWindow({
         action: "stop",
       });
     }
-  }, [play, data]);
+  }, [play, exporting]);
 
   return <div />;
 };

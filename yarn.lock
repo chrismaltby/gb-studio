@@ -3736,6 +3736,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mediabunny/flac-encoder@npm:^1.39.2":
+  version: 1.39.2
+  resolution: "@mediabunny/flac-encoder@npm:1.39.2"
+  peerDependencies:
+    mediabunny: ^1.0.0
+  checksum: 10c0/518568cf9e8c6aec8e9fc799a37a844b0094acb83f820e4a6277e6aab0a001f601e383d5e68230e1c1e805426d9e09f2ffe2832a0f57ac73f19f678896e1b346
+  languageName: node
+  linkType: hard
+
+"@mediabunny/mp3-encoder@npm:^1.39.2":
+  version: 1.39.2
+  resolution: "@mediabunny/mp3-encoder@npm:1.39.2"
+  peerDependencies:
+    mediabunny: ^1.0.0
+  checksum: 10c0/214a6cf4814db87bcf2b1e656b8801c3d0c47ebdc282427c156b45cdb8352f42bd0f1830f07d83ca3f82f62f632667a7616da1b374345ea33539cf9b8cf04292
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:^1.0.0":
   version: 1.0.1
   resolution: "@napi-rs/wasm-runtime@npm:1.0.1"
@@ -5094,6 +5112,29 @@ __metadata:
   version: 0.0.9
   resolution: "@types/doctrine@npm:0.0.9"
   checksum: 10c0/cdaca493f13c321cf0cacd1973efc0ae74569633145d9e6fc1128f32217a6968c33bea1f858275239fe90c98f3be57ec8f452b416a9ff48b8e8c1098b20fa51c
+  languageName: node
+  linkType: hard
+
+"@types/dom-mediacapture-transform@npm:^0.1.11":
+  version: 0.1.11
+  resolution: "@types/dom-mediacapture-transform@npm:0.1.11"
+  dependencies:
+    "@types/dom-webcodecs": "npm:*"
+  checksum: 10c0/19c76d54cf31aa2a925011fc5f973dff9a10bdecfdf2285e5e568e61850a0fa2b8c9f1807a1462cbefd57ec26d32eeaa9c359117aca9d9fe7f0d6f2fff33f51e
+  languageName: node
+  linkType: hard
+
+"@types/dom-webcodecs@npm:*":
+  version: 0.1.18
+  resolution: "@types/dom-webcodecs@npm:0.1.18"
+  checksum: 10c0/dcf0a36869bddb6ec1534039911bd5517985c03503da6d6cfea4ef26480c763f91b2ef4f03dcc7b3c8a68740efc1ed93b0f63a865823877eb8675f98a772f67d
+  languageName: node
+  linkType: hard
+
+"@types/dom-webcodecs@npm:0.1.13":
+  version: 0.1.13
+  resolution: "@types/dom-webcodecs@npm:0.1.13"
+  checksum: 10c0/16683fd0330fdfbb867affec1c18fd493d88433a4ec66257579adc5d07b07e9492268b4401e9017b7388b13750722365b0392b375e39c84e74f564d5b4f634a4
   languageName: node
   linkType: hard
 
@@ -10687,6 +10728,8 @@ __metadata:
     "@jitl/quickjs-singlefile-browser-release-sync": "npm:^0.31.0"
     "@jitl/quickjs-singlefile-cjs-debug-sync": "npm:^0.31.0"
     "@jitl/quickjs-singlefile-cjs-release-sync": "npm:^0.31.0"
+    "@mediabunny/flac-encoder": "npm:^1.39.2"
+    "@mediabunny/mp3-encoder": "npm:^1.39.2"
     "@octokit/rest": "npm:^16.25.4"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.5.15"
     "@reduxjs/toolkit": "npm:^2.2.7"
@@ -10764,6 +10807,7 @@ __metadata:
     jest-extended: "npm:^4.0.2"
     knip: "npm:^5.62.0"
     lodash: "npm:^4.17.23"
+    mediabunny: "npm:^1.39.2"
     node-fetch: "npm:^3.3.2"
     node-gzip: "npm:^1.1.2"
     node-loader: "npm:^2.0.0"
@@ -13718,6 +13762,16 @@ __metadata:
   version: 0.3.0
   resolution: "media-typer@npm:0.3.0"
   checksum: 10c0/d160f31246907e79fed398470285f21bafb45a62869dc469b1c8877f3f064f5eabc4bcc122f9479b8b605bc5c76187d7871cf84c4ee3ecd3e487da1993279928
+  languageName: node
+  linkType: hard
+
+"mediabunny@npm:^1.39.2":
+  version: 1.39.2
+  resolution: "mediabunny@npm:1.39.2"
+  dependencies:
+    "@types/dom-mediacapture-transform": "npm:^0.1.11"
+    "@types/dom-webcodecs": "npm:0.1.13"
+  checksum: 10c0/e32aeaf27d6e5b8c4af59e65ce31cf92a4abebcdf7345c0fb61dd062c0d0e17fec8d4f9eec676a8c503649623b27ebae5be39f84942effbce1d7a1f232328eb1
   languageName: node
   linkType: hard
 

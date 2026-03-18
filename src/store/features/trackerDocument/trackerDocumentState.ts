@@ -209,14 +209,20 @@ const trackerSlice = createSlice({
       const patternId = _action.payload.patternId;
       const rowId = _action.payload.cell[0];
       const colId = _action.payload.cell[1];
-      const patternCell = state.song.patterns[patternId][rowId][colId];
+      const patternCell = state.song.patterns?.[patternId]?.[rowId]?.[colId];
+
+      if (!patternCell) {
+        return;
+      }
 
       let patch = { ..._action.payload.changes };
       if (
         patch.effectcode &&
         patch.effectcode !== null &&
+        (patch.effectparam === null || patch.effectparam === undefined) &&
         patternCell.effectparam === null
       ) {
+        // If there's an effect code but no effect param, default to 0
         patch = {
           ...patch,
           effectparam: 0,
@@ -468,6 +474,38 @@ const trackerSlice = createSlice({
         };
       }
     },
+    moveSequence: (
+      state,
+      action: PayloadAction<{ fromIndex: number; toIndex: number }>,
+    ) => {
+      if (!state.song) {
+        return;
+      }
+
+      const { fromIndex, toIndex } = action.payload;
+      const newSequence = [...state.song.sequence];
+
+      if (
+        fromIndex === toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= newSequence.length ||
+        toIndex >= newSequence.length
+      ) {
+        return;
+      }
+
+      const [movedItem] = newSequence.splice(fromIndex, 1);
+      if (movedItem === undefined) {
+        return;
+      }
+      newSequence.splice(toIndex, 0, movedItem);
+
+      state.song = {
+        ...state.song,
+        sequence: newSequence,
+      };
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -503,7 +541,8 @@ const trackerSlice = createSlice({
         (action: UnknownAction): action is UnknownAction =>
           action.type.startsWith("tracker/edit") ||
           action.type.startsWith("tracker/addSequence") ||
-          action.type.startsWith("tracker/removeSequence"),
+          action.type.startsWith("tracker/removeSequence") ||
+          action.type.startsWith("tracker/moveSequence"),
         (state, _action) => {
           state.modified = true;
         },

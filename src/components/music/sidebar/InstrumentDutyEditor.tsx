@@ -1,0 +1,250 @@
+import React, { useEffect, useRef } from "react";
+import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import { DutyInstrument } from "shared/lib/uge/types";
+import { FormDivider, FormField, FormRow } from "ui/form/layout/FormLayout";
+import { Select } from "ui/form/Select";
+import { SliderField } from "ui/form/SliderField";
+import { InstrumentLengthForm } from "./InstrumentLengthForm";
+import { InstrumentVolumeEditor } from "./InstrumentVolumeEditor";
+import { Button } from "ui/buttons/Button";
+import { Alert, AlertItem } from "ui/alerts/Alert";
+import API from "renderer/lib/api";
+import l10n from "shared/lib/lang/l10n";
+import { useAppDispatch } from "store/hooks";
+import { SingleValue } from "react-select";
+import { ButtonGroup } from "ui/buttons/ButtonGroup";
+import { testNotes } from "./helpers";
+import throttle from "lodash/throttle";
+import { OCTAVE_SIZE } from "consts";
+
+const dutyOptions = [
+  {
+    value: "0",
+    label: "12.5%",
+  },
+  {
+    value: "1",
+    label: "25%",
+  },
+  {
+    value: "2",
+    label: "50%",
+  },
+  {
+    value: "3",
+    label: "75%",
+  },
+];
+
+const sweepTimeOptions = [
+  {
+    value: "0",
+    label: "Off",
+  },
+  {
+    value: "1",
+    label: "1/128Hz",
+  },
+  {
+    value: "2",
+    label: "2/128Hz",
+  },
+  {
+    value: "3",
+    label: "3/128Hz",
+  },
+  {
+    value: "4",
+    label: "4/128Hz",
+  },
+  {
+    value: "5",
+    label: "5/128Hz",
+  },
+  {
+    value: "6",
+    label: "6/128Hz",
+  },
+  {
+    value: "7",
+    label: "7/128Hz",
+  },
+];
+
+interface InstrumentDutyEditorProps {
+  id: string;
+  instrument?: DutyInstrument;
+}
+
+export const InstrumentDutyEditor = ({
+  instrument,
+}: InstrumentDutyEditorProps) => {
+  const dispatch = useAppDispatch();
+
+  const throttledTestInstrument = useRef(
+    throttle(
+      (instrument: DutyInstrument) => {
+        API.music.sendToMusicWindow({
+          action: "preview",
+          note: OCTAVE_SIZE * 2, // C5
+          type: "duty",
+          instrument,
+          square2: false,
+        });
+      },
+      250,
+      { leading: true, trailing: true },
+    ),
+  ).current;
+
+  useEffect(() => {
+    return () => {
+      throttledTestInstrument.cancel();
+    };
+  }, [throttledTestInstrument]);
+
+  const lastAutoPreview = useRef("");
+  const hasMounted = useRef(false);
+
+  useEffect(() => {
+    const instrumentKey = JSON.stringify(instrument);
+
+    if (
+      instrument &&
+      hasMounted.current &&
+      instrumentKey !== lastAutoPreview.current
+    ) {
+      throttledTestInstrument(instrument);
+    }
+
+    lastAutoPreview.current = instrumentKey;
+    hasMounted.current = true;
+  }, [instrument, throttledTestInstrument]);
+
+  if (!instrument) return <></>;
+
+  const selectedDuty = dutyOptions.find(
+    (i) => parseInt(i.value, 10) === instrument.duty_cycle,
+  );
+
+  const selectedSweepTime = sweepTimeOptions.find(
+    (i) => parseInt(i.value, 10) === instrument.frequency_sweep_time,
+  );
+
+  const onChangeField =
+    <T extends keyof DutyInstrument>(key: T) =>
+    (editValue: DutyInstrument[T]) => {
+      dispatch(
+        trackerDocumentActions.editDutyInstrument({
+          instrumentId: instrument.index,
+          changes: {
+            [key]: editValue,
+          },
+        }),
+      );
+    };
+
+  const onChangeFieldSelect =
+    <T extends keyof DutyInstrument>(key: T) =>
+    (e: SingleValue<{ value: string; label: string }>) => {
+      if (e) {
+        const editValue = e.value;
+        dispatch(
+          trackerDocumentActions.editDutyInstrument({
+            instrumentId: instrument.index,
+            changes: {
+              [key]: editValue,
+            },
+          }),
+        );
+      }
+    };
+
+  const onTestInstrument = (note: number) => () => {
+    API.music.sendToMusicWindow({
+      action: "preview",
+      note,
+      type: "duty",
+      instrument: instrument,
+      square2: false,
+    });
+  };
+
+  return (
+    <>
+      <InstrumentLengthForm
+        value={instrument.length}
+        onChange={onChangeField("length")}
+      />
+      <FormDivider />
+      <InstrumentVolumeEditor
+        initialVolume={instrument.initial_volume}
+        volumeSweepChange={instrument.volume_sweep_change}
+        length={instrument.length}
+        onChange={onChangeField}
+      />
+      <FormDivider />
+      <FormRow>
+        <FormField name="frequency_sweep_time" label={l10n("FIELD_SWEEP_TIME")}>
+          <Select
+            name="frequency_sweep_time"
+            value={selectedSweepTime}
+            options={sweepTimeOptions}
+            onChange={onChangeFieldSelect("frequency_sweep_time")}
+          />
+        </FormField>
+      </FormRow>
+      {Number(instrument.frequency_sweep_time) !== 0 && (
+        <FormRow>
+          <SliderField
+            name="frequency_sweep_shift"
+            label={l10n("FIELD_SWEEP_SHIFT")}
+            value={instrument.frequency_sweep_shift || 0}
+            min={-7}
+            max={7}
+            onChange={(value) => {
+              onChangeField("frequency_sweep_shift")(value || 0);
+            }}
+          />
+        </FormRow>
+      )}
+      <FormDivider />
+      <FormRow>
+        <FormField name="duty_cycle" label={l10n("FIELD_DUTY")}>
+          <Select
+            name="duty_cycle"
+            value={selectedDuty}
+            options={dutyOptions}
+            onChange={onChangeFieldSelect("duty_cycle")}
+          />
+        </FormField>
+      </FormRow>
+      <FormDivider />
+      <FormRow>
+        <FormField
+          name="test_instrument_C5"
+          label={l10n("FIELD_TEST_INSTRUMENT")}
+        >
+          <ButtonGroup>
+            {testNotes.map(({ label, value }) => (
+              <Button
+                key={`test_instrument_${label}`}
+                id={`test_instrument_${label}`}
+                onClick={onTestInstrument(value)}
+              >
+                {label}
+              </Button>
+            ))}
+          </ButtonGroup>
+        </FormField>
+      </FormRow>
+      {instrument.subpattern_enabled && (
+        <FormRow>
+          <Alert variant="info">
+            <AlertItem>{l10n("MESSAGE_NOT_PREVIEW_SUBPATTERN")}</AlertItem>
+          </Alert>
+        </FormRow>
+      )}
+    </>
+  );
+};

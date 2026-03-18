@@ -5,9 +5,9 @@ import { FormContainer, FormHeader, FormRow } from "ui/form/layout/FormLayout";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { Label } from "ui/form/Label";
 import { Input } from "ui/form/Input";
-import { InstrumentDutyEditor } from "./InstrumentDutyEditor";
-import { InstrumentWaveEditor } from "./InstrumentWaveEditor";
-import { InstrumentNoiseEditor } from "./InstrumentNoiseEditor";
+import { InstrumentDutyEditor } from "./sidebar/InstrumentDutyEditor";
+import { InstrumentWaveEditor } from "./sidebar/InstrumentWaveEditor";
+import { InstrumentNoiseEditor } from "./sidebar/InstrumentNoiseEditor";
 import {
   Song,
   DutyInstrument,
@@ -18,10 +18,10 @@ import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import l10n from "shared/lib/lang/l10n";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import { MenuItem } from "ui/menu/Menu";
-import { PatternCellEditor } from "./PatternCellEditor";
+import { PatternCellEditor } from "./sidebar/PatternCellEditor";
 import trackerActions from "store/features/tracker/trackerActions";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";
-import { InstrumentSubpatternEditor } from "./InstrumentSubpatternEditor";
+import { InstrumentSubpatternEditor } from "./sidebar/InstrumentSubpatternEditor";
 import styled from "styled-components";
 import { NumberInput } from "ui/form/NumberInput";
 import { useAppDispatch, useAppSelector } from "store/hooks";

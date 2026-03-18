@@ -553,7 +553,7 @@
   "FIELD_LINK_CLOSE": "Die derzeitige Linkverbindung schließen.",
   "FIELD_LINK_JOIN": "Linkverbindung beitreten.",
   "FIELD_LINK_HOST": "Linkverbindung hosten.",
-  "FIELD_TEST_INSTRUMENT": "Instrument testen (C5)",
+  "FIELD_TEST_INSTRUMENT": "Instrument testen",
   "FIELD_DIRECTION_OFFSET": "Richtungs-Offset",
   "FIELD_CURSOR_IMAGE": "Mauszeiger-Grafik",
   "FIELD_FRAME_IMAGE": "Einzelbild-Bild",

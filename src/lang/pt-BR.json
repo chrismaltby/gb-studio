@@ -584,7 +584,7 @@
   "FIELD_LINK_CLOSE": "Fecha a sessão de conexão atual.",
   "FIELD_LINK_JOIN": "Entra em uma sessão de conexão.",
   "FIELD_LINK_HOST": "Hospeda uma sessão de conexão.",
-  "FIELD_TEST_INSTRUMENT": "Testar instrumento (C5)",
+  "FIELD_TEST_INSTRUMENT": "Testar instrumento",
   "FIELD_DIRECTION_OFFSET": "Deslocamento de direção",
   "FIELD_CURSOR_IMAGE": "Imagem do cursor",
   "FIELD_FRAME_IMAGE": "Imagem do quadro",

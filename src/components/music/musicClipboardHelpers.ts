@@ -44,15 +44,25 @@ const patternCelltoString = (
   }`;
 };
 
+export const parseClipboardOrigin = (clipboard: string): number | null => {
+  const match = clipboard.match(/^GBStudio origin: (\d+)$/m);
+  return match ? parseInt(match[1], 10) : null;
+};
+
 export const parsePatternToClipboard = (
   pattern: PatternCell[][],
   channelId?: number,
   selectedCells?: number[],
+  originAbsCol?: number,
 ) => {
   let parsed: string[] = [
     "GBStudio hUGETracker Piano format compatible with...",
     "ModPlug Tracker  XM",
   ];
+
+  if (originAbsCol !== undefined) {
+    parsed.push(`GBStudio origin: ${originAbsCol}`);
+  }
 
   if (!selectedCells) {
     parsed = pattern.map((p) => {
