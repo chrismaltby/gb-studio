@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2174260314",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2181260318",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -487,7 +487,7 @@
   "FIELD_SCROLL_SPEED_DESC": "Dystans, o jaki scena przesuwa się w każdej klatce.",
   "FIELD_PREVIEW_AS_SCENE": "Podgląd jako {sceneName}",
   "FIELD_PREVIEW_AS_DEFAULT": "Podgląd przy użyciu domyślnych kolorów",
-  "FIELD_SONGS": "Melodie",
+  "FIELD_SONGS": "Utwory",
   "FIELD_INSTRUMENTS": "Instrumenty",
   "FIELD_PATTERNS": "Wzorce",
   "FIELD_ARTIST": "Artysta",
@@ -761,8 +761,8 @@
   "FIELD_FILL_COLOR": "Kolor wypełnienia",
   "FIELD_FILL_COLOR_OVERLAY_DESC": "Kolor do wypełnienia warstwy, może być czarny lub biały.",
   "FIELD_SCENE_DESC": "Wybierz scenę do przejścia.",
-  "FIELD_SONG": "Muzyka",
-  "FIELD_SONG_DESC": "Wybierz muzykę do odtworzenia.",
+  "FIELD_SONG": "Utwór",
+  "FIELD_SONG_DESC": "Wybierz utwór do odtworzenia.",
   "FIELD_SCRIPT": "Skrypt (GBVM)",
   "FIELD_SCRIPT_DESC": "Polecenie uruchomi prawidłowy skrypt GBVM do wykonania.",
   "FIELD_VIEW_SLOPE_TILES": "Wyświetl tafly pochyłe",
@@ -1317,6 +1317,10 @@
   "FIELD_MUTE_CHANNEL": "Wycisz kanał",
   "FIELD_SOLO_CHANNEL": "Solo kanał",
   "FIELD_OCTAVE": "Oktawa",
+  "FIELD_EXPORT_SONG": "Eksportuj utwór",
+  "FIELD_EXPORTING": "Eksportowanie...",
+  "FIELD_FILE_FORMAT": "Format pliku",
+  "FIELD_LOOPS": "Pętle",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1885,7 +1889,7 @@
   "MENU_MINIMIZE": "Minimalizuj",
   "MENU_HELP": "Pomoc",
   "MENU_SET_BREAKPOINT": "Ustaw punkt przerwania",
-  "MENU_DELETE_SONG": "Usuń melodię",
+  "MENU_DELETE_SONG": "Usuń utwór",
   "MENU_DELETE_BACKGROUND": "Usuń tło",
   "MENU_DELETE_TILESET": "Usuń Tileset",
   "MENU_DELETE_SPRITE": "Usuń grafikę (sprite)",
@@ -1969,6 +1973,9 @@
   "ERROR_UNABLE_TO_REMOVE_PLUGIN": "Nie można usunąć wtyczki",
   "ERROR_UNABLE_TO_INSTALL_PLUGIN": "Nie można zainstalować wtyczki",
   "ERROR_FILE_DOESNT_BELONG_TO_CURRENT_PLUGIN": "Próba uzyskania dostępu do pliku \"{file}\". Ten plik nie należy do wtyczki, która próbuje go odczytać. Wtyczki mogą uzyskiwać dostęp wyłącznie do plików w folderze `plugins/<PLUGIN_NAME>/events/`.",
+  "ERROR_EXPORT_FILE_FAILED": "Nie udało się wyeksportować {filetype}",
+  "ERROR_TIMED_OUT": "Przekroczono limit czasu operacji",
+  "ERROR_AUDIO_ENCODE_FAILED": "Błąd kodowania audio",
 
   "// 13": "Splash -------------------------------------------------------",
 
@@ -2161,7 +2168,7 @@
 
   "// 21": "Messages -----------------------------------------------------",
 
-  "MESSAGE_NO_SONGS_FOUND": "Nie znaleziono muzyki",
+  "MESSAGE_NO_SONGS_FOUND": "Nie znaleziono utworów",
   "MESSAGE_ADD_UGE_FILES": "Dodaj pliki .uge do folderu projektu assets/music.",
   "MESSAGE_WHAT_ABOUT_MOD": "Otwarzanie plików .mod?",
   "MESSAGE_USE_MOD_FILES": "W celu użycia plików .mod należy w projekcie zmienić sterownik muzyczny z hUGEDriver na GBT Player. Opcję tę można zmienić w 'Ustawieniach'.",
