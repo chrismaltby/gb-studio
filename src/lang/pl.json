@@ -503,7 +503,7 @@
   "FIELD_SHIFT_CLOCK_MASK": "Przesunięcie maski zegara",
   "FIELD_DIVIDING_RATIO": "Stosunek podziału",
   "FIELD_BIT_COUNT": "Licznik 7-bitowy",
-  "FIELD_SUBPATTERN_ENBALED": "Włącz podwzorzec",
+  "FIELD_SUBPATTERN_ENABLED": "Włącz podwzorzec",
   "FIELD_INPUT_JUMP": "Przycisk skoku",
   "FIELD_INPUT_JUMP_DESC": "Przycisk odpowiadający za skok.",
   "FIELD_INPUT_RUN": "Przycisk biegu",
