@@ -1400,6 +1400,8 @@
   "FIELD_BEAT": "ビート",
   "FIELD_PIANO_ROLL_DESCRIPTION": "タイムラインにノートを描いて作曲します。",
   "FIELD_TRACKER_DESCRIPTION": "ノートやエフェクトをグリッドに入力して作曲します。",
+  "FIELD_CLONE_PATTERN": "パターンを複製",
+  "FIELD_LOOP_PATTERN": "パターンをループ",
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "検索...",
   "ASSET_EDIT": "編集",
