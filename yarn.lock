@@ -12560,7 +12560,7 @@ __metadata:
     ts-node: "npm:^10.0.0"
     tsconfig-paths-webpack-plugin: "npm:^4.1.0"
     typescript: "npm:^5.6.3"
-    uuid: "npm:^3.3.2"
+    uuid: "npm:^14.0.0"
     wavefile: "npm:^11.0.0"
     webpack-bundle-analyzer: "npm:^4.4.2"
     webpack-cli: "npm:^4.7.0"
@@ -21340,12 +21340,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^3.3.2":
-  version: 3.3.2
-  resolution: "uuid@npm:3.3.2"
+"uuid@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "uuid@npm:14.0.0"
   bin:
-    uuid: ./bin/uuid
-  checksum: 10c0/847bd7b389f44d05cf5341134d52803116b616c7344f12c74040effd75280b58273ea3a2bee6ba6e5405688c5edbb0696f4adcbc89e1206dc1d8650bdaece7a6
+    uuid: dist-node/bin/uuid
+  checksum: 10c0/a57ae7794c45005c1a9208989196c5baf79a7679c30f43c1bee9033a2c4d113a2cea216fa6fcc9663b08b0d55635df1a7c6eb7e7f3d21c3e50688c698fa39a50
   languageName: node
   linkType: hard
 
