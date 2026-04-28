@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2274260426",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2275260428",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -600,7 +600,7 @@
   "FIELD_HOVER": "Wzniesienie",
   "FIELD_OVERRIDE_DEFAULT_BUTTON_ACTION": "Nadpisz domyślny przycisk akcji",
   "FIELD_OVERRIDE_DEFAULT_BUTTON_ACTION_DESC": "Ustawienie odpowiadające za skrypt czy ma nadpisać domyślne działanie przycisku.",
-  "FIELD_UI_TRACKER_KEYBINDINGS": "Układ klawiatury dla Music Trackera",
+  "FIELD_UI_TRACKER_KEYBINDINGS": "Układ klawiatury dla Trackera",
   "FIELD_UI_LINEAR": "Liniowy",
   "FIELD_UI_PIANO": "Piano",
   "FIELD_UI_LINEAR_INFO": "OpenMPT, hUGETracker",
@@ -1407,10 +1407,10 @@
   "FIELD_BEAT": "Bit",
   "FIELD_PIANO_ROLL_DESCRIPTION": "Twórz muzykę, rysując nuty na osi czasu.",
   "FIELD_TRACKER_DESCRIPTION": "Twórz muzykę, wpisując nuty i efekty w siatce.",
-  "FIELD_CLONE_PATTERN": "Utwórz powiązany wzorzec",
+  "FIELD_CLONE_PATTERN": "Utwórz kopię wzorca",
   "FIELD_LOOP_PATTERN": "Zapętl wzorzec",
   "FIELD_SPLIT_PATTERN": "Rozdziel wzorzec",
-  "FIELD_DUPLICATE_PATTERN": "Duplikuj wzorzec",
+  "FIELD_DUPLICATE_PATTERN": "Powtórz wzorzec",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1998,6 +1998,7 @@
   "MENU_MUTE_AUDIO": "Wycisz audio",
   "MENU_DELETE_NOTE": "Usuń notatkę",
   "MENU_DELETE_SELECTION": "Usuń zaznaczenie",
+  "MENU_INPUT": "Sterowanie",
 
   "// 11": "Warnings -----------------------------------------------------",
 
