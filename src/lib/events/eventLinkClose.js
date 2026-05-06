@@ -18,6 +18,7 @@ const compile = (input, helpers) => {
 
 module.exports = {
   id,
+  description: l10n("EVENT_LINK_CLOSE_DESC"),
   subGroups,
   fields,
   compile,
