@@ -3320,4 +3320,43 @@ describe("script handlers", () => {
       },
     );
   });
+
+  testAllHandlers(
+    "will strip Markdown URLs from description fields",
+    async (handlerLoader) => {
+      const pluginCode = `
+        module.exports = {
+          id: "EVENT_ID",
+          description: "This is a [link](https://example.com) in the description.",
+          fields: [
+            {
+              key: "field1",
+              description: "Field with a [link](https://example.com).",
+            },
+            {
+              key:"field2",
+              type:"group",
+              fields:[{
+                key: "field3",
+                description: "Nested field with a [link](https://example.com).",
+              }]
+            }
+          ]
+        }
+      `;
+      const handler = await handlerLoader(
+        pluginCode,
+        "test.js",
+        (filePath) => `File content of ${filePath}`,
+      );
+      expect(handler.id).toBe("EVENT_ID");
+      expect(handler.description).toBe("This is a link in the description.");
+      expect(handler.fields[0].description).toBe("Field with a link.");
+      expect(handler.fields[1].fields?.[0].description).toBe(
+        "Nested field with a link.",
+      );
+
+      handler.cleanup();
+    },
+  );
 });

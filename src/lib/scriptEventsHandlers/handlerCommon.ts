@@ -128,6 +128,44 @@ export const validateUserPresets = (handler: ScriptEventHandler): void => {
 };
 
 /**
+ * Strip Markdown formatting from text to ensure clean display in the UI, preserving links as plain text.
+ */
+export const stripMarkdown = (text: string | undefined): string | undefined => {
+  if (!text) {
+    return undefined;
+  }
+  return (
+    text
+      // Strip Markdown URLs
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+  );
+};
+
+/**
+ * Recursively strip Markdown from field descriptions, while preserving the nested structure.
+ */
+export const stripFieldsMarkdown = (
+  fields: ScriptEventHandlerFieldSchema[] | undefined,
+): ScriptEventHandlerFieldSchema[] => {
+  if (!fields || !Array.isArray(fields)) {
+    return [];
+  }
+  return fields.map((field) => {
+    if (field.type === "group" && field.fields) {
+      return {
+        ...field,
+        fields: stripFieldsMarkdown(field.fields),
+      };
+    } else {
+      return {
+        ...field,
+        description: stripMarkdown(field.description),
+      };
+    }
+  });
+};
+
+/**
  * Creates the base handler object structure with all required properties.
  */
 export const createHandlerBase = (
@@ -141,14 +179,14 @@ export const createHandlerBase = (
   const handler = {
     ...metadata,
     id: metadata.id as string,
-    fields: Array.isArray(metadata.fields)
-      ? (metadata.fields as ScriptEventHandlerFieldSchema[])
-      : [],
+    fields: stripFieldsMarkdown(
+      metadata.fields as ScriptEventHandlerFieldSchema[],
+    ),
     cleanup,
     hasAutoLabel: hasAutoLabelFunction,
     fieldsLookup: {} as Record<string, ScriptEventHandlerFieldSchema>,
     name: metadata.name as string | undefined,
-    description: metadata.description as string | undefined,
+    description: stripMarkdown(metadata.description as string | undefined),
     groups: metadata.groups as string[] | string | undefined,
     subGroups: metadata.subGroups as Record<string, string> | undefined,
     deprecated: metadata.deprecated as boolean | undefined,
