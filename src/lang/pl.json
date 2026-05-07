@@ -1745,7 +1745,7 @@
   "EVENT_GBVM_SCRIPT": "Skrypt GBVM",
   "EVENT_GBVM_SCRIPT_DESC": "Polecenie uruchomi skrypt GBVM.",
   "EVENT_LINK_CLOSE": "Link: Zamknij",
-  "EVENT_LINK_CLOSE_DESC": "Zamyka aktywną sesję połączenia.", 
+  "EVENT_LINK_CLOSE_DESC": "Zamyka aktywną sesję połączenia.",
   "EVENT_LINK_JOIN": "Link: Dołącz",
   "EVENT_LINK_JOIN_DESC": "Dołącza do aktywnej sesji połączenia jako gracz 2. Sesja musi zostać najpierw utworzona przez innego gracza przy użyciu polecenia `Link: Utwórz sesję`. To polecenie musi zostać wykonane przed jakąkolwiek wymianą danych między graczem 1 a graczem 2. Próba wysyłania lub odbierania danych przed jego wykonaniem zakończy się niepowodzeniem i/lub zawieszeniem gry.",
   "EVENT_LINK_HOST": "Link: Utwórz sesję",
