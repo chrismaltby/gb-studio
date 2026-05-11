@@ -61,16 +61,15 @@ export const useContextMenu = ({
         return;
       }
 
+      e.preventDefault();
+      e.stopPropagation();
+      closeAllContextMenus();
+
       const menu = await getMenu({ closeMenu, event: e });
 
       if (!menu || menu.length === 0) {
         return;
       }
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      closeAllContextMenus();
 
       setContextMenu({
         x: e.pageX,
