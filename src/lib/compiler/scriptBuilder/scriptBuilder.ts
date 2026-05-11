@@ -1249,6 +1249,7 @@ class ScriptBuilder extends ScriptBuilderBase {
         avatarIndex,
       )}${textPosSequence}${this._injectScrollCode(text, textHeight)}`;
 
+      this._setTextLayer(".TEXT_LAYER_WIN");
       this._loadAndDisplayText(decoratedText);
 
       if (isModal) {
@@ -1331,6 +1332,8 @@ class ScriptBuilder extends ScriptBuilderBase {
 
     if (location === "background") {
       this._setTextLayer(".TEXT_LAYER_BKG");
+    } else {
+      this._setTextLayer(".TEXT_LAYER_WIN");
     }
 
     this._loadAndDisplayText(`\\003\\${drawX}\\${drawY}\\001\\001${inputText}`);
@@ -1392,6 +1395,7 @@ class ScriptBuilder extends ScriptBuilderBase {
 
     this._overlayClear(0, 0, 20, numLines + 2, ".UI_COLOR_WHITE", true, true);
     this._overlayMoveTo(0, 18 - numLines - 2, ".OVERLAY_IN_SPEED");
+    this._setTextLayer(".TEXT_LAYER_WIN");
     this._loadAndDisplayText(choiceText);
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._choice(dest, [".UI_MENU_LAST_0", ".UI_MENU_CANCEL_B"], 2);
@@ -1456,6 +1460,7 @@ class ScriptBuilder extends ScriptBuilderBase {
       this._overlayMoveTo(10, 18, ".OVERLAY_SPEED_INSTANT");
     }
     this._overlayMoveTo(x, 18 - height - 2, ".OVERLAY_IN_SPEED");
+    this._setTextLayer(".TEXT_LAYER_WIN");
     this._loadAndDisplayText(menuText);
     this._overlayWait(true, [".UI_WAIT_WINDOW", ".UI_WAIT_TEXT"]);
     this._choice(dest, choiceFlags, numLines);

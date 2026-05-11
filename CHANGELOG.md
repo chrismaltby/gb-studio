@@ -76,6 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where changing one color in a palette could also slightly change the other colors
 - Fix issue where palette editor sliders were not updating after undo and redo
 - Fix issue where "Play Sound Effect" event was using deprecated wait function
+- Fix issue where using Dialogue or Menu events while using Draw Text could cause dialogue text to be drawn to the background
 
 ## [4.2.2] - 2026-02-24
 
