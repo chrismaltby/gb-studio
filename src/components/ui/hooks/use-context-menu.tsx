@@ -64,6 +64,7 @@ export const useContextMenu = ({
       }
 
       e.preventDefault();
+      e.stopPropagation();
 
       closeAllContextMenus();
 

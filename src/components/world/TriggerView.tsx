@@ -1,11 +1,11 @@
-import React, { JSX, memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect } from "react";
 import editorActions from "store/features/editor/editorActions";
 import { triggerSelectors } from "store/features/entities/entitiesState";
 import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
 import styled, { css } from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { ContextMenu } from "ui/menu/ContextMenu";
 import renderTriggerContextMenu from "./renderTriggerContextMenu";
+import { useContextMenu } from "ui/hooks/use-context-menu";
 
 interface TriggerViewProps {
   id: string;
@@ -73,13 +73,9 @@ const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
     };
   }, [onMouseUp, isDragging]);
 
-  const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
-    menu: JSX.Element[];
-  }>();
+  //#region Context Menu
 
-  const renderContextMenu = useCallback(() => {
+  const getContextMenu = useCallback(() => {
     return renderTriggerContextMenu({
       dispatch,
       triggerId: id,
@@ -87,21 +83,11 @@ const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
     });
   }, [dispatch, id, sceneId]);
 
-  const onContextMenu = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      e.stopPropagation();
-      const menu = renderContextMenu();
-      if (!menu) {
-        return;
-      }
-      setContextMenu({ x: e.pageX, y: e.pageY, menu });
-    },
-    [renderContextMenu],
-  );
+  const { onContextMenu, contextMenuElement } = useContextMenu({
+    getMenu: getContextMenu,
+  });
 
-  const onContextMenuClose = useCallback(() => {
-    setContextMenu(undefined);
-  }, []);
+  //#endregion Context Menu
 
   if (!trigger) {
     return <></>;
@@ -119,15 +105,7 @@ const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
         height: Math.max(trigger.height, 1) * TILE_SIZE,
       }}
     >
-      {contextMenu && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          onClose={onContextMenuClose}
-        >
-          {contextMenu.menu}
-        </ContextMenu>
-      )}
+      {contextMenuElement}
     </Wrapper>
   );
 });
