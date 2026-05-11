@@ -1,12 +1,4 @@
-import React, {
-  JSX,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
 import { noteSelectors } from "store/features/entities/entitiesState";
 import editorActions from "store/features/editor/editorActions";
@@ -16,10 +8,10 @@ import styled, { css } from "styled-components";
 import { LabelSpan } from "ui/buttons/LabelButton";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import renderNoteContextMenu from "components/world/renderNoteContextMenu";
-import { ContextMenu } from "ui/menu/ContextMenu";
 import { noteColorStyles } from "ui/form/NoteField";
 import { LabelColor } from "shared/lib/resources/types";
 import l10n from "shared/lib/lang/l10n";
+import { useContextMenu } from "ui/hooks/use-context-menu";
 
 const ALIGNMENT_OFFSET_X = -1;
 const ALIGNMENT_OFFSET_Y = 3;
@@ -325,45 +317,12 @@ const NoteView = memo(({ id, index, editable }: NoteViewProps) => {
     };
   }, [onEndDrag, onMoveDrag]);
 
-  const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
-    menu: JSX.Element[];
-  }>();
-
   useEffect(() => {
     const el = textAreaRef.current;
     if (!selected && el && document.activeElement === el) {
       el.blur();
     }
   }, [selected]);
-
-  const onContextMenuClose = useCallback(() => {
-    setContextMenu(undefined);
-  }, []);
-
-  const renderContextMenu = useCallback(() => {
-    return renderNoteContextMenu({
-      dispatch,
-      noteId: id,
-      additionalSceneIds: sceneSelectionIds,
-      onClose: onContextMenuClose,
-    });
-  }, [dispatch, id, onContextMenuClose, sceneSelectionIds]);
-
-  const onContextMenu = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (!renderContextMenu) {
-        return;
-      }
-      const menu = renderContextMenu();
-      if (!menu) {
-        return;
-      }
-      setContextMenu({ x: e.pageX, y: e.pageY, menu });
-    },
-    [renderContextMenu],
-  );
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -444,6 +403,26 @@ const NoteView = memo(({ id, index, editable }: NoteViewProps) => {
     [dispatch, id],
   );
 
+  //#region Context Menu
+
+  const getContextMenu = useCallback(
+    ({ closeMenu: onClose }: { closeMenu: () => void }) => {
+      return renderNoteContextMenu({
+        dispatch,
+        noteId: id,
+        additionalSceneIds: sceneSelectionIds,
+        onClose,
+      });
+    },
+    [dispatch, id, sceneSelectionIds],
+  );
+
+  const { onContextMenu, contextMenuElement } = useContextMenu({
+    getMenu: getContextMenu,
+  });
+
+  //#endregion Context Menu
+
   if (!note || !visible) {
     return <></>;
   }
@@ -500,15 +479,7 @@ const NoteView = memo(({ id, index, editable }: NoteViewProps) => {
         <ResizeHandle ref={handleRef} />
       </ContentWrapper>
 
-      {contextMenu && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          onClose={onContextMenuClose}
-        >
-          {contextMenu.menu}
-        </ContextMenu>
-      )}
+      {contextMenuElement}
     </Wrapper>
   );
 });
