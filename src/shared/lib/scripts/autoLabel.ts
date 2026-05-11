@@ -93,6 +93,12 @@ export const getAutoLabel = (
       if (value === "yoffset") {
         return l10n("FIELD_OFFSET_Y").replace(/ /g, "");
       }
+      if (value === "xscroll") {
+        return l10n("FIELD_SCROLL_X").replace(/ /g, "");
+      }
+      if (value === "yscroll") {
+        return l10n("FIELD_SCROLL_Y").replace(/ /g, "");
+      }
       return value;
     };
 

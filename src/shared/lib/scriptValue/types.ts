@@ -203,6 +203,8 @@ const validProperties = [
   "ydeadzone",
   "xoffset",
   "yoffset",
+  "xscroll",
+  "yscroll",
 ];
 
 export const isScriptValue = (value: unknown): value is ScriptValue => {
