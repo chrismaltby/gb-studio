@@ -3,9 +3,9 @@ import styled, { css } from "styled-components";
 import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
 import renderSpriteFrameContextMenu from "components/sprites/renderSpriteFrameContextMenu";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { JSX, useCallback, useState } from "react";
-import { ContextMenu } from "ui/menu/ContextMenu";
+import { useCallback } from "react";
 import { pasteAny } from "store/features/clipboard/clipboardHelpers";
+import { useContextMenu } from "ui/hooks/use-context-menu";
 
 interface CardWrapperProps {
   $selected: boolean;
@@ -87,17 +87,9 @@ export const SpriteAnimationTimelineFrame = ({
     (state) => state.editor.selectedAdditionalMetaspriteIds,
   );
 
-  const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
-    menu: JSX.Element[];
-  }>();
+  //#region Context Menu
 
-  const onContextMenuClose = useCallback(() => {
-    setContextMenu(undefined);
-  }, []);
-
-  const renderContextMenu = useCallback(async () => {
+  const getContextMenu = useCallback(async () => {
     const clipboard = await pasteAny();
     return renderSpriteFrameContextMenu({
       dispatch,
@@ -108,23 +100,18 @@ export const SpriteAnimationTimelineFrame = ({
       clipboard,
     });
   }, [
-    selectedAdditionalMetaspriteIds,
     animationId,
     dispatch,
     id,
+    selectedAdditionalMetaspriteIds,
     spriteSheetId,
   ]);
 
-  const onContextMenu = useCallback(
-    async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      const menu = await renderContextMenu();
-      if (!menu) {
-        return;
-      }
-      setContextMenu({ x: e.pageX, y: e.pageY, menu });
-    },
-    [renderContextMenu],
-  );
+  const { onContextMenu, contextMenuElement } = useContextMenu({
+    getMenu: getContextMenu,
+  });
+
+  //#endregion Context Menu
 
   return (
     <CardWrapper
@@ -135,15 +122,7 @@ export const SpriteAnimationTimelineFrame = ({
     >
       <MetaspriteCanvas metaspriteId={id} spriteSheetId={spriteSheetId} />
       <FrameIndex>{index}</FrameIndex>
-      {contextMenu && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          onClose={onContextMenuClose}
-        >
-          {contextMenu.menu}
-        </ContextMenu>
-      )}
+      {contextMenuElement}
     </CardWrapper>
   );
 };
