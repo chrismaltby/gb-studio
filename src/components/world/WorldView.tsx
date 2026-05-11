@@ -15,6 +15,7 @@ import {
   TOOL_COLLISIONS,
   TOOL_ERASER,
   TILE_SIZE,
+  TOOL_SELECT,
 } from "consts";
 import {
   sceneSelectors,
@@ -726,8 +727,13 @@ const WorldView = () => {
     });
   }, [dispatch, selectedIds]);
 
+  const getContextMenuEnabled = useCallback(() => {
+    return tool === TOOL_SELECT;
+  }, [tool]);
+
   const { onContextMenu, contextMenuElement } = useContextMenu({
     getMenu: getContextMenu,
+    getIsEnabled: getContextMenuEnabled,
   });
 
   //#endregion Context Menu
