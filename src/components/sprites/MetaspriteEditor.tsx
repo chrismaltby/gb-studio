@@ -1,5 +1,4 @@
 import React, {
-  JSX,
   useCallback,
   useEffect,
   useMemo,
@@ -25,13 +24,13 @@ import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Selection } from "ui/document/Selection";
 import renderMetaspriteTileContextMenu from "components/world/renderMetaspriteTileContextMenu";
-import { ContextMenu } from "ui/menu/ContextMenu";
 import {
   MetaspriteTile,
   MonoOBJPalette,
   SpriteModeSetting,
 } from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
+import { useContextMenu } from "ui/hooks/use-context-menu";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
@@ -790,13 +789,9 @@ const MetaspriteEditor = ({
     ] as [MonoOBJPalette, MonoOBJPalette];
   }, [scene?.monoOBP0, defaultMonoOBP0, scene?.monoOBP1, defaultMonoOBP1]);
 
-  const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
-    menu: JSX.Element[];
-  }>();
+  //#region Context Menu
 
-  const renderContextMenu = useCallback(() => {
+  const getContextMenu = useCallback(() => {
     return renderMetaspriteTileContextMenu({
       dispatch,
       spriteSheetId,
@@ -805,21 +800,11 @@ const MetaspriteEditor = ({
     });
   }, [dispatch, metaspriteId, selectedTileIds, spriteSheetId]);
 
-  const onContextMenu = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      e.stopPropagation();
-      const menu = renderContextMenu();
-      if (!menu) {
-        return;
-      }
-      setContextMenu({ x: e.pageX, y: e.pageY, menu });
-    },
-    [renderContextMenu],
-  );
+  const { onContextMenu, contextMenuElement } = useContextMenu({
+    getMenu: getContextMenu,
+  });
 
-  const onContextMenuClose = useCallback(() => {
-    setContextMenu(undefined);
-  }, []);
+  //#endregion Context Menu
 
   if (!metasprite) {
     return null;
@@ -939,15 +924,7 @@ const MetaspriteEditor = ({
           )}
         </GridWrapper>
       </ContentWrapper>
-      {contextMenu && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          onClose={onContextMenuClose}
-        >
-          {contextMenu.menu}
-        </ContextMenu>
-      )}
+      {contextMenuElement}
     </ScrollWrapper>
   );
 };
