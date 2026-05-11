@@ -1,4 +1,4 @@
-import React, { JSX, memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect } from "react";
 import SpriteSheetCanvas from "./SpriteSheetCanvas";
 import { MIDDLE_MOUSE, TILE_SIZE, TOOL_COLLISIONS } from "consts";
 import {
@@ -10,9 +10,9 @@ import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import renderActorContextMenu from "./renderActorContextMenu";
-import { ContextMenu } from "ui/menu/ContextMenu";
 import { SpriteBoundingBox } from "components/sprites/MetaspriteEditor";
 import { MonoOBJPalette, Palette } from "shared/lib/resources/types";
+import { useContextMenu } from "ui/hooks/use-context-menu";
 
 interface ActorViewProps {
   id: string;
@@ -134,13 +134,9 @@ const ActorView = memo(
       };
     }, [onMouseUp, isDragging]);
 
-    const [contextMenu, setContextMenu] = useState<{
-      x: number;
-      y: number;
-      menu: JSX.Element[];
-    }>();
+    //#region Context Menu
 
-    const renderContextMenu = useCallback(() => {
+    const getContextMenu = useCallback(() => {
       return renderActorContextMenu({
         dispatch,
         actorId: id,
@@ -148,21 +144,11 @@ const ActorView = memo(
       });
     }, [dispatch, id, sceneId]);
 
-    const onContextMenu = useCallback(
-      (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        e.stopPropagation();
-        const menu = renderContextMenu();
-        if (!menu) {
-          return;
-        }
-        setContextMenu({ x: e.pageX, y: e.pageY, menu });
-      },
-      [renderContextMenu],
-    );
+    const { onContextMenu, contextMenuElement } = useContextMenu({
+      getMenu: getContextMenu,
+    });
 
-    const onContextMenuClose = useCallback(() => {
-      setContextMenu(undefined);
-    }, []);
+    //#endregion Context Menu
 
     if (!actor) {
       return <></>;
@@ -206,15 +192,7 @@ const ActorView = memo(
               )}
             </CanvasWrapper>
           )}
-          {contextMenu && (
-            <ContextMenu
-              x={contextMenu.x}
-              y={contextMenu.y}
-              onClose={onContextMenuClose}
-            >
-              {contextMenu.menu}
-            </ContextMenu>
-          )}
+          {contextMenuElement}
         </Wrapper>
       </>
     );
