@@ -261,6 +261,27 @@ const resourcesSchema = {
   engineFieldValues: engineFieldValuesResourceSchema,
 };
 
+export const pruneMissingEntities = <T>(input: T): T => {
+  if (Array.isArray(input)) {
+    return input
+      .map((item) => pruneMissingEntities(item))
+      .filter((item): item is Exclude<typeof item, undefined> => {
+        return item !== undefined;
+      }) as T;
+  }
+
+  if (input !== null && typeof input === "object") {
+    return Object.fromEntries(
+      Object.entries(input as Record<string, unknown>).map(([key, value]) => [
+        key,
+        pruneMissingEntities(value),
+      ]),
+    ) as T;
+  }
+
+  return input;
+};
+
 export const normalizeEntityResources = (
   projectResources: ProjectEntityResources,
 ): NormalizedData => {
@@ -355,10 +376,8 @@ export const denormalizeEntities = (
       EngineFieldValue
     >,
   };
-  const denormalizedEntities: DenormalizedEntities = denormalize(
-    input,
-    resourcesSchema,
-    entities,
+  const denormalizedEntities: DenormalizedEntities = pruneMissingEntities(
+    denormalize(input, resourcesSchema, entities),
   );
 
   const entityToResource =
@@ -441,7 +460,10 @@ export const denormalizeSprite = ({
     spriteAnimations,
     spriteStates,
   };
-  return denormalize(sprite, spriteSheetsSchema, entities);
+
+  return pruneMissingEntities(
+    denormalize(sprite, spriteSheetsSchema, entities),
+  );
 };
 
 export const normalizeSprite = (

@@ -77,6 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where palette editor sliders were not updating after undo and redo
 - Fix issue where "Play Sound Effect" event was using deprecated wait function
 - Fix issue where using Dialogue or Menu events while using Draw Text could cause dialogue text to be drawn to the background
+- Fix 'sprite:compile' error by removing invalid state data before compiling sprites
 
 ## [4.2.2] - 2026-02-24
 

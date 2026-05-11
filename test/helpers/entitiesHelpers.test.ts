@@ -7,6 +7,7 @@ import {
   nextIndexedName,
   applyReparentFolderToCollection,
   applyReparentEntityToCollection,
+  pruneMissingEntities,
 } from "shared/lib/entities/entitiesHelpers";
 import {
   ActorPrefabNormalized,
@@ -674,5 +675,77 @@ describe("applyReparentEntityToCollection", () => {
 
     expect(collection.a.name).toBe("x/file.txt");
     expect(collection.b.name).toBe("b/file.txt");
+  });
+});
+
+describe("pruneMissingEntities", () => {
+  test("removes undefined values from arrays", () => {
+    expect(pruneMissingEntities([1, undefined, 2, undefined, 3])).toEqual([
+      1, 2, 3,
+    ]);
+  });
+
+  test("removes undefined values from nested arrays", () => {
+    expect(pruneMissingEntities([1, [undefined, 2], undefined, [3]])).toEqual([
+      1,
+      [2],
+      [3],
+    ]);
+  });
+
+  test("removes undefined values from arrays nested inside objects", () => {
+    expect(
+      pruneMissingEntities({
+        states: [
+          undefined,
+          {
+            id: "state1",
+            animations: [
+              undefined,
+              {
+                id: "anim1",
+                frames: [undefined, { id: "frame1", tiles: [] }],
+              },
+            ],
+          },
+        ],
+      }),
+    ).toEqual({
+      states: [
+        {
+          id: "state1",
+          animations: [
+            {
+              id: "anim1",
+              frames: [{ id: "frame1", tiles: [] }],
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  test("preserves undefined object properties", () => {
+    expect(
+      pruneMissingEntities({
+        id: "sprite1",
+        notes: undefined,
+      }),
+    ).toEqual({
+      id: "sprite1",
+      notes: undefined,
+    });
+  });
+
+  test("preserves null values in arrays and objects", () => {
+    expect(
+      pruneMissingEntities({
+        value: null,
+        items: [null, undefined, { value: null }],
+      }),
+    ).toEqual({
+      value: null,
+      items: [null, { value: null }],
+    });
   });
 });
