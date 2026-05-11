@@ -1,6 +1,7 @@
-import React, { JSX, ReactNode, useCallback, useState } from "react";
+import React, { JSX, ReactNode, useCallback } from "react";
 import styled from "styled-components";
 import { RenameInput } from "ui/form/RenameInput";
+import { useContextMenu } from "ui/hooks/use-context-menu";
 import {
   ActorIcon,
   AnimationIcon,
@@ -29,7 +30,6 @@ import {
   StyledEntityWarningLabel,
   StyledNavigatorArrow,
 } from "ui/lists/style";
-import { ContextMenu } from "ui/menu/ContextMenu";
 
 type EntityListItemData = {
   name: string;
@@ -116,30 +116,20 @@ export const EntityListItem = React.forwardRef(
     }: EntityListItemProps<T>,
     ref: React.ForwardedRef<HTMLDivElement>,
   ) => {
-    const [contextMenu, setContextMenu] = useState<{
-      x: number;
-      y: number;
-      menu: JSX.Element[];
-    }>();
+    //#region Context Menu
 
-    const onContextMenuClose = useCallback(() => {
-      setContextMenu(undefined);
-    }, []);
-
-    const onContextMenu = useCallback(
-      (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (!renderContextMenu) {
-          return;
-        }
-        e.preventDefault();
-        const menu = renderContextMenu(item, onContextMenuClose);
-        if (!menu) {
-          return;
-        }
-        setContextMenu({ x: e.pageX, y: e.pageY, menu });
+    const getContextMenu = useCallback(
+      ({ closeMenu: onClose }: { closeMenu: () => void }) => {
+        return renderContextMenu?.(item, onClose);
       },
-      [item, renderContextMenu, onContextMenuClose],
+      [item, renderContextMenu],
     );
+
+    const { onContextMenu, contextMenuElement } = useContextMenu({
+      getMenu: getContextMenu,
+    });
+
+    //#endregion Context Menu
 
     const onRenameComplete = useCallback(
       (newValue: string) => {
@@ -276,15 +266,7 @@ export const EntityListItem = React.forwardRef(
           </StyledEntityLabel>
         )}
         {item.labelColor && <StyledEntityLabelColor $color={item.labelColor} />}
-        {contextMenu && (
-          <ContextMenu
-            x={contextMenu.x}
-            y={contextMenu.y}
-            onClose={onContextMenuClose}
-          >
-            {contextMenu.menu}
-          </ContextMenu>
-        )}
+        {contextMenuElement}
       </StyledEntityListItem>
     );
   },
