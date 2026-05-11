@@ -1,12 +1,4 @@
-import React, {
-  JSX,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import WorldActor from "./ActorView";
 import TriggerView from "./TriggerView";
 import SceneCollisions from "./SceneCollisions";
@@ -39,7 +31,6 @@ import { LabelSpan } from "ui/buttons/LabelButton";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { assetURL } from "shared/lib/helpers/assets";
 import AutoColorizedImage from "components/world/AutoColorizedImage";
-import { ContextMenu } from "ui/menu/ContextMenu";
 import renderSceneContextMenu from "./renderSceneContextMenu";
 import SceneScrollBounds from "./SceneScrollBounds";
 import { SceneContext } from "components/script/SceneContext";
@@ -47,6 +38,7 @@ import { WarningIcon } from "ui/icons/Icons";
 import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeIds";
 import SceneScreenGrid from "components/world/SceneScreenGrid";
 import { MonoOBJPalette } from "shared/lib/resources/types";
+import { useContextMenu } from "ui/hooks/use-context-menu";
 
 const TILE_SIZE = 8;
 
@@ -619,60 +611,48 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     );
   }, [dispatch]);
 
-  const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
-    menu: JSX.Element[];
-  }>();
+  //#region Context Menu
 
-  const onContextMenuClose = useCallback(() => {
-    setContextMenu(undefined);
-  }, []);
-
-  const renderContextMenu = useCallback(() => {
-    return renderSceneContextMenu({
+  const getContextMenu = useCallback(
+    ({ closeMenu: onClose }: { closeMenu: () => void }) => {
+      return renderSceneContextMenu({
+        dispatch,
+        sceneId: id,
+        additionalSceneIds: sceneSelectionIds,
+        startSceneId,
+        startDirection,
+        hoverX,
+        hoverY,
+        colorsEnabled: gbcEnabled,
+        colorModeOverride: scene.colorModeOverride,
+        runSceneSelectionOnly,
+        onClose,
+      });
+    },
+    [
       dispatch,
-      sceneId: id,
-      additionalSceneIds: sceneSelectionIds,
-      startSceneId,
-      startDirection,
       hoverX,
       hoverY,
-      colorsEnabled: gbcEnabled,
-      colorModeOverride: scene.colorModeOverride,
+      id,
+      sceneSelectionIds,
+      startDirection,
+      startSceneId,
       runSceneSelectionOnly,
-      onClose: onContextMenuClose,
-    });
-  }, [
-    dispatch,
-    hoverX,
-    hoverY,
-    id,
-    sceneSelectionIds,
-    startDirection,
-    startSceneId,
-    runSceneSelectionOnly,
-    gbcEnabled,
-    scene.colorModeOverride,
-    onContextMenuClose,
-  ]);
-
-  const onContextMenu = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (tool !== TOOL_SELECT) {
-        return;
-      }
-      if (!renderContextMenu) {
-        return;
-      }
-      const menu = renderContextMenu();
-      if (!menu) {
-        return;
-      }
-      setContextMenu({ x: e.pageX, y: e.pageY, menu });
-    },
-    [renderContextMenu, tool],
+      gbcEnabled,
+      scene.colorModeOverride,
+    ],
   );
+
+  const getContextMenuEnabled = useCallback(() => {
+    return tool === TOOL_SELECT;
+  }, [tool]);
+
+  const { onContextMenu, contextMenuElement } = useContextMenu({
+    getMenu: getContextMenu,
+    getIsEnabled: getContextMenuEnabled,
+  });
+
+  //#endregion Context Menu
 
   const onToggleSelection = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -911,15 +891,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
           <SceneInfo />
         </SceneMetadata>
       )}
-      {contextMenu && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          onClose={onContextMenuClose}
-        >
-          {contextMenu.menu}
-        </ContextMenu>
-      )}
+      {contextMenuElement}
     </Wrapper>
   );
 });
