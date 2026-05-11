@@ -1,5 +1,4 @@
 import React, {
-  JSX,
   useCallback,
   useEffect,
   useMemo,
@@ -16,7 +15,6 @@ import {
   TOOL_COLLISIONS,
   TOOL_ERASER,
   TILE_SIZE,
-  TOOL_SELECT,
 } from "consts";
 import {
   sceneSelectors,
@@ -34,8 +32,8 @@ import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import { Selection } from "ui/document/Selection";
 import useResizeObserver from "ui/hooks/use-resize-observer";
 import NoteView from "components/world/NoteView";
-import { ContextMenu } from "ui/menu/ContextMenu";
 import renderWorldContextMenu from "components/world/renderWorldContextMenu";
+import { useContextMenu } from "ui/hooks/use-context-menu";
 
 const MOUSE_ZOOM_SPEED = 0.5;
 
@@ -721,62 +719,16 @@ const WorldView = () => {
 
   //#region Context Menu
 
-  const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
-    menu: JSX.Element[];
-  }>();
-
-  const onContextMenuClose = useCallback(() => {
-    setContextMenu(undefined);
-  }, []);
-
-  const renderContextMenu = useCallback(() => {
+  const getContextMenu = useCallback(() => {
     return renderWorldContextMenu({
       dispatch,
       selectedIds,
-      // sceneId: id,
-      // additionalSceneIds: sceneSelectionIds,
-      // startSceneId,
-      // startDirection,
-      // hoverX,
-      // hoverY,
-      // colorsEnabled: gbcEnabled,
-      // colorModeOverride: scene.colorModeOverride,
-      // runSceneSelectionOnly,
-      // onClose: onContextMenuClose,
     });
-  }, [
-    dispatch,
-    selectedIds,
-    // hoverX,
-    // hoverY,
-    // id,
-    // sceneSelectionIds,
-    // startDirection,
-    // startSceneId,
-    // runSceneSelectionOnly,
-    // gbcEnabled,
-    // scene.colorModeOverride,
-    // onContextMenuClose,
-  ]);
+  }, [dispatch, selectedIds]);
 
-  const onContextMenu = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (tool !== TOOL_SELECT) {
-        return;
-      }
-      if (!renderContextMenu) {
-        return;
-      }
-      const menu = renderContextMenu();
-      if (!menu) {
-        return;
-      }
-      setContextMenu({ x: e.pageX, y: e.pageY, menu });
-    },
-    [renderContextMenu, tool],
-  );
+  const { onContextMenu, contextMenuElement } = useContextMenu({
+    getMenu: getContextMenu,
+  });
 
   //#endregion Context Menu
 
@@ -864,15 +816,7 @@ const WorldView = () => {
         )}
       </WorldContent>
       {loaded && scenes.length === 0 && notes.length === 0 && <WorldHelp />}
-      {contextMenu && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          onClose={onContextMenuClose}
-        >
-          {contextMenu.menu}
-        </ContextMenu>
-      )}
+      {contextMenuElement}
     </Wrapper>
   );
 };
