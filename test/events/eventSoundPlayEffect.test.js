@@ -2,16 +2,14 @@ import { compile } from "../../src/lib/events/eventSoundPlayEffect";
 
 test("Should play beep with type beep and pitch 4 if not set", () => {
   const mockSoundPlayBeep = jest.fn();
-  const mockWait = jest.fn();
 
   compile(
     {},
     {
       soundPlayBeep: mockSoundPlayBeep,
-      wait: mockWait,
     },
   );
-  expect(mockSoundPlayBeep).toBeCalledWith(5, 30, "medium");
+  expect(mockSoundPlayBeep).toHaveBeenCalledWith(5, 30, "medium");
 });
 
 test("Should be able to play beep with pitch 7 (really value 2 since flipped to make high values high pitched)", () => {
@@ -26,7 +24,7 @@ test("Should be able to play beep with pitch 7 (really value 2 since flipped to 
       soundPlayBeep: mockSoundPlayBeep,
     },
   );
-  expect(mockSoundPlayBeep).toBeCalledWith(2, 30, "medium");
+  expect(mockSoundPlayBeep).toHaveBeenCalledWith(2, 30, "medium");
 });
 
 test("Should be able to play crash", () => {
@@ -40,7 +38,7 @@ test("Should be able to play crash", () => {
       soundPlayCrash: mockSoundPlayCrash,
     },
   );
-  expect(mockSoundPlayCrash).toBeCalledWith(30, "medium");
+  expect(mockSoundPlayCrash).toHaveBeenCalledWith(30, "medium");
 });
 
 test("Should play tone at 200hz for 0.5 seconds if tone not set", () => {
@@ -54,7 +52,7 @@ test("Should play tone at 200hz for 0.5 seconds if tone not set", () => {
       soundStartTone: mockSoundStartTone,
     },
   );
-  expect(mockSoundStartTone).toBeCalledWith(1393, 30, "medium");
+  expect(mockSoundStartTone).toHaveBeenCalledWith(1393, 30, "medium");
 });
 
 test("Should be able to play sound with tone 1024hz for 1 second", () => {
@@ -70,11 +68,35 @@ test("Should be able to play sound with tone 1024hz for 1 second", () => {
       soundStartTone: mockSoundStartTone,
     },
   );
-  expect(mockSoundStartTone).toBeCalledWith(1920, 60, "medium");
+  expect(mockSoundStartTone).toHaveBeenCalledWith(1920, 60, "medium");
 });
 
 test("Should be able to wait for sound to finish", () => {
   const mockSoundStartTone = jest.fn();
+  const mockWaitScriptValue = jest.fn();
+
+  compile(
+    {
+      type: "tone",
+      frequency: 1024,
+      duration: 1.0,
+      wait: true,
+    },
+    {
+      soundStartTone: mockSoundStartTone,
+      waitScriptValue: mockWaitScriptValue,
+    },
+  );
+  expect(mockSoundStartTone).toHaveBeenCalledWith(1920, 60, "medium");
+  expect(mockWaitScriptValue).toHaveBeenCalledWith({
+    type: "number",
+    value: 60,
+  });
+});
+
+test("Should not call deprecated wait function", () => {
+  const mockSoundStartTone = jest.fn();
+  const mockWaitScriptValue = jest.fn();
   const mockWait = jest.fn();
 
   compile(
@@ -87,8 +109,9 @@ test("Should be able to wait for sound to finish", () => {
     {
       soundStartTone: mockSoundStartTone,
       wait: mockWait,
+      waitScriptValue: mockWaitScriptValue,
     },
   );
   expect(mockSoundStartTone).toBeCalledWith(1920, 60, "medium");
-  expect(mockWait).toBeCalledWith(60);
+  expect(mockWait).not.toHaveBeenCalled();
 });

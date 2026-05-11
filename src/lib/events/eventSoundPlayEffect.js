@@ -112,7 +112,7 @@ const compile = (input, helpers) => {
     soundStartTone,
     soundPlayCrash,
     soundPlay,
-    wait,
+    waitScriptValue,
   } = helpers;
   let priority = input.priority || "medium";
   let seconds = typeof input.duration === "number" ? input.duration : 0.5;
@@ -140,7 +140,7 @@ const compile = (input, helpers) => {
   }
 
   if (shouldWait) {
-    wait(Math.round(seconds * 60));
+    waitScriptValue({ type: "number", value: Math.round(frames) });
   }
 };
 
