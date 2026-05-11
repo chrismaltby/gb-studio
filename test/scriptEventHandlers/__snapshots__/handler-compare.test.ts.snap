@@ -312,6 +312,7 @@ _script::
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_SWITCH_TEXT_LAYER    .TEXT_LAYER_WIN
         VM_LOAD_TEXT            0
         .asciz "False Path"
         VM_DISPLAY_TEXT
@@ -325,6 +326,7 @@ _script::
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_SWITCH_TEXT_LAYER    .TEXT_LAYER_WIN
         VM_LOAD_TEXT            0
         .asciz "True Path"
         VM_DISPLAY_TEXT
@@ -386,6 +388,7 @@ _script::
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_SWITCH_TEXT_LAYER    .TEXT_LAYER_WIN
         VM_LOAD_TEXT            0
         .asciz "False Path"
         VM_DISPLAY_TEXT
@@ -399,6 +402,7 @@ _script::
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_SWITCH_TEXT_LAYER    .TEXT_LAYER_WIN
         VM_LOAD_TEXT            0
         .asciz "True Path"
         VM_DISPLAY_TEXT
@@ -469,6 +473,7 @@ _script::
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_SWITCH_TEXT_LAYER    .TEXT_LAYER_WIN
         VM_LOAD_TEXT            0
         .asciz "In Loop"
         VM_DISPLAY_TEXT
@@ -630,6 +635,7 @@ _script::
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_SWITCH_TEXT_LAYER    .TEXT_LAYER_WIN
         VM_LOAD_TEXT            0
         .asciz "Hello World"
         VM_DISPLAY_TEXT
@@ -658,11 +664,13 @@ _script::
         VM_OVERLAY_MOVE_TO      0, 18, .OVERLAY_SPEED_INSTANT
         VM_OVERLAY_MOVE_TO      0, 14, .OVERLAY_IN_SPEED
         VM_OVERLAY_SET_SCROLL   1, 1, 18, 5, .UI_COLOR_WHITE
+        VM_SWITCH_TEXT_LAYER    .TEXT_LAYER_WIN
         VM_LOAD_TEXT            0
         .asciz "Hello World"
         VM_DISPLAY_TEXT
         VM_OVERLAY_WAIT         .UI_MODAL, ^/(.UI_WAIT_WINDOW | .UI_WAIT_TEXT | .UI_WAIT_BTN_A)/
         VM_OVERLAY_CLEAR        0, 0, 20, 4, .UI_COLOR_WHITE, .UI_DRAW_FRAME
+        VM_SWITCH_TEXT_LAYER    .TEXT_LAYER_WIN
         VM_LOAD_TEXT            0
         .asciz "Goodbye World"
         VM_DISPLAY_TEXT
