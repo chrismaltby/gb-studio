@@ -1152,6 +1152,8 @@ const editorSlice = createSlice({
       .addCase(navigationActions.setSection, (state, _action) => {
         state.worldFocus = false;
         state.eventId = "";
+        state.eventParentId = "";
+        state.eventParentKey = "";
         state.scriptEventSelectionIds = [];
         state.replaceSpriteTileMode = undefined;
       })
