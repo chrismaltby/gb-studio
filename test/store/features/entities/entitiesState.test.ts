@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import reducer, {
+  fixAllSpritesWithMissingStates,
   initialState,
 } from "../../../../src/store/features/entities/entitiesState";
 import { EntitiesState } from "../../../../src/shared/lib/entities/entitiesTypes";
@@ -33,8 +34,11 @@ import {
   SpriteResourceAsset,
 } from "shared/lib/resources/types";
 import { v4 as uuid } from "uuid";
+import { createNextState } from "@reduxjs/toolkit";
 
 jest.mock("uuid");
+
+const mockUuid = uuid as jest.MockedFunction<typeof uuid>;
 
 test("Should fix scene widths if backgrounds has been removed since save", () => {
   const state: EntitiesState = {
@@ -5195,5 +5199,200 @@ describe("Metasprites", () => {
         state.scenes.entities["scene3"],
       );
     });
+  });
+});
+
+describe("fixAllSpritesWithMissingStates", () => {
+  beforeEach(() => {
+    let id = 0;
+
+    mockUuid.mockImplementation(() => {
+      id += 1;
+      return `uuid-${id}`;
+    });
+  });
+
+  afterEach(() => {
+    mockUuid.mockReset();
+  });
+
+  test("Should create a default sprite state when sprite has no states", () => {
+    const state = {
+      spriteSheets: {
+        ids: ["spriteSheet1"],
+        entities: {
+          spriteSheet1: {
+            id: "spriteSheet1",
+            states: [],
+          },
+        },
+      },
+      spriteStates: {
+        ids: [],
+        entities: {},
+      },
+      spriteAnimations: {
+        ids: [],
+        entities: {},
+      },
+      metasprites: {
+        ids: [],
+        entities: {},
+      },
+    } as unknown as EntitiesState;
+
+    const result = createNextState(state, (draft) => {
+      fixAllSpritesWithMissingStates(draft);
+    });
+
+    const sprite = result.spriteSheets.entities.spriteSheet1;
+    expect(sprite?.states.length).toEqual(1);
+
+    const spriteStateId = sprite?.states[0];
+    expect(spriteStateId).toBeDefined();
+    expect(result.spriteStates.entities[spriteStateId]).toBeDefined();
+
+    const spriteState = result.spriteStates.entities[spriteStateId];
+    expect(spriteState?.animations.length).toEqual(8);
+
+    for (const animationId of spriteState?.animations ?? []) {
+      const animation = result.spriteAnimations.entities[animationId];
+      expect(animation).toBeDefined();
+      expect(animation?.frames.length).toEqual(1);
+
+      const metaspriteId = animation?.frames[0];
+      expect(metaspriteId).toBeDefined();
+      expect(result.metasprites.entities[metaspriteId]).toBeDefined();
+    }
+  });
+
+  test("Should create a default sprite state when sprite references missing states", () => {
+    const state = {
+      spriteSheets: {
+        ids: ["spriteSheet1"],
+        entities: {
+          spriteSheet1: {
+            id: "spriteSheet1",
+            states: ["missingState"],
+          },
+        },
+      },
+      spriteStates: {
+        ids: [],
+        entities: {},
+      },
+      spriteAnimations: {
+        ids: [],
+        entities: {},
+      },
+      metasprites: {
+        ids: [],
+        entities: {},
+      },
+    } as unknown as EntitiesState;
+
+    const result = createNextState(state, (draft) => {
+      fixAllSpritesWithMissingStates(draft);
+    });
+
+    const sprite = result.spriteSheets.entities.spriteSheet1;
+    expect(sprite?.states.length).toEqual(1);
+    expect(sprite?.states).not.toContain("missingState");
+
+    const spriteStateId = sprite?.states[0];
+    expect(spriteStateId).toBeDefined();
+    expect(result.spriteStates.entities[spriteStateId]).toBeDefined();
+  });
+
+  test("Should keep existing valid sprite states and remove missing state references", () => {
+    const state = {
+      spriteSheets: {
+        ids: ["spriteSheet1"],
+        entities: {
+          spriteSheet1: {
+            id: "spriteSheet1",
+            states: ["state1", "missingState"],
+          },
+        },
+      },
+      spriteStates: {
+        ids: ["state1"],
+        entities: {
+          state1: {
+            id: "state1",
+            name: "",
+            animationType: "multi_movement",
+            flipLeft: true,
+            animations: ["animation1"],
+          },
+        },
+      },
+      spriteAnimations: {
+        ids: ["animation1"],
+        entities: {
+          animation1: {
+            id: "animation1",
+            frames: ["metasprite1"],
+          },
+        },
+      },
+      metasprites: {
+        ids: ["metasprite1"],
+        entities: {
+          metasprite1: {
+            id: "metasprite1",
+            tiles: [],
+          },
+        },
+      },
+    } as unknown as EntitiesState;
+
+    const result = createNextState(state, (draft) => {
+      fixAllSpritesWithMissingStates(draft);
+    });
+
+    expect(result.spriteSheets.entities.spriteSheet1?.states).toEqual([
+      "state1",
+    ]);
+    expect(result.spriteStates.entities.state1).toBeDefined();
+  });
+
+  test("Should create a default sprite state when all referenced states are missing", () => {
+    const state = {
+      spriteSheets: {
+        ids: ["spriteSheet1"],
+        entities: {
+          spriteSheet1: {
+            id: "spriteSheet1",
+            states: ["missingState1", "missingState2"],
+          },
+        },
+      },
+      spriteStates: {
+        ids: [],
+        entities: {},
+      },
+      spriteAnimations: {
+        ids: [],
+        entities: {},
+      },
+      metasprites: {
+        ids: [],
+        entities: {},
+      },
+    } as unknown as EntitiesState;
+
+    const result = createNextState(state, (draft) => {
+      fixAllSpritesWithMissingStates(draft);
+    });
+
+    const sprite = result.spriteSheets.entities.spriteSheet1;
+    expect(sprite?.states.length).toEqual(1);
+    expect(sprite?.states).not.toContain("missingState1");
+    expect(sprite?.states).not.toContain("missingState2");
+
+    const spriteStateId = sprite?.states[0];
+    expect(spriteStateId).toBeDefined();
+    expect(result.spriteStates.entities[spriteStateId]).toBeDefined();
   });
 });

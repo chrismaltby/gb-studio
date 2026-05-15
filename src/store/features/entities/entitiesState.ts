@@ -827,39 +827,72 @@ const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
   }
 };
 
-const fixAllSpritesWithMissingStates = (state: EntitiesState) => {
+const createDefaultSpriteStateData = (): {
+  metasprites: MetaspriteNormalized[];
+  animations: SpriteAnimationNormalized[];
+  spriteState: SpriteStateNormalized;
+} => {
+  const metasprites: MetaspriteNormalized[] = Array.from(Array(8)).map(() => ({
+    id: uuid(),
+    tiles: [],
+  }));
+
+  const animations: SpriteAnimationNormalized[] = metasprites.map(
+    (metasprite) => ({
+      id: uuid(),
+      frames: [metasprite.id],
+    }),
+  );
+
+  const spriteState: SpriteStateNormalized = {
+    id: uuid(),
+    name: "",
+    animationType: "multi_movement",
+    flipLeft: true,
+    animations: animations.map((animation) => animation.id),
+  };
+
+  return {
+    metasprites,
+    animations,
+    spriteState,
+  };
+};
+
+export const fixAllSpritesWithMissingStates = (state: EntitiesState) => {
   const sprites = localSpriteSheetSelectAll(state);
+
   for (const sprite of sprites) {
-    if (!sprite.states || sprite.states.length === 0) {
-      // Create default state for newly added spritesheets
-      const metasprites: MetaspriteNormalized[] = Array.from(Array(8)).map(
-        () => ({
-          id: uuid(),
-          tiles: [],
-        }),
-      );
-      const animations: SpriteAnimationNormalized[] = metasprites.map(
-        (metasprite) => ({
-          id: uuid(),
-          frames: [metasprite.id],
-        }),
-      );
-      const animationIds = animations.map((a) => a.id);
-      const spriteState: SpriteStateNormalized = {
-        id: uuid(),
-        name: "",
-        animationType: "multi_movement",
-        flipLeft: true,
-        animations: animationIds,
-      };
-      metaspritesAdapter.addMany(state.metasprites, metasprites);
-      spriteAnimationsAdapter.addMany(state.spriteAnimations, animations);
-      spriteStatesAdapter.addOne(state.spriteStates, spriteState);
-      spriteSheetsAdapter.upsertOne(state.spriteSheets, {
-        ...sprite,
-        states: [spriteState.id],
-      });
+    const validStateIds = (sprite.states ?? []).filter((spriteStateId) => {
+      return !!state.spriteStates.entities[spriteStateId];
+    });
+
+    if (validStateIds.length > 0) {
+      if (validStateIds.length !== sprite.states?.length) {
+        spriteSheetsAdapter.updateOne(state.spriteSheets, {
+          id: sprite.id,
+          changes: {
+            states: validStateIds,
+          },
+        });
+      }
+
+      continue;
     }
+
+    const { metasprites, animations, spriteState } =
+      createDefaultSpriteStateData();
+
+    metaspritesAdapter.addMany(state.metasprites, metasprites);
+    spriteAnimationsAdapter.addMany(state.spriteAnimations, animations);
+    spriteStatesAdapter.addOne(state.spriteStates, spriteState);
+
+    spriteSheetsAdapter.updateOne(state.spriteSheets, {
+      id: sprite.id,
+      changes: {
+        states: [spriteState.id],
+      },
+    });
   }
 };
 
