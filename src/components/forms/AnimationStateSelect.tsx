@@ -130,7 +130,6 @@ const AnimationStateSelect = ({
 }: AnimationStateSelectProps) => {
   const [renameVisible, setRenameVisible] = useState(false);
   const [editValue, setEditValue] = useState("");
-  const [renameId, setRenameId] = useState("");
   const [currentValue, setCurrentValue] = useState<Option>();
 
   const [options, setOptions] = useState<(Option | OptGroup)[]>([]);
@@ -148,7 +147,6 @@ const AnimationStateSelect = ({
   const onRenameStart = () => {
     if (currentValue) {
       setEditValue(currentValue.label);
-      setRenameId(currentValue.value);
       setRenameVisible(true);
     }
   };
@@ -170,7 +168,7 @@ const AnimationStateSelect = ({
   };
 
   const onRenameFinish = () => {
-    if (renameId) {
+    if (editValue.length > 0) {
       onChange?.(editValue);
     }
     setRenameVisible(false);
@@ -279,7 +277,6 @@ const AnimationStateSelect = ({
     <Wrapper>
       {renameVisible ? (
         <StateRenameInput
-          key={renameId}
           value={editValue}
           onChange={onRename}
           onKeyDown={onRenameKeyDown}
