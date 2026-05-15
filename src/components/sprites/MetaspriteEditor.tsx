@@ -425,7 +425,7 @@ const MetaspriteEditor = ({
     ],
   );
 
-  const onDragStart =
+  const onDragStart = useCallback(
     (tileId: string) => (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       const tile = metaspriteTileLookup[tileId];
       if (tile) {
@@ -459,7 +459,14 @@ const MetaspriteEditor = ({
           setDraggingMetasprite(true);
         }
       }
-    };
+    },
+    [
+      metaspriteTileLookup,
+      selectedTileIds,
+      setSelectedTileId,
+      toggleSelectedTileId,
+    ],
+  );
 
   const onDrag = useCallback(
     (e: MouseEvent) => {
@@ -552,14 +559,14 @@ const MetaspriteEditor = ({
     ],
   );
 
-  const onDragSelectionEnd = (_e: MouseEvent) => {
+  const onDragSelectionEnd = useCallback((_e: MouseEvent) => {
     setDraggingSelection(false);
     setSelectionRect(undefined);
-  };
+  }, []);
 
-  const onDeselect = () => {
+  const onDeselect = useCallback(() => {
     resetSelectedTileIds();
-  };
+  }, [resetSelectedTileIds]);
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -717,7 +724,7 @@ const MetaspriteEditor = ({
       };
     }
     return () => {};
-  }, [draggingSelection, onDragSelection, hidden]);
+  }, [draggingSelection, onDragSelection, hidden, onDragSelectionEnd]);
 
   useEffect(() => {
     if (newTiles && isOverEditor && !hidden) {

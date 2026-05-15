@@ -36,9 +36,16 @@ export const SpriteSliceCanvas = ({
 }: SpriteSliceCanvasProps) => {
   const [workerId] = useState(Math.random());
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const spriteSheet = useAppSelector((state) =>
-    spriteSheetSelectors.selectById(state, spriteSheetId),
+  const hasSprite = useAppSelector(
+    (state) => !!spriteSheetSelectors.selectById(state, spriteSheetId),
   );
+  const spriteURL = useAppSelector((state) => {
+    const sprite = spriteSheetSelectors.selectById(state, spriteSheetId);
+    if (!sprite) {
+      return undefined;
+    }
+    return assetURL("sprites", sprite);
+  });
   const colorCorrection = useAppSelector(
     (state) => getSettings(state).colorCorrection,
   );
@@ -48,7 +55,7 @@ export const SpriteSliceCanvas = ({
       if (e.data.id === workerId) {
         const offscreenCanvas = document.createElement("canvas");
         const offscreenCtx = offscreenCanvas.getContext("bitmaprenderer");
-        if (!canvasRef.current || !spriteSheet || !offscreenCtx) {
+        if (!canvasRef.current || !hasSprite || !offscreenCtx) {
           return;
         }
         const ctx = canvasRef.current.getContext("2d");
@@ -60,7 +67,7 @@ export const SpriteSliceCanvas = ({
         ctx.drawImage(offscreenCanvas, 0, 0);
       }
     },
-    [height, spriteSheet, width, workerId],
+    [height, hasSprite, width, workerId],
   );
 
   useEffect(() => {
@@ -71,14 +78,13 @@ export const SpriteSliceCanvas = ({
   }, [width, height, onWorkerComplete]);
 
   useEffect(() => {
-    if (!canvasRef.current || !spriteSheet) {
+    if (!canvasRef.current || !hasSprite || !spriteURL) {
       return;
     }
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) {
       return;
     }
-    const spriteURL = assetURL("sprites", spriteSheet);
 
     worker.postMessage({
       id: workerId,
@@ -95,7 +101,6 @@ export const SpriteSliceCanvas = ({
     });
   }, [
     canvasRef,
-    spriteSheet,
     offsetX,
     offsetY,
     width,
@@ -106,6 +111,8 @@ export const SpriteSliceCanvas = ({
     palette,
     colorCorrection,
     workerId,
+    hasSprite,
+    spriteURL,
   ]);
 
   return (
