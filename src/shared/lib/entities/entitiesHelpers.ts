@@ -485,6 +485,65 @@ const matchAsset = (assetA: Asset) => (assetB: Asset) => {
   return assetA.filename === assetB.filename && assetA.plugin === assetB.plugin;
 };
 
+const assetResourceType = (asset: Asset): string | undefined => {
+  return "_resourceType" in asset && typeof asset._resourceType === "string"
+    ? asset._resourceType
+    : undefined;
+};
+
+const isCompatibleCachedAsset = <T extends Asset & { inode: string }>(
+  incoming: T,
+  cached: Asset | undefined,
+): cached is T => {
+  if (!cached) {
+    return false;
+  }
+
+  if (assetResourceType(cached) !== assetResourceType(incoming)) {
+    return false;
+  }
+
+  if (cached.plugin !== incoming.plugin) {
+    return false;
+  }
+
+  return true;
+};
+
+const hasValidInode = (
+  asset: Asset & { inode?: string },
+): asset is Asset & {
+  inode: string;
+} => {
+  return typeof asset.inode === "string" && asset.inode.length > 0;
+};
+
+const cacheAssetByInode = <T extends Asset & { inode: string }>(asset: T) => {
+  if (!hasValidInode(asset)) {
+    return;
+  }
+
+  inodeToAssetCache[asset.inode] = cloneDeep(asset);
+};
+
+const takeCachedAsset = <T extends Asset & { inode: string }>(
+  entity: T,
+): T | undefined => {
+  if (!hasValidInode(entity)) {
+    return undefined;
+  }
+
+  const cachedAsset = inodeToAssetCache[entity.inode];
+
+  if (!cachedAsset) {
+    return undefined;
+  }
+
+  delete inodeToAssetCache[entity.inode];
+
+  return isCompatibleCachedAsset(entity, cachedAsset) ? cachedAsset : undefined;
+};
+
 const collator = new Intl.Collator(undefined, {
   numeric: true,
   sensitivity: "base",
@@ -860,11 +919,9 @@ const mergeAssetEntity = <T extends Asset & { inode: string }>(
 
   // Check if asset already exists or was recently deleted
   const existingAsset =
-    existingEntities.find(matchAsset(entity)) ||
-    inodeToAssetCache[entity.inode];
+    existingEntities.find(matchAsset(entity)) || takeCachedAsset(entity);
 
   if (existingAsset) {
-    delete inodeToAssetCache[entity.inode];
     const preferExisting = pick(existingAsset, keepProps);
 
     return {
@@ -916,7 +973,7 @@ export const removeAssetEntity = <
   ) as T[];
   const existingAsset = existingEntities.find(matchAsset(asset));
   if (existingAsset) {
-    inodeToAssetCache[existingAsset.inode] = cloneDeep(existingAsset);
+    cacheAssetByInode(existingAsset);
     adapter.removeOne(entities, existingAsset.id);
   }
 };
@@ -945,7 +1002,7 @@ export const renameAssetEntity = <
   ) as T[];
   const existingAsset = existingEntities.find(matchAsset(asset));
   if (existingAsset) {
-    inodeToAssetCache[existingAsset.inode] = cloneDeep(existingAsset);
+    cacheAssetByInode(existingAsset);
     adapter.updateOne(entities, {
       id: existingAsset.id,
       changes: {
