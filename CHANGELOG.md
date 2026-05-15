@@ -80,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix 'sprite:compile' error by removing invalid state data before compiling sprites
 - Fix issue where navigating app sections with the keyboard could prevent the Paste shortcut from working
 - Fix issue where it was possible to create an animation state with a blank name which could no longer renamed
+- Fix issue where keyboard controls wouldn't always work in sprite animations navigator
 
 ## [4.2.2] - 2026-02-24
 

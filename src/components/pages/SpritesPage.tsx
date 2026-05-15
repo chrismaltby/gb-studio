@@ -16,7 +16,6 @@ import {
 } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
 import { SpriteEditor } from "components/sprites/SpriteEditor";
-import { NavigatorSprites } from "components/sprites/NavigatorSprites";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
@@ -37,6 +36,11 @@ import { TargetIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { getAnimationNameById } from "renderer/lib/sprites/spriteL10NHelpers";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import SplitPaneVerticalContainer, {
+  SplitPaneLayout,
+} from "ui/splitpane/SplitPaneVerticalContainer";
+import { NavigatorSpritesAnimationsPane } from "components/sprites/navigator/NavigatorSpritesAnimationsPane";
+import { NavigatorSpritesPane } from "components/sprites/navigator/NavigatorSpritesPane";
 
 const Wrapper = styled.div`
   display: flex;
@@ -53,82 +57,116 @@ const PrecisionIcon = styled(TargetIcon)`
   }
 `;
 
+const defaultPaneLayout: SplitPaneLayout[] = [
+  { type: "fill", initialMinSize: 200 },
+  { type: "fixed", size: 334 },
+];
+
 const SpritesPage = () => {
   const dispatch = useAppDispatch();
   const themeContext = useContext(ThemeContext);
+
   const worldSidebarWidth = useAppSelector(
     (state) => state.editor.worldSidebarWidth,
   );
+
   const navigatorSidebarWidth = useAppSelector(
     (state) => state.editor.navigatorSidebarWidth,
   );
+
   const tilesZoom = useAppSelector((state) => state.editor.zoomSpriteTiles);
+
+  const selectedId = useAppSelector(
+    (state) => state.editor.selectedSpriteSheetId,
+  );
+
+  const navigationStateId = useAppSelector(
+    (state) => state.editor.selectedSpriteStateId,
+  );
+
+  const animationId = useAppSelector(
+    (state) => state.editor.selectedAnimationId,
+  );
+
+  const metaspriteId = useAppSelector(
+    (state) => state.editor.selectedMetaspriteId,
+  );
+
+  const selectedAdditionalMetaspriteIds = useAppSelector(
+    (state) => state.editor.selectedAdditionalMetaspriteIds,
+  );
+
+  const precisionTileMode = useAppSelector(
+    (state) => state.editor.precisionTileMode,
+  );
+
+  const firstSpriteId = useAppSelector(
+    (state) => spriteSheetSelectors.selectIds(state)[0] ?? "",
+  );
+
+  const sprite = useAppSelector((state) =>
+    spriteSheetSelectors.selectById(state, selectedId),
+  );
+
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
   const windowWidth = windowSize.width || 0;
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
 
-  const allSprites = useAppSelector((state) =>
-    spriteSheetSelectors.selectAll(state),
-  );
-  const spritesLookup = useAppSelector((state) =>
-    spriteSheetSelectors.selectEntities(state),
-  );
-  const spriteStatesLookup = useAppSelector((state) =>
-    spriteStateSelectors.selectEntities(state),
-  );
-  const spriteAnimationsLookup = useAppSelector((state) =>
-    spriteAnimationSelectors.selectEntities(state),
-  );
-  const selectedId = useAppSelector(
-    (state) => state.editor.selectedSpriteSheetId,
-  );
-  const navigationStateId = useAppSelector(
-    (state) => state.editor.selectedSpriteStateId,
-  );
-  const animationId = useAppSelector(
-    (state) => state.editor.selectedAnimationId,
-  );
-  const metaspriteId = useAppSelector(
-    (state) => state.editor.selectedMetaspriteId,
-  );
-  const selectedAdditionalMetaspriteIds = useAppSelector(
-    (state) => state.editor.selectedAdditionalMetaspriteIds,
-  );
-  const precisionTileMode = useAppSelector(
-    (state) => state.editor.precisionTileMode,
-  );
-  const [tmpPrecisionMode, setTmpPrecisionMode] = useState(false);
-
-  const sprite = useAppSelector((state) =>
-    spriteSheetSelectors.selectById(state, selectedId),
-  );
-
   const lastSpriteId = useRef("");
+
   useEffect(() => {
     if (sprite) {
       lastSpriteId.current = sprite.id;
     }
   }, [sprite]);
 
-  const viewSpriteId = useMemo(
-    () => sprite?.id || lastSpriteId.current || allSprites[0]?.id,
-    [allSprites, sprite],
+  const viewSpriteId =
+    sprite?.id || lastSpriteId.current || firstSpriteId || "";
+
+  const selectedSprite = useAppSelector((state) =>
+    viewSpriteId
+      ? spriteSheetSelectors.selectById(state, viewSpriteId)
+      : undefined,
   );
 
-  const selectedSprite = spritesLookup[viewSpriteId];
+  const fallbackStateId = selectedSprite?.states[0] ?? "";
 
-  const selectedState =
-    spriteStatesLookup[navigationStateId] ||
-    spriteStatesLookup[selectedSprite?.states[0] ?? ""];
+  const navigationState = useAppSelector((state) =>
+    navigationStateId
+      ? spriteStateSelectors.selectById(state, navigationStateId)
+      : undefined,
+  );
 
-  const selectedAnimation =
-    spriteAnimationsLookup[animationId] ||
-    (selectedState && spriteAnimationsLookup[selectedState.animations?.[0]]);
+  const fallbackState = useAppSelector((state) =>
+    fallbackStateId
+      ? spriteStateSelectors.selectById(state, fallbackStateId)
+      : undefined,
+  );
 
+  const selectedState = navigationState || fallbackState;
   const selectedStateId = selectedState?.id || "";
+
+  const fallbackAnimationId = selectedState?.animations?.[0] ?? "";
+
+  const navigationAnimation = useAppSelector((state) =>
+    animationId
+      ? spriteAnimationSelectors.selectById(state, animationId)
+      : undefined,
+  );
+
+  const fallbackAnimation = useAppSelector((state) =>
+    fallbackAnimationId
+      ? spriteAnimationSelectors.selectById(state, fallbackAnimationId)
+      : undefined,
+  );
+
+  const selectedAnimation = navigationAnimation || fallbackAnimation;
   const selectedAnimationId = selectedAnimation?.id || "";
+
+  const [tmpPrecisionMode, setTmpPrecisionMode] = useState(false);
+
   const selectedMetaspriteId =
     metaspriteId || selectedAnimation?.frames[0] || "";
   const frames = useMemo(
@@ -192,6 +230,9 @@ const SpritesPage = () => {
   const prevWidth = prevWindowWidthRef.current;
 
   useEffect(() => {
+    if (!viewSpriteId) {
+      return;
+    }
     dispatch(spriteActions.compileSprite({ spriteSheetId: viewSpriteId }));
   }, [dispatch, viewSpriteId]);
 
@@ -257,8 +298,8 @@ const SpritesPage = () => {
   }, [centerPaneHeight, setCenterPaneSize]);
 
   const toggleAnimationsPane = useCallback(() => {
-    setAnimationsOpen(!animationsOpen);
-  }, [animationsOpen, setAnimationsOpen]);
+    setAnimationsOpen((open) => !open);
+  }, [setAnimationsOpen]);
 
   const onZoomIn = useCallback(() => {
     dispatch(editorActions.zoomIn({ section: "spriteTiles" }));
@@ -300,7 +341,7 @@ const SpritesPage = () => {
       window.removeEventListener("keydown", handleKeys);
       window.removeEventListener("keyup", handleKeysUp);
     };
-  });
+  }, [handleKeys, handleKeysUp]);
 
   return (
     <Wrapper>
@@ -321,14 +362,15 @@ const SpritesPage = () => {
             height: "100%",
           }}
         >
-          <NavigatorSprites
+          <SplitPaneVerticalContainer
             height={windowHeight - 38}
-            selectedId={selectedId}
-            viewId={viewSpriteId}
-            selectedAnimationId={selectedAnimationId}
-            selectedStateId={selectedStateId}
-            defaultFirst
-          />
+            defaultLayout={defaultPaneLayout}
+          >
+            <NavigatorSpritesPane viewSpriteId={viewSpriteId} />
+            {selectedSprite && (
+              <NavigatorSpritesAnimationsPane viewSpriteId={viewSpriteId} />
+            )}
+          </SplitPaneVerticalContainer>
         </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
