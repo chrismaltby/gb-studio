@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for split patterns in the Music Editor, allowing different patterns to be set per channel
 - Add note sustain previews to Piano Roll view
 - Add ability to view current tracker keyboard layout (accessible in Preferences window in main app, and in menu `Input / Tracker Keyboard Layout` on music web app)
+- Add ability to read camera scroll x/y within script values [@pau-tomas](https://github.com/pau-tomas)
 - Ukrainian localisation. [@AmakerGame](https://github.com/AmakerGame)
 
 ### Changed
