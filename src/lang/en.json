@@ -311,6 +311,8 @@
   "FIELD_ACTOR_TYPE": "Sprite Type",
   "FIELD_OFFSET_X": "Offset X",
   "FIELD_OFFSET_Y": "Offset Y",
+  "FIELD_SCROLL_X": "Scroll X",
+  "FIELD_SCROLL_Y": "Scroll Y",
   "FIELD_SOURCE": "Source",
   "FIELD_DISTANCE": "Distance",
   "FIELD_DISTANCE_DESC": "The distance value.",

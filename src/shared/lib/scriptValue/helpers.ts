@@ -593,6 +593,16 @@ export const precompileOptimisedScriptValue = (
           type: "memI8",
           value: "camera_offset_y",
         });
+      } else if (input.property === "xscroll") {
+        rpnOperations.push({
+          type: "memI16",
+          value: "scroll_x",
+        });
+      } else if (input.property === "yscroll") {
+        rpnOperations.push({
+          type: "memI16",
+          value: "scroll_y",
+        });
       } else {
         throw new Error(`Unsupported property type "${input.property}"`);
       }

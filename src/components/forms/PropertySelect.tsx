@@ -240,10 +240,22 @@ export const PropertySelect = ({
       label: l10n("FIELD_CAMERA"),
       options: [
         {
+          label: l10n("FIELD_SCROLL_X"),
+          value: "camera:xscroll",
+          icon: <CameraIcon />,
+          menuIcon: <CameraIcon />,
+        },
+        {
+          label: l10n("FIELD_SCROLL_Y"),
+          value: "camera:yscroll",
+          icon: <CameraIcon />,
+          menuIcon: "",
+        },
+        {
           label: l10n("FIELD_X_POSITION"),
           value: "camera:xpos",
           icon: <CameraIcon />,
-          menuIcon: <CameraIcon />,
+          menuIcon: "",
         },
         {
           label: l10n("FIELD_Y_POSITION"),
