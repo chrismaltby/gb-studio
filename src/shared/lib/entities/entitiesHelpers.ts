@@ -1156,6 +1156,15 @@ const scriptFixNulls = (script: Script): Script => {
   return { ...script, script: filterEvents(script.script, validScriptEvent) };
 };
 
+const extractEntities = <T extends { id: string }>(
+  ids: readonly string[] | undefined,
+  lookup: Record<string, T | undefined>,
+): T[] => {
+  return (ids ?? [])
+    .map((id) => lookup[id])
+    .filter((entity): entity is T => !!entity);
+};
+
 export const getMetaspriteTilesForSpriteSheet = (
   state: EntitiesState,
   spriteSheetId: string,
@@ -1163,26 +1172,21 @@ export const getMetaspriteTilesForSpriteSheet = (
   const spriteSheet = state.spriteSheets.entities[spriteSheetId];
   if (!spriteSheet) return [];
 
-  const spriteStates = spriteSheet.states.map(
-    (stateId) => state.spriteStates.entities[stateId],
+  const spriteStates = extractEntities(
+    spriteSheet.states,
+    state.spriteStates.entities,
   );
 
   const spriteAnimations = spriteStates.flatMap((spriteState) =>
-    spriteState.animations.map(
-      (animationId) => state.spriteAnimations.entities[animationId],
-    ),
+    extractEntities(spriteState.animations, state.spriteAnimations.entities),
   );
 
   const spriteFrames = spriteAnimations.flatMap((animation) =>
-    animation.frames.map(
-      (metaspriteId) => state.metasprites.entities[metaspriteId],
-    ),
+    extractEntities(animation.frames, state.metasprites.entities),
   );
 
   const spriteTiles = spriteFrames.flatMap((metasprite) =>
-    metasprite.tiles.map(
-      (metaspriteTileId) => state.metaspriteTiles.entities[metaspriteTileId],
-    ),
+    extractEntities(metasprite.tiles, state.metaspriteTiles.entities),
   );
 
   return uniqBy(spriteTiles, "id");
