@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2282260506",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2284260516",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -311,6 +311,8 @@
   "FIELD_ACTOR_TYPE": "Rodzaj aktora",
   "FIELD_OFFSET_X": "Przesunięcie X",
   "FIELD_OFFSET_Y": "Przesunięcie Y",
+  "FIELD_SCROLL_X": "Przewijanie X",
+  "FIELD_SCROLL_Y": "Przewijanie Y",
   "FIELD_SOURCE": "Punkt wyjścia",
   "FIELD_DISTANCE": "Odległość",
   "FIELD_DISTANCE_DESC": "Wartość odległości.",
