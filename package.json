@@ -120,7 +120,7 @@
     "ts-flood-fill": "^1.0.2",
     "uuid": "^3.3.2",
     "wavefile": "^11.0.0",
-    "webpack-dev-server": "4.15.1"
+    "webpack-dev-server": "5.2.4"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
