@@ -304,6 +304,8 @@
   "FIELD_ACTOR_TYPE": "スプライトタイプ",
   "FIELD_OFFSET_X": "オフセット（X）",
   "FIELD_OFFSET_Y": "オフセット（Y）",
+  "FIELD_SCROLL_X": "スクロール（X）",
+  "FIELD_SCROLL_Y": "スクロール（Y）",
   "FIELD_SOURCE": "ソース",
   "FIELD_DISTANCE": "距離",
   "FIELD_DISTANCE_DESC": "距離の値。",
