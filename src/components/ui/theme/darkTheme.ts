@@ -159,6 +159,9 @@ const darkTheme: ThemeInterface = {
         border: "#b7babb44",
       },
       sharpBackground: "#00000011",
+      wave: "#c92c61",
+      waveGrid: "#333333",
+      waveBackground: "#000000",
     },
     prefab: {
       background: "#01579b",

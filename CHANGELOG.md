@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Smoother playhead movement and auto-scrolling in the Piano Roll view
 - Compiled music no longer includes unused instrument subpatterns
 - Plugins can now specify `preserveFiles` to prevent files from being overwritten when updated in the Plugin Manager
+- Themes plugins can now set `tracker.wave`, `tracker.waveGrid` and `tracker.waveBackground` colors [@pau-tomas](https://github.com/pau-tomas)
 
 ### Fixed
 

@@ -24,7 +24,10 @@ export const NoiseMacroEditorForm = ({
       return;
     }
 
-    const defaultColor = themeContext.colors.highlight;
+    const defaultColor = themeContext?.colors.tracker.wave ?? "#fff";
+    const backgroundColor =
+      themeContext?.colors.tracker.waveBackground ?? "#000";
+    const gridColor = themeContext?.colors.tracker.waveGrid ?? "#333";
 
     const getLayout = () => {
       const rect = canvas.getBoundingClientRect();
@@ -57,7 +60,7 @@ export const NoiseMacroEditorForm = ({
     const clear = () => {
       const { width, height } = getLayout();
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = "#000";
+      ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, width, height);
     };
 
@@ -68,7 +71,7 @@ export const NoiseMacroEditorForm = ({
       clear();
 
       ctx.beginPath();
-      ctx.strokeStyle = "#333";
+      ctx.strokeStyle = gridColor;
       ctx.lineWidth = 1;
 
       for (let i = 0; i <= noiseMacros.length; i++) {
@@ -87,19 +90,24 @@ export const NoiseMacroEditorForm = ({
       ctx.stroke();
     };
 
-    const drawMacros = (noiseMacros: number[], color?: string) => {
+    const drawMacros = (noiseMacros: number[], isPreview?: boolean) => {
       const { drawLeft, drawTop, drawWidth, drawHeight } = getLayout();
       const ratio = drawHeight / 72;
 
       ctx.beginPath();
-      ctx.fillStyle = color || defaultColor;
-      ctx.strokeStyle = color || defaultColor;
+
+      ctx.fillStyle = defaultColor;
+      ctx.strokeStyle = defaultColor;
       ctx.lineWidth = 1;
 
       const midY = Math.round(drawTop + 36 * ratio) + 0.5;
       ctx.moveTo(drawLeft, midY);
       ctx.lineTo(drawLeft + drawWidth, midY);
       ctx.stroke();
+
+      if (isPreview) {
+        ctx.globalAlpha = 0.2;
+      }
 
       noiseMacros.forEach((y, x) => {
         const left =
@@ -113,17 +121,21 @@ export const NoiseMacroEditorForm = ({
         const barY = Math.round(drawTop + drawHeight / 2);
         const barH = Math.round(-y * ratio);
 
-        ctx.shadowColor = color ?? defaultColor;
+        ctx.shadowColor = defaultColor;
         ctx.shadowBlur = 15;
 
         ctx.fillRect(barX, barY, barW, barH);
         ctx.shadowBlur = 0;
       });
+
+      if (isPreview) {
+        ctx.globalAlpha = 1;
+      }
     };
 
-    const redraw = (noiseMacros: number[], previewColor?: string) => {
+    const redraw = (noiseMacros: number[]) => {
       drawGrid(noiseMacros);
-      drawMacros(noiseMacros, previewColor);
+      drawMacros(noiseMacros);
     };
 
     redraw(macros);
@@ -164,7 +176,7 @@ export const NoiseMacroEditorForm = ({
         gridP.i < macros.length
       ) {
         drawGrid(macros);
-        drawMacros(macros, "#FF000066");
+        drawMacros(macros, true);
 
         if (!mousedown) {
           newMacros = [...macros];

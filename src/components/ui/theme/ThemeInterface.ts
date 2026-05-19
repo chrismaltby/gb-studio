@@ -154,6 +154,9 @@ export interface ThemeInterface {
         border: string;
       };
       sharpBackground: string;
+      wave: string;
+      waveGrid: string;
+      waveBackground: string;
     };
     prefab: {
       background: string;
