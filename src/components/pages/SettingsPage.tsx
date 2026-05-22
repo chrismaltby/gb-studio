@@ -585,6 +585,7 @@ const SettingsPage: FC = () => {
                               defaultSpritePaletteIds[index]) ||
                             ""
                           }
+                          type="sprite"
                           onChange={(e: string) => {
                             onEditSpritePaletteId(index, e);
                           }}
