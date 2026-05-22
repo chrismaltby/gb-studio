@@ -658,15 +658,19 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
     (background?.autoTileFlipOverride !== undefined ||
       autoTileFlipOverrideOpen);
   const onEditPaletteId = (index: number) => (paletteId: string) => {
-    const paletteIds = scene.paletteIds ? [...scene.paletteIds] : [];
+    const paletteIds = Array.from(
+      { length: 8 },
+      (_, i) => scene.paletteIds?.[i] ?? "",
+    );
     paletteIds[index] = paletteId;
     onChangeSceneProp("paletteIds", paletteIds);
   };
 
   const onEditSpritePaletteId = (index: number) => (paletteId: string) => {
-    const spritePaletteIds = scene.spritePaletteIds
-      ? [...scene.spritePaletteIds]
-      : [];
+    const spritePaletteIds = Array.from(
+      { length: 8 },
+      (_, i) => scene.spritePaletteIds?.[i] ?? "",
+    );
     spritePaletteIds[index] = paletteId;
     onChangeSceneProp("spritePaletteIds", spritePaletteIds);
   };
