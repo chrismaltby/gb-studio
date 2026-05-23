@@ -3236,6 +3236,10 @@ class ScriptBuilder extends ScriptBuilderBase {
     }
   };
 
+  paletteSetSGB = (paletteIds: string[]) => {
+    this.paletteSetBackground(["keep", "keep", "keep", "keep", ...paletteIds]);
+  };
+
   paletteSetSprite = (paletteIds: string[]) => {
     const { palettes, scene, settings } = this.options;
 
@@ -3356,6 +3360,55 @@ class ScriptBuilder extends ScriptBuilderBase {
       parseG(colors[3]),
       parseB(colors[3]),
     );
+  };
+
+  setSGBColorArea = (
+    fill: string,
+    border: string,
+    outside: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  ) => {
+    const ATTR_BLK = 4;
+
+    const changeFill = fill === "none" ? 0 : 1;
+    const changeBorder = border === "none" ? 0 : 1;
+    const changeOutside = outside === "none" ? 0 : 1;
+
+    const paletteFill = fill === "none" ? 0 : parseInt(fill);
+    const paletteBorder = border === "none" ? 0 : parseInt(border);
+    const paletteOutside = outside === "none" ? 0 : parseInt(outside);
+
+    const commandCode = (ATTR_BLK << 3) | 1;
+    const numberOfDataSets = 1;
+    const controlCode = changeFill | (changeBorder << 1) | (changeOutside << 2);
+    const colorPalettes =
+      paletteFill | (paletteBorder << 2) | (paletteOutside << 4);
+    const x0 = x;
+    const y0 = y;
+    const x1 = x + width - 1;
+    const y1 = y + height - 1;
+
+    this._sgbTransfer([
+      commandCode,
+      numberOfDataSets,
+      controlCode,
+      colorPalettes,
+      x0,
+      y0,
+      x1,
+      y1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+    ]);
   };
 
   // --------------------------------------------------------------------------

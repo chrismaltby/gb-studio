@@ -147,6 +147,21 @@ const PosOffset = styled.div`
   }
 `;
 
+const AreaPos = styled.div<{
+  fillColor: string;
+  borderColor: string;
+  outsideColor: string;
+}>`
+  transition: none;
+  position: absolute;
+  width: 160px;
+  height: 144px;
+  background-color: ${(props) => props.fillColor};
+  box-shadow:
+    0 0 0 8px ${(props) => props.borderColor},
+    0 0 1000px 1000px ${(props) => props.outsideColor};
+`;
+
 export const getArgValue = (
   arg: unknown,
   constantsLookup: Record<string, Constant>,
@@ -535,6 +550,58 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
           maxHeight={18}
         />
       </PosOffset>
+    );
+  }
+
+  if (scriptEventDef.helper.type === "area") {
+    const x = ensureNumber(argValue(args[scriptEventDef.helper.x]), 0);
+    const y = ensureNumber(argValue(args[scriptEventDef.helper.y]), 0);
+    const width = ensureNumber(argValue(args[scriptEventDef.helper.width]), 0);
+    const height = ensureNumber(
+      argValue(args[scriptEventDef.helper.height]),
+      0,
+    );
+
+    const transparentColor = "rgb(0, 0, 0, 0)";
+    const colors = [
+      "rgba(255, 152, 152, 0.6)",
+      "rgba(91, 255, 91, 0.6)",
+      "rgba(255, 255, 91, 0.6)",
+      "rgba(184, 184, 255, 0.6)",
+    ];
+
+    const fill = ensureString(args[scriptEventDef.helper.fill], "none");
+    const border = ensureString(args[scriptEventDef.helper.border], "none");
+    const outside = ensureString(args[scriptEventDef.helper.outside], "none");
+
+    const fillColor =
+      fill === "none" ? transparentColor : colors[parseInt(fill)];
+    const outsideColor =
+      outside === "none" ? transparentColor : colors[parseInt(outside)];
+
+    let borderColor = transparentColor;
+    if (border !== "none") {
+      borderColor = colors[parseInt(border)];
+    } else if (fill === "none" && outside !== "none") {
+      borderColor = outsideColor;
+    } else if (fill !== "none" && outside === "none") {
+      borderColor = fillColor;
+    }
+
+    return (
+      <EventHelperWrapper>
+        <AreaPos
+          fillColor={fillColor}
+          borderColor={borderColor}
+          outsideColor={outsideColor}
+          style={{
+            left: (x + 1) * TILE_SIZE,
+            top: (y + 1) * TILE_SIZE,
+            width: (width - 2) * TILE_SIZE,
+            height: (height - 2) * TILE_SIZE,
+          }}
+        />
+      </EventHelperWrapper>
     );
   }
 

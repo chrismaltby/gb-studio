@@ -821,6 +821,10 @@ abstract class ScriptBuilderBase {
     );
   };
 
+  _db = (bytes: number[]) => {
+    this._addCmd(`.db ${bytes.join(", ")}`);
+  };
+
   _label = (label: string) => {
     const _label = toValidLabel(label);
     this._assertLabelStackNeutral(_label);
@@ -2229,6 +2233,11 @@ extern void __mute_mask_${symbol};
       // Args are popped by called script with ret_far_n
       this.stackPtr -= argsLen;
     }
+  };
+
+  _sgbTransfer = (data: number[]) => {
+    this._addCmd("VM_SGB_TRANSFER");
+    this._db(data);
   };
 
   _callNative = (symbol: string, bank?: number) => {

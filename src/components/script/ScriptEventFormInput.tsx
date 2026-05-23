@@ -498,7 +498,7 @@ const ScriptEventFormInput = ({
             name={id}
             value={String(value || "")}
             onChange={onChangeField}
-            prefix={`${(field.paletteIndex || 0) + 1}: `}
+            prefix={field.prefix ?? `${(field.paletteIndex || 0) + 1}: `}
             optional
             optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
             optionalDefaultPaletteId={
@@ -518,7 +518,7 @@ const ScriptEventFormInput = ({
           name={id}
           value={String(value || "")}
           onChange={onChangeField}
-          prefix={`${(field.paletteIndex || 0) + 1}: `}
+          prefix={field.prefix ?? `${(field.paletteIndex || 0) + 1}: `}
           optional
           optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
           optionalDefaultPaletteId={
@@ -527,7 +527,7 @@ const ScriptEventFormInput = ({
           canKeep={field.canKeep}
           canRestore={field.canRestore}
           keepLabel={l10n("FIELD_DONT_MODIFY")}
-          type="tile"
+          type={field.paletteType === "sgb" ? "sgb" : "tile"}
         />
       </OffscreenSkeletonInput>
     );

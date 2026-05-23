@@ -62,6 +62,16 @@ export type ScriptEventHelperDef =
       x: string;
       y: string;
       location: string;
+    }
+  | {
+      type: "area";
+      x: string;
+      y: string;
+      width: string;
+      height: string;
+      fill: string;
+      border: string;
+      outside: string;
     };
 
 export type ScriptEventPresetValue = {
