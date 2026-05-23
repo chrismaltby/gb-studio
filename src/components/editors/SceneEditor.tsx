@@ -15,6 +15,8 @@ import assetsActions from "store/features/assets/assetsActions";
 import settingsActions from "store/features/settings/settingsActions";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import {
+  FormColumn,
+  FormColumns,
   FormContainer,
   FormField,
   FormHeader,
@@ -189,6 +191,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
   const colorMode = useAppSelector(
     (state) => state.project.present.settings.colorMode,
+  );
+  const sgbEnabled = useAppSelector(
+    (state) => state.project.present.settings.sgbEnabled,
   );
   const startSceneId = useAppSelector(
     (state) => state.project.present.settings.startSceneId,
@@ -1073,41 +1078,73 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                 )}
 
                 <SidebarColumn>
-                  <FormRow>
-                    <FormField
-                      name="monoBGPPalette"
-                      label={l10n("FIELD_MONOCHROME_PALETTES")}
-                    >
-                      <PaletteButtons>
-                        <DMGPaletteSelectButton
-                          name="monoBGPPalette"
-                          label="BGP"
-                          value={scene.monoBGP || defaultMonoBGP}
-                          onChange={onChangeMonoBGP}
-                          showName
-                          isOptional
-                        />
-                        <DMGPaletteSelectButton
-                          name="monoOBP1Palette"
-                          label="OBP0"
-                          isSpritePalette
-                          value={scene.monoOBP0 || defaultMonoOBP0}
-                          onChange={onChangeMonoOBP0}
-                          showName
-                          isOptional
-                        />
-                        <DMGPaletteSelectButton
-                          name="monoOBP1Palette"
-                          label="OBP1"
-                          isSpritePalette
-                          value={scene.monoOBP1 || defaultMonoOBP1}
-                          onChange={onChangeMonoOBP1}
-                          showName
-                          isOptional
-                        />
-                      </PaletteButtons>
-                    </FormField>
-                  </FormRow>
+                  <FormColumns>
+                    <FormColumn>
+                      <FormField
+                        name="monoBGPPalette"
+                        label={l10n("FIELD_MONOCHROME_PALETTES")}
+                      >
+                        <PaletteButtons>
+                          <DMGPaletteSelectButton
+                            name="monoBGPPalette"
+                            label="BGP"
+                            value={scene.monoBGP || defaultMonoBGP}
+                            onChange={onChangeMonoBGP}
+                            showName
+                            isOptional
+                          />
+                          <DMGPaletteSelectButton
+                            name="monoOBP1Palette"
+                            label="OBP0"
+                            isSpritePalette
+                            value={scene.monoOBP0 || defaultMonoOBP0}
+                            onChange={onChangeMonoOBP0}
+                            showName
+                            isOptional
+                          />
+                          <DMGPaletteSelectButton
+                            name="monoOBP1Palette"
+                            label="OBP1"
+                            isSpritePalette
+                            value={scene.monoOBP1 || defaultMonoOBP1}
+                            onChange={onChangeMonoOBP1}
+                            showName
+                            isOptional
+                          />
+                        </PaletteButtons>
+                      </FormField>
+                    </FormColumn>
+                    {sgbEnabled && !colorsEnabled && (
+                      <FormColumn>
+                        <FormField
+                          name="playerSpriteSheetId"
+                          label={l10n("FIELD_SCENE_SGB_PALETTES")}
+                        >
+                          <PaletteButtons>
+                            {[4, 5, 6, 7].map((index) => (
+                              <PaletteSelectButton
+                                key={index}
+                                name={`scenePalette${index}`}
+                                value={
+                                  (scene.paletteIds &&
+                                    scene.paletteIds[index]) ||
+                                  ""
+                                }
+                                type={index === 6 ? "tile" : "sgb"}
+                                onChange={onEditPaletteId(index)}
+                                slotNumber={index + 1}
+                                optional
+                                optionalDefaultPaletteId={
+                                  defaultBackgroundPaletteIds[index] || ""
+                                }
+                                optionalLabel={l10n("FIELD_GLOBAL_DEFAULT")}
+                              />
+                            ))}
+                          </PaletteButtons>
+                        </FormField>
+                      </FormColumn>
+                    )}
+                  </FormColumns>
                 </SidebarColumn>
 
                 {colorsEnabled && (

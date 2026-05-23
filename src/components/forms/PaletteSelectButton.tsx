@@ -4,7 +4,7 @@ import {
   getLocalisedDMGPalette,
   getLocalisedPaletteById,
 } from "store/features/entities/entitiesState";
-import PaletteBlock from "components/forms/PaletteBlock";
+import PaletteBlock, { PaletteBlockType } from "components/forms/PaletteBlock";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { PaletteSelect } from "./PaletteSelect";
@@ -15,7 +15,7 @@ import { Palette } from "shared/lib/resources/types";
 type PaletteSelectProps = {
   name: string;
   value?: string;
-  type?: "tile" | "sprite";
+  type?: PaletteBlockType;
   onChange?: (newId: string) => void;
   slotNumber?: number;
   optional?: boolean;
