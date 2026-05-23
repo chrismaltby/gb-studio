@@ -536,6 +536,9 @@ const SettingsPage: FC = () => {
               >
                 <SettingRowLabel>
                   {l10n("FIELD_DEFAULT_BACKGROUND_PALETTES")}
+                  {sgbEnabled && (
+                    <FormInfo>{l10n("FIELD_SGB_PALETTES_NOTE")}</FormInfo>
+                  )}
                 </SettingRowLabel>
                 <SettingRowInput>
                   <div>
@@ -553,9 +556,6 @@ const SettingsPage: FC = () => {
                             onEditPaletteId(index, e);
                           }}
                         />
-                        {sgbEnabled && colorMode !== "color" && index === 4 && (
-                          <FormInfo>{l10n("FIELD_SGB_PALETTE_NOTE")}</FormInfo>
-                        )}
                         {index !== 7 && <FixedSpacer height={3} />}
                         {index === 7 && (
                           <FormInfo>{l10n("FIELD_UI_PALETTE_NOTE")}</FormInfo>
@@ -645,29 +645,54 @@ const SettingsPage: FC = () => {
             <>
               <SearchableSettingRow
                 searchTerm={searchTerm}
-                searchMatches={[l10n("FIELD_DEFAULT_PALETTE")]}
+                searchMatches={[l10n("FIELD_DEFAULT_PALETTES")]}
               >
                 <SettingRowLabel>
-                  {l10n("FIELD_DEFAULT_PALETTE")}
+                  {l10n("FIELD_DEFAULT_PALETTES")}
+                  {colorEnabled && (
+                    <FormInfo>{l10n("FIELD_SGB_PALETTES_NOTE")}</FormInfo>
+                  )}
                 </SettingRowLabel>
                 <SettingRowInput>
                   <div>
-                    <FormField name="scenePalette">
-                      <PaletteSelect
-                        name="scenePalette"
-                        value={
-                          (defaultBackgroundPaletteIds &&
-                            defaultBackgroundPaletteIds[4]) ||
-                          ""
-                        }
-                        onChange={(e: string) => {
-                          onEditPaletteId(4, e);
-                        }}
-                      />
-                      {colorEnabled && (
-                        <FormInfo>{l10n("FIELD_SGB_PALETTE_NOTE")}</FormInfo>
-                      )}
-                    </FormField>
+                    {[4, 5, 6, 7].map((index) => (
+                      <FormField key={index} name={`scenePalette${index}`}>
+                        <PaletteSelect
+                          name={`scenePalette${index}`}
+                          prefix={`${index - 3}:`}
+                          value={
+                            (defaultBackgroundPaletteIds &&
+                              defaultBackgroundPaletteIds[index]) ||
+                            ""
+                          }
+                          onChange={(e: string) => {
+                            onEditPaletteId(index, e);
+                          }}
+                          type={index !== 6 ? "sgb" : "tile"}
+                        />
+
+                        {index !== 4 && index !== 6 && index !== 7 && (
+                          <FixedSpacer height={3} />
+                        )}
+                        {index === 4 && (
+                          <FormInfo>
+                            {l10n("FIELD_DEFAULT_SGB_PALETTE_NOTE")}
+                          </FormInfo>
+                        )}
+
+                        {index === 6 && (
+                          <FormInfo>
+                            {l10n("FIELD_COLOR_0_SGB_PALETTE_NOTE")}
+                          </FormInfo>
+                        )}
+
+                        {index === 7 && (
+                          <FormInfo>
+                            {l10n("FIELD_UI_SGB_PALETTE_NOTE")}
+                          </FormInfo>
+                        )}
+                      </FormField>
+                    ))}
                   </div>
                 </SettingRowInput>
               </SearchableSettingRow>

@@ -5,7 +5,7 @@ import {
   getLocalisedDMGPalette,
   getLocalisedPalettes,
 } from "store/features/entities/entitiesState";
-import PaletteBlock from "components/forms/PaletteBlock";
+import PaletteBlock, { PaletteBlockType } from "components/forms/PaletteBlock";
 import {
   Option,
   Select,
@@ -22,7 +22,7 @@ interface PaletteSelectProps extends SelectCommonProps {
   name: string;
   prefix?: string;
   value?: string;
-  type?: "tile" | "sprite";
+  type?: PaletteBlockType;
   onChange?: (newId: string) => void;
   optional?: boolean;
   optionalLabel?: string;
