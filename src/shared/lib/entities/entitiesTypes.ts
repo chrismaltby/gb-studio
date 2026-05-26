@@ -299,7 +299,7 @@ export interface ScriptEventFieldSchema {
   allowNone?: boolean;
   allowDefault?: boolean;
   allowMultiple?: boolean;
-  paletteType?: "background" | "ui" | "emote" | "sprite";
+  paletteType?: "background" | "ui" | "emote" | "sprite" | "sgb";
   paletteIndex?: number;
   canKeep?: boolean;
   canRestore?: boolean;
@@ -320,4 +320,5 @@ export interface ScriptEventFieldSchema {
   variant?: string;
   labelVariant?: string;
   filters?: Record<string, unknown>;
+  prefix?: string;
 }

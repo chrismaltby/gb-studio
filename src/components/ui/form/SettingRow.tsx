@@ -38,7 +38,7 @@ export const SettingRowLabel = styled.label<SettingRowLabelProps>`
   max-width: 300px;
   min-width: 150px;
   width: 50%;
-  padding-right: 5px;
+  padding-right: 20px;
 
   @container (max-width: 300px) {
     min-height: 0px;

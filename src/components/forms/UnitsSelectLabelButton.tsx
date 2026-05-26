@@ -82,7 +82,7 @@ export const UnitSelectLabelButton = <T extends UnitType>({
           ))}
         </DropdownButton>
       ) : (
-        <Button size="small" variant="transparent" type="button">
+        <Button size="small" variant="transparent" type="button" tabIndex={-1}>
           {currentValue}
         </Button>
       )}

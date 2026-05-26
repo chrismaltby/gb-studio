@@ -35,6 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add note sustain previews to Piano Roll view
 - Add ability to view current tracker keyboard layout (accessible in Preferences window in main app, and in menu `Input / Tracker Keyboard Layout` on music web app)
 - Add ability to read camera scroll x/y within script values [@pau-tomas](https://github.com/pau-tomas)
+- Add ability to set all four available palettes for SGB games [@pau-tomas](https://github.com/pau-tomas)
+- Add "Set Super GB Color Area" event to allow setting where each color palette should be used in SGB games [@pau-tomas](https://github.com/pau-tomas)
+- Add "Set Super GB Palettes" event for changing SGB palettes from scripts [@pau-tomas](https://github.com/pau-tomas)
 - Ukrainian localisation. [@AmakerGame](https://github.com/AmakerGame)
 
 ### Changed
