@@ -1,4 +1,10 @@
-import { normalize, denormalize, schema, NormalizedSchema } from "normalizr";
+import {
+  normalize,
+  denormalize,
+  schema,
+  NormalizedSchema,
+  Schema,
+} from "normalizr";
 import pick from "lodash/pick";
 import cloneDeep from "lodash/cloneDeep";
 import {
@@ -261,22 +267,77 @@ const resourcesSchema = {
   engineFieldValues: engineFieldValuesResourceSchema,
 };
 
-export const pruneMissingEntities = <T>(input: T): T => {
+const getArrayItemSchema = (
+  normalizrSchema?: Schema<unknown>,
+): Schema<unknown> | undefined => {
+  if (Array.isArray(normalizrSchema)) {
+    return normalizrSchema[0];
+  }
+  return undefined;
+};
+
+const getObjectSchema = (
+  normalizrSchema?: Schema<unknown>,
+): Record<string, Schema<unknown>> | undefined => {
+  if (!normalizrSchema || Array.isArray(normalizrSchema)) {
+    return undefined;
+  }
+
+  if ("schema" in normalizrSchema) {
+    const childSchema = normalizrSchema.schema;
+
+    if (
+      childSchema &&
+      typeof childSchema === "object" &&
+      !Array.isArray(childSchema)
+    ) {
+      return childSchema as Record<string, Schema<unknown>>;
+    }
+    return undefined;
+  }
+
+  return normalizrSchema as Record<string, Schema<unknown>>;
+};
+
+const getValuesSchema = (
+  normalizrSchema?: Schema<unknown>,
+): Schema<unknown> | undefined => {
+  if (!normalizrSchema || Array.isArray(normalizrSchema)) {
+    return undefined;
+  }
+
+  if ("schema" in normalizrSchema && Array.isArray(normalizrSchema.schema)) {
+    return normalizrSchema.schema;
+  }
+
+  return undefined;
+};
+
+export const pruneMissingEntities = <T>(
+  input: T,
+  normalizrSchema?: Schema<unknown>,
+): T => {
   if (Array.isArray(input)) {
-    return input
-      .map((item) => pruneMissingEntities(item))
-      .filter((item): item is Exclude<typeof item, undefined> => {
-        return item !== undefined;
-      }) as T;
+    const itemSchema = getArrayItemSchema(normalizrSchema);
+    const result = input.map((item) => pruneMissingEntities(item, itemSchema));
+    if (itemSchema === undefined) {
+      return result as T;
+    }
+    return result.filter((item) => item !== undefined && item !== null) as T;
   }
 
   if (input !== null && typeof input === "object") {
-    return Object.fromEntries(
-      Object.entries(input as Record<string, unknown>).map(([key, value]) => [
-        key,
-        pruneMissingEntities(value),
-      ]),
-    ) as T;
+    const objectSchema = getObjectSchema(normalizrSchema);
+    const valuesSchema = getValuesSchema(normalizrSchema);
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(input)) {
+      result[key] = pruneMissingEntities(
+        value,
+        valuesSchema ?? objectSchema?.[key],
+      );
+    }
+
+    return result as T;
   }
 
   return input;
@@ -378,6 +439,7 @@ export const denormalizeEntities = (
   };
   const denormalizedEntities: DenormalizedEntities = pruneMissingEntities(
     denormalize(input, resourcesSchema, entities),
+    resourcesSchema,
   );
 
   const entityToResource =
@@ -463,6 +525,7 @@ export const denormalizeSprite = ({
 
   return pruneMissingEntities(
     denormalize(sprite, spriteSheetsSchema, entities),
+    spriteSheetsSchema,
   );
 };
 
