@@ -686,7 +686,7 @@ const SettingsPage: FC = () => {
                           </FormInfo>
                         )}
 
-                        {index === 7 && (
+                        {index === 7 && colorMode !== "mono" && (
                           <FormInfo>
                             {l10n("FIELD_UI_SGB_PALETTE_NOTE")}
                           </FormInfo>
