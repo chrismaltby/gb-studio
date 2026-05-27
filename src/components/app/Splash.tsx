@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Path from "path";
 import FocusLock from "react-focus-lock";
 import { FlexGrow } from "ui/spacing/Spacing";
@@ -117,6 +117,7 @@ const Splash = () => {
   const [pathError, setPathError] = useState("");
   const [creating, setCreating] = useState(false);
   const windowFocus = useWindowFocus();
+  const projectLoadInProgressRef = useRef(false);
 
   const [patrons, setPatrons] = useState<Patrons>(inbuiltPatrons as Patrons);
 
@@ -182,9 +183,18 @@ const Splash = () => {
   };
 
   const onOpenRecent = (projectPath: string) => async () => {
-    const success = await API.project.openProject(projectPath);
-    if (!success) {
-      setRecentProjects((await API.project.getRecentProjects()).reverse());
+    if (projectLoadInProgressRef.current) {
+      return;
+    }
+    projectLoadInProgressRef.current = true;
+
+    try {
+      const success = await API.project.openProject(projectPath);
+      if (!success) {
+        setRecentProjects((await API.project.getRecentProjects()).reverse());
+      }
+    } finally {
+      projectLoadInProgressRef.current = false;
     }
   };
 
@@ -227,6 +237,11 @@ const Splash = () => {
       return;
     }
 
+    if (projectLoadInProgressRef.current) {
+      return;
+    }
+    projectLoadInProgressRef.current = true;
+
     try {
       setCreating(true);
       const projectPath = await API.project.createProject({
@@ -239,19 +254,19 @@ const Splash = () => {
       if (err instanceof Error) {
         if (err.message.includes(ERR_PROJECT_EXISTS)) {
           setNameError(l10n("ERROR_PROJECT_ALREADY_EXISTS"));
-          setCreating(false);
         } else if (
           err.message.includes("ENOTDIR") ||
           err.message.includes("EEXIST") ||
           err.message.includes("EROFS")
         ) {
           setPathError(l10n("ERROR_PROJECT_PATH_INVALID"));
-          setCreating(false);
         } else {
           setPathError(err.message);
-          setCreating(false);
         }
       }
+    } finally {
+      projectLoadInProgressRef.current = false;
+      setCreating(false);
     }
   };
 
