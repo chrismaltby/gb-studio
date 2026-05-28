@@ -174,16 +174,15 @@ export const createEmulator = (): EmulatorController => {
 
     let requiredSize = ((romData.length - 1) | 0x3fff) + 1;
     if (requiredSize < 0x8000) requiredSize = 0x8000;
-    if (romSize < requiredSize) {
-      if (typeof romPtr !== "undefined") Module._free(romPtr);
-      romPtr = Module._malloc(requiredSize);
-      romSize = requiredSize;
-    }
-    for (let n = 0; n < romSize; n++) Module.HEAP8[romPtr + n] = 0;
-    for (let n = 0; n < romData.length; n++) {
-      Module.HEAP8[romPtr + n] = romData[n];
-    }
+    romPtr = Module._malloc(requiredSize);
+    romSize = requiredSize;
 
+    const romView = Module.HEAP8.subarray(romPtr, romPtr + romSize);
+    romView.fill(0);
+    romView.set(romData);
+
+    // Note: this takes ownership of `romPtr`, even if init fails.
+    //       The ROM will be freed when `emulator_delete` is called from `destroy()`, and not leaked.
     emu = Module._emulator_new_simple(
       romPtr,
       romSize,
@@ -202,10 +201,11 @@ export const createEmulator = (): EmulatorController => {
     let requiredSize = ((romData.length - 1) | 0x3fff) + 1;
     if (requiredSize < 0x8000) requiredSize = 0x8000;
     if (romSize < requiredSize) return false;
-    for (let n = 0; n < romSize; n++) Module.HEAP8[romPtr + n] = 0;
-    for (let n = 0; n < romData.length; n++) {
-      Module.HEAP8[romPtr + n] = romData[n];
-    }
+
+    const romView = Module.HEAP8.subarray(romPtr, romPtr + romSize);
+    romView.fill(0);
+    romView.set(romData);
+
     return true;
   };
 
