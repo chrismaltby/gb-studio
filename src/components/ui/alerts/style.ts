@@ -11,6 +11,7 @@ export const StyledAlertItem = styled.div`
 const StyledAlert = styled.div<StyledAlertProps>`
   width: 100%;
   padding: 5px;
+  box-sizing: border-box;
   border-radius: 4px;
   font-size: 11px;
 

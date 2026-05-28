@@ -9,6 +9,7 @@ import {
   applyReparentEntityToCollection,
   pruneMissingEntities,
   denormalizeEntities,
+  updateCustomEventArgs,
 } from "shared/lib/entities/entitiesHelpers";
 import { initialState as initialEntitiesState } from "store/features/entities/entitiesState";
 import {
@@ -646,6 +647,66 @@ describe("nextIndexedName", () => {
     const existingNames = ["Palette", "Palette 1", "Palette 3"];
     const nextName = nextIndexedName("Palette", existingNames);
     expect(nextName).toBe("Palette 2");
+  });
+});
+
+describe("updateCustomEventArgs", () => {
+  test("Should include custom event variables referenced by data table fields", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {
+        V1: {
+          id: "V1",
+          name: "Existing Variable",
+          passByReference: false,
+        },
+      },
+      actors: {},
+      script: ["event1"],
+    } as Parameters<typeof updateCustomEventArgs>[0];
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_DATA_TABLE",
+          args: {
+            data: {
+              variables: ["V1", "0", "T0"],
+              rows: [
+                {
+                  label: "Row 1",
+                  values: [{ type: "number", value: 1 }],
+                },
+              ],
+            },
+          },
+        },
+      },
+      {
+        EVENT_DATA_TABLE: {
+          id: "EVENT_DATA_TABLE",
+          fieldsLookup: {
+            data: {
+              key: "data",
+              type: "dataTable",
+            },
+          },
+        },
+      } as never,
+    );
+
+    expect(customEvent.variables).toEqual({
+      V1: {
+        id: "V1",
+        name: "Existing Variable",
+        passByReference: false,
+      },
+    });
   });
 });
 

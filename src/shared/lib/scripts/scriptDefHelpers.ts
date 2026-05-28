@@ -121,3 +121,19 @@ export const isScriptValueField = (
     isFieldVisible(field, args, [SECTION_TAB_KEY])
   );
 };
+
+export const isDataTableField = (
+  cmd: string,
+  fieldName: string,
+  args: ScriptEventArgs,
+  scriptEventDefs: ScriptEventDefs,
+) => {
+  const event = scriptEventDefs[cmd];
+  if (!event) return false;
+  const field = getField(cmd, fieldName, scriptEventDefs);
+  return (
+    field &&
+    field.type === "dataTable" &&
+    isFieldVisible(field, args, [SECTION_TAB_KEY])
+  );
+};

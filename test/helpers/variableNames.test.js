@@ -8,6 +8,7 @@ import {
   localVariableName,
   customEventVariableCode,
   customEventVariableName,
+  getNextVariableId,
 } from "../../src/shared/lib/variables/variableNames";
 
 test("Should get variable code for global", () => {
@@ -104,4 +105,21 @@ test("Should get default variable name for custom event when no custom name prov
       },
     }),
   ).toBe("Variable F");
+});
+
+test("Should get next sequential variable ids for each variable type", () => {
+  expect(getNextVariableId("0")).toBe("1");
+  expect(getNextVariableId("L0")).toBe("L1");
+  expect(getNextVariableId("T0")).toBe("T1");
+  expect(getNextVariableId("V0")).toBe("V1");
+});
+
+test("Should wrap scoped variable ids back to 0 when reaching the limit", () => {
+  expect(getNextVariableId("L5")).toBe("0");
+  expect(getNextVariableId("T1")).toBe("0");
+  expect(getNextVariableId("V9")).toBe("0");
+});
+
+test("Should reset invalid variable ids back to 0", () => {
+  expect(getNextVariableId("LAST_VARIABLE")).toBe("0");
 });

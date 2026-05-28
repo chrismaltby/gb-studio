@@ -16,6 +16,7 @@ import {
   isVariableField,
   isActorField,
   isScriptValueField,
+  isDataTableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import {
   isUnionPropertyValue,
@@ -91,6 +92,11 @@ import {
 } from "./helpers";
 import ScriptBuilderBase from "./scriptBuilderBase";
 import { createDeprecatedMethods } from "./deprecatedAPI";
+import {
+  isScriptDataTable,
+  ScriptDataTable,
+} from "shared/lib/scriptDataTable/types";
+import { toValidSymbol } from "shared/lib/helpers/symbols";
 
 /**
  * ScriptBuilder contains the public API available to event plugins.
@@ -2332,6 +2338,27 @@ class ScriptBuilder extends ScriptBuilderBase {
               });
             }
           }
+          // Update data table fields
+          if (
+            isDataTableField(
+              e.command,
+              arg,
+              e.args,
+              this.options.scriptEventHandlers,
+            )
+          ) {
+            if (isScriptDataTable(argValue)) {
+              e.args[arg] = {
+                ...argValue,
+                variables: argValue.variables.map((v) => {
+                  if (isVariableCustomEvent(v)) {
+                    return getArg("variable", v);
+                  }
+                  return v;
+                }),
+              };
+            }
+          }
         });
         return e;
       },
@@ -2719,6 +2746,63 @@ class ScriptBuilder extends ScriptBuilderBase {
       `Variable ${variable} = ${this._expressionToHumanReadable(expression)}`,
     );
     this._stackPushEvaluatedExpression(expression, variable);
+    this._addNL();
+  };
+
+  variableDataTableLookup = (indexVariable: string, table: ScriptDataTable) => {
+    if (table.variables.length === 0 || table.rows.length === 0) {
+      // No data provided, skip instruction
+      return;
+    }
+
+    this._addComment(`Variable Data Table`);
+
+    const data = table.rows.flatMap((row) =>
+      table.variables.map((col, colIndex) => {
+        const value = row.values[colIndex];
+        if (value?.type === "number") {
+          return value.value;
+        } else if (value?.type === "constant") {
+          return this.getConstantSymbol(value.value);
+        }
+        return 0;
+      }),
+    );
+
+    const labels = table.rows.map((row) => row.label);
+
+    const dataSymbol = this._registerDataTable(
+      toValidSymbol(table.label ?? "data_table"),
+      ".dw",
+      table.variables.length,
+      data,
+      labels,
+    );
+    const addrRef = this._declareLocal("data_addr", 1, true);
+
+    const rpn = this._rpn() //
+      .int16(dataSymbol)
+      .refVariable(indexVariable)
+      .int16(table.variables.length * 2)
+      .operator(".MUL")
+      .operator(".ADD")
+      .refSet(addrRef);
+
+    for (let i = 0; i < table.variables.length; i++) {
+      const columnVariable = table.variables[i];
+      rpn //
+        .refMemInd(".MEM_I16", addrRef)
+        .refSetVariable(columnVariable);
+      if (i < table.variables.length - 1) {
+        rpn //
+          .ref(addrRef)
+          .int16(2)
+          .operator(".ADD")
+          .refSet(addrRef);
+      }
+    }
+
+    rpn.stop();
     this._addNL();
   };
 

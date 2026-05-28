@@ -267,3 +267,11 @@ export type RPNHandler = {
 };
 
 export type RPNMemType = ".MEM_I8" | ".MEM_U8" | ".MEM_I16";
+
+export type ScriptBuilderDataTable = {
+  type: ".dw" | ".db";
+  symbol: string;
+  rowSize: number;
+  data: (number | string)[];
+  rowLabels?: (string | undefined)[];
+};

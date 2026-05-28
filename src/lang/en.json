@@ -1430,6 +1430,18 @@
   "FIELD_OUTSIDE_PALETTE": "Outside fill",
   "FIELD_OUTSIDE_PALETTE_DESC": "Super GB Palette used to fill the outside of the rectangle area.",
   "FIELD_SUPER_GB_PALETTE_N": "Super GB Palette #{index}",
+  "FIELD_INDEX_VARIABLE": "Index Variable",
+  "FIELD_INDEX_VARIABLE_DESC": "The variable that stores the row index to fetch.",
+  "FIELD_DATA": "Data",
+  "FIELD_DATA_TABLE_DESC": "A table of values to fetch data from based on the Index Variable. The values are loaded into the specified variable for each column.",
+  "FIELD_ADD_COLUMN": "Add Column",
+  "FIELD_REMOVE_COLUMN": "Remove Column",
+  "FIELD_ADD_ROW": "Add Row",
+  "FIELD_REMOVE_ROW": "Remove Row",
+  "FIELD_TABLE_NAME": "Table Name",
+  "FIELD_ROW_NAME": "Row Name",
+  "FIELD_IMPORT_CSV": "Import .CSV",
+  "FIELD_EXPORT_CSV": "Export .CSV",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1875,6 +1887,9 @@
   "EVENT_RATE_LIMIT": "Rate Limit",
   "EVENT_RATE_LIMIT_DESC": "Limit how often this script can be be run. If the script is triggered again before the time limit has passed the script will be skipped.",
   "EVENT_RATE_LIMIT_LABEL": "Rate Limit To Once Per {time} {units}",
+  "EVENT_GROUP_DATA_TABLE": "Data Table",
+  "EVENT_DATA_TABLE": "Data Table Lookup",
+  "EVENT_DATA_TABLE_DESC": "Define a 2D array of static values that can be looked up by index, with each column loaded into a variable.",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -2096,6 +2111,9 @@
   "ERROR_INSTRUMENT_TYPE_MISMATCH": "Cannot import: instrument is a {got} type but the selected slot expects a {expected} type.",
   "ERROR_TIMED_OUT": "Operation timed out",
   "ERROR_AUDIO_ENCODE_FAILED": "Unable to encode audio",
+  "ERROR_DATA_TABLE_CSV_INVALID": "Imported CSV is not valid.",
+  "ERROR_DATA_TABLE_CSV_NO_VARIABLES": "Imported CSV contains no variables.",
+  "ERROR_DATA_TABLE_CSV_NO_ROW_DATA": "Imported CSV contains no row data.",
 
   "// 13": "Splash -------------------------------------------------------",
 

@@ -118,6 +118,7 @@ import {
   BackgroundAsset,
   ColorCorrectionSetting,
   ColorModeSetting,
+  Constant,
   MusicResourceAsset,
   ProjectResources,
   Sprite,
@@ -174,6 +175,11 @@ import { clearAppCache } from "lib/helpers/cache";
 import { ensureNonEmptyBasename } from "shared/lib/helpers/path";
 import { convertMODDataToUGESong } from "shared/lib/uge/mod2uge/import";
 import confirmConvertModReplaceDialog from "lib/electron/dialog/confirmConvertModDialog";
+import { ScriptDataTable } from "shared/lib/scriptDataTable/types";
+import {
+  csvToScriptDataTable,
+  scriptDataTableToCSV,
+} from "shared/lib/scriptDataTable/csv";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1789,6 +1795,37 @@ ipcMain.handle(
         }
       }
     }
+  },
+);
+
+ipcMain.handle(
+  "data-table:export-csv",
+  async (_event, table: ScriptDataTable, constants: Constant[]) => {
+    const savePath = dialog.showSaveDialogSync({
+      defaultPath: `${table.label || "data"}.csv`,
+      filters: [{ name: "CSV", extensions: ["csv"] }],
+    });
+    if (!savePath) return;
+    const data = scriptDataTableToCSV(table, constants);
+    await writeFile(savePath, data);
+  },
+);
+
+ipcMain.handle(
+  "data-table:import-csv",
+  async (
+    _event,
+    constants: Constant[],
+  ): Promise<ScriptDataTable | undefined> => {
+    const files = dialog.showOpenDialogSync({
+      properties: ["openFile"],
+      filters: [{ name: "CSV", extensions: ["csv"] }],
+    });
+    if (!files || !files[0]) {
+      return undefined;
+    }
+    const data = await readFile(files[0], "utf8");
+    return csvToScriptDataTable(data, constants);
   },
 );
 

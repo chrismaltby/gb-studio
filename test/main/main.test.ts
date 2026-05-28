@@ -1,4 +1,5 @@
 import electron, { BrowserWindow } from "electron";
+import { readFile, writeFile } from "fs-extra";
 import { createPreferences, createSplash } from "../../src/apps/gb-studio/main";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 
@@ -10,6 +11,17 @@ jest.mock("../../src/apps/gb-studio/menu");
 
 const mockedElectron = jest.mocked(electron);
 const mockedCheckForUpdate = jest.mocked(checkForUpdate);
+const mockedReadFile = jest.mocked(readFile);
+const mockedWriteFile = jest.mocked(writeFile);
+
+const getIpcHandler = (channel: string) => {
+  const handlerCall = mockedElectron.ipcMain.handle.mock.calls.find(
+    ([registeredChannel]) => registeredChannel === channel,
+  );
+  return handlerCall?.[1] as
+    | ((...args: unknown[]) => Promise<unknown>)
+    | undefined;
+};
 
 describe("Electron Main Process", () => {
   beforeEach(() => {
@@ -17,6 +29,10 @@ describe("Electron Main Process", () => {
     mockedElectron.BrowserWindow.mockClear();
     mockedElectron.app.whenReady.mockClear();
     mockedCheckForUpdate.mockClear();
+    mockedElectron.dialog.showOpenDialogSync.mockClear();
+    mockedElectron.dialog.showSaveDialogSync.mockClear();
+    mockedReadFile.mockReset();
+    mockedWriteFile.mockReset();
   });
 
   afterEach(() => {
@@ -125,5 +141,56 @@ describe("Electron Main Process", () => {
     expect(mockBrowserWindow.loadURL).toHaveBeenCalledWith(
       `PREFERENCES_WINDOW_WEBPACK_ENTRY`,
     );
+  });
+
+  test("registers a CSV export IPC handler that writes the serialized table", async () => {
+    const exportHandler = getIpcHandler("data-table:export-csv");
+
+    mockedElectron.dialog.showSaveDialogSync.mockReturnValueOnce("/tmp/data.csv");
+
+    await exportHandler?.(
+      {},
+      {
+        label: "Scores",
+        variables: ["0"],
+        rows: [
+          {
+            label: "Row 1",
+            values: [{ type: "number", value: 10 }],
+          },
+        ],
+      },
+      [],
+    );
+
+    expect(exportHandler).toBeDefined();
+    expect(mockedWriteFile).toHaveBeenCalledWith(
+      "/tmp/data.csv",
+      "Scores,0\nRow 1,10",
+    );
+  });
+
+  test("registers a CSV import IPC handler that parses imported files", async () => {
+    const importHandler = getIpcHandler("data-table:import-csv");
+
+    mockedElectron.dialog.showOpenDialogSync.mockReturnValueOnce([
+      "/tmp/data.csv",
+    ]);
+    mockedReadFile.mockResolvedValueOnce("Scores,0\nRow 1,10" as never);
+
+    const result = await importHandler?.({}, []);
+
+    expect(importHandler).toBeDefined();
+    expect(mockedReadFile).toHaveBeenCalledWith("/tmp/data.csv", "utf8");
+    expect(result).toEqual({
+      label: "Scores",
+      variables: ["0"],
+      rows: [
+        {
+          label: "Row 1",
+          values: [{ type: "number", value: 10 }],
+        },
+      ],
+    });
   });
 });

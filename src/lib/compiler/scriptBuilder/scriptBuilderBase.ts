@@ -26,6 +26,7 @@ import {
   ScriptBuilderAxis,
   ScriptBuilderChoiceFlag,
   ScriptBuilderComparisonOperator,
+  ScriptBuilderDataTable,
   ScriptBuilderFunctionArg,
   ScriptBuilderLocalSymbol,
   ScriptBuilderMoveType,
@@ -77,6 +78,7 @@ import { ScriptEvent, ScriptEditorCtxType } from "shared/lib/resources/types";
 import { generateScriptHash } from "shared/lib/scripts/scriptHelpers";
 import compileEntityEvents from "lib/compiler/compileEntityEvents";
 import { gbvmScriptChecksum } from "lib/compiler/gbvm/buildHelpers";
+import { chunk } from "shared/lib/helpers/array";
 
 /**
  * ScriptBuilderBase is the base class for ScriptBuilder.
@@ -101,6 +103,7 @@ abstract class ScriptBuilderBase {
   labelStackSize: Record<string, number>;
   includeParams: number[];
   headers: string[];
+  dataTables: Record<string, ScriptBuilderDataTable>;
   eventCommand: string;
 
   constructor(
@@ -159,6 +162,7 @@ abstract class ScriptBuilderBase {
     this.nextLabel = 1;
     this.labelLookup = {};
     this.localsLookup = {};
+    this.dataTables = {};
     this.localsSize = 0;
     this.actorIndex = options.entity
       ? getActorIndex(options.entity.id, options.scene)
@@ -923,6 +927,11 @@ abstract class ScriptBuilderBase {
       },
       refMem: (type: RPNMemType, address: string) => {
         rpnCmd(".R_REF_MEM", type, `_${address}`);
+        rpnStackSize++;
+        return rpn;
+      },
+      refMemInd: (type: RPNMemType, pointerAddress: number | string) => {
+        rpnCmd(".R_REF_MEM_IND", type, pointerAddress);
         rpnStackSize++;
         return rpn;
       },
@@ -2846,6 +2855,32 @@ extern void __mute_mask_${symbol};
   };
 
   // --------------------------------------------------------------------------
+  // Data tables
+
+  _registerDataTable = (
+    name: string,
+    type: ".dw" | ".db",
+    rowSize: number,
+    data: (number | string)[],
+    rowLabels?: (string | undefined)[],
+  ) => {
+    const symbol = this._getAvailableSymbol(name);
+    if (data.length % rowSize !== 0) {
+      throw new Error(
+        `Data length ${data.length} is not divisible by row size ${rowSize}`,
+      );
+    }
+    this.dataTables[symbol] = {
+      symbol,
+      type,
+      rowSize,
+      data,
+      rowLabels,
+    };
+    return symbol;
+  };
+
+  // --------------------------------------------------------------------------
   // Labels
 
   getNextLabel = (): string => {
@@ -2950,6 +2985,20 @@ extern void __mute_mask_${symbol};
       )
       .join("");
 
+    const dataTables = Object.values(this.dataTables)
+      .map((dataTable) => {
+        return (
+          `\n${dataTable.symbol}:\n` +
+          chunk(dataTable.data, dataTable.rowSize)
+            .map(
+              (entries, entryIndex) =>
+                `${dataTable.rowLabels?.[entryIndex] ? `\t; ${dataTable.rowLabels?.[entryIndex]}\n` : ""}\t${dataTable.type} ${entries.join(", ")}`,
+            )
+            .join("\n")
+        );
+      })
+      .join("\n");
+
     return `.module ${name}
 
 ${this.headers.map((header) => `.include "${header}"`).join("\n")}
@@ -2972,7 +3021,7 @@ ${lock ? this._padCmd("VM_LOCK", "", 8, 24) + "\n\n" : ""}${
         ? this._padCmd("VM_RESERVE", String(reserveMem), 8, 24) + "\n\n"
         : ""
     }${this.output.join("\n")}
-`;
+${dataTables}`;
   };
 }
 

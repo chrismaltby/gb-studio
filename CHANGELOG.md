@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to set all four available palettes for SGB games [@pau-tomas](https://github.com/pau-tomas)
 - Add "Set Super GB Color Area" event to allow setting where each color palette should be used in SGB games [@pau-tomas](https://github.com/pau-tomas)
 - Add "Set Super GB Palettes" event for changing SGB palettes from scripts [@pau-tomas](https://github.com/pau-tomas)
+- Add "Data Table Lookup" event for reading static data from a table using an index variable, with CSV import/export. Useful for lookups like monster stats
 - Ukrainian localisation. [@AmakerGame](https://github.com/AmakerGame)
 
 ### Changed

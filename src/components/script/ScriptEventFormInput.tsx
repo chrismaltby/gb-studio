@@ -82,6 +82,8 @@ import ConstantValueSelect from "components/forms/ConstantValueSelect";
 import { EngineFieldType } from "store/features/engine/engineState";
 import { OverlaySpeedSelect } from "components/forms/OverlaySpeedSelect";
 import { ActorDirection, CollisionGroup } from "shared/lib/resources/types";
+import { DataTableInput } from "components/forms/DataTableInput";
+import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -907,6 +909,15 @@ const ScriptEventFormInput = ({
         />
       );
     }
+  } else if (type === "dataTable") {
+    const dataTableValue = isScriptDataTable(value) ? value : undefined;
+    return (
+      <DataTableInput
+        value={dataTableValue}
+        onChange={onChangeField}
+        entityId={entityId}
+      />
+    );
   } else if (type === "addEventButton") {
     return (
       <Button style={{ width: "100%" }} onClick={onInsertEventAfter}>

@@ -38,7 +38,7 @@ interface VariableSelectProps extends SelectCommonProps {
   onChangeUnits?: (newUnits: UnitType) => void;
 }
 
-const VariableSelectWrapper = styled.div`
+export const VariableSelectWrapper = styled.div`
   position: relative;
   width: 100%;
   min-width: 78px;

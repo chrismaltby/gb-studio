@@ -37,6 +37,7 @@ import { isNormalizedScriptEqual } from "shared/lib/scripts/scriptHelpers";
 import {
   ScriptEventDefs,
   isActorField,
+  isDataTableField,
   isPropertyField,
   isScriptValueField,
   isVariableField,
@@ -84,6 +85,7 @@ import {
   reparentEntityPath,
   reparentFolderPath,
 } from "shared/lib/helpers/virtualFilesystem";
+import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
 
 interface NormalizedEntities {
   scenes: Record<EntityId, SceneNormalized>;
@@ -1197,6 +1199,16 @@ export const updateCustomEventArgs = (
           for (const variable of variables) {
             if (isVariableCustomEvent(variable)) {
               addVariable(variable);
+            }
+          }
+        }
+        if (isDataTableField(scriptEvent.command, arg, args, scriptEventDefs)) {
+          const value = isScriptDataTable(args[arg]) ? args[arg] : undefined;
+          if (value) {
+            for (const variable of value.variables) {
+              if (isVariableCustomEvent(variable)) {
+                addVariable(variable);
+              }
             }
           }
         }
