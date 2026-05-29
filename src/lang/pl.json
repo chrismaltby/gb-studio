@@ -528,7 +528,7 @@
   "FIELD_UI_PALETTE_NOTE": "Uwaga: GB Paleta tła #8 odpowiada również za elementy UI (interfejsu użytkownika) takie jak okna i menu",
   "FIELD_EMOTE_PALETTE_NOTE": "Uwaga: GB Paleta obiektów #8 jest używana również do emotikonów",
   "FIELD_SGB_PALETTE_NOTE": "Uwaga: Domyślna paleta dla Super GB jest współdziedziczona z paletą kolorów GB nr #5, zmiana którejkolwiek z nich spowoduje aktualizację dla drugiej wartość.",
-  "FIELD_SGB_PALETTES_NOTE": "Palety Super GB od #1 do #4 współdzielą wartości z paletami GB Color od #5 do #8, więc zmiana jednej z nich zaktualizuje również drugą."
+  "FIELD_SGB_PALETTES_NOTE": "Palety Super GB od #1 do #4 współdzielą wartości z paletami GB Color od #5 do #8, więc zmiana jednej z nich zaktualizuje również drugą.",
   "FIELD_UI_SGB_PALETTE_NOTE": "Uwaga: Paleta Super GB #4 jest również używana przez elementy interfejsu, takie jak okna dialogowe i menu w trybie GB Color.",
   "FIELD_DEFAULT_SGB_PALETTE_NOTE": "Paleta Super GB #1 jest używana jako domyślna paleta tła i sprite'ów w trybie Super GB.",
   "FIELD_COLOR_0_SGB_PALETTE_NOTE": "Uwaga: Paleta Super GB #3 ustawia kolor 0 dla wszystkich pozostałych palet Super GB.",
