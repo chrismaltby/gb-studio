@@ -26,7 +26,27 @@ module.exports = async () => {
         name: "@electron-forge/maker-zip",
         platforms: ["darwin", "win32", "linux"],
       },
-      new MakerAppImage({}),
+      new MakerAppImage({
+        options: {
+          name: "gb-studio",
+          bin: "gb-studio",
+          productName: "GB Studio",
+          genericName: "Visual retro game maker",
+          icon: {
+            strict: true,
+            default: "512x512",
+            "16x16": "src/assets/app/icon/16x16.png",
+            "32x32": "src/assets/app/icon/32x32.png",
+            "48x48": "src/assets/app/icon/48x48.png",
+            "64x64": "src/assets/app/icon/64x64.png",
+            "128x128": "src/assets/app/icon/128x128.png",
+            "256x256": "src/assets/app/icon/256x256.png",
+            "512x512": "src/assets/app/icon/512x512.png",
+            "1024x1024": "src/assets/app/icon/app_icon.png",
+          },
+          categories: ["Development", "IDE"],
+        },
+      }),
       {
         name: "@electron-forge/maker-deb",
         config: {

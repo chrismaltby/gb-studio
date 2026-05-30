@@ -88,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where it was possible to create an animation state with a blank name which could no longer renamed
 - Fix issue where keyboard controls wouldn't always work in sprite animations navigator
 - Fix issue where double clicking a recent project from the splash window could cause project not to open
+- Fix Linux AppImage releases missing icons and metadata needed for integration using AppImageLauncher
 
 ### Removed
 
