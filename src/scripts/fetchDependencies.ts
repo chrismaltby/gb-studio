@@ -22,37 +22,37 @@ const lockPath = Path.join(buildToolsRoot, "dependencies.lock");
 const dependencies = {
   "darwin-arm64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/gbdk-next/gbdk-macos-arm64.tar.gz",
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/latest/download/gbdk-macos-arm64.tar.gz",
       type: "targz",
     },
   },
   "darwin-x64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/gbdk-next/gbdk-macos.tar.gz",
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/latest/download/gbdk-macos.tar.gz",
       type: "targz",
     },
   },
   "linux-x64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/gbdk-next/gbdk-linux64.tar.gz",
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/latest/download/gbdk-linux64.tar.gz",
       type: "targz",
     },
   },
   "linux-arm64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/gbdk-next/gbdk-linux-arm64.tar.gz",
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/latest/download/gbdk-linux-arm64.tar.gz",
       type: "targz",
     },
   },
   "win32-ia32": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/gbdk-next/gbdk-win32.zip",
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/latest/download/gbdk-win32.zip",
       type: "zip",
     },
   },
   "win32-x64": {
     gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/gbdk-next/gbdk-win64.zip",
+      url: "https://github.com/gbdk-2020/gbdk-2020/releases/latest/download/gbdk-win64.zip",
       type: "zip",
     },
   },
