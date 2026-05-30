@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2302260527",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2320260530 (ver.b)",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -1430,6 +1430,18 @@
   "FIELD_OUTSIDE_PALETTE": "Wypełnienie zewnętrzne",
   "FIELD_OUTSIDE_PALETTE_DESC": "Paleta Super GB używana do wypełnienia obszaru znajdującego się poza prostokątem.",
   "FIELD_SUPER_GB_PALETTE_N": "Paleta Super GB #{index}",
+  "FIELD_INDEX_VARIABLE": "Zmienna numeru wieksza",
+  "FIELD_INDEX_VARIABLE_DESC": "Zmienna przechowująca numer wiersza do pobrania.",
+  "FIELD_DATA": "Dane",
+  "FIELD_DATA_TABLE_DESC": "Tabela wartości, z której pobierane są dane na podstawie zmiennej numeru wiersza. Wartości z każdej kolumny zostaną zapisane do przypisanych zmiennych.",
+  "FIELD_ADD_COLUMN": "Dodaj kolumnę",
+  "FIELD_REMOVE_COLUMN": "Usuń kolumnę",
+  "FIELD_ADD_ROW": "Dodaj wiersz",
+  "FIELD_REMOVE_ROW": "Usuń wiersz",
+  "FIELD_TABLE_NAME": "Nazwa tabeli",
+  "FIELD_ROW_NAME": "Nazwa wiersza",
+  "FIELD_IMPORT_CSV": "Importuj .CSV",
+  "FIELD_EXPORT_CSV": "Eksportuj .CSV",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
@@ -1875,6 +1887,9 @@
   "EVENT_RATE_LIMIT": "Ograniczenie częstotliwości",
   "EVENT_RATE_LIMIT_DESC": "Ogranicza, jak często ten skrypt może być uruchamiany. Jeśli zostanie wywołany ponownie przed upływem limitu czasu, jego wykonanie zostanie pominięte.",
   "EVENT_RATE_LIMIT_LABEL": "Ogranicz do jednego wywołania co {time} {units}",
+  "EVENT_GROUP_DATA_TABLE": "Tabela danych",
+  "EVENT_DATA_TABLE": "Pobierz tabelę danych",
+  "EVENT_DATA_TABLE_DESC": "Zdefiniuj tabelę statycznych danych, z której wartości mogą być pobierane na podstawie numeru wiersza (indeksu). Każda kolumna zostanie wczytana do przypisanej zmiennej.",
 
   "// 10": "Menu -----------------------------------------------------",
 
@@ -2096,6 +2111,9 @@
   "ERROR_INSTRUMENT_TYPE_MISMATCH": "Nie można zaimportować: instrument ma typ {got}, ale wybrane miejsce oczekuje typu {expected}.",
   "ERROR_TIMED_OUT": "Przekroczono limit czasu operacji",
   "ERROR_AUDIO_ENCODE_FAILED": "Błąd kodowania audio",
+  "ERROR_DATA_TABLE_CSV_INVALID": "Importowany plik CSV jest nieprawidłowy.",
+  "ERROR_DATA_TABLE_CSV_NO_VARIABLES": "Importowany plik CSV nie zawiera zmiennych.",
+  "ERROR_DATA_TABLE_CSV_NO_ROW_DATA": "Importowany plik CSV nie zawiera żadnych danych wierszy.",
 
   "// 13": "Splash -------------------------------------------------------",
 
