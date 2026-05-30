@@ -1,13 +1,9 @@
 import React, { useCallback, useRef, useState } from "react";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import {
-  castEventToBool,
-  castEventToString,
-} from "renderer/lib/helpers/castEventValue";
+import { castEventToBool } from "renderer/lib/helpers/castEventValue";
 import CustomControlsPicker from "components/forms/CustomControlsPicker";
 import { PaletteSelect } from "components/forms/PaletteSelect";
-import { Button } from "ui/buttons/Button";
 import {
   SettingsState,
   SpriteModeSetting,
@@ -25,7 +21,7 @@ import {
   SettingsPageWrapper,
   SettingsSearchWrapper,
 } from "components/settings/SettingsLayout";
-import { CardAnchor, CardButtons, CardHeading } from "ui/cards/Card";
+import { CardAnchor, CardHeading } from "ui/cards/Card";
 import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { SearchableCard } from "ui/cards/SearchableCard";
@@ -35,25 +31,20 @@ import electronActions from "store/features/electron/electronActions";
 import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
 import { FormField } from "ui/form/layout/FormLayout";
-import { FixedSpacer, FlexRow } from "ui/spacing/Spacing";
+import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { CompilerPresetSelect } from "components/forms/CompilerPresetSelect";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
-import stripInvalidFilenameCharacters from "shared/lib/helpers/stripInvalidFilenameCharacters";
-import { getROMFilename } from "shared/lib/helpers/filePaths";
 import SceneTypesSettingsCard from "components/settings/SceneTypesSettingsCard";
 import editorActions from "store/features/editor/editorActions";
 import { useRestoreScroll } from "ui/hooks/use-restore-scroll";
 import { useSaveScroll } from "ui/hooks/use-save-scroll";
 import { SettingsSectionColor } from "components/settings/section/SettingsSectionColor";
 import { SettingsSectionWeb } from "components/settings/section/SettingsSectionWeb";
+import { SettingsSectionBuild } from "components/settings/section/SettingsSectionBuild";
 
 const SettingsPage = () => {
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.project.present.settings);
-  const projectName = useAppSelector(
-    (state) => state.project.present.metadata.name,
-  );
   const [searchTerm, setSearchTerm] = useState<string>("");
   const groupedFields = useGroupedEngineFields();
   const editSettings = useCallback(
@@ -77,23 +68,10 @@ const SettingsPage = () => {
     sgbEnabled,
     defaultBackgroundPaletteIds,
     defaultFontId,
-    openBuildLogOnWarnings,
-    generateDebugFilesEnabled,
-    openBuildFolderOnExport,
-    showRomUsageAfterBuild,
-    compilerPreset,
     spriteMode,
-    romFilename,
   } = settings;
 
   const colorEnabled = colorMode !== "mono";
-
-  const defaultRomFilename = getROMFilename(
-    "",
-    projectName,
-    colorMode === "color",
-    "rom",
-  );
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.currentTarget.value);
@@ -133,44 +111,6 @@ const SettingsPage = () => {
 
   const onChangeDefaultFontId = useCallback(
     (e: string) => onChangeSettingProp("defaultFontId", e),
-    [onChangeSettingProp],
-  );
-
-  const onChangeROMFilename = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeSettingProp(
-        "romFilename",
-        stripInvalidFilenameCharacters(castEventToString(e)),
-      ),
-    [onChangeSettingProp],
-  );
-
-  const onChangeOpenBuildLogOnWarnings = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeSettingProp("openBuildLogOnWarnings", castEventToBool(e)),
-    [onChangeSettingProp],
-  );
-
-  const onChangeGenerateDebugFilesEnabled = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeSettingProp("generateDebugFilesEnabled", castEventToBool(e)),
-    [onChangeSettingProp],
-  );
-
-  const onChangeOpenBuildFolderOnExport = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeSettingProp("openBuildFolderOnExport", castEventToBool(e)),
-    [onChangeSettingProp],
-  );
-
-  const onChangeShowRomUsageAfterBuild = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeSettingProp("showRomUsageAfterBuild", castEventToBool(e)),
-    [onChangeSettingProp],
-  );
-
-  const onChangeCompilerPreset = useCallback(
-    (value: number) => onChangeSettingProp("compilerPreset", value),
     [onChangeSettingProp],
   );
 
@@ -514,132 +454,7 @@ const SettingsPage = () => {
           <CartSettingsEditor searchTerm={searchTerm} />
         </SearchableCard>
 
-        <SearchableCard
-          searchTerm={searchTerm}
-          searchMatches={[
-            l10n("SETTINGS_BUILD"),
-            l10n("FIELD_ROM_FILENAME"),
-            l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS"),
-            l10n("FIELD_GENERATE_DEBUG_FILES"),
-            l10n("FIELD_COMPILER_PRESET"),
-          ]}
-        >
-          <CardAnchor id="settingsBuild" />
-          <CardHeading>{l10n("SETTINGS_BUILD")}</CardHeading>
-          <SearchableSettingRow
-            searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_ROM_FILENAME")]}
-          >
-            <SettingRowLabel>{l10n("FIELD_ROM_FILENAME")}</SettingRowLabel>
-            <SettingRowInput>
-              <FlexRow>
-                <Input
-                  id="romFilename"
-                  name="romFilename"
-                  onChange={onChangeROMFilename}
-                  value={romFilename}
-                  placeholder={defaultRomFilename}
-                />
-              </FlexRow>
-            </SettingRowInput>
-          </SearchableSettingRow>
-
-          <SearchableSettingRow
-            searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")]}
-          >
-            <SettingRowLabel>
-              {l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")}
-            </SettingRowLabel>
-            <SettingRowInput>
-              <Checkbox
-                id="openBuildLogOnWarnings"
-                name="openBuildLogOnWarnings"
-                checked={openBuildLogOnWarnings}
-                onChange={onChangeOpenBuildLogOnWarnings}
-              />
-            </SettingRowInput>
-          </SearchableSettingRow>
-
-          <SearchableSettingRow
-            searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_GENERATE_DEBUG_FILES")]}
-          >
-            <SettingRowLabel>
-              {l10n("FIELD_GENERATE_DEBUG_FILES")}
-            </SettingRowLabel>
-            <SettingRowInput>
-              <Checkbox
-                id="generateDebugFilesEnabled"
-                name="generateDebugFilesEnabled"
-                checked={generateDebugFilesEnabled}
-                onChange={onChangeGenerateDebugFilesEnabled}
-              />
-            </SettingRowInput>
-          </SearchableSettingRow>
-
-          <SearchableSettingRow
-            searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")]}
-          >
-            <SettingRowLabel>
-              {l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")}
-            </SettingRowLabel>
-            <SettingRowInput>
-              <Checkbox
-                id="openBuildFolderOnExport"
-                name="openBuildFolderOnExport"
-                checked={openBuildFolderOnExport}
-                onChange={onChangeOpenBuildFolderOnExport}
-              />
-            </SettingRowInput>
-          </SearchableSettingRow>
-
-          <SearchableSettingRow
-            searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")]}
-          >
-            <SettingRowLabel>
-              {l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")}
-            </SettingRowLabel>
-            <SettingRowInput>
-              <Checkbox
-                id="showRomUsageAfterBuild"
-                name="showRomUsageAfterBuild"
-                checked={showRomUsageAfterBuild}
-                onChange={onChangeShowRomUsageAfterBuild}
-              />
-            </SettingRowInput>
-          </SearchableSettingRow>
-
-          <SearchableSettingRow
-            searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_COMPILER_PRESET")]}
-          >
-            <SettingRowLabel>{l10n("FIELD_COMPILER_PRESET")}</SettingRowLabel>
-            <SettingRowInput>
-              <CompilerPresetSelect
-                name={"compilerPreset"}
-                value={compilerPreset}
-                onChange={onChangeCompilerPreset}
-              />
-            </SettingRowInput>
-          </SearchableSettingRow>
-
-          {!searchTerm && (
-            <CardButtons>
-              <Button
-                onClick={() => {
-                  onChangeSettingProp("openBuildLogOnWarnings", true);
-                  onChangeSettingProp("generateDebugFilesEnabled", false);
-                  onChangeSettingProp("compilerPreset", 3000);
-                }}
-              >
-                {l10n("FIELD_RESTORE_DEFAULT")}
-              </Button>
-            </CardButtons>
-          )}
-        </SearchableCard>
+        <SettingsSectionBuild searchTerm={searchTerm} />
 
         <SettingsSectionWeb searchTerm={searchTerm} />
       </SettingsContentColumn>
