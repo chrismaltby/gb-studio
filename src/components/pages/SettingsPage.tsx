@@ -24,7 +24,6 @@ import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { SearchableCard } from "ui/cards/SearchableCard";
 import { FontSelect } from "components/forms/FontSelect";
 import electronActions from "store/features/electron/electronActions";
-import CartSettingsEditor from "components/settings/CartSettingsEditor";
 import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
@@ -36,6 +35,7 @@ import { SettingsSectionColor } from "components/settings/section/SettingsSectio
 import { SettingsSectionWeb } from "components/settings/section/SettingsSectionWeb";
 import { SettingsSectionBuild } from "components/settings/section/SettingsSectionBuild";
 import { SettingsSectionSGB } from "components/settings/section/SettingsSectionSGB";
+import { SettingsSectionCart } from "components/settings/section/SettingsSectionCart";
 
 const SettingsPage = () => {
   const dispatch = useAppDispatch();
@@ -286,14 +286,7 @@ const SettingsPage = () => {
           <CustomControlsPicker searchTerm={searchTerm} />
         </SearchableCard>
 
-        <SearchableCard
-          searchTerm={searchTerm}
-          searchMatches={[l10n("SETTINGS_CART_TYPE")]}
-        >
-          <CardAnchor id="settingsCartType" />
-          <CardHeading>{l10n("SETTINGS_CART_TYPE")}</CardHeading>
-          <CartSettingsEditor searchTerm={searchTerm} />
-        </SearchableCard>
+        <SettingsSectionCart searchTerm={searchTerm} />
 
         <SettingsSectionBuild searchTerm={searchTerm} />
 
