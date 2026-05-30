@@ -23,6 +23,8 @@ import {
   MonoBGPPalette,
   MonoOBJPalette,
 } from "shared/lib/resources/types";
+import { NavigationSection } from "store/features/navigation/navigationState";
+import navigationActions from "store/features/navigation/navigationActions";
 
 interface SettingsSectionColorProps {
   searchTerm: string;
@@ -57,11 +59,26 @@ export const SettingsSectionColor = ({
     (state) => state.project.present.settings.defaultMonoOBP1,
   );
 
+  const defaultBackgroundPaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultBackgroundPaletteIds,
+  );
+
+  const defaultSpritePaletteIds = useAppSelector(
+    (state) => state.project.present.settings.defaultSpritePaletteIds,
+  );
+
   const sgbEnabled = useAppSelector(
     (state) => state.project.present.settings.sgbEnabled,
   );
 
   const colorEnabled = colorMode !== "mono";
+
+  const setSection = useCallback(
+    (section: NavigationSection) => {
+      dispatch(navigationActions.setSection(section));
+    },
+    [dispatch],
+  );
 
   const onChangeColorMode = useCallback(
     (e: ColorModeSetting) =>
@@ -98,6 +115,54 @@ export const SettingsSectionColor = ({
       dispatch(settingsActions.editSettings({ defaultMonoOBP1: palette })),
 
     [dispatch],
+  );
+
+  const onEditPaletteId = useCallback(
+    (index: number, e: string) => {
+      const paletteIds = defaultBackgroundPaletteIds
+        ? [...defaultBackgroundPaletteIds]
+        : [];
+      paletteIds[index] = e;
+      dispatch(
+        settingsActions.editSettings({
+          defaultBackgroundPaletteIds: [
+            paletteIds[0],
+            paletteIds[1],
+            paletteIds[2],
+            paletteIds[3],
+            paletteIds[4],
+            paletteIds[5],
+            paletteIds[6],
+            paletteIds[7],
+          ],
+        }),
+      );
+    },
+    [defaultBackgroundPaletteIds, dispatch],
+  );
+
+  const onEditSpritePaletteId = useCallback(
+    (index: number, e: string) => {
+      const paletteIds = defaultSpritePaletteIds
+        ? [...defaultSpritePaletteIds]
+        : [];
+      paletteIds[index] = e;
+      dispatch(
+        settingsActions.editSettings({
+          defaultSpritePaletteIds: [
+            paletteIds[0],
+            paletteIds[1],
+            paletteIds[2],
+            paletteIds[3],
+            paletteIds[4],
+            paletteIds[5],
+            paletteIds[6],
+            paletteIds[7],
+          ],
+        }),
+      );
+    },
+    [defaultSpritePaletteIds, dispatch],
   );
 
   return (
