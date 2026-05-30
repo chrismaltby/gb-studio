@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import Path from "path";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import {
@@ -17,7 +17,6 @@ import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
 import { Checkbox } from "ui/form/Checkbox";
 import { Input } from "ui/form/Input";
 import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
-import { Textarea } from "ui/form/Textarea";
 import useWindowSize from "ui/hooks/use-window-size";
 import {
   SettingsContentColumn,
@@ -47,8 +46,9 @@ import editorActions from "store/features/editor/editorActions";
 import { useRestoreScroll } from "ui/hooks/use-restore-scroll";
 import { useSaveScroll } from "ui/hooks/use-save-scroll";
 import { SettingsSectionColor } from "components/settings/section/SettingsSectionColor";
+import { SettingsSectionWeb } from "components/settings/section/SettingsSectionWeb";
 
-const SettingsPage: FC = () => {
+const SettingsPage = () => {
   const dispatch = useAppDispatch();
   const settings = useAppSelector((state) => state.project.present.settings);
   const projectName = useAppSelector(
@@ -75,7 +75,6 @@ const SettingsPage: FC = () => {
   const {
     colorMode,
     sgbEnabled,
-    customHead,
     defaultBackgroundPaletteIds,
     defaultFontId,
     openBuildLogOnWarnings,
@@ -134,12 +133,6 @@ const SettingsPage: FC = () => {
 
   const onChangeDefaultFontId = useCallback(
     (e: string) => onChangeSettingProp("defaultFontId", e),
-    [onChangeSettingProp],
-  );
-
-  const onChangeCustomHead = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-      onChangeSettingProp("customHead", e.currentTarget.value),
     [onChangeSettingProp],
   );
 
@@ -648,46 +641,7 @@ const SettingsPage: FC = () => {
           )}
         </SearchableCard>
 
-        <SearchableCard
-          searchTerm={searchTerm}
-          searchMatches={[l10n("FIELD_CUSTOM_HTML_HEADER")]}
-        >
-          <CardAnchor id="settingsCustomHead" />
-          <CardHeading>{l10n("SETTINGS_CUSTOM_HEADER")}</CardHeading>
-          <SearchableSettingRow
-            searchTerm={searchTerm}
-            searchMatches={[l10n("FIELD_CUSTOM_HTML_HEADER")]}
-          >
-            <SettingRowLabel>
-              {l10n("FIELD_CUSTOM_HTML_HEADER")}
-            </SettingRowLabel>
-            <SettingRowInput>
-              <pre>
-                &lt;!DOCTYPE html&gt;{"\n"}
-                &lt;html&gt;{"\n  "}
-                &lt;head&gt;{"\n  "}
-                ...
-              </pre>
-              <Textarea
-                id="customHead"
-                value={customHead || ""}
-                placeholder={
-                  'e.g. <style type"text/css">\nbody {\n  background-color: darkgreen;\n}\n</style>'
-                }
-                onChange={onChangeCustomHead}
-                rows={15}
-                style={{ fontFamily: "monospace" }}
-              />
-              <pre>
-                {"  "}&lt;/head&gt;{"\n  "}
-                &lt;body&gt;{"\n  "}
-                ...{"\n  "}
-                &lt;body&gt;{"\n"}
-                &lt;html&gt;
-              </pre>
-            </SettingRowInput>
-          </SearchableSettingRow>
-        </SearchableCard>
+        <SettingsSectionWeb searchTerm={searchTerm} />
       </SettingsContentColumn>
     </SettingsPageWrapper>
   );
