@@ -8,7 +8,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import { Button } from "ui/buttons/Button";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { SliderField } from "ui/form/SliderField";
-import { useGroupedEngineFields } from "./useGroupedEngineFields";
+import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
 import { CardAnchor, CardButtons, CardHeading } from "ui/cards/Card";
 import { SearchableCard } from "ui/cards/SearchableCard";
 import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
@@ -26,7 +26,7 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SingleValue } from "react-select";
 import { isEngineFieldVisible } from "shared/lib/engineFields/engineFieldVisible";
 import { FlexRow } from "ui/spacing/Spacing";
-import { useEngineFieldsDefaultValues } from "./useEngineFieldsDefaultValues";
+import { useEngineFieldsDefaultValues } from "components/settings/useEngineFieldsDefaultValues";
 import ToggleButtons from "ui/form/ToggleButtons";
 import { pxToSubpx, pxToSubpxVelPrecise } from "shared/lib/helpers/subpixels";
 import AnimationStateSelect from "components/forms/AnimationStateSelect";
@@ -34,7 +34,7 @@ import { EngineFieldValue } from "shared/lib/resources/types";
 
 const { editEngineFieldValue, removeEngineFieldValue } = entitiesActions;
 
-interface EngineFieldsEditorProps {
+interface SettingsSectionEngineFieldsProps {
   searchTerm?: string;
   sceneType?: string;
 }
@@ -376,11 +376,12 @@ const EngineFieldRow = ({
   );
 };
 
-const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({
+const SettingsSectionEngineFields = ({
   searchTerm,
   sceneType,
-}) => {
+}: SettingsSectionEngineFieldsProps) => {
   const dispatch = useAppDispatch();
+
   const values = useAppSelector(engineFieldValueSelectors.selectEntities);
   const groupedFields = useGroupedEngineFields(sceneType);
   const defaultValues = useEngineFieldsDefaultValues();
@@ -458,4 +459,4 @@ const EngineFieldsEditor: FC<EngineFieldsEditorProps> = ({
   );
 };
 
-export default EngineFieldsEditor;
+export default SettingsSectionEngineFields;

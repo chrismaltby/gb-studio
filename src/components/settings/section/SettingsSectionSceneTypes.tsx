@@ -19,7 +19,7 @@ import { FormField } from "ui/form/layout/FormLayout";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeIds";
 
-interface SceneTypesSettingsCardProps {
+interface SettingsSectionSceneTypesProps {
   searchTerm?: string;
 }
 
@@ -29,9 +29,9 @@ const CheckboxWrapper = styled.div`
   flex-grow: 1;
 `;
 
-const SceneTypesSettingsCard = ({
+const SettingsSectionSceneTypes = ({
   searchTerm,
-}: SceneTypesSettingsCardProps) => {
+}: SettingsSectionSceneTypesProps) => {
   const dispatch = useAppDispatch();
   const sceneTypes = useAppSelector((state) => state.engine.sceneTypes);
   const disabledSceneTypeIds = useAppSelector(
@@ -254,4 +254,4 @@ const SceneTypesSettingsCard = ({
   );
 };
 
-export default SceneTypesSettingsCard;
+export default SettingsSectionSceneTypes;

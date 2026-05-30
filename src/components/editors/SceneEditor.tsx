@@ -87,7 +87,7 @@ import {
   SceneBoundsRect,
   SceneParallaxLayer,
 } from "shared/lib/resources/types";
-import EngineFieldsEditor from "components/settings/EngineFieldsEditor";
+import SettingsSectionEngineFields from "components/settings/section/SettingsSectionEngineFields";
 import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
 import ScrollBoundsInput from "components/forms/ScrollBoundsInput";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
@@ -899,7 +899,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
                     </Alert>
                   </FormRow>
                 )}
-                {settingsOpen && <EngineFieldsEditor sceneType={scene.type} />}
+                {settingsOpen && (
+                  <SettingsSectionEngineFields sceneType={scene.type} />
+                )}
               </FormContainer>
             </SidebarColumn>
             <FlexBreak />
