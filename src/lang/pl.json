@@ -1430,7 +1430,7 @@
   "FIELD_OUTSIDE_PALETTE": "Wypełnienie zewnętrzne",
   "FIELD_OUTSIDE_PALETTE_DESC": "Paleta Super GB używana do wypełnienia obszaru znajdującego się poza prostokątem.",
   "FIELD_SUPER_GB_PALETTE_N": "Paleta Super GB #{index}",
-  
+
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Szukaj",
   "ASSET_EDIT": "Edytuj",

@@ -3188,7 +3188,9 @@ test("Should remap custom event variable arguments used in data table columns", 
   });
 
   expect(output).toContain("        VM_PUSH_VALUE           VAR_VARIABLE_2");
-  expect(additionalScripts["script_1"]?.compiledScript).toContain("VAR_VARIABLE_1");
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    "VAR_VARIABLE_1",
+  );
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
     ".SCRIPT_ARG_0_VARIABLE",
   );

@@ -146,7 +146,9 @@ describe("Electron Main Process", () => {
   test("registers a CSV export IPC handler that writes the serialized table", async () => {
     const exportHandler = getIpcHandler("data-table:export-csv");
 
-    mockedElectron.dialog.showSaveDialogSync.mockReturnValueOnce("/tmp/data.csv");
+    mockedElectron.dialog.showSaveDialogSync.mockReturnValueOnce(
+      "/tmp/data.csv",
+    );
 
     await exportHandler?.(
       {},

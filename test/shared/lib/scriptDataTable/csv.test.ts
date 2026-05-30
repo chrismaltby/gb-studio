@@ -75,7 +75,10 @@ describe("csvToScriptDataTable", () => {
 
   test("Should pad jagged rows with zeros based on header variables", () => {
     expect(
-      csvToScriptDataTable("my data table,L0,L1,T0,L4\nfoo,2\nbar\nhello,3,4", []),
+      csvToScriptDataTable(
+        "my data table,L0,L1,T0,L4\nfoo,2\nbar\nhello,3,4",
+        [],
+      ),
     ).toEqual({
       label: "my data table",
       variables: ["L0", "L1", "T0", "L4"],
@@ -112,19 +115,21 @@ describe("csvToScriptDataTable", () => {
   });
 
   test("Should discard values beyond the header variable count", () => {
-    expect(csvToScriptDataTable("Data Table,V0,V1\nRow 1,1,2,3,4", [])).toEqual({
-      label: "Data Table",
-      variables: ["V0", "V1"],
-      rows: [
-        {
-          label: "Row 1",
-          values: [
-            { type: "number", value: 1 },
-            { type: "number", value: 2 },
-          ],
-        },
-      ],
-    });
+    expect(csvToScriptDataTable("Data Table,V0,V1\nRow 1,1,2,3,4", [])).toEqual(
+      {
+        label: "Data Table",
+        variables: ["V0", "V1"],
+        rows: [
+          {
+            label: "Row 1",
+            values: [
+              { type: "number", value: 1 },
+              { type: "number", value: 2 },
+            ],
+          },
+        ],
+      },
+    );
   });
 
   test("Should throw when imported CSV contains no variables", () => {
