@@ -89,6 +89,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where keyboard controls wouldn't always work in sprite animations navigator
 - Fix issue where double clicking a recent project from the splash window could cause project not to open
 
+### Removed
+
+- Removed mod2gbt binary which is no longer used as .mod files now get converted to .uge format at compile time
+
 ## [4.2.2] - 2026-02-24
 
 ### Added
