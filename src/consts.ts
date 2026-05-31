@@ -86,6 +86,7 @@ export const TOOL_COLORS = "colors";
 export const TOOL_SCENE = "scene";
 export const TOOL_TRIGGERS = "triggers";
 export const TOOL_ERASER = "eraser";
+export const TOOL_NOTE = "note";
 
 // Brushes
 export const BRUSH_8PX = "8px";

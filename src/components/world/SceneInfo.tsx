@@ -10,7 +10,7 @@ import {
   SCREEN_WIDTH,
 } from "consts";
 import React, { useCallback, useEffect, useState } from "react";
-import { useAppSelector } from "store/hooks";
+import { useAppSelector, useAppSelectorPick, useAppStore } from "store/hooks";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -96,10 +96,25 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
 `;
 
 const SceneInfo = () => {
+  const store = useAppStore();
+
   const selectedSceneId = useAppSelector((state) => state.editor.scene);
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, selectedSceneId),
+
+  const scene = useAppSelectorPick(
+    (state) => sceneSelectors.selectById(state, selectedSceneId),
+    [
+      "id",
+      "type",
+      "backgroundId",
+      "colorModeOverride",
+      "spriteMode",
+      "actors",
+      "triggers",
+      "width",
+      "height",
+    ] as const,
   );
+
   const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state),
   );
@@ -144,6 +159,9 @@ const SceneInfo = () => {
   const [loaded, setLoaded] = useState(false);
 
   const recalculateCounts = useCallback(() => {
+    const state = store.getState();
+    const scene = sceneSelectors.selectById(state, selectedSceneId);
+
     if (!scene) {
       return;
     }
@@ -380,7 +398,8 @@ const SceneInfo = () => {
     setActorWarnings(newActorWarnings);
     setLoaded(true);
   }, [
-    scene,
+    store,
+    selectedSceneId,
     spriteSheetsLookup,
     scriptEventsLookup,
     actorsLookup,

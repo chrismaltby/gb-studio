@@ -15,7 +15,11 @@ import {
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { Button } from "ui/buttons/Button";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useAppSelectorPick,
+} from "store/hooks";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 
 export const ScriptEventAutoFade = () => {
@@ -24,17 +28,19 @@ export const ScriptEventAutoFade = () => {
   const type = context.entityType;
   const sceneId = context.sceneId;
   const headerRef = useRef<HTMLDivElement>(null);
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId),
+  const autoFade = useAppSelectorPick(
+    (state) => sceneSelectors.selectById(state, sceneId),
+    ["autoFadeSpeed", "autoFadeEventCollapse"] as const,
   );
+
   const value =
-    scene?.autoFadeSpeed === null ? null : (scene?.autoFadeSpeed ?? 1);
-  const autoFadeEventCollapse = scene?.autoFadeEventCollapse;
+    autoFade?.autoFadeSpeed === null ? null : (autoFade?.autoFadeSpeed ?? 1);
+
+  const autoFadeEventCollapse = autoFade?.autoFadeEventCollapse;
   const isOpen = !autoFadeEventCollapse;
 
   const onChangeField = useCallback(
     (newValue: number | null) => {
-      console.log(newValue);
       dispatch(
         entitiesActions.editScene({
           sceneId,
@@ -77,7 +83,7 @@ export const ScriptEventAutoFade = () => {
     }
   }, [isExecuting]);
 
-  if (type !== "scene" || value === null || !scene) {
+  if (type !== "scene" || value === null || !autoFade) {
     return null;
   }
 
@@ -123,8 +129,8 @@ export const ScriptEventAutoFadeDisabledWarning = () => {
   const dispatch = useAppDispatch();
   const type = useAppSelector((state) => state.editor.type);
   const sceneId = useAppSelector((state) => state.editor.scene);
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId),
+  const autoFadeSpeed = useAppSelector(
+    (state) => sceneSelectors.selectById(state, sceneId)?.autoFadeSpeed,
   );
 
   const onEnable = useCallback(() => {
@@ -138,7 +144,7 @@ export const ScriptEventAutoFadeDisabledWarning = () => {
     );
   }, [dispatch, sceneId]);
 
-  if (type !== "scene" || !scene) {
+  if (type !== "scene" || autoFadeSpeed !== null) {
     return null;
   }
 

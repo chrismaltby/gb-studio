@@ -25,10 +25,9 @@ import ScenePriorityMap from "./ScenePriorityMap";
 import SceneSlopePreview from "./SceneSlopePreview";
 import { SceneEventHelper } from "./SceneEventHelper";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
-import { getDOMElementCoords } from "renderer/lib/helpers/dom";
 import styled, { css } from "styled-components";
 import { LabelSpan } from "ui/buttons/LabelButton";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import { assetURL } from "shared/lib/helpers/assets";
 import AutoColorizedImage from "components/world/AutoColorizedImage";
 import renderSceneContextMenu from "./renderSceneContextMenu";
@@ -227,6 +226,8 @@ const SceneErrorOverlay = styled.div`
 
 const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const dispatch = useAppDispatch();
+  const store = useAppStore();
+
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
   const defaultSpriteMode = useAppSelector(
     (state) => state.project.present.settings.spriteMode,
@@ -248,9 +249,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   );
   const startDirection = useAppSelector(
     (state) => state.project.present.settings.startDirection,
-  );
-  const { x: hoverX, y: hoverY } = useAppSelector(
-    (state) => state.editor.hover,
   );
   const runSceneSelectionOnly = useAppSelector(
     (state) => state.project.present.settings.runSceneSelectionOnly,
@@ -571,9 +569,9 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       if (!scene) {
         return;
       }
-      const pos = getDOMElementCoords(e.currentTarget);
-      const x = e.pageX - pos.left;
-      const y = e.pageY - pos.top;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.pageX - rect.left;
+      const y = e.pageY - rect.top;
       const pX = Math.floor(x / zoomRatio);
       const pY = Math.floor(y / zoomRatio);
       const tX = Math.floor(pX / TILE_SIZE);
@@ -615,6 +613,8 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
 
   const getContextMenu = useCallback(
     ({ closeMenu: onClose }: { closeMenu: () => void }) => {
+      const state = store.getState();
+      const { x: hoverX, y: hoverY } = state.editor.hover;
       return renderSceneContextMenu({
         dispatch,
         sceneId: id,
@@ -631,8 +631,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     },
     [
       dispatch,
-      hoverX,
-      hoverY,
+      store,
       id,
       sceneSelectionIds,
       startDirection,

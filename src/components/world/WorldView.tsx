@@ -16,6 +16,8 @@ import {
   TOOL_ERASER,
   TILE_SIZE,
   TOOL_SELECT,
+  TOOL_SCENE,
+  TOOL_NOTE,
 } from "consts";
 import {
   sceneSelectors,
@@ -28,8 +30,12 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import styled from "styled-components";
-import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
-import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useAppSelectorMapArray,
+  useAppStore,
+} from "store/hooks";
 import { Selection } from "ui/document/Selection";
 import useResizeObserver from "ui/hooks/use-resize-observer";
 import NoteView from "components/world/NoteView";
@@ -82,11 +88,380 @@ type SelectionRect = {
 
 const SCENE_VERTICAL_PADDING = 20;
 
+type WorldEntitiesProps = {
+  sceneIds: string[];
+  noteIds: string[];
+  scrollWidth: number;
+  scrollHeight: number;
+  zoomRatio: number;
+  showConnections: boolean;
+  editable: boolean;
+};
+
+const WorldEntities = React.memo(
+  ({
+    sceneIds: scenes,
+    noteIds: notes,
+    scrollWidth,
+    scrollHeight,
+    zoomRatio,
+    showConnections,
+    editable,
+  }: WorldEntitiesProps) => {
+    return (
+      <>
+        {scenes.map((sceneId, index) => (
+          <SceneView
+            key={sceneId}
+            id={sceneId}
+            index={index}
+            editable={editable}
+          />
+        ))}
+
+        {notes.map((noteId, index) => (
+          <NoteView
+            key={noteId}
+            id={noteId}
+            index={index}
+            editable={editable}
+          />
+        ))}
+
+        {showConnections && (
+          <Connections
+            width={scrollWidth}
+            height={scrollHeight}
+            zoomRatio={zoomRatio}
+            editable={editable}
+          />
+        )}
+      </>
+    );
+  },
+);
+
+WorldEntities.displayName = "WorldEntities";
+
+type WorldInteractionOverlayProps = {
+  tool: string;
+  scrollRef: React.RefObject<HTMLDivElement | null>;
+  zoomRatio: number;
+};
+
+const WorldInteractionOverlay = React.memo(
+  ({ tool, scrollRef, zoomRatio }: WorldInteractionOverlayProps) => {
+    const dispatch = useAppDispatch();
+    const store = useAppStore();
+
+    const [hoverState, setHoverState] = useState<Point>();
+    const [selectionStart, setSelectionStart] = useState<Point>();
+    const [selectionEnd, setSelectionEnd] = useState<Point>();
+    const selection = useRef<SelectionRect | undefined>(undefined);
+
+    useEffect(() => {
+      if (!selectionStart || !selectionEnd) {
+        selection.current = undefined;
+      } else {
+        selection.current = {
+          x: Math.min(selectionStart.x, selectionEnd.x),
+          y: Math.min(selectionStart.y, selectionEnd.y),
+          width: Math.abs(selectionEnd.x - selectionStart.x),
+          height: Math.abs(selectionEnd.y - selectionStart.y),
+        };
+      }
+    }, [selectionStart, selectionEnd]);
+
+    const onAddScene = useCallback(
+      (point: Point) => {
+        const state = store.getState();
+        const pasteMode = state.editor.pasteMode;
+        const clipboardVariables = state.editor.clipboardVariables;
+        const defaultSceneTypeId =
+          state.project.present.settings.defaultSceneTypeId;
+
+        if (pasteMode) {
+          dispatch(clipboardActions.pasteSceneAt(point));
+        } else {
+          dispatch(
+            entitiesActions.addScene({
+              ...point,
+              variables: clipboardVariables,
+              defaults: {
+                type: defaultSceneTypeId,
+              },
+            }),
+          );
+        }
+
+        dispatch(editorActions.setTool({ tool: TOOL_SELECT }));
+      },
+      [dispatch, store],
+    );
+
+    const onAddNote = useCallback(
+      (point: Point) => {
+        dispatch(
+          entitiesActions.addNote({
+            ...point,
+          }),
+        );
+
+        dispatch(editorActions.setTool({ tool: TOOL_SELECT }));
+      },
+      [dispatch],
+    );
+
+    const onMoveMultiSelection = useCallback(
+      (e: MouseEvent) => {
+        const scroll = scrollRef.current;
+        if (!scroll) {
+          return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const boundingRect = scroll.getBoundingClientRect();
+        const x = (e.pageX + scroll.scrollLeft - boundingRect.x) / zoomRatio;
+        const y = (e.pageY + scroll.scrollTop - boundingRect.y) / zoomRatio;
+        const point: Point = { x, y };
+
+        if (selection.current) {
+          const rect = selection.current;
+
+          const state = store.getState();
+          const scenes = sceneSelectors.selectAll(state);
+          const notes = noteSelectors.selectAll(state);
+
+          const selectedSceneIds = scenes
+            .filter((scene) => {
+              return (
+                scene.x + scene.width * TILE_SIZE >= rect.x &&
+                scene.x <= rect.x + rect.width &&
+                scene.y + scene.height * TILE_SIZE + SCENE_VERTICAL_PADDING >=
+                  rect.y &&
+                scene.y <= rect.y + rect.height
+              );
+            })
+            .map((s) => s.id);
+
+          const selectedNoteIds = notes
+            .filter((note) => {
+              return (
+                note.x + note.width * TILE_SIZE >= rect.x &&
+                note.x <= rect.x + rect.width &&
+                note.y + note.height * TILE_SIZE + SCENE_VERTICAL_PADDING >=
+                  rect.y &&
+                note.y <= rect.y + rect.height
+              );
+            })
+            .map((s) => s.id);
+
+          dispatch(
+            editorActions.addSceneSelectionIds([
+              ...selectedSceneIds,
+              ...selectedNoteIds,
+            ]),
+          );
+        }
+
+        setSelectionEnd(point);
+      },
+      [dispatch, scrollRef, store, zoomRatio],
+    );
+
+    const onEndMultiSelection = useCallback(
+      (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setSelectionStart(undefined);
+        setSelectionEnd(undefined);
+
+        window.removeEventListener("mousemove", onMoveMultiSelection);
+        window.removeEventListener("mouseup", onEndMultiSelection);
+      },
+      [onMoveMultiSelection],
+    );
+
+    const onKeyDown = useCallback(
+      (e: KeyboardEvent) => {
+        if (e.shiftKey && tool === TOOL_SELECT) {
+          setSelectionStart(undefined);
+          setSelectionEnd(undefined);
+        }
+      },
+      [tool],
+    );
+
+    useEffect(() => {
+      window.addEventListener("keydown", onKeyDown);
+
+      return () => {
+        window.removeEventListener("keydown", onKeyDown);
+      };
+    }, [onKeyDown]);
+
+    const updateHover = useCallback(
+      (e: MouseEvent) => {
+        const scroll = scrollRef.current;
+        if (!scroll) {
+          return;
+        }
+
+        if (!(e.target instanceof Node) || !scroll.contains(e.target)) {
+          setHoverState(undefined);
+          return;
+        }
+
+        if (tool !== TOOL_SCENE && tool !== TOOL_NOTE) {
+          setHoverState(undefined);
+          return;
+        }
+
+        const boundingRect = scroll.getBoundingClientRect();
+        const x = e.pageX + scroll.scrollLeft - boundingRect.x;
+        const y = e.pageY + scroll.scrollTop - boundingRect.y;
+
+        setHoverState({
+          x: x / zoomRatio - 80,
+          y: y / zoomRatio - 72,
+        });
+      },
+      [scrollRef, tool, zoomRatio],
+    );
+
+    useEffect(() => {
+      window.addEventListener("mousemove", updateHover);
+
+      return () => {
+        window.removeEventListener("mousemove", updateHover);
+      };
+    }, [updateHover]);
+
+    const onMouseDown = useCallback(
+      (e: MouseEvent) => {
+        const scroll = scrollRef.current;
+        if (!scroll || !e.shiftKey || tool !== TOOL_SELECT) {
+          return;
+        }
+
+        if (!(e.target instanceof Node) || !scroll.contains(e.target)) {
+          return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const boundingRect = scroll.getBoundingClientRect();
+        const x = (e.pageX + scroll.scrollLeft - boundingRect.x) / zoomRatio;
+        const y = (e.pageY + scroll.scrollTop - boundingRect.y) / zoomRatio;
+
+        const point: Point = { x, y };
+        setSelectionStart(point);
+        setSelectionEnd(point);
+
+        window.addEventListener("mousemove", onMoveMultiSelection);
+        window.addEventListener("mouseup", onEndMultiSelection);
+      },
+      [onEndMultiSelection, onMoveMultiSelection, scrollRef, tool, zoomRatio],
+    );
+
+    useEffect(() => {
+      window.addEventListener("mousedown", onMouseDown, true);
+
+      return () => {
+        window.removeEventListener("mousedown", onMouseDown, true);
+      };
+    }, [onMouseDown]);
+
+    useEffect(() => {
+      return () => {
+        window.removeEventListener("mousemove", onMoveMultiSelection);
+        window.removeEventListener("mouseup", onEndMultiSelection);
+      };
+    }, [onEndMultiSelection, onMoveMultiSelection]);
+
+    return (
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+        }}
+      >
+        {tool === TOOL_SCENE && hoverState && (
+          <NewSceneCursor
+            onClick={() => onAddScene(hoverState)}
+            style={{
+              left: hoverState.x,
+              top: hoverState.y,
+              pointerEvents: "auto",
+            }}
+          />
+        )}
+
+        {tool === TOOL_NOTE && hoverState && (
+          <NewSceneCursor
+            onClick={() => onAddNote(hoverState)}
+            style={{
+              left: hoverState.x,
+              top: hoverState.y,
+              pointerEvents: "auto",
+            }}
+          />
+        )}
+
+        {selectionStart && selectionEnd && (
+          <Selection
+            style={{
+              left: Math.min(selectionStart.x, selectionEnd.x),
+              top: Math.min(selectionStart.y, selectionEnd.y),
+              width: Math.abs(selectionEnd.x - selectionStart.x),
+              height: Math.abs(selectionEnd.y - selectionStart.y),
+            }}
+          />
+        )}
+      </div>
+    );
+  },
+);
+
+WorldInteractionOverlay.displayName = "WorldInteractionOverlay";
+
 const WorldView = () => {
   //#region Component State
 
   const dispatch = useAppDispatch();
   const store = useAppStore();
+
+  // Redux Store
+  const loaded = useAppSelector((state) => state.document.loaded);
+  const sceneIds = useAppSelector(sceneSelectors.selectIds);
+  const sceneNames = useAppSelectorMapArray(sceneSelectors.selectAll, "name");
+  const noteIds = useAppSelector(noteSelectors.selectIds);
+
+  const showConnections = useAppSelector(
+    (state) =>
+      state.editor.showLayers ||
+      (state.editor.tool !== TOOL_COLORS &&
+        state.editor.tool !== TOOL_COLLISIONS &&
+        state.editor.tool !== TOOL_ERASER),
+  );
+  const focusSceneId = useAppSelector((state) => state.editor.focusSceneId);
+
+  const zoomRatio = useAppSelector((state) => (state.editor.zoom || 100) / 100);
+
+  const worldMaxWidth = useAppSelector(getMaxWorldRight);
+  const worldMaxHeight = useAppSelector(getMaxWorldBottom);
+
+  const focus = useAppSelector((state) => state.editor.worldFocus);
+
+  const searchTerm = useAppSelector((state) => state.editor.searchTerm);
+
+  const selectedIds = useAppSelector((state) => state.editor.sceneSelectionIds);
+  const tool = useAppSelector((state) => state.editor.tool);
 
   const [scrollRef, scrollContainerSize] = useResizeObserver<HTMLDivElement>();
 
@@ -97,7 +472,6 @@ const WorldView = () => {
   );
 
   const [dragMode, setDragMode] = useState(false);
-  const [hoverState, setHoverState] = useState<{ x: number; y: number }>();
   const dragState = useRef({
     dragDistanceX: 0,
     dragDistanceY: 0,
@@ -109,82 +483,49 @@ const WorldView = () => {
     scrollY: 0,
   });
   const isMouseOver = useRef(false);
-  const [selectionStart, setSelectionStart] = useState<Point>();
-  const [selectionEnd, setSelectionEnd] = useState<Point>();
-  const selection = useRef<SelectionRect | undefined>(undefined);
-
-  const loaded = useAppSelector((state) => state.document.loaded);
-  const scenes = useAppSelector(
-    (state) => sceneSelectors.selectIds(state) as string[],
-  );
-  const scenesLookup = useAppSelector((state) =>
-    sceneSelectors.selectEntities(state),
-  );
-  const notes = useAppSelector(
-    (state) => noteSelectors.selectIds(state) as string[],
-  );
-  const notesLookup = useAppSelector((state) =>
-    noteSelectors.selectEntities(state),
-  );
-  const allSceneIds = useAppSelector(sceneSelectors.selectIds);
-  const allNoteIds = useAppSelector(noteSelectors.selectIds);
-
-  const showConnections = useAppSelector(
-    (state) =>
-      state.editor.showLayers ||
-      (state.editor.tool !== TOOL_COLORS &&
-        state.editor.tool !== TOOL_COLLISIONS &&
-        state.editor.tool !== TOOL_ERASER),
-  );
-
-  const clipboardVariables = useAppSelector(
-    (state) => state.editor.clipboardVariables,
-  );
-  const focusSceneId = useAppSelector((state) => state.editor.focusSceneId);
 
   const viewportWidth = scrollContainerSize?.width ?? 0;
   const viewportHeight = scrollContainerSize?.height ?? 0;
 
-  const zoomRatio = useAppSelector((state) => (state.editor.zoom || 100) / 100);
-
-  const scrollWidth = useAppSelector((state) =>
-    Math.max(viewportWidth / (zoomRatio ?? 1), getMaxWorldRight(state) + 20),
-  );
-  const scrollHeight = useAppSelector((state) =>
-    Math.max(viewportHeight / (zoomRatio ?? 1), getMaxWorldBottom(state) + 60),
+  const scrollWidth = Math.max(
+    viewportWidth / (zoomRatio ?? 1),
+    worldMaxWidth + 20,
   );
 
-  const focus = useAppSelector((state) => state.editor.worldFocus);
-
-  const searchTerm = useAppSelector((state) => state.editor.searchTerm);
-
-  const defaultSceneTypeId = useAppSelector(
-    (state) => state.project.present.settings.defaultSceneTypeId,
+  const scrollHeight = Math.max(
+    viewportHeight / (zoomRatio ?? 1),
+    worldMaxHeight + 60,
   );
 
-  const selectedIds = useAppSelector((state) => state.editor.sceneSelectionIds);
+  const worldGridStyle = useMemo(
+    () => ({ width: scrollWidth, height: scrollHeight }),
+    [scrollWidth, scrollHeight],
+  );
 
-  const matchingScenes = searchTerm
-    ? scenes.filter((scene, sceneIndex) => {
-        const s = scenesLookup[scene];
-        const name = s ? sceneName(s, sceneIndex) : "";
-        return (
-          searchTerm === scene ||
-          name.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1
-        );
-      })
-    : [];
+  const matchingSceneIds = useMemo(() => {
+    if (!searchTerm) {
+      return [];
+    }
 
-  const onlyMatchingScene =
-    (matchingScenes.length === 1 && scenesLookup[matchingScenes[0]]) ||
-    scenesLookup[focusSceneId] ||
-    null;
+    const searchTermUpper = searchTerm.toUpperCase();
 
-  const tool = useAppSelector((state) => state.editor.tool);
-  const pasteMode = useAppSelector((state) => state.editor.pasteMode);
+    return sceneIds.filter((sceneId, sceneIndex) => {
+      const name = sceneName(
+        { name: sceneNames[sceneIndex] ?? "" },
+        sceneIndex,
+      );
+
+      return (
+        searchTerm === sceneId || name.toUpperCase().includes(searchTermUpper)
+      );
+    });
+  }, [sceneIds, sceneNames, searchTerm]);
+
+  const onlyMatchingSceneId =
+    matchingSceneIds.length === 1 ? matchingSceneIds[0] : focusSceneId || null;
 
   const prevLoaded = useRef(false);
-  const prevOnlyMatchingScene = useRef(onlyMatchingScene);
+  const prevOnlyMatchingSceneId = useRef(onlyMatchingSceneId);
   const prevZoomRatio = useRef(0);
 
   //#endregion Component State
@@ -224,17 +565,11 @@ const WorldView = () => {
   //#region Keyboard handling
 
   const onSelectAllWorldEntities = useCallback(() => {
-    dispatch(
-      editorActions.setSceneSelectionIds([...allSceneIds, ...allNoteIds]),
-    );
-  }, [allSceneIds, allNoteIds, dispatch]);
+    dispatch(editorActions.setSceneSelectionIds([...sceneIds, ...noteIds]));
+  }, [dispatch, sceneIds, noteIds]);
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.shiftKey && tool === "select") {
-        setSelectionStart(undefined);
-        setSelectionEnd(undefined);
-      }
       if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
@@ -253,7 +588,7 @@ const WorldView = () => {
         dispatch(entitiesActions.removeSelectedEntity());
       }
     },
-    [dispatch, focus, onSelectAllWorldEntities, tool],
+    [dispatch, focus, onSelectAllWorldEntities],
   );
 
   const onKeyUp = useCallback(
@@ -371,13 +706,16 @@ const WorldView = () => {
   );
 
   const startWorldDrag = useCallback(
-    (_e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (e.shiftKey && tool === TOOL_SELECT) {
+        return;
+      }
       dragState.current.dragDistanceX = 0;
       dragState.current.dragDistanceY = 0;
       window.addEventListener("mousemove", onWorldDragMove);
       window.addEventListener("mouseup", onEndWorldDrag);
     },
-    [onEndWorldDrag, onWorldDragMove],
+    [onEndWorldDrag, onWorldDragMove, tool],
   );
 
   const startWorldDragIfAltOrMiddleClick = useCallback(
@@ -393,48 +731,6 @@ const WorldView = () => {
   );
 
   //#endregion World Dragging
-
-  //#region Add Scene
-
-  const onAddScene = useCallback(() => {
-    if (!hoverState) {
-      return;
-    }
-    if (pasteMode) {
-      dispatch(clipboardActions.pasteSceneAt(hoverState));
-    } else {
-      dispatch(
-        entitiesActions.addScene({
-          ...hoverState,
-          variables: clipboardVariables,
-          defaults: {
-            type: defaultSceneTypeId,
-          },
-        }),
-      );
-    }
-    dispatch(editorActions.setTool({ tool: "select" }));
-    setHoverState(undefined);
-  }, [clipboardVariables, dispatch, hoverState, pasteMode, defaultSceneTypeId]);
-
-  //#endregion Add Scene
-
-  //#region Add Note
-
-  const onAddNote = useCallback(() => {
-    if (!hoverState) {
-      return;
-    }
-    dispatch(
-      entitiesActions.addNote({
-        ...hoverState,
-      }),
-    );
-    dispatch(editorActions.setTool({ tool: "select" }));
-    setHoverState(undefined);
-  }, [dispatch, hoverState]);
-
-  //#endregion Add Note
 
   //#region World Resize
 
@@ -475,20 +771,11 @@ const WorldView = () => {
   const onMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       const boundingRect = e.currentTarget.getBoundingClientRect();
-      const x = e.pageX + e.currentTarget.scrollLeft - boundingRect.x;
-      const y = e.pageY + e.currentTarget.scrollTop - boundingRect.y - 0;
 
       dragState.current.offsetX = e.pageX - boundingRect.x;
       dragState.current.offsetY = e.pageY - boundingRect.y;
-
-      if (tool === "scene" || tool === "note") {
-        setHoverState({
-          x: x / zoomRatio - 80,
-          y: y / zoomRatio - 72,
-        });
-      }
     },
-    [tool, zoomRatio],
+    [],
   );
 
   useEffect(() => {
@@ -533,9 +820,9 @@ const WorldView = () => {
     }
 
     if (
-      onlyMatchingScene &&
-      (!prevOnlyMatchingScene.current ||
-        onlyMatchingScene.id !== prevOnlyMatchingScene.current.id)
+      onlyMatchingSceneId &&
+      (!prevOnlyMatchingSceneId.current ||
+        onlyMatchingSceneId !== prevOnlyMatchingSceneId.current)
     ) {
       const view = scrollRef.current;
       const viewContents = scrollContentsRef.current;
@@ -544,6 +831,14 @@ const WorldView = () => {
       }
       const halfViewWidth = 0.5 * view.clientWidth;
       const halfViewHeight = 0.5 * view.clientHeight;
+      const state = store.getState();
+      const onlyMatchingScene = sceneSelectors.selectById(
+        state,
+        onlyMatchingSceneId,
+      );
+      if (!onlyMatchingScene) {
+        return;
+      }
       const newScrollX =
         (onlyMatchingScene.x + onlyMatchingScene.width * 8 * 0.5) * zoomRatio -
         halfViewWidth;
@@ -560,120 +855,11 @@ const WorldView = () => {
     }
 
     prevZoomRatio.current = zoomRatio;
-    prevOnlyMatchingScene.current = onlyMatchingScene;
+    prevOnlyMatchingSceneId.current = onlyMatchingSceneId;
     prevLoaded.current = loaded;
-  }, [loaded, onlyMatchingScene, scrollRef, store, zoomRatio]);
+  }, [loaded, onlyMatchingSceneId, scrollRef, store, zoomRatio]);
 
   //#endregion
-
-  //#region Multi Selection
-
-  useEffect(() => {
-    if (!selectionStart || !selectionEnd) {
-      selection.current = undefined;
-    } else {
-      selection.current = {
-        x: Math.min(selectionStart.x, selectionEnd.x),
-        y: Math.min(selectionStart.y, selectionEnd.y),
-        width: Math.abs(selectionEnd.x - selectionStart.x),
-        height: Math.abs(selectionEnd.y - selectionStart.y),
-      };
-    }
-  }, [selectionStart, selectionEnd]);
-
-  const onMoveMultiSelection = useCallback(
-    (e: MouseEvent) => {
-      if (scrollRef.current) {
-        e.preventDefault();
-        e.stopPropagation();
-        const boundingRect = scrollRef.current.getBoundingClientRect();
-        const x =
-          (e.pageX + scrollRef.current.scrollLeft - boundingRect.x) / zoomRatio;
-        const y =
-          (e.pageY + scrollRef.current.scrollTop - boundingRect.y) / zoomRatio;
-        const point: Point = { x, y };
-
-        if (selection.current) {
-          const rect = selection.current;
-          const scenes = Object.values(scenesLookup) as SceneNormalized[];
-          const notes = Object.values(notesLookup);
-
-          const selectedSceneIds = scenes
-            .filter((scene) => {
-              return (
-                scene.x + scene.width * TILE_SIZE >= rect.x &&
-                scene.x <= rect.x + rect.width &&
-                scene.y + scene.height * TILE_SIZE + SCENE_VERTICAL_PADDING >=
-                  rect.y &&
-                scene.y <= rect.y + rect.height
-              );
-            })
-            .map((s) => s.id);
-          const selectedNoteIds = notes
-            .filter((note) => {
-              return (
-                note.x + note.width * TILE_SIZE >= rect.x &&
-                note.x <= rect.x + rect.width &&
-                note.y + note.height * TILE_SIZE + SCENE_VERTICAL_PADDING >=
-                  rect.y &&
-                note.y <= rect.y + rect.height
-              );
-            })
-            .map((s) => s.id);
-          dispatch(
-            editorActions.addSceneSelectionIds([
-              ...selectedSceneIds,
-              ...selectedNoteIds,
-            ]),
-          );
-        }
-
-        setSelectionEnd(point);
-      }
-    },
-    [dispatch, scenesLookup, notesLookup, scrollRef, zoomRatio],
-  );
-
-  const onEndMultiSelection = useCallback(
-    (e: MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setSelectionStart(undefined);
-      setSelectionEnd(undefined);
-      window.removeEventListener("mousemove", onMoveMultiSelection);
-      window.removeEventListener("mouseup", onEndMultiSelection);
-    },
-    [onMoveMultiSelection],
-  );
-
-  const onStartMultiSelection = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (e.shiftKey && tool === "select" && scrollRef.current) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const boundingRect = scrollRef.current.getBoundingClientRect();
-        const x =
-          (e.pageX + scrollRef.current.scrollLeft - boundingRect.x) / zoomRatio;
-        const y =
-          (e.pageY + scrollRef.current.scrollTop - boundingRect.y) / zoomRatio;
-
-        const point: Point = { x, y };
-        setSelectionStart(point);
-        setSelectionEnd(point);
-        window.addEventListener("mousemove", onMoveMultiSelection);
-        window.addEventListener("mouseup", onEndMultiSelection);
-      }
-    },
-    [onEndMultiSelection, onMoveMultiSelection, scrollRef, tool, zoomRatio],
-  );
-
-  useEffect(() => {
-    return () => {
-      window.removeEventListener("mousemove", onMoveMultiSelection);
-      window.removeEventListener("mouseup", onEndMultiSelection);
-    };
-  }, [onEndMultiSelection, onMoveMultiSelection]);
 
   //#region Window Blur
 
@@ -745,7 +931,6 @@ const WorldView = () => {
       onMouseLeave={onMouseLeave}
       onMouseMove={onMouseMove}
       onMouseDown={startWorldDragIfAltOrMiddleClick}
-      onMouseDownCapture={onStartMultiSelection}
       onScroll={onScroll}
       style={
         dragMode
@@ -758,70 +943,26 @@ const WorldView = () => {
       <WorldContent ref={scrollContentsRef}>
         <WorldGrid
           ref={worldRef}
-          style={{ width: scrollWidth, height: scrollHeight }}
+          style={worldGridStyle}
           onMouseDown={startWorldDrag}
           onContextMenu={onContextMenu}
         />
-
-        {scenes.map((sceneId, index) => (
-          <SceneView
-            key={sceneId}
-            id={sceneId}
-            index={index}
-            editable={!dragMode}
-          />
-        ))}
-
-        {notes.map((noteId, index) => (
-          <NoteView
-            key={noteId}
-            id={noteId}
-            index={index}
-            editable={!dragMode}
-          />
-        ))}
-
-        {showConnections && (
-          <Connections
-            width={scrollWidth}
-            height={scrollHeight}
-            zoomRatio={zoomRatio}
-            editable={!dragMode}
-          />
-        )}
-
-        {tool === "scene" && hoverState && (
-          <NewSceneCursor
-            onClick={onAddScene}
-            style={{
-              left: hoverState.x,
-              top: hoverState.y,
-            }}
-          />
-        )}
-
-        {tool === "note" && hoverState && (
-          <NewSceneCursor
-            onClick={onAddNote}
-            style={{
-              left: hoverState.x,
-              top: hoverState.y,
-            }}
-          />
-        )}
-
-        {selectionStart && selectionEnd && (
-          <Selection
-            style={{
-              left: Math.min(selectionStart.x, selectionEnd.x),
-              top: Math.min(selectionStart.y, selectionEnd.y),
-              width: Math.abs(selectionEnd.x - selectionStart.x),
-              height: Math.abs(selectionEnd.y - selectionStart.y),
-            }}
-          />
-        )}
+        <WorldEntities
+          sceneIds={sceneIds}
+          noteIds={noteIds}
+          scrollWidth={scrollWidth}
+          scrollHeight={scrollHeight}
+          zoomRatio={zoomRatio}
+          showConnections={showConnections}
+          editable={!dragMode}
+        />
+        <WorldInteractionOverlay
+          tool={tool}
+          scrollRef={scrollRef}
+          zoomRatio={zoomRatio}
+        />
       </WorldContent>
-      {loaded && scenes.length === 0 && notes.length === 0 && <WorldHelp />}
+      {loaded && sceneIds.length === 0 && noteIds.length === 0 && <WorldHelp />}
       {contextMenuElement}
     </Wrapper>
   );

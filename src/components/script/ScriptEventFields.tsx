@@ -11,7 +11,11 @@ import {
   ScriptEventFieldGroup,
   ScriptEventBranchHeader,
 } from "ui/scripting/ScriptEvents";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useAppSelectorPick,
+} from "store/hooks";
 import {
   sceneSelectors,
   soundSelectors,
@@ -42,7 +46,7 @@ export const isFieldVisible = (
   field: ScriptEventFieldSchema,
   args: Record<string, unknown>,
   context: ScriptEditorCtx,
-  scene: SceneNormalized | undefined,
+  scene: Pick<SceneNormalized, "parallax" | "type"> | undefined,
   soundsLookup: Record<string, SoundAsset>,
   ignoreConditions?: string[],
 ) => {
@@ -105,8 +109,9 @@ const ScriptEventFields = ({
   const soundsLookup = useAppSelector((state) =>
     soundSelectors.selectEntities(state),
   );
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, context.sceneId),
+  const scene = useAppSelectorPick(
+    (state) => sceneSelectors.selectById(state, context.sceneId),
+    ["parallax", "type"] as const,
   );
 
   const dispatch = useAppDispatch();

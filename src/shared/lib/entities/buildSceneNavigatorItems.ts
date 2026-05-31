@@ -1,12 +1,35 @@
-import {
-  ActorNormalized,
-  SceneNormalized,
-  TriggerNormalized,
-} from "./entitiesTypes";
 import { actorName, sceneName, triggerName, noteName } from "./entitiesHelpers";
-import { Note } from "shared/lib/resources/types";
+import {
+  ColorModeOverrideSetting,
+  LabelColor,
+} from "shared/lib/resources/types";
 
 type Entity = {
+  id: string;
+  name: string;
+};
+
+export type SceneNavigatorScene = {
+  id: string;
+  name: string;
+  labelColor?: LabelColor;
+  colorModeOverride: ColorModeOverrideSetting;
+  actors: string[];
+  triggers: string[];
+};
+
+export type SceneNavigatorNote = {
+  id: string;
+  name: string;
+  labelColor?: LabelColor;
+};
+
+export type SceneNavigatorActor = {
+  id: string;
+  name: string;
+};
+
+export type SceneNavigatorTrigger = {
   id: string;
   name: string;
 };
@@ -23,20 +46,20 @@ export type SceneNavigatorItem = {
     }
   | {
       type: "scene";
-      scene: SceneNormalized;
+      scene: SceneNavigatorScene;
     }
   | {
       type: "note";
-      note: Note;
+      note: SceneNavigatorNote;
     }
   | {
       type: "actor";
-      actor: ActorNormalized;
+      actor: SceneNavigatorActor;
       sceneId: string;
     }
   | {
       type: "trigger";
-      trigger: TriggerNormalized;
+      trigger: SceneNavigatorTrigger;
       sceneId: string;
     }
 );
@@ -50,8 +73,8 @@ const sortByName = (a: Entity, b: Entity) => {
   return collator.compare(a.name, b.name);
 };
 
-export const sceneParentFolders = (scene: SceneNormalized | Note): string[] => {
-  const parts = scene.name.split(/[/\\]/).slice(0, -1);
+export const sceneParentFolders = (name: string): string[] => {
+  const parts = name.split(/[/\\]/).slice(0, -1);
   const folders: string[] = [];
   while (parts.length > 0) {
     folders.push(parts.join("/"));
@@ -61,24 +84,31 @@ export const sceneParentFolders = (scene: SceneNormalized | Note): string[] => {
   return folders;
 };
 
-export const scenesInFolder = (
+export const sceneIdsInFolder = (
   folder: string,
-  scenes: SceneNormalized[],
-): SceneNormalized[] => {
+  scenes: SceneNavigatorScene[],
+): string[] => {
   const regex = new RegExp("^" + folder.split(/[/\\]/).join("[/\\\\]"));
-  return scenes.filter((scene) => scene.name.match(regex));
+  return scenes
+    .filter((scene) => scene.name.match(regex))
+    .map((scene) => scene.id);
 };
 
-export const notesInFolder = (folder: string, notes: Note[]): Note[] => {
+export const noteIdsInFolder = (
+  folder: string,
+  notes: SceneNavigatorNote[],
+): string[] => {
   const regex = new RegExp("^" + folder.split(/[/\\]/).join("[/\\\\]"));
-  return notes.filter((scene) => scene.name.match(regex));
+  return notes
+    .filter((scene) => scene.name.match(regex))
+    .map((note) => note.id);
 };
 
 export const buildSceneNavigatorItems = (
-  scenes: SceneNormalized[],
-  notes: Note[],
-  actorsLookup: Record<string, ActorNormalized>,
-  triggersLookup: Record<string, TriggerNormalized>,
+  scenes: SceneNavigatorScene[],
+  notes: SceneNavigatorNote[],
+  actorsLookup: Record<string, SceneNavigatorActor | undefined>,
+  triggersLookup: Record<string, SceneNavigatorTrigger | undefined>,
   openFolders: string[],
   searchTerm: string,
 ): SceneNavigatorItem[] => {
@@ -97,17 +127,20 @@ export const buildSceneNavigatorItems = (
     });
   };
 
-  const sceneAndNotes = [...scenes, ...notes]
-    .map((value) => {
-      if ("content" in value) {
-        return { ...value, name: noteName(value, notes.indexOf(value)) };
-      } else {
-        return { ...value, name: sceneName(value, scenes.indexOf(value)) };
-      }
-    })
-    .sort(sortByName);
+  const sceneAndNotes = [
+    ...scenes.map((scene, index) => ({
+      ...scene,
+      type: "scene" as const,
+      name: sceneName(scene, index),
+    })),
+    ...notes.map((note, index) => ({
+      ...note,
+      type: "note" as const,
+      name: noteName(note, index),
+    })),
+  ].sort(sortByName);
 
-  const addScene = (scene: SceneNormalized, nestLevel: number) => {
+  const addScene = (scene: SceneNavigatorScene, nestLevel: number) => {
     result.push({
       id: scene.id,
       type: "scene",
@@ -120,10 +153,13 @@ export const buildSceneNavigatorItems = (
     if (!openFolders.includes(scene.id)) {
       return;
     }
-    scene.actors.forEach((actorId) => {
+
+    scene.actors.forEach((actorId, actorIndex) => {
       const actor = actorsLookup[actorId];
+
       if (actor) {
-        const name = actorName(actor, scene.actors.indexOf(actorId));
+        const name = actorName(actor, actorIndex);
+
         result.push({
           id: actor.id,
           type: "actor",
@@ -136,10 +172,12 @@ export const buildSceneNavigatorItems = (
       }
     });
 
-    scene.triggers.forEach((triggerId) => {
+    scene.triggers.forEach((triggerId, triggerIndex) => {
       const trigger = triggersLookup[triggerId];
+
       if (trigger) {
-        const name = triggerName(trigger, scene.triggers.indexOf(triggerId));
+        const name = triggerName(trigger, triggerIndex);
+
         result.push({
           id: trigger.id,
           type: "trigger",
@@ -153,7 +191,7 @@ export const buildSceneNavigatorItems = (
     });
   };
 
-  const addNote = (note: Note, nestLevel: number) => {
+  const addNote = (note: SceneNavigatorNote, nestLevel: number) => {
     result.push({
       id: note.id,
       type: "note",
@@ -171,14 +209,17 @@ export const buildSceneNavigatorItems = (
   if (searchTerm.length > 0) {
     const searchTermUpperCase = searchTerm.toLocaleUpperCase();
     sceneAndNotes
-      .filter((s) => s.name.toLocaleUpperCase().includes(searchTermUpperCase))
-      .forEach((value) => {
-        if ("content" in value) {
-          addNote(value, 0);
+      .filter((item) =>
+        item.name.toLocaleUpperCase().includes(searchTermUpperCase),
+      )
+      .forEach((item) => {
+        if (item.type === "note") {
+          addNote(item, 0);
         } else {
-          addScene(value, 0);
+          addScene(item, 0);
         }
       });
+
     return result;
   }
 
@@ -195,7 +236,7 @@ export const buildSceneNavigatorItems = (
         if (!isVisible(currentPath, nestLevel)) {
           return;
         }
-        if ("content" in value) {
+        if (value.type === "note") {
           addNote(value, nestLevel);
         } else {
           addScene(value, nestLevel);

@@ -6,29 +6,28 @@ const Tooltip = styled.div`
   color: #000;
   background-color: #fff;
   border-radius: 4px;
-  padding: 4px 0;
   overflow: auto;
   box-shadow:
     0 0 0 1px rgba(150, 150, 150, 0.3),
     0 4px 11px hsla(0, 0%, 0%, 0.1);
-  min-width: 60px;
-  z-index: 1001;
+  z-index: 10000;
   font-size: 11px;
   line-height: normal;
   font-weight: normal;
   padding: 10px;
   max-width: 230px;
-  transform: translateX(-10px);
-  z-index: 10000;
-  white-space: pre-wrap;
   min-width: 150px;
+  transform: translateX(-10px);
+  white-space: pre-wrap;
 
   p {
     margin: 10px 0;
   }
+
   p:first-child {
     margin-top: 0;
   }
+
   p:last-child {
     margin-bottom: 0;
   }
@@ -45,40 +44,61 @@ export const TooltipWrapper = ({
   tooltip,
   open,
 }: TooltipWrapperProps) => {
-  const [isOpen, setOpen] = useState(open);
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const isControlled = open !== undefined;
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const isOpen = isControlled ? open : uncontrolledOpen;
+
+  const clearTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = undefined;
+    }
+  }, []);
 
   useEffect(() => {
-    if (open !== undefined) {
-      setOpen(open);
+    return clearTimer;
+  }, [clearTimer]);
+
+  const openTooltip = useCallback(() => {
+    if (!isControlled) {
+      setUncontrolledOpen(true);
     }
-  }, [open]);
+  }, [isControlled]);
+
+  const closeTooltip = useCallback(() => {
+    if (!isControlled) {
+      clearTimer();
+      setUncontrolledOpen(false);
+    }
+  }, [clearTimer, isControlled]);
 
   const onClick = useCallback(() => {
-    if (open === undefined) {
-      setOpen(true);
-    }
-  }, [open]);
+    openTooltip();
+  }, [openTooltip]);
 
-  const onHoverStart = useCallback(() => {
-    if (open === undefined) {
-      timer.current = setTimeout(() => {
-        setOpen(true);
+  const onMouseEnter = useCallback(() => {
+    if (!isControlled) {
+      clearTimer();
+
+      timerRef.current = setTimeout(() => {
+        setUncontrolledOpen(true);
+        timerRef.current = undefined;
       }, 500);
     }
-  }, [open]);
+  }, [clearTimer, isControlled]);
 
-  const onHoverEnd = useCallback(() => {
-    if (open === undefined) {
-      if (timer.current) {
-        clearTimeout(timer.current);
-      }
-      setOpen(false);
-    }
-  }, [open]);
+  const onMouseLeave = useCallback(() => {
+    closeTooltip();
+  }, [closeTooltip]);
 
   return (
-    <div onClick={onClick} onMouseOver={onHoverStart} onMouseOut={onHoverEnd}>
+    <div
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       {isOpen && (
         <RelativePortal pin="bottom-left" offsetX={5} offsetY={-5}>
           <Tooltip>{tooltip}</Tooltip>

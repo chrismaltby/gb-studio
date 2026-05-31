@@ -1,4 +1,5 @@
 import React, {
+  Children,
   CSSProperties,
   FC,
   ReactNode,
@@ -71,6 +72,9 @@ type PortalState =
       y: number;
     };
 
+const hasRenderableChildren = (children: ReactNode): boolean =>
+  Children.toArray(children).length > 0;
+
 export const RelativePortal: FC<RelativePortalProps> = ({
   children,
   offsetX = 0,
@@ -85,7 +89,18 @@ export const RelativePortal: FC<RelativePortalProps> = ({
   const [portalState, setPortalState] = useState<PortalState>({ type: "idle" });
   const parentWidth = props.pin === "parent-edge" ? props.parentWidth : 0;
 
+  const hasChildren = hasRenderableChildren(children);
+
   useLayoutEffect(() => {
+    if (!hasChildren) {
+      setPortalState((prev) =>
+        prev.type === "idle" ? prev : { type: "idle" },
+      );
+      return;
+    }
+
+    let frameId: number | undefined;
+
     const update = () => {
       const rect = pinRef.current?.getBoundingClientRect();
       const contentsHeight = contentsRef.current?.offsetHeight ?? 0;
@@ -129,7 +144,7 @@ export const RelativePortal: FC<RelativePortalProps> = ({
         newX = window.innerWidth - contentsWidth - MIN_MARGIN;
       }
 
-      newX = Math.max(10, newX);
+      newX = Math.max(MIN_MARGIN, newX);
 
       setPortalState((prev) => {
         if (prev.type === "ready" && prev.x === newX && prev.y === newY) {
@@ -144,13 +159,24 @@ export const RelativePortal: FC<RelativePortalProps> = ({
       });
     };
 
+    const loop = () => {
+      update();
+      frameId = window.requestAnimationFrame(loop);
+    };
+
     update();
-    const timer = window.setInterval(update, 1);
+    frameId = window.requestAnimationFrame(loop);
 
     return () => {
-      window.clearInterval(timer);
+      if (frameId !== undefined) {
+        window.cancelAnimationFrame(frameId);
+      }
     };
-  }, [offsetX, offsetY, pin, props.pin, parentWidth]);
+  }, [hasChildren, offsetX, offsetY, pin, props.pin, parentWidth]);
+
+  if (!hasChildren) {
+    return null;
+  }
 
   return (
     <>

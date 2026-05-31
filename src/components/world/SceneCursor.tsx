@@ -26,6 +26,7 @@ import {
   MIDDLE_MOUSE,
   TILE_COLOR_PROPS,
   BRUSH_SLOPE,
+  TILE_SIZE,
 } from "consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { calculateSlope } from "shared/lib/helpers/slope";
@@ -48,6 +49,9 @@ const Wrapper = styled.div<WrapperProps>`
   position: absolute;
   width: 8px;
   height: 8px;
+  top: 0px;
+  left: 0px;
+  transform: translate3d(0, 0, 0);
   outline: 1px solid rgb(140, 150, 156);
   background: rgba(140, 150, 156, 0.4);
   -webkit-transform: translate3d(0, 0, 0);
@@ -1069,8 +1073,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       onMouseMove={onMouseMoveSlopeSelect}
       onMouseDown={onMouseDown}
       style={{
-        top: y * 8,
-        left: x * 8,
+        transform: `translate3d(${x * TILE_SIZE}px, ${y * TILE_SIZE}px, 0)`,
       }}
     >
       {(tool === TOOL_ACTORS ||

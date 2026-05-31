@@ -55,7 +55,11 @@ import { Button } from "ui/buttons/Button";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem, MenuOverlay } from "ui/menu/Menu";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useAppSelectorPick,
+} from "store/hooks";
 import { paletteName } from "shared/lib/entities/entitiesHelpers";
 import { StyledButton } from "ui/buttons/style";
 import { Slider } from "ui/form/Slider";
@@ -70,24 +74,35 @@ interface BrushToolbarProps {
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
 const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
 
-function useHiglightPalette() {
-  const hoverScene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, state.editor.hover.sceneId),
-  );
-  const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, hoverScene?.backgroundId ?? ""),
-  );
-  const { x, y } = useAppSelector((state) => state.editor.hover);
+const useHighlightPalette = () => {
+  return useAppSelector((state) => {
+    const tool = state.editor.tool;
+    if (tool !== TOOL_COLORS) {
+      return -1;
+    }
+    const { sceneId, x, y } = state.editor.hover;
+    const hoverScene = sceneSelectors.selectById(state, sceneId);
 
-  let highlightPalette = -1;
-  if (background) {
-    highlightPalette = Array.isArray(background.tileColors)
-      ? background.tileColors[x + y * background.width]
-      : 0;
-  }
+    if (!hoverScene) {
+      return -1;
+    }
 
-  return highlightPalette;
-}
+    const background = backgroundSelectors.selectById(
+      state,
+      hoverScene.backgroundId,
+    );
+
+    if (!background) {
+      return -1;
+    }
+
+    if (!Array.isArray(background.tileColors)) {
+      return 0;
+    }
+
+    return background.tileColors[x + y * background.width] ?? -1;
+  });
+};
 
 interface BrushToolbarWrapperProps {
   $visible: boolean;
@@ -170,14 +185,32 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const dispatch = useAppDispatch();
 
   const sceneId = useAppSelector((state) => state.editor.scene);
-  const { selectedPalette, selectedTileType, selectedBrush, showLayers } =
-    useAppSelector((state) => state.editor);
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId),
+
+  const selectedPalette = useAppSelector(
+    (state) => state.editor.selectedPalette,
   );
-  const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, scene?.backgroundId ?? ""),
+
+  const selectedTileType = useAppSelector(
+    (state) => state.editor.selectedTileType,
   );
+
+  const selectedBrush = useAppSelector((state) => state.editor.selectedBrush);
+
+  const showLayers = useAppSelector((state) => state.editor.showLayers);
+
+  const scene = useAppSelectorPick(
+    (state) => sceneSelectors.selectById(state, sceneId),
+    ["backgroundId", "type", "paletteIds"] as const,
+  );
+
+  const background = useAppSelectorPick(
+    (state) =>
+      scene?.backgroundId
+        ? backgroundSelectors.selectById(state, scene.backgroundId)
+        : undefined,
+    ["autoColor"] as const,
+  );
+
   const selectedTool = useAppSelector((state) => state.editor.tool);
   const visible = validTools.includes(selectedTool);
   const showPalettes = selectedTool === TOOL_COLORS;
@@ -235,59 +268,74 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     [dispatch],
   );
 
-  const setSection = (section: NavigationSection) => {
-    dispatch(navigationActions.setSection(section));
-  };
+  const setSection = useCallback(
+    (section: NavigationSection) => {
+      dispatch(navigationActions.setSection(section));
+    },
+    [dispatch],
+  );
 
-  const setNavigationId = (navigationId: string) => {
-    dispatch(navigationActions.setNavigationId(navigationId));
-  };
+  const setNavigationId = useCallback(
+    (navigationId: string) => {
+      dispatch(navigationActions.setNavigationId(navigationId));
+    },
+    [dispatch],
+  );
 
-  const highlightPalette = useHiglightPalette();
+  const highlightPalette = useHighlightPalette();
 
-  const setSelectedPalette =
+  const setSelectedPalette = useCallback(
     (index: number) =>
-    (e: KeyboardEvent | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      if (showPalettes) {
-        dispatch(editorActions.setSelectedPalette({ paletteIndex: index }));
-      }
-      if (showTileTypes && namedCollisionTileDefs[index]) {
-        const selectedTile = namedCollisionTileDefs[index];
-        if (!selectedTile) {
-          return;
+      (e: KeyboardEvent | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        if (showPalettes) {
+          dispatch(editorActions.setSelectedPalette({ paletteIndex: index }));
         }
+        if (showTileTypes && namedCollisionTileDefs[index]) {
+          const selectedTile = namedCollisionTileDefs[index];
+          if (!selectedTile) {
+            return;
+          }
 
-        let newValue = selectedTile.flag;
-        const mask = selectedTile.mask ?? 0xff;
+          let newValue = selectedTile.flag;
+          const mask = selectedTile.mask ?? 0xff;
 
-        if (e.shiftKey) {
-          if (selectedTile.multi) {
-            // If multi selectable tile toggle on/off when shift clicking
-            const mask = selectedTile.mask ?? 0xff;
-            if (
-              selectedTileType !== selectedTile.flag &&
-              selectedTileType & selectedTile.flag
-            ) {
-              newValue = selectedTileType & mask & ~selectedTile.flag;
-            } else {
-              newValue =
-                (selectedTileType & mask) | namedCollisionTileDefs[index].flag;
+          if (e.shiftKey) {
+            if (selectedTile.multi) {
+              // If multi selectable tile toggle on/off when shift clicking
+              const mask = selectedTile.mask ?? 0xff;
+              if (
+                selectedTileType !== selectedTile.flag &&
+                selectedTileType & selectedTile.flag
+              ) {
+                newValue = selectedTileType & mask & ~selectedTile.flag;
+              } else {
+                newValue =
+                  (selectedTileType & mask) |
+                  namedCollisionTileDefs[index].flag;
+              }
+            }
+            // If extra tiles defined also set them on shift click
+            if (selectedTile.extra !== undefined) {
+              newValue = newValue | selectedTile.extra;
             }
           }
-          // If extra tiles defined also set them on shift click
-          if (selectedTile.extra !== undefined) {
-            newValue = newValue | selectedTile.extra;
-          }
-        }
 
-        dispatch(
-          editorActions.setSelectedTileType({
-            tileType: newValue,
-            tileMask: mask,
-          }),
-        );
-      }
-    };
+          dispatch(
+            editorActions.setSelectedTileType({
+              tileType: newValue,
+              tileMask: mask,
+            }),
+          );
+        }
+      },
+    [
+      dispatch,
+      namedCollisionTileDefs,
+      selectedTileType,
+      showPalettes,
+      showTileTypes,
+    ],
+  );
 
   const palettesLookup = useAppSelector((state) =>
     paletteSelectors.selectEntities(state),
@@ -318,24 +366,30 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   );
 
   const [modalColorIndex, setModalColorIndex] = useState<number>(-1);
-  const openReplacePalette = (paletteIndex: number) => () => {
-    setModalColorIndex(paletteIndex);
-  };
-  const closePaletteModal = () => {
+  const openReplacePalette = useCallback(
+    (paletteIndex: number) => () => {
+      setModalColorIndex(paletteIndex);
+    },
+    [],
+  );
+  const closePaletteModal = useCallback(() => {
     setModalColorIndex(-1);
-  };
+  }, []);
   useEffect(() => {
     if (selectedTool !== TOOL_COLORS) {
       setModalColorIndex(-1);
     }
   }, [selectedTool]);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const startReplacePalette = (paletteIndex: number) => () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    timerRef.current = setTimeout(openReplacePalette(paletteIndex), 300);
-  };
+  const startReplacePalette = useCallback(
+    (paletteIndex: number) => () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+      timerRef.current = setTimeout(openReplacePalette(paletteIndex), 300);
+    },
+    [openReplacePalette],
+  );
   const onChangePalette = useCallback(
     (newPalette: string) => {
       if (scene) {
@@ -359,7 +413,14 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       }
       closePaletteModal();
     },
-    [defaultBackgroundPaletteIds, dispatch, modalColorIndex, scene, sceneId],
+    [
+      closePaletteModal,
+      defaultBackgroundPaletteIds,
+      dispatch,
+      modalColorIndex,
+      scene,
+      sceneId,
+    ],
   );
 
   const onChangeCollisionLayerOpacity = useCallback(
@@ -415,43 +476,55 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       );
   }, [dispatch, scene?.backgroundId, background]);
 
-  const onMouseUp = () => {
+  const toggleShowLayers = useCallback(() => {
+    dispatch(editorActions.setShowLayers({ showLayers: !showLayers }));
+  }, [dispatch, showLayers]);
+
+  const onMouseUp = useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
-  };
+  }, []);
 
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.ctrlKey || e.shiftKey || e.metaKey) {
-      return;
-    }
-    if (!hasFocusForKeyboardShortcuts()) {
-      return;
-    }
-    if (e.code === "Digit1") {
-      setSelectedPalette(0)(e);
-    } else if (e.code === "Digit2") {
-      setSelectedPalette(1)(e);
-    } else if (e.code === "Digit3") {
-      setSelectedPalette(2)(e);
-    } else if (e.code === "Digit4") {
-      setSelectedPalette(3)(e);
-    } else if (e.code === "Digit5") {
-      setSelectedPalette(4)(e);
-    } else if (e.code === "Digit6") {
-      setSelectedPalette(5)(e);
-    } else if (e.code === "Digit7") {
-      setSelectedPalette(6)(e);
-    } else if (e.code === "Digit8") {
-      setBrush(BRUSH_8PX);
-    } else if (e.code === "Digit9") {
-      setBrush(BRUSH_16PX);
-    } else if (e.code === "Digit0") {
-      setBrush(BRUSH_FILL);
-    } else if (e.code === "Minus") {
-      toggleShowLayers();
-    }
-  };
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.shiftKey || e.metaKey) {
+        return;
+      }
+      if (!hasFocusForKeyboardShortcuts()) {
+        return;
+      }
+      if (e.code === "Digit1") {
+        setSelectedPalette(0)(e);
+      } else if (e.code === "Digit2") {
+        setSelectedPalette(1)(e);
+      } else if (e.code === "Digit3") {
+        setSelectedPalette(2)(e);
+      } else if (e.code === "Digit4") {
+        setSelectedPalette(3)(e);
+      } else if (e.code === "Digit5") {
+        setSelectedPalette(4)(e);
+      } else if (e.code === "Digit6") {
+        setSelectedPalette(5)(e);
+      } else if (e.code === "Digit7") {
+        setSelectedPalette(6)(e);
+      } else if (e.code === "Digit8") {
+        setBrush(BRUSH_8PX);
+      } else if (e.code === "Digit9") {
+        setBrush(BRUSH_16PX);
+      } else if (e.code === "Digit0") {
+        setBrush(BRUSH_FILL);
+      } else if (e.code === "Minus") {
+        toggleShowLayers();
+      }
+    },
+    [
+      hasFocusForKeyboardShortcuts,
+      setBrush,
+      setSelectedPalette,
+      toggleShowLayers,
+    ],
+  );
 
   useEffect(() => {
     window.addEventListener("keydown", onKeyDown);
@@ -460,11 +533,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("mouseup", onMouseUp);
     };
-  });
-
-  const toggleShowLayers = () => {
-    dispatch(editorActions.setShowLayers({ showLayers: !showLayers }));
-  };
+  }, [onKeyDown, onMouseUp]);
 
   useEffect(() => {
     if (!slopesAvailable && selectedBrush === BRUSH_SLOPE) {

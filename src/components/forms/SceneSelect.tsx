@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   backgroundSelectors,
   sceneSelectors,
@@ -11,12 +11,15 @@ import {
   SelectCommonProps,
   FormatFolderLabel,
 } from "ui/form/Select";
-import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import editorActions from "store/features/editor/editorActions";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { assetURLStyleProp } from "shared/lib/helpers/assets";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import {
+  useAppDispatch,
+  useAppSelectorPick,
+  useAppSelectorPickArray,
+} from "store/hooks";
 import { SingleValue } from "react-select";
 
 interface SceneSelectProps extends SelectCommonProps {
@@ -35,8 +38,21 @@ const Thumbnail = styled.div`
   background-position: center;
 `;
 
+type SceneSelectScene = {
+  id: string;
+  name: string;
+  backgroundId: string;
+};
+
+type SceneSelectBackground = {
+  id: string;
+  filename: string;
+  plugin?: string;
+  _v?: number;
+};
+
 interface SceneOption extends Option {
-  scene: SceneNormalized;
+  scene?: SceneSelectScene;
 }
 
 const collator = new Intl.Collator(undefined, {
@@ -49,7 +65,7 @@ const sortByLabel = (a: SceneOption, b: SceneOption) => {
 };
 
 const sceneToSceneOption = (
-  scene: SceneNormalized,
+  scene: SceneSelectScene,
   sceneIndex: number,
 ): SceneOption => ({
   value: scene.id,
@@ -57,74 +73,90 @@ const sceneToSceneOption = (
   scene,
 });
 
-export const SceneSelect: FC<SceneSelectProps> = ({
+export const SceneSelect = ({
   value,
   onChange,
   optional,
   optionalLabel,
   ...selectProps
-}) => {
-  const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
-  const backgroundsLookup = useAppSelector((state) =>
-    backgroundSelectors.selectEntities(state),
-  );
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, value || ""),
-  );
-  const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, scene?.backgroundId || ""),
-  );
-  const [options, setOptions] = useState<SceneOption[]>([]);
-  const [currentScene, setCurrentScene] = useState<SceneNormalized>();
-  const [currentValue, setCurrentValue] = useState<SceneOption>();
+}: SceneSelectProps) => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    setOptions(scenes.map(sceneToSceneOption).sort(sortByLabel));
-  }, [scenes]);
+  const scenes = useAppSelectorPickArray(sceneSelectors.selectAll, [
+    "id",
+    "name",
+    "backgroundId",
+  ] as const);
 
-  useEffect(() => {
-    setOptions(
+  const selectedScene = useAppSelectorPick(
+    (state) => sceneSelectors.selectById(state, value || ""),
+    ["id", "name", "backgroundId"] as const,
+  );
+
+  const backgrounds = useAppSelectorPickArray(backgroundSelectors.selectAll, [
+    "id",
+    "filename",
+    "plugin",
+    "_v",
+  ] as const);
+
+  const backgroundsLookup = useMemo<Record<string, SceneSelectBackground>>(
+    () =>
+      Object.fromEntries(
+        backgrounds.map((background) => [background.id, background]),
+      ),
+    [backgrounds],
+  );
+
+  const selectedBackground = useAppSelectorPick(
+    (state) =>
+      selectedScene?.backgroundId
+        ? backgroundSelectors.selectById(state, selectedScene.backgroundId)
+        : undefined,
+    ["filename", "plugin", "_v"] as const,
+  );
+
+  const options = useMemo(
+    () =>
       ([] as SceneOption[]).concat(
         optional
-          ? ([
+          ? [
               {
                 value: "",
                 label: optionalLabel || "None",
               },
-            ] as SceneOption[])
-          : ([] as SceneOption[]),
+            ]
+          : [],
         scenes.map(sceneToSceneOption).sort(sortByLabel),
       ),
-    );
-  }, [scenes, optional, optionalLabel]);
+    [scenes, optional, optionalLabel],
+  );
 
-  useEffect(() => {
-    setCurrentScene(scenes.find((v) => v.id === value));
+  const currentValue = useMemo(() => {
+    const sceneIndex = scenes.findIndex((scene) => scene.id === value);
+    const scene = sceneIndex >= 0 ? scenes[sceneIndex] : undefined;
+
+    return scene ? sceneToSceneOption(scene, sceneIndex) : undefined;
   }, [scenes, value]);
 
-  useEffect(() => {
-    if (currentScene) {
-      setCurrentValue(
-        sceneToSceneOption(currentScene, scenes.indexOf(currentScene)),
-      );
-    }
-  }, [currentScene, scenes]);
+  const onSelectChange = useCallback(
+    (newValue: SingleValue<Option>) => {
+      if (newValue) {
+        onChange?.(newValue.value);
+      }
+    },
+    [onChange],
+  );
 
-  const onSelectChange = (newValue: SingleValue<Option>) => {
-    if (newValue) {
-      onChange?.(newValue.value);
-    }
-  };
-
-  const onJumpToScene = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (e.altKey) {
-      if (value) {
+  const onJumpToScene = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (e.altKey && value) {
         dispatch(editorActions.selectScene({ sceneId: value }));
         dispatch(editorActions.setFocusSceneId(value));
       }
-    }
-  };
+    },
+    [dispatch, value],
+  );
 
   return (
     <div onClick={onJumpToScene}>
@@ -133,7 +165,10 @@ export const SceneSelect: FC<SceneSelectProps> = ({
         options={options}
         onChange={onSelectChange}
         formatOptionLabel={(option: SceneOption) => {
-          const background = backgroundsLookup[option.scene?.backgroundId];
+          const background = option.scene
+            ? backgroundsLookup[option.scene.backgroundId]
+            : undefined;
+
           return (
             <OptionLabelWithPreview
               preview={
@@ -157,8 +192,8 @@ export const SceneSelect: FC<SceneSelectProps> = ({
                 <Thumbnail
                   style={{
                     backgroundImage:
-                      background &&
-                      assetURLStyleProp("backgrounds", background),
+                      selectedBackground &&
+                      assetURLStyleProp("backgrounds", selectedBackground),
                   }}
                 />
               }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import l10n from "shared/lib/lang/l10n";
 import { sceneSelectors } from "store/features/entities/entitiesState";
@@ -30,7 +30,6 @@ const Container = styled.div<ContainerProps>`
   margin-right: 15px;
   height: 19px;
   line-height: 19px;
-  margin-right: 15px;
 
   transition: opacity 0.3s ease-in-out;
   opacity: 1;
@@ -54,19 +53,16 @@ const Monospace = styled.span`
 
 const WorldStatusBar = () => {
   const dispatch = useAppDispatch();
-  const sceneId = useAppSelector((state) => state.editor.hover.sceneId);
   const x = useAppSelector((state) => state.editor.hover.x);
   const y = useAppSelector((state) => state.editor.hover.y);
 
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId),
-  );
-  const sceneIndex = useAppSelector((state) =>
-    sceneSelectors.selectIds(state).indexOf(sceneId),
-  );
-  const hoverSceneName = useMemo(() => {
+  const hoverSceneName = useAppSelector((state) => {
+    const sceneId = state.editor.hover.sceneId;
+    const scene = sceneSelectors.selectById(state, sceneId);
+    const sceneIndex = sceneSelectors.selectIds(state).indexOf(sceneId);
     return scene && sceneName(scene, sceneIndex);
-  }, [scene, sceneIndex]);
+  });
+
   const canPreviewAsMono = useAppSelector(
     (state) => state.project.present.settings.colorMode === "mixed",
   );
@@ -82,21 +78,9 @@ const WorldStatusBar = () => {
     );
   }, [dispatch, previewAsMono]);
 
-  const [hoverLabel, setHoverLabel] = useState({
-    sceneName: "",
-    x: "00",
-    y: "00",
-  });
-
-  useEffect(() => {
-    if (hoverSceneName) {
-      setHoverLabel({
-        sceneName: hoverSceneName,
-        x: String(x ?? 0).padStart(2, "0"),
-        y: String(y ?? 0).padStart(2, "0"),
-      });
-    }
-  }, [hoverSceneName, x, y]);
+  const hoverX = String(x ?? 0).padStart(2, "0");
+  const hoverY = String(y ?? 0).padStart(2, "0");
+  const hoverSceneLabel = hoverSceneName ?? "";
 
   return (
     <Wrapper>
@@ -112,10 +96,10 @@ const WorldStatusBar = () => {
       )}
       <Container $hide={!hoverSceneName}>
         <Text>
-          {hoverLabel.sceneName}
+          {hoverSceneLabel}
           {" : "}
-          {l10n("FIELD_X")}=<Monospace>{hoverLabel.x}</Monospace>{" "}
-          {l10n("FIELD_Y")}=<Monospace>{hoverLabel.y}</Monospace>
+          {l10n("FIELD_X")}=<Monospace>{hoverX}</Monospace> {l10n("FIELD_Y")}=
+          <Monospace>{hoverY}</Monospace>
         </Text>
       </Container>
     </Wrapper>

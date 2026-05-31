@@ -1,25 +1,21 @@
 import React, { Dispatch } from "react";
 import { UnknownAction } from "redux";
-import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
-import { Note } from "shared/lib/resources/types";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 
 interface SceneFolderContextMenuProps {
   dispatch: Dispatch<UnknownAction>;
-  scenes: SceneNormalized[];
-  notes: Note[];
+  sceneIds: string[];
+  noteIds: string[];
 }
 
 const renderSceneFolderContextMenu = ({
-  scenes,
-  notes,
+  sceneIds,
+  noteIds,
   dispatch,
 }: SceneFolderContextMenuProps) => {
-  const sceneIds = scenes.map((s) => s.id);
-  const noteIds = notes.map((n) => n.id);
   return [
     <MenuItem
       key="select"

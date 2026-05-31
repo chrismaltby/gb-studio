@@ -72,7 +72,11 @@ import { ScriptEditorContext } from "components/script/ScriptEditorContext";
 import { Alert, AlertItem } from "ui/alerts/Alert";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useAppSelectorPick,
+} from "store/hooks";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { TilesetSelect } from "components/forms/TilesetSelect";
 import { FixedSpacer, FlexBreak, FlexGrow } from "ui/spacing/Spacing";
@@ -159,7 +163,36 @@ const getScriptKey = (
 };
 
 export const SceneEditor = ({ id }: SceneEditorProps) => {
-  const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
+  const scene = useAppSelectorPick(
+    (state) => sceneSelectors.selectById(state, id),
+    [
+      "id",
+      "name",
+      "type",
+      "backgroundId",
+      "tilesetId",
+      "notes",
+      "labelColor",
+      "colorModeOverride",
+      "spriteMode",
+      "playerSpriteSheetId",
+      "paletteIds",
+      "spritePaletteIds",
+      "monoBGP",
+      "monoOBP0",
+      "monoOBP1",
+      "parallax",
+      "scrollBounds",
+      "width",
+      "height",
+      "script",
+      "playerHit1Script",
+      "playerHit2Script",
+      "playerHit3Script",
+      "autoFadeSpeed",
+    ] as const,
+  );
+
   const sceneIndex = useAppSelector((state) =>
     sceneSelectors.selectIds(state).indexOf(id),
   );
@@ -171,7 +204,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   );
   const [notesOpen, setNotesOpen] = useState<boolean>(!!scene?.notes);
   const [colorModeOverrideOpen, setColorModeOverrideOpen] = useState<boolean>(
-    scene?.colorModeOverride && scene?.colorModeOverride !== "none",
+    !!(scene?.colorModeOverride && scene?.colorModeOverride !== "none"),
   );
   const [autoTileFlipOverrideOpen, setAutoTileFlipOverrideOpen] =
     useState<boolean>(background?.autoTileFlipOverride !== undefined);
@@ -238,7 +271,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
 
   const enabledSceneTypeIds = useEnabledSceneTypeIds();
   const sceneTypeEnabled = useMemo(() => {
-    return enabledSceneTypeIds.includes(scene?.type);
+    return enabledSceneTypeIds.includes(scene?.type ?? "");
   }, [enabledSceneTypeIds, scene?.type]);
 
   const scriptTabs: Record<ScriptTab, string> = useMemo(
@@ -520,9 +553,9 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
         sceneId: id,
         backgroundId: scene?.backgroundId || "",
         is360: scene?.type === "LOGO",
-        uiPaletteId: scene?.paletteIds?.[7],
+        uiPaletteId: scene?.paletteIds?.[7] ?? "",
         colorMode:
-          scene.colorModeOverride === "none"
+          !scene?.colorModeOverride || scene.colorModeOverride === "none"
             ? projectColorMode
             : scene.colorModeOverride,
       }),
