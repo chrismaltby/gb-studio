@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import l10n from "shared/lib/lang/l10n";
 import {
   castEventToBool,
@@ -51,6 +51,7 @@ export const SettingsSectionBuild = ({
   const romFilename = useAppSelector(
     (state) => state.project.present.settings.romFilename,
   );
+  const [currentRomFilename, setCurrentRomFilename] = useState(romFilename);
 
   const defaultRomFilename = getROMFilename(
     "",
@@ -60,12 +61,15 @@ export const SettingsSectionBuild = ({
   );
 
   const onChangeROMFilename = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const name = castEventToString(e);
+      setCurrentRomFilename(name);
       dispatch(
         settingsActions.editSettings({
-          romFilename: stripInvalidFilenameCharacters(castEventToString(e)),
+          romFilename: stripInvalidFilenameCharacters(name),
         }),
-      ),
+      );
+    },
     [dispatch],
   );
 
@@ -155,7 +159,7 @@ export const SettingsSectionBuild = ({
               id="romFilename"
               name="romFilename"
               onChange={onChangeROMFilename}
-              value={romFilename}
+              value={currentRomFilename}
               placeholder={defaultRomFilename}
             />
           </FlexRow>

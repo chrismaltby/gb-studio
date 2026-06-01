@@ -62,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compiled music no longer includes unused instrument subpatterns
 - Plugins can now specify `preserveFiles` to prevent files from being overwritten when updated in the Plugin Manager
 - Themes plugins can now set `tracker.wave`, `tracker.waveGrid` and `tracker.waveBackground` colors [@pau-tomas](https://github.com/pau-tomas)
+- Setting ROM filename to end with ".gb" will allow now cause that extension to be used for GBC-only games instead of ".gbc"
 
 ### Fixed
 

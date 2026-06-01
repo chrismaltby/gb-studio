@@ -26,8 +26,12 @@ export const getROMFilename = (
   isColorOnly: boolean,
   buildType: "rom" | "pocket" | "web",
 ): string => {
-  const fileExt =
-    buildType === "pocket" ? "pocket" : isColorOnly ? "gbc" : "gb";
+  let fileExt = "gb";
+  if (buildType === "pocket") {
+    fileExt = "pocket";
+  } else if (isColorOnly && !overrideName.endsWith(".gb")) {
+    fileExt = "gbc";
+  }
   const fileStem = getROMFileStem(overrideName, projectName);
   return `${fileStem}.${fileExt}`;
 };

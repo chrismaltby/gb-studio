@@ -142,6 +142,12 @@ describe("getROMFilename", () => {
     );
   });
 
+  test("Should return .gb extension for color-only ROM build if override was explicitly set to have .gb extension", () => {
+    expect(getROMFilename("my-game.gb", "project", true, "rom")).toBe(
+      "my-game.gb",
+    );
+  });
+
   test("Should return .pocket extension for pocket build regardless of color setting", () => {
     expect(getROMFilename("my-game", "project", false, "pocket")).toBe(
       "my-game.pocket",
