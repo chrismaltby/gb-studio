@@ -11,6 +11,7 @@ export interface DebuggerState {
   gbvmScripts: Record<string, string>;
   sceneMap: Record<string, SceneMapData>;
   vramPreview: string;
+  backgroundPreview: string;
   variablesData: number[];
   scriptContexts: DebuggerScriptContext[];
   currentSceneSymbol: string;
@@ -26,6 +27,7 @@ export const initialState: DebuggerState = {
   gbvmScripts: {},
   sceneMap: {},
   vramPreview: "",
+  backgroundPreview: "",
   variablesData: [],
   scriptContexts: [],
   currentSceneSymbol: "",
@@ -60,6 +62,7 @@ const debuggerSlice = createSlice({
       state,
       action: PayloadAction<{
         vramPreview: string;
+        backgroundPreview: string;
         variablesData: number[];
         scriptContexts: DebuggerScriptContext[];
         currentSceneSymbol: string;
@@ -72,6 +75,7 @@ const debuggerSlice = createSlice({
       }
       state.isPaused = action.payload.isPaused;
       state.vramPreview = action.payload.vramPreview;
+      state.backgroundPreview = action.payload.backgroundPreview;
       if (!isEqual(state.variablesData, action.payload.variablesData)) {
         state.variablesData = action.payload.variablesData;
       }

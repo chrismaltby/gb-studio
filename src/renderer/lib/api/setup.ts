@@ -22,7 +22,10 @@ import type { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
 import type { NavigationSection } from "store/features/navigation/navigationState";
 import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import type { MenuZoomType } from "shared/lib/menu/types";
-import type { DebuggerDataPacket } from "shared/lib/debugger/types";
+import type {
+  BackgroundPreviewType,
+  DebuggerDataPacket,
+} from "shared/lib/debugger/types";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
 import type { UsageData } from "lib/compiler/romUsage";
 import type { Asset, AssetType } from "shared/lib/helpers/assets";
@@ -418,6 +421,8 @@ const APISetup = {
       ipcRenderer.invoke("debugger:set-breakpoints", breakpoints),
     setWatchedVariableIds: (variableIds: string[]) =>
       ipcRenderer.invoke("debugger:set-watched", variableIds),
+    setBackgroundPreviewType: (type: BackgroundPreviewType) =>
+      ipcRenderer.invoke("debugger:set-background-preview-type", type),
     sendToProjectWindow: (data: DebuggerDataPacket) =>
       ipcRenderer.send("debugger:data-receive", data),
   },
