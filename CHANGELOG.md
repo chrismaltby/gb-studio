@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Update to latest [GBVM](https://github.com/chrismaltby/gbvm)
 - Improve warning messages when multiple engine plugins modify the same files.
 - Clear build cache on the first build after opening a project to prevent stale data issues
 - Preserve scroll position in the Settings section when navigating away and returning
@@ -90,6 +91,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where keyboard controls wouldn't always work in sprite animations navigator
 - Fix issue where double clicking a recent project from the splash window could cause project not to open
 - Fix Linux AppImage releases missing icons and metadata needed for integration using AppImageLauncher
+- Fix scene loading when it interrupts a camera shake event [@Phidias618](https://github.com/Phidias618)
+- Fix screenshake from removing projectiles [@Mico27](https://github.com/Mico27)
+- Fix brief text glitch that would appear when drawing dialogue frame on CGB [@Phidias618](https://github.com/Phidias618)
+- Fix player detecting itself instead of another actor when the player has on player hit scripts [@Mico27](https://github.com/Mico27)
+- Fix issue where platformer was reusing coyote timer for wall jump leading to cases where jumping after leaving a ledge would cause a large push forwards
+- Fix issue where jump state wasn't decreasing wall jump coyote timer
+- Fix issue where disabling player collisions wouldn't prevent projectiles from colliding with player
+- Fix issue in platformer scenes where drop through feature can allow phasing through solid walls
 
 ### Removed
 

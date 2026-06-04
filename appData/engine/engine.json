@@ -1,5 +1,5 @@
 {
-  "version": "4.2.2-e1",
+  "version": "4.3.0-e1",
   "fields": [
     {
       "key": "INPUT_PLATFORM_INTERACT",
@@ -2501,7 +2501,7 @@
           "name": "FIELD_COLLISION_SLOPE_BOTTOM_RIGHT",
           "icon": "0F0F1F3FFEFEFCF0",
           "group": "corner"
-        } 
+        }
       ]
     },
     {
