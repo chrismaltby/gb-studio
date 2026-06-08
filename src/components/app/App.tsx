@@ -78,7 +78,7 @@ const App = () => {
       }
       for (let i = 0; i < e.dataTransfer.files.length; i++) {
         const file = e.dataTransfer.files[i];
-        dispatch(projectActions.addFileToProject(file.path));
+        dispatch(projectActions.addFileToProject(file.name));
       }
     },
     [dispatch],
