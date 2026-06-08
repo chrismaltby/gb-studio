@@ -330,6 +330,7 @@ const DataTableColumnHeader = React.memo(
             name={`variable_${colIndex}`}
             entityId={entityId}
             onChange={(newValue) => onUpdateVariable(colIndex, newValue)}
+            allowRename
           />
         </InputGroup>
       </th>
