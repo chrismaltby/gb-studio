@@ -29,7 +29,7 @@ const fields = [
       },
       {
         key: "y",
-        label: l10n("FIELD_X"),
+        label: l10n("FIELD_Y"),
         description: l10n("FIELD_Y_DESC"),
         type: "number",
         min: 0,
