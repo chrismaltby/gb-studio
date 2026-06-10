@@ -198,7 +198,7 @@
     "ts-loader": "^9.2.2",
     "ts-node": "^10.0.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
-    "typescript": "^5.6.3",
+    "typescript": "^6.0.3",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.7.0",
     "workbox-webpack-plugin": "^7.4.0",
