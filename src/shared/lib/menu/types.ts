@@ -26,6 +26,7 @@ export type MenuListenerKey =
   | "exportProjectSrc"
   | "exportProjectData"
   | "pasteInPlace"
+  | "selectAll"
   | "preferences"
   | "pluginManager"
   | "globalPlugins"

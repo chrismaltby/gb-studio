@@ -52,6 +52,7 @@ const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   exportProjectSrc: [],
   exportProjectData: [],
   pasteInPlace: [],
+  selectAll: [],
   preferences: [],
   pluginManager: [],
   globalPlugins: [],
@@ -228,7 +229,13 @@ const buildMenu = async ({
           },
         },
         { role: "delete", label: l10n("MENU_DELETE") },
-        { role: "selectAll", label: l10n("MENU_SELECT_ALL") },
+        {
+          label: l10n("MENU_SELECT_ALL"),
+          accelerator: "CmdOrCtrl+A",
+          click: () => {
+            notifyListeners("selectAll");
+          },
+        },
         { type: "separator" },
         {
           label: l10n("MENU_SPELLING"),

@@ -46,6 +46,7 @@ import WorldCursor from "components/world/WorldCursor";
 import { BackgroundIcon, JigsawIcon } from "ui/icons/Icons";
 import l10n from "shared/lib/lang/l10n";
 import PlayerStartMarker from "components/world/connections/PlayerStartMarker";
+import { useSelectAllShortcut } from "ui/hooks/use-select-all";
 
 const MOUSE_ZOOM_SPEED = 0.5;
 
@@ -657,18 +658,19 @@ const WorldView = () => {
 
   //#region Keyboard handling
 
-  const onSelectAllWorldEntities = useCallback(() => {
+  const onSelectAll = useCallback(() => {
     dispatch(editorActions.setSceneSelectionIds([...sceneIds, ...noteIds]));
   }, [dispatch, sceneIds, noteIds]);
+
+  useSelectAllShortcut({
+    onSelectAll,
+  });
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") {
         return;
-      }
-      if ((e.ctrlKey || e.metaKey) && e.code === "KeyA") {
-        return onSelectAllWorldEntities();
       }
       if (e.ctrlKey || e.metaKey) {
         return;
@@ -713,7 +715,7 @@ const WorldView = () => {
         dispatch(entitiesActions.removeSelectedEntity());
       }
     },
-    [dispatch, focus, onSelectAllWorldEntities, scenePaintSelection],
+    [dispatch, focus, scenePaintSelection],
   );
 
   const onKeyUp = useCallback(
