@@ -265,15 +265,15 @@ const MusicPage = () => {
                 defaultLayout={defaultPaneLayout}
               >
                 {songsPane}
-                {viewSong.type === "uge" ? <NavigatorChannelsPane /> : null}
-                {viewSong.type === "uge" ? <NavigatorInstrumentsPane /> : null}
+                {viewSong?.type === "uge" ? <NavigatorChannelsPane /> : null}
+                {viewSong?.type === "uge" ? <NavigatorInstrumentsPane /> : null}
               </SplitPaneVerticalContainer>
             </div>
           </div>
           <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
         </>
       )}
-      {viewSong.type === "mod" && (
+      {viewSong?.type === "mod" && (
         <div
           style={{
             flex: "1 1 0",
@@ -292,7 +292,7 @@ const MusicPage = () => {
           </div>
         </div>
       )}
-      {viewSong.type === "uge" && (
+      {viewSong?.type === "uge" && (
         <>
           <div
             id="song-document"
