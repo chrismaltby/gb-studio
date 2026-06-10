@@ -8,31 +8,30 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react",
-    "downlevelIteration": true,
     "experimentalDecorators": true,
-    "baseUrl": "src",
     "sourceMap": true,
     "noImplicitOverride": true,
     "paths": {
-      "store/*": [ "./store/*" ],
-      "lib/*": [ "./lib/*" ],
-      "ui/*": [ "./components/ui/*" ],
-      "components/*": [ "./components/*" ],
-      "lang/*": [ "./lang/*" ],
-      "wasm/*": ["../appData/wasm/*" ],
-      "contributors.json": ["../contributors.json"],
-      "gbs-music-web/*": ["./apps/gbs-music-web/*"],
-      "contributors-external.json": ["../contributors-external.json"],
-      "patrons.json": ["../patrons.json"],
+      "*": ["./src/*"],
+      "store/*": ["./src/store/*"],
+      "lib/*": ["./src/lib/*"],
+      "ui/*": ["./src/components/ui/*"],
+      "components/*": ["./src/components/*"],
+      "lang/*": ["./src/lang/*"],
+      "wasm/*": ["./appData/wasm/*"],
+      "contributors.json": ["./contributors.json"],
+      "gbs-music-web/*": ["./src/apps/gbs-music-web/*"],
+      "contributors-external.json": ["./contributors-external.json"],
+      "patrons.json": ["./patrons.json"],
       "#my-quickjs-variant": [
-        "../node_modules/@jitl/quickjs-singlefile-cjs-release-sync"
-      ]      
+        "./node_modules/@jitl/quickjs-singlefile-cjs-release-sync"
+      ]
     }
   },
   "include": ["src", "test"]
