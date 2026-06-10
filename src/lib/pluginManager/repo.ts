@@ -47,7 +47,9 @@ const oneHour = 60 * 60 * 1000;
 
 const getUserReposList = (): PluginRepositoryEntry[] => {
   const userRepositories: PluginRepositoryEntry[] = [];
-  const storedUserRepositories: unknown = settings.get("plugins:repositories");
+  const storedUserRepositories: unknown = settings.getSync(
+    "plugins:repositories",
+  );
   if (Array.isArray(storedUserRepositories)) {
     for (const entry of storedUserRepositories) {
       if (isPluginRepositoryEntry(entry)) {
@@ -82,7 +84,7 @@ export const addUserRepo = async (url: string) => {
         url,
       },
     ];
-    settings.set("plugins:repositories", updated);
+    settings.setSync("plugins:repositories", updated);
   } catch (e) {
     dialog.showErrorBox(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"), String(e));
   }
@@ -104,7 +106,7 @@ export const removeUserRepo = async (url: string) => {
   const updated = userRepositories.filter((entry) => {
     return entry.url !== url;
   });
-  settings.set("plugins:repositories", updated);
+  settings.setSync("plugins:repositories", updated);
 };
 
 export const getGlobalPluginsList = async (force?: boolean) => {
