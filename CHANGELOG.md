@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated Simplified Chinese localisation [@wcxu21](https://github.com/wcxu21)
 
+### Fixed
+
+- Fix crash after deleting a file in the music editor
+
 ## [4.3.0] - 2026-06-08
 
 ### Added
