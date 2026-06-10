@@ -64,6 +64,11 @@ import { EngineSchema } from "lib/project/loadEngineSchema";
 import { HexPalette } from "shared/lib/tiles/autoColor";
 import { ScriptDataTable } from "shared/lib/scriptDataTable/types";
 import type { WebTemplateInfo } from "shared/lib/webTemplates/types";
+import {
+  getDeepActiveElement as getActiveElement,
+  canPerformSelectAll,
+  performSelectAll,
+} from "renderer/lib/helpers/dom";
 
 interface L10NLookup {
   [key: string]: string | boolean | undefined;
@@ -131,6 +136,21 @@ const createWatchSubscribeAPI = <T>(channel: string) => {
     >(`${channel}:removed`),
   };
 };
+
+const selectAllListeners = new Set<() => void>();
+
+ipcRenderer.on("menu:select-all", () => {
+  const activeElement = getActiveElement();
+
+  if (activeElement && canPerformSelectAll(activeElement)) {
+    performSelectAll(activeElement);
+    return;
+  }
+
+  selectAllListeners.forEach((listener) => {
+    listener();
+  });
+});
 
 const APISetup = {
   platform: process.platform,
@@ -477,6 +497,14 @@ const APISetup = {
       pasteInPlace: createSubscribeAPI<(event: IpcRendererEvent) => void>(
         "menu:paste-in-place",
       ),
+      selectAll: {
+        subscribe: (listener: () => void) => {
+          selectAllListeners.add(listener);
+          return () => {
+            selectAllListeners.delete(listener);
+          };
+        },
+      },
       midiInputToggle: createSubscribeAPI<(event: IpcRendererEvent) => void>(
         "menu:midi-input-toggle",
       ),

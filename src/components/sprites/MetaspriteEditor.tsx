@@ -31,6 +31,8 @@ import {
 } from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
 import { useContextMenu } from "ui/hooks/use-context-menu";
+import API from "renderer/lib/api";
+import { useSelectAllShortcut } from "ui/hooks/use-select-all";
 
 interface MetaspriteEditorProps {
   spriteSheetId: string;
@@ -682,11 +684,6 @@ const MetaspriteEditor = ({
   }, [setIsOverEditor]);
 
   const onSelectAll = useCallback(() => {
-    const selection = window.getSelection();
-    if (!selection || selection.focusNode) {
-      return;
-    }
-    window.getSelection()?.empty();
     setSelectedTileIds(metasprite?.tiles || []);
   }, [metasprite?.tiles, setSelectedTileIds]);
 
@@ -752,15 +749,10 @@ const MetaspriteEditor = ({
   }, [hidden, selectedTileIds, metaspriteId, animationId, onCopy, onPaste]);
 
   // Selection
-  useEffect(() => {
-    if (!hidden) {
-      document.addEventListener("selectionchange", onSelectAll);
-      return () => {
-        document.removeEventListener("selectionchange", onSelectAll);
-      };
-    }
-    return () => {};
-  }, [hidden, metasprite?.tiles, onSelectAll]);
+  useSelectAllShortcut({
+    onSelectAll,
+    enabled: !hidden,
+  });
 
   const getTilePalette = useCallback(
     (metaspriteTile: MetaspriteTile) => {
