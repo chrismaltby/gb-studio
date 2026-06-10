@@ -80,7 +80,7 @@ const migrateWarning = async (projectPath: string) => {
 
   if (checkboxChecked) {
     // Ignore all updates until manually check for updates
-    settings.set("dontCheckForUpdates", true);
+    settings.setSync("dontCheckForUpdates", true);
   }
   if (buttonIndex === 0) {
     return true;
