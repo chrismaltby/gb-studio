@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [4.3.1] - 2026-06-11
 
 ### Changed
 
@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix crash after deleting a file in the music editor
 - Fix error log seen in Javascript console of web export whenever link cable is initialised or data is transferred
+- Fix Y label in "Set Super GB Color Area" event [@pau-tomas](https://github.com/pau-tomas)
 
 ## [4.3.0] - 2026-06-08
 
