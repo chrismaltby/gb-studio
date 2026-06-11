@@ -790,8 +790,9 @@ app.on("ready", async () => {
     app.quit();
   } else if (
     process.argv.length >= 2 &&
+    lastArg &&
     lastArg !== "." &&
-    lastArg.indexOf("-") !== 0
+    !lastArg.startsWith("-")
   ) {
     openProject(lastArg);
   } else if (splashWindow === null && projectWindow === null) {
@@ -802,6 +803,11 @@ app.on("ready", async () => {
     const { host, pathname } = new URL(req.url);
     if (host === "plugin-repo-asset") {
       const [_, repoId, ...pathParts] = pathname.split("/");
+      if (!repoId) {
+        return callback({
+          error: 500,
+        });
+      }
       const repoUrl = getRepoUrlById(repoId);
       if (repoUrl) {
         const repoRoot = Path.dirname(repoUrl);
@@ -1856,7 +1862,14 @@ ipcMain.handle(
           }
           return data;
         } else {
-          const [filename] = path.split(".uge");
+          const ext = ".uge";
+          if (!path.endsWith(ext)) {
+            throw new Error(`Invalid filename ${path}`);
+          }
+          const filename = path.slice(0, path.length - ext.length);
+          if (!filename) {
+            throw new Error(`Invalid filename ${path}`);
+          }
           const matches = filename.match(/\d+$/);
           let newFilename = `${filename} 1`;
           if (matches) {
