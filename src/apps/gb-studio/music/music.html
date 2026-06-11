@@ -7,6 +7,13 @@
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
     />
     <style id="theme"></style>
+    <script>
+      // CM: Added a noop here to prevent binjgb throwing an error if the music rom
+      // ever gets updated to version that initialises the link cable
+      const emulator = {
+        serialCallback: (_x) => {},
+      };
+    </script>
   </head>
   <body>
     <div id="App">

@@ -675,6 +675,11 @@ class Emulator {
   setJoypA(set) {
     this.module._set_joyp_A(this.e, set);
   }
+  serialCallback(_x) {
+      // CM: Added a noop here to prevent binjgb throwing an error when
+      // data is sent on link cable, can update this later
+      // to send logs to GB Studio debugger
+  }
 }
 
 class Gamepad {

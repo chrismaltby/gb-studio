@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix crash after deleting a file in the music editor
+- Fix error log seen in Javascript console of web export whenever link cable is initialised or data is transferred
 
 ## [4.3.0] - 2026-06-08
 
