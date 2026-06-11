@@ -18,7 +18,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: "21.7.1"
+          node-version: "24.16.0"
 
       - name: Enable Corepack
         run: corepack enable
