@@ -731,7 +731,8 @@ const buildMenu = async ({
     });
 
     // Edit menu
-    const editSubmenu = template[2].submenu;
+    const editMenuItem = template[2];
+    const editSubmenu = editMenuItem?.submenu;
     if (editSubmenu && "push" in editSubmenu) {
       editSubmenu.push(
         { type: "separator" },
@@ -743,29 +744,33 @@ const buildMenu = async ({
     }
 
     // Window menu
-    template[template.length - 2].submenu = [
-      {
-        label: l10n("MENU_PLAY_WINDOW"),
-        submenu: [
-          {
-            label: l10n("MENU_MUTE_AUDIO"),
-            type: "checkbox",
-            checked: settings.get(EMULATOR_MUTED_SETTING_KEY) === true,
-            click: (item: MenuItem) => {
-              notifyListeners("updateEmulatorMuted", item.checked);
+    const windowMenuItem = template[template.length - 2];
+    if (windowMenuItem) {
+      windowMenuItem.submenu = [
+        {
+          label: l10n("MENU_PLAY_WINDOW"),
+          submenu: [
+            {
+              label: l10n("MENU_MUTE_AUDIO"),
+              type: "checkbox",
+              checked: settings.get(EMULATOR_MUTED_SETTING_KEY) === true,
+              click: (item: MenuItem) => {
+                notifyListeners("updateEmulatorMuted", item.checked);
+              },
             },
-          },
-        ],
-      },
-      { type: "separator" },
-      { label: l10n("MENU_MINIMIZE"), role: "minimize" },
-      { role: "zoom" },
-      { type: "separator" },
-      { role: "front" },
-    ];
+          ],
+        },
+        { type: "separator" },
+        { label: l10n("MENU_MINIMIZE"), role: "minimize" },
+        { role: "zoom" },
+        { type: "separator" },
+        { role: "front" },
+      ];
+    }
   } else {
     // About menu item for Windows / Linux
-    const aboutSubmenu = template[template.length - 1].submenu;
+    const aboutMenuItem = template[template.length - 1];
+    const aboutSubmenu = aboutMenuItem?.submenu;
     if (aboutSubmenu && "push" in aboutSubmenu) {
       aboutSubmenu.push(
         { type: "separator" },
@@ -785,7 +790,8 @@ const buildMenu = async ({
     }
 
     // Edit Preferences for Windows / Linux
-    const editSubmenu = template[1].submenu;
+    const editMenuItem = template[1];
+    const editSubmenu = editMenuItem?.submenu;
     if (editSubmenu && "push" in editSubmenu) {
       editSubmenu.push(
         { type: "separator" },
