@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - main
+      - gbs-next
       - feat-*
       - beta-*
       - wip-*
@@ -38,7 +39,7 @@ jobs:
   deploy:
     needs: test
     runs-on: ${{ matrix.os }}
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/beta-') || startsWith(github.ref, 'refs/heads/feat-') || startsWith(github.ref, 'refs/heads/wip-') || startsWith(github.ref, 'refs/heads/fix-')
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/beta-') || startsWith(github.ref, 'refs/heads/feat-') || startsWith(github.ref, 'refs/heads/wip-') || startsWith(github.ref, 'refs/heads/fix-') || github.ref == 'refs/heads/gbs-next'
 
     strategy:
       matrix:
