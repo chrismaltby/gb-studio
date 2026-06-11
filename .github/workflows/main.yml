@@ -17,11 +17,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "21.7.1"
 
@@ -64,11 +64,11 @@ jobs:
             os: ubuntu-22.04-arm
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "21.7.1"
 
@@ -180,7 +180,7 @@ jobs:
           mv ./out/make/zip/win32/x64/*.zip ./out/keep/gb-studio-${CIRCLE_BRANCH}-windows_x86_64.zip
           mv ./out/make/squirrel.windows/x64 ./out/keep/gb-studio-${CIRCLE_BRANCH}-windows_x86_64-squirrel
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.label }} build
           path: |
