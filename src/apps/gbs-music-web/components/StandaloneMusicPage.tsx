@@ -132,7 +132,7 @@ const StandaloneMusicPage = ({
   }, [song]);
 
   const viewSongId = useMemo(
-    () => song?.id || lastSongId.current || allSortedSongs[0]?.id,
+    () => song?.id || lastSongId.current || allSortedSongs[0]?.id || "",
     [allSortedSongs, song],
   );
 
@@ -349,15 +349,15 @@ const StandaloneMusicPage = ({
                 defaultLayout={defaultPaneLayout}
               >
                 {songsPane}
-                {viewSong.type === "uge" ? <NavigatorChannelsPane /> : null}
-                {viewSong.type === "uge" ? <NavigatorInstrumentsPane /> : null}
+                {viewSong?.type === "uge" ? <NavigatorChannelsPane /> : null}
+                {viewSong?.type === "uge" ? <NavigatorInstrumentsPane /> : null}
               </SplitPaneVerticalContainer>
             </div>
           </div>
           <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
         </>
       )}
-      {viewSong.type === "uge" && (
+      {viewSong?.type === "uge" && (
         <>
           <div
             id="song-document"
