@@ -6,6 +6,6 @@ export const sortByKey = <T extends Record<string, unknown>>(input: T): T => {
         obj[key] = input[key];
         return obj;
       },
-      {} as Record<string, unknown>,
+      Object.create(null) as Record<string, unknown>,
     ) as T;
 };
