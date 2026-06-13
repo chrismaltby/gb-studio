@@ -54,7 +54,6 @@ import {
   extractScriptValueVariables,
 } from "shared/lib/scriptValue/helpers";
 import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
-import { sortByKey } from "shared/lib/helpers/sortByKey";
 import {
   Actor,
   AvatarAsset,
@@ -1242,7 +1241,12 @@ export const updateCustomEventArgs = (
     },
   );
 
-  customEvent.variables = sortByKey(variables);
+  customEvent.variables = Object.fromEntries(
+    // Sort variables in ID order
+    Object.entries(variables).sort(
+      ([a], [b]) => Number(a.slice(1)) - Number(b.slice(1)),
+    ),
+  );
   customEvent.actors = actors;
 };
 

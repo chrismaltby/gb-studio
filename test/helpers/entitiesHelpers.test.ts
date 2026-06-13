@@ -708,6 +708,51 @@ describe("updateCustomEventArgs", () => {
       },
     });
   });
+
+  test("Should sort variables by id", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {},
+      actors: {},
+      script: ["event1", "event2"],
+    } as Parameters<typeof updateCustomEventArgs>[0];
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_INC_VALUE",
+          args: {
+            variable: "V5",
+          },
+        },
+        event2: {
+          id: "event2",
+          command: "EVENT_INC_VALUE",
+          args: {
+            variable: "V3",
+          },
+        },
+      },
+      {
+        EVENT_INC_VALUE: {
+          id: "EVENT_INC_VALUE",
+          fieldsLookup: {
+            variable: {
+              key: "variable",
+              type: "variable",
+            },
+          },
+        },
+      } as never,
+    );
+
+    expect(Object.keys(customEvent.variables)).toEqual(["V3", "V5"]);
+  });
 });
 
 describe("applyReparentFolderToCollection", () => {
