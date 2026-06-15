@@ -14,6 +14,9 @@ const songReplacer = (_key: string, value: unknown): unknown => {
   return value;
 };
 
+const isNumberArray = (value: unknown): value is number[] =>
+  Array.isArray(value) && value.every((item) => typeof item === "number");
+
 // Paired JSON reviver that reconstructs Uint8Arrays from the tagged form.
 const songReviver = (_key: string, value: unknown): unknown => {
   if (
@@ -21,7 +24,10 @@ const songReviver = (_key: string, value: unknown): unknown => {
     typeof value === "object" &&
     UINT8_TAG in (value as Record<string, unknown>)
   ) {
-    return new Uint8Array((value as Record<string, number[]>)[UINT8_TAG]);
+    const taggedValue = (value as Record<string, unknown>)[UINT8_TAG];
+    if (isNumberArray(taggedValue)) {
+      return new Uint8Array(taggedValue);
+    }
   }
   return value;
 };

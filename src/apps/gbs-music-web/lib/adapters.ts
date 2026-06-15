@@ -259,6 +259,9 @@ export const pickUGIFile = async (): Promise<Uint8Array | null> => {
         multiple: false,
         types: [ugiAccept],
       });
+      if (!handle) {
+        return null;
+      }
       const file = await handle.getFile();
       return new Uint8Array(await file.arrayBuffer());
     }
@@ -303,6 +306,9 @@ export const pickUGWFile = async (): Promise<Uint8Array | null> => {
         multiple: false,
         types: [ugwAccept],
       });
+      if (!handle) {
+        return null;
+      }
       const file = await handle.getFile();
       return new Uint8Array(await file.arrayBuffer());
     }
@@ -347,6 +353,9 @@ export const webMusicEnvironment: MusicEnvironment<MusicBinaryDocument> = {
         multiple: false,
         types: [accept],
       });
+      if (!handle) {
+        throw new Error("Unable to get file handle");
+      }
       currentDirectoryHandle = undefined;
       const reference = registerHandleReference(handle);
       return createMusicWorkspace({
@@ -481,6 +490,9 @@ export const importMusicDocument =
           multiple: false,
           types: [accept],
         });
+        if (!handle) {
+          return null;
+        }
         return registerHandleReference(handle);
       }
 
