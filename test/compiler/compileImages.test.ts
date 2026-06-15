@@ -22,8 +22,8 @@ test("should compile images", async () => {
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );
-  expect(res[0].tilemap.length).toEqual(360);
-  expect(res[0].vramData[0].length).toEqual(114 * BYTES_PER_TILE);
+  expect(res[0]?.tilemap.length).toEqual(360);
+  expect(res[0]?.vramData[0].length).toEqual(114 * BYTES_PER_TILE);
 });
 
 test("should compile split large images into two tilesets for CGB mode", async () => {
@@ -43,9 +43,9 @@ test("should compile split large images into two tilesets for CGB mode", async (
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );
-  expect(res[0].tilemap.length).toEqual(3136);
-  expect(res[0].vramData[0].length).toEqual(192 * BYTES_PER_TILE);
-  expect(res[0].vramData[1].length).toEqual(192 * BYTES_PER_TILE);
+  expect(res[0]?.tilemap.length).toEqual(3136);
+  expect(res[0]?.vramData[0].length).toEqual(192 * BYTES_PER_TILE);
+  expect(res[0]?.vramData[1].length).toEqual(192 * BYTES_PER_TILE);
 });
 
 test("should compile large images into one overflowing bank when not in color only mode", async () => {
@@ -63,8 +63,8 @@ test("should compile large images into one overflowing bank when not in color on
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );
-  expect(res[0].tilemap.length).toEqual(3136);
-  expect(res[0].vramData[0].length).toEqual(384 * BYTES_PER_TILE);
+  expect(res[0]?.tilemap.length).toEqual(3136);
+  expect(res[0]?.vramData[0].length).toEqual(384 * BYTES_PER_TILE);
 });
 
 test("should split tiles into two banks when in color only mode, filling first 128 tiles of vram bank 1 first", async () => {
@@ -84,9 +84,9 @@ test("should split tiles into two banks when in color only mode, filling first 1
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );
-  expect(res[0].tilemap.length).toEqual(1440);
-  expect(res[0].vramData[0].length).toEqual(128 * BYTES_PER_TILE);
-  expect(res[0].vramData[1].length).toEqual(63 * BYTES_PER_TILE);
+  expect(res[0]?.tilemap.length).toEqual(1440);
+  expect(res[0]?.vramData[0].length).toEqual(128 * BYTES_PER_TILE);
+  expect(res[0]?.vramData[1].length).toEqual(63 * BYTES_PER_TILE);
 });
 
 test("Should allocate all tiles to VRAM1 in original order by default", () => {
@@ -146,14 +146,14 @@ test("should handle overflow correctly for DMG mode", async () => {
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );
-  expect(res[0].tilemap.length).toEqual(360);
-  expect(res[0].vramData[0].length).toEqual(194 * BYTES_PER_TILE);
-  expect(res[0].vramData[1].length).toEqual(0);
+  expect(res[0]?.tilemap.length).toEqual(360);
+  expect(res[0]?.vramData[0].length).toEqual(194 * BYTES_PER_TILE);
+  expect(res[0]?.vramData[1].length).toEqual(0);
   for (let i = 0; i <= 0xc1; i++) {
-    expect(res[0].tilemap[i]).toEqual(i);
+    expect(res[0]?.tilemap[i]).toEqual(i);
   }
-  for (let i = 0xc1; i < res[0].tilemap.length; i++) {
-    expect(res[0].tilemap[i]).toEqual(0xc1);
+  for (let i = 0xc1; i < (res[0]?.tilemap?.length ?? 0); i++) {
+    expect(res[0]?.tilemap[i]).toEqual(0xc1);
   }
 });
 
@@ -174,27 +174,27 @@ test("should handle overflow correctly for color only mode", async () => {
     `${__dirname}/_files/`,
     { warnings: () => {} },
   );
-  expect(res[0].tilemap.length).toEqual(640);
-  expect(res[0].vramData[0].length).toEqual(193 * BYTES_PER_TILE);
-  expect(res[0].vramData[1].length).toEqual(193 * BYTES_PER_TILE);
+  expect(res[0]?.tilemap.length).toEqual(640);
+  expect(res[0]?.vramData[0].length).toEqual(193 * BYTES_PER_TILE);
+  expect(res[0]?.vramData[1].length).toEqual(193 * BYTES_PER_TILE);
   // First bank - first block
   for (let i = 0; i <= 0x7f; i++) {
-    expect(res[0].tilemap[i]).toEqual(i);
+    expect(res[0]?.tilemap[i]).toEqual(i);
   }
   // Second bank - first block
   for (let i = 0x80; i <= 0xff; i++) {
-    expect(res[0].tilemap[i]).toEqual(i - 0x80);
+    expect(res[0]?.tilemap[i]).toEqual(i - 0x80);
   }
   // First bank - second block
   for (let i = 0x100; i <= 0x180; i += 2) {
-    expect(res[0].tilemap[i]).toEqual((i - 0x100) / 2 + 0x80);
+    expect(res[0]?.tilemap[i]).toEqual((i - 0x100) / 2 + 0x80);
   }
   // Second bank - second block
   for (let i = 0x101; i <= 0x180; i += 2) {
-    expect(res[0].tilemap[i]).toEqual(Math.floor((i - 0x100) / 2) + 0x80);
+    expect(res[0]?.tilemap[i]).toEqual(Math.floor((i - 0x100) / 2) + 0x80);
   }
   // Overflow
-  for (let i = 0x181; i < res[0].tilemap.length; i++) {
-    expect(res[0].tilemap[i]).toEqual(0xc0);
+  for (let i = 0x181; i < (res[0]?.tilemap?.length ?? 0); i++) {
+    expect(res[0]?.tilemap[i]).toEqual(0xc0);
   }
 });

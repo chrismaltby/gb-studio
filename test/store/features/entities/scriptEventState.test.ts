@@ -247,11 +247,11 @@ test("should be able to add multiple script events to a scene init script", () =
   expect(newState.scenes.entities["scene1"]?.script?.[2]).toBe("script1");
   expect(state.scenes.entities["scene1"]?.script.length).toBe(1);
   expect(
-    newState.scriptEvents.entities[action.payload.scriptEventIds[0]]?.args
+    newState.scriptEvents.entities[action.payload.scriptEventIds[0] ?? ""]?.args
       ?.text,
   ).toBe("Hello World");
   expect(
-    newState.scriptEvents.entities[action.payload.scriptEventIds[1]]?.args
+    newState.scriptEvents.entities[action.payload.scriptEventIds[1] ?? ""]?.args
       ?.text,
   ).toBe("Goodbye World");
 
@@ -316,11 +316,11 @@ test("should be able to add multiple script events to a scene init script after 
   );
   expect(state.scenes.entities["scene1"]?.script.length).toBe(1);
   expect(
-    newState.scriptEvents.entities[action.payload.scriptEventIds[0]]?.args
+    newState.scriptEvents.entities[action.payload.scriptEventIds[0] ?? ""]?.args
       ?.text,
   ).toBe("Hello World");
   expect(
-    newState.scriptEvents.entities[action.payload.scriptEventIds[1]]?.args
+    newState.scriptEvents.entities[action.payload.scriptEventIds[1] ?? ""]?.args
       ?.text,
   ).toBe("Goodbye World");
   expect(newState.scenes.entities["scene1"]?.script.length).toBe(3);
@@ -480,12 +480,12 @@ test("should remove child ids provided in scriptEvent creation data", () => {
     action.payload.scriptEventIds[0],
   );
   expect(
-    newState.scriptEvents.entities[action.payload.scriptEventIds[0]]?.children
-      ?.true?.length,
+    newState.scriptEvents.entities[action.payload.scriptEventIds[0] ?? ""]
+      ?.children?.true?.length,
   ).toBe(0);
   expect(
-    newState.scriptEvents.entities[action.payload.scriptEventIds[0]]?.children
-      ?.false?.length,
+    newState.scriptEvents.entities[action.payload.scriptEventIds[0] ?? ""]
+      ?.children?.false?.length,
   ).toBe(0);
 });
 

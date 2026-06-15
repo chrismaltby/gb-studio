@@ -48,7 +48,7 @@ describe("applyPrefabs", () => {
 
     const result = applyPrefabs(projectData);
 
-    expect(result.scenes[0].actors[0].script[0].args?.x).toBe(10);
+    expect(result.scenes[0]?.actors[0]?.script[0]?.args?.x).toBe(10);
   });
 
   it("should apply trigger prefabs correctly", () => {
@@ -84,7 +84,7 @@ describe("applyPrefabs", () => {
 
     const result = applyPrefabs(projectData);
 
-    expect(result.scenes[0].triggers[0].script[0].args?.y).toBe(8);
+    expect(result.scenes[0]?.triggers[0]?.script[0]?.args?.y).toBe(8);
   });
 
   it("should return the original actor when no actor prefab is found", () => {
@@ -108,7 +108,7 @@ describe("applyPrefabs", () => {
 
     const result = applyPrefabs(projectData);
 
-    expect(result.scenes[0].actors[0]).toEqual(actor);
+    expect(result.scenes[0]?.actors[0]).toEqual(actor);
   });
 
   it("should return the original trigger when no trigger prefab is found", () => {
@@ -132,7 +132,7 @@ describe("applyPrefabs", () => {
 
     const result = applyPrefabs(projectData);
 
-    expect(result.scenes[0].triggers[0]).toEqual(trigger);
+    expect(result.scenes[0]?.triggers[0]).toEqual(trigger);
   });
 
   it("should not modify actors or triggers without prefabs", () => {
@@ -161,8 +161,8 @@ describe("applyPrefabs", () => {
 
     const result = applyPrefabs(projectData);
 
-    expect(result.scenes[0].actors[0]).toEqual(actor);
-    expect(result.scenes[0].triggers[0]).toEqual(trigger);
+    expect(result.scenes[0]?.actors[0]).toEqual(actor);
+    expect(result.scenes[0]?.triggers[0]).toEqual(trigger);
   });
 
   it("should apply actor prefab without script overrides", () => {
@@ -194,7 +194,7 @@ describe("applyPrefabs", () => {
 
     const result = applyPrefabs(projectData);
 
-    expect(result.scenes[0].actors[0].script[0].args?.x).toBe(5);
+    expect(result.scenes[0]?.actors[0]?.script[0]?.args?.x).toBe(5);
   });
 
   it("should apply trigger prefab without script overrides", () => {
@@ -228,6 +228,6 @@ describe("applyPrefabs", () => {
 
     const result = applyPrefabs(projectData);
 
-    expect(result.scenes[0].triggers[0].script[0].args?.y).toBe(3);
+    expect(result.scenes[0]?.triggers[0]?.script[0]?.args?.y).toBe(3);
   });
 });

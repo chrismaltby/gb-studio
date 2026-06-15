@@ -304,20 +304,20 @@ describe("saveUGIInstrument / loadUGIInstrument", () => {
       });
       const loaded = loadUGIInstrument(saveUGIInstrument(instr));
 
-      expect(loaded.subpattern[0].note).toBe(36);
-      expect(loaded.subpattern[0].jump).toBe(3);
-      expect(loaded.subpattern[0].effectCode).toBe(5);
-      expect(loaded.subpattern[0].effectParam).toBe(10);
+      expect(loaded.subpattern[0]?.note).toBe(36);
+      expect(loaded.subpattern[0]?.jump).toBe(3);
+      expect(loaded.subpattern[0]?.effectCode).toBe(5);
+      expect(loaded.subpattern[0]?.effectParam).toBe(10);
 
-      expect(loaded.subpattern[1].note).toBe(48);
-      expect(loaded.subpattern[1].jump).toBe(0); // null jump serializes as 0
-      expect(loaded.subpattern[1].effectCode).toBeNull();
-      expect(loaded.subpattern[1].effectParam).toBeNull();
+      expect(loaded.subpattern[1]?.note).toBe(48);
+      expect(loaded.subpattern[1]?.jump).toBe(0); // null jump serializes as 0
+      expect(loaded.subpattern[1]?.effectCode).toBeNull();
+      expect(loaded.subpattern[1]?.effectParam).toBeNull();
 
-      expect(loaded.subpattern[63].note).toBeNull();
-      expect(loaded.subpattern[63].jump).toBe(1);
-      expect(loaded.subpattern[63].effectCode).toBe(0x0a);
-      expect(loaded.subpattern[63].effectParam).toBe(0xff);
+      expect(loaded.subpattern[63]?.note).toBeNull();
+      expect(loaded.subpattern[63]?.jump).toBe(1);
+      expect(loaded.subpattern[63]?.effectCode).toBe(0x0a);
+      expect(loaded.subpattern[63]?.effectParam).toBe(0xff);
     });
 
     test("subpattern has exactly 64 cells after round-trip", () => {

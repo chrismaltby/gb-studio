@@ -455,8 +455,8 @@ test("Should be able to add a scene", () => {
   expect(state.scenes.ids.length).toBe(0);
   const newState = reducer(state, action);
   expect(newState.scenes.ids.length).toBe(1);
-  expect(newState.scenes.entities[newState.scenes.ids[0]]?.x).toBe(110);
-  expect(newState.scenes.entities[newState.scenes.ids[0]]?.y).toBe(220);
+  expect(newState.scenes.entities[newState.scenes.ids[0] ?? ""]?.x).toBe(110);
+  expect(newState.scenes.entities[newState.scenes.ids[0] ?? ""]?.y).toBe(220);
 });
 
 test("Should update scene dimensions to match new background", () => {
@@ -2288,7 +2288,7 @@ describe("Actor Prefabs", () => {
         newState.actors.entities["actor1"]?.prefabScriptOverrides,
       ).toHaveProperty("event1");
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1.args,
+        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1?.args,
       ).toEqual({
         arg1: "value1",
       });
@@ -2333,7 +2333,7 @@ describe("Actor Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1.args,
+        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1?.args,
       ).toEqual({
         arg1: "newValue",
       });
@@ -2378,7 +2378,7 @@ describe("Actor Prefabs", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1.args,
+        newState.actors.entities["actor1"]?.prefabScriptOverrides?.event1?.args,
       ).toEqual({
         arg1: "value1",
         arg2: "value2",
@@ -3542,7 +3542,7 @@ describe("Trigger Prefabs", () => {
       ).toHaveProperty("event1");
       expect(
         newState.triggers.entities["trigger1"]?.prefabScriptOverrides?.event1
-          .args,
+          ?.args,
       ).toEqual({
         arg1: "value1",
       });
@@ -3588,7 +3588,7 @@ describe("Trigger Prefabs", () => {
 
       expect(
         newState.triggers.entities["trigger1"]?.prefabScriptOverrides?.event1
-          .args,
+          ?.args,
       ).toEqual({
         arg1: "newValue",
       });
@@ -3634,7 +3634,7 @@ describe("Trigger Prefabs", () => {
 
       expect(
         newState.triggers.entities["trigger1"]?.prefabScriptOverrides?.event1
-          .args,
+          ?.args,
       ).toEqual({
         arg1: "value1",
         arg2: "value2",
@@ -4603,8 +4603,8 @@ describe("Script Event Presets", () => {
       const newState = reducer(state, action);
 
       expect(
-        newState.actors.entities["actor1"]?.prefabScriptOverrides.override1.args
-          ?.someArg,
+        newState.actors.entities["actor1"]?.prefabScriptOverrides.override1
+          ?.args?.someArg,
       ).toBe("newValue");
     });
 
@@ -4644,7 +4644,7 @@ describe("Script Event Presets", () => {
 
       expect(
         newState.triggers.entities["trigger1"]?.prefabScriptOverrides.override1
-          .args?.someArg,
+          ?.args?.someArg,
       ).toBe("newValue");
     });
 
@@ -4773,7 +4773,7 @@ describe("Metasprites", () => {
         tiles: [],
       });
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames,
+        newState.spriteAnimations.entities[spriteAnimationId]?.frames,
       ).toEqual([afterMetaspriteId, newMetaspriteId]);
     });
 
@@ -4804,7 +4804,7 @@ describe("Metasprites", () => {
         tiles: [],
       });
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames,
+        newState.spriteAnimations.entities[spriteAnimationId]?.frames,
       ).toEqual(["metasprite_1", newMetaspriteId]);
     });
 
@@ -4891,7 +4891,7 @@ describe("Metasprites", () => {
 
       // Check if frames are updated correctly
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames,
+        newState.spriteAnimations.entities[spriteAnimationId]?.frames,
       ).toEqual([
         metaspriteId1,
         metaspriteId2,
@@ -4942,7 +4942,7 @@ describe("Metasprites", () => {
 
       expect(newState.metasprites.entities[metaspriteId]).toBeUndefined();
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames,
+        newState.spriteAnimations.entities[spriteAnimationId]?.frames,
       ).toEqual(["metasprite_2"]);
     });
 
@@ -4968,9 +4968,9 @@ describe("Metasprites", () => {
 
       const newState = reducer(state, action);
 
-      expect(newState.metasprites.entities[metaspriteId].tiles).toEqual([]);
+      expect(newState.metasprites.entities[metaspriteId]?.tiles).toEqual([]);
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames,
+        newState.spriteAnimations.entities[spriteAnimationId]?.frames,
       ).toEqual([metaspriteId]);
     });
 
@@ -5024,7 +5024,7 @@ describe("Metasprites", () => {
       expect(newState.metasprites.entities["metasprite_1"]).toBeUndefined();
       expect(newState.metasprites.entities["metasprite_2"]).toBeUndefined();
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames,
+        newState.spriteAnimations.entities[spriteAnimationId]?.frames,
       ).toEqual(["metasprite_3"]);
     });
 
@@ -5056,9 +5056,9 @@ describe("Metasprites", () => {
       const newState = reducer(state, action);
 
       expect(newState.metasprites.entities["metasprite_2"]).toBeUndefined();
-      expect(newState.metasprites.entities["metasprite_1"].tiles).toEqual([]);
+      expect(newState.metasprites.entities["metasprite_1"]?.tiles).toEqual([]);
       expect(
-        newState.spriteAnimations.entities[spriteAnimationId].frames,
+        newState.spriteAnimations.entities[spriteAnimationId]?.frames,
       ).toEqual(["metasprite_1"]);
     });
 
@@ -5250,9 +5250,9 @@ describe("fixAllSpritesWithMissingStates", () => {
 
     const spriteStateId = sprite?.states[0];
     expect(spriteStateId).toBeDefined();
-    expect(result.spriteStates.entities[spriteStateId]).toBeDefined();
+    expect(result.spriteStates.entities[spriteStateId ?? ""]).toBeDefined();
 
-    const spriteState = result.spriteStates.entities[spriteStateId];
+    const spriteState = result.spriteStates.entities[spriteStateId ?? ""];
     expect(spriteState?.animations.length).toEqual(8);
 
     for (const animationId of spriteState?.animations ?? []) {
@@ -5262,7 +5262,7 @@ describe("fixAllSpritesWithMissingStates", () => {
 
       const metaspriteId = animation?.frames[0];
       expect(metaspriteId).toBeDefined();
-      expect(result.metasprites.entities[metaspriteId]).toBeDefined();
+      expect(result.metasprites.entities[metaspriteId ?? ""]).toBeDefined();
     }
   });
 
@@ -5301,7 +5301,7 @@ describe("fixAllSpritesWithMissingStates", () => {
 
     const spriteStateId = sprite?.states[0];
     expect(spriteStateId).toBeDefined();
-    expect(result.spriteStates.entities[spriteStateId]).toBeDefined();
+    expect(result.spriteStates.entities[spriteStateId ?? ""]).toBeDefined();
   });
 
   test("Should keep existing valid sprite states and remove missing state references", () => {
@@ -5393,6 +5393,6 @@ describe("fixAllSpritesWithMissingStates", () => {
 
     const spriteStateId = sprite?.states[0];
     expect(spriteStateId).toBeDefined();
-    expect(result.spriteStates.entities[spriteStateId]).toBeDefined();
+    expect(result.spriteStates.entities[spriteStateId ?? ""]).toBeDefined();
   });
 });

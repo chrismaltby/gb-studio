@@ -864,13 +864,13 @@ describe("migrateFrom420r7To420r8Scenes", () => {
       ],
     };
     const migrated = migrateFrom420r7To420r8Scenes(resources);
-    expect(migrated.scenes[0].paletteIds).not.toEqual(
-      resources.scenes[0].paletteIds,
+    expect(migrated.scenes[0]?.paletteIds).not.toEqual(
+      resources.scenes[0]?.paletteIds,
     );
-    expect(migrated.scenes[0].paletteIds[7]).toEqual("auto");
+    expect(migrated.scenes[0]?.paletteIds[7]).toEqual("auto");
     for (let i = 0; i < 7; i++) {
-      expect(migrated.scenes[0].paletteIds[i]).toEqual(
-        resources.scenes[0].paletteIds[i],
+      expect(migrated.scenes[0]?.paletteIds[i]).toEqual(
+        resources.scenes[0]?.paletteIds[i],
       );
     }
   });
@@ -903,9 +903,9 @@ describe("migrateFrom420r7To420r8Scenes", () => {
       ],
     };
     const migrated = migrateFrom420r7To420r8Scenes(resources);
-    expect(migrated.scenes[0].paletteIds[7]).not.toEqual("auto");
-    expect(migrated.scenes[0].paletteIds).toEqual(
-      resources.scenes[0].paletteIds,
+    expect(migrated.scenes[0]?.paletteIds[7]).not.toEqual("auto");
+    expect(migrated.scenes[0]?.paletteIds).toEqual(
+      resources.scenes[0]?.paletteIds,
     );
   });
 
@@ -931,9 +931,9 @@ describe("migrateFrom420r7To420r8Scenes", () => {
       backgrounds: [],
     };
     const migrated = migrateFrom420r7To420r8Scenes(resources);
-    expect(migrated.scenes[0].paletteIds[7]).not.toEqual("auto");
-    expect(migrated.scenes[0].paletteIds).toEqual(
-      resources.scenes[0].paletteIds,
+    expect(migrated.scenes[0]?.paletteIds[7]).not.toEqual("auto");
+    expect(migrated.scenes[0]?.paletteIds).toEqual(
+      resources.scenes[0]?.paletteIds,
     );
   });
 });

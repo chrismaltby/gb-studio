@@ -397,7 +397,7 @@ test("Should be able to conditionally execute if variable is true with event arr
     } as unknown as PrecompiledScene,
     // variables: ["0", "1"],
     compileEvents: (self: ScriptBuilderBase, events: ScriptEvent[]) => {
-      if (events[0].id === "event1") {
+      if (events[0]?.id === "event1") {
         output.push("        VM_DEBUG                0");
         output.push('        .asciz "True Path"');
       } else {
@@ -484,7 +484,7 @@ test("Should be able to conditionally execute if variable is true with function 
     fonts: [dummyCompiledFont],
     // variables: ["0", "1"],
     compileEvents: (self: ScriptBuilderBase, events: ScriptEvent[]) => {
-      if (events[0].id === "event1") {
+      if (events[0]?.id === "event1") {
         output.push("        VM_DEBUG        0");
         output.push('        .asciz "True Path"');
       } else {
@@ -2034,7 +2034,7 @@ test("should insert placeholder symbol for recursive scripts", async () => {
   expect(additionalScripts["script_1"]?.compiledScript).not.toContain(
     `VM_CALL_FAR             ___bank_script`,
   );
-  expect(recursiveSymbolMap[placeholder]).toEqual("script_1");
+  expect(recursiveSymbolMap[placeholder ?? ""]).toEqual("script_1");
 });
 
 test("should NOT reuse script symbol even if scene hashes are different as long as scripts are identical", async () => {
@@ -2561,7 +2561,7 @@ test("should allow pass by reference for recursive scripts", async () => {
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
     `VM_CALL_FAR             ___bank_${placeholder}, _${placeholder}`,
   );
-  expect(recursiveSymbolMap[placeholder]).toEqual("script_1");
+  expect(recursiveSymbolMap[placeholder ?? ""]).toEqual("script_1");
 });
 
 test("should allow pass by value for recursive scripts", async () => {
@@ -2658,7 +2658,7 @@ test("should allow pass by value for recursive scripts", async () => {
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
     `VM_CALL_FAR             ___bank_${placeholder}, _${placeholder}`,
   );
-  expect(recursiveSymbolMap[placeholder]).toEqual("script_1");
+  expect(recursiveSymbolMap[placeholder ?? ""]).toEqual("script_1");
 });
 
 test("should allow pass by reference between multiple scripts", async () => {
@@ -4953,7 +4953,7 @@ describe("compileCustomEventScript", () => {
 
     const script = sb.compileCustomEventScript("script1");
     expect(script).toEqual({ argsLen: 0, scriptRef: "script1" });
-    expect(sb.options.additionalScripts["script1"].compiledScript)
+    expect(sb.options.additionalScripts["script1"]?.compiledScript)
       .toEqual(`.module script1
 
 .include "vm.i"
@@ -5017,7 +5017,7 @@ _script1::
 
     const script = sb.compileCustomEventScript("script1");
     expect(script).toEqual({ argsLen: 1, scriptRef: "script1" });
-    expect(sb.options.additionalScripts["script1"].compiledScript)
+    expect(sb.options.additionalScripts["script1"]?.compiledScript)
       .toEqual(`.module script1
 
 .include "vm.i"
@@ -5077,7 +5077,7 @@ _script1::
 
     const script = sb.compileCustomEventScript("script1");
     expect(script).toEqual({ argsLen: 1, scriptRef: "script1" });
-    expect(sb.options.additionalScripts["script1"].compiledScript)
+    expect(sb.options.additionalScripts["script1"]?.compiledScript)
       .toEqual(`.module script1
 
 .include "vm.i"
@@ -5141,7 +5141,7 @@ _script1::
     const script = sb.compileCustomEventScript("script1");
     expect(script).toEqual({ argsLen: 1, scriptRef: "script1" });
 
-    expect(sb.options.additionalScripts["script1"].compiledScript)
+    expect(sb.options.additionalScripts["script1"]?.compiledScript)
       .toEqual(`.module script1
 
 .include "vm.i"
@@ -5212,7 +5212,7 @@ _script1::
     const script = sb.compileCustomEventScript("script1");
     expect(script).toEqual({ argsLen: 2, scriptRef: "script1" });
 
-    expect(sb.options.additionalScripts["script1"].compiledScript)
+    expect(sb.options.additionalScripts["script1"]?.compiledScript)
       .toEqual(`.module script1
 
 .include "vm.i"
@@ -5287,7 +5287,7 @@ _script1::
     const script = sb.compileCustomEventScript("script1");
     expect(script).toEqual({ argsLen: 1, scriptRef: "script1" });
 
-    expect(sb.options.additionalScripts["script1"].compiledScript)
+    expect(sb.options.additionalScripts["script1"]?.compiledScript)
       .toEqual(`.module script1
 
 .include "vm.i"

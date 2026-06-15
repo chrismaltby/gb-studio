@@ -120,8 +120,8 @@ describe("parseMod", () => {
 
       expect(typeof mod.name).toBe("string");
       expect(mod.patterns.length).toBeGreaterThan(0);
-      expect(mod.patterns[0].length).toBe(64);
-      expect(mod.patterns[0][0].length).toBe(4);
+      expect(mod.patterns[0]?.length).toBe(64);
+      expect(mod.patterns[0]?.[0]?.length).toBe(4);
     });
   }
 });
@@ -317,13 +317,13 @@ describe("portamento overflow protection", () => {
 
     applyPlaybackCorrections(song, true);
 
-    const effect0 = song.patterns[0][0].effectCode;
-    const effect1 = song.patterns[0][1].effectCode;
-    const effect2 = song.patterns[0][2].effectCode;
+    const effect0 = song.patterns[0]?.[0].effectCode;
+    const effect1 = song.patterns[0]?.[1].effectCode;
+    const effect2 = song.patterns[0]?.[2].effectCode;
 
-    const param0 = song.patterns[0][0].effectParam;
-    const param1 = song.patterns[0][1].effectParam;
-    const param2 = song.patterns[0][2].effectParam;
+    const param0 = song.patterns[0]?.[0].effectParam;
+    const param1 = song.patterns[0]?.[1].effectParam;
+    const param2 = song.patterns[0]?.[2].effectParam;
 
     expect(effect0).toEqual(UGE_EFFECTS.PORTA_DOWN);
     expect(effect1).toEqual(UGE_EFFECTS.PORTA_DOWN);
@@ -358,13 +358,13 @@ describe("portamento overflow protection", () => {
 
     applyPlaybackCorrections(song, true);
 
-    const effect0 = song.patterns[0][0].effectCode;
-    const effect1 = song.patterns[0][1].effectCode;
-    const effect2 = song.patterns[0][2].effectCode;
+    const effect0 = song.patterns[0]?.[0].effectCode;
+    const effect1 = song.patterns[0]?.[1].effectCode;
+    const effect2 = song.patterns[0]?.[2].effectCode;
 
-    const param0 = song.patterns[0][0].effectParam;
-    const param1 = song.patterns[0][1].effectParam;
-    const param2 = song.patterns[0][2].effectParam;
+    const param0 = song.patterns[0]?.[0].effectParam;
+    const param1 = song.patterns[0]?.[1].effectParam;
+    const param2 = song.patterns[0]?.[2].effectParam;
 
     expect(effect0).toEqual(UGE_EFFECTS.PORTA_UP);
     expect(effect1).toEqual(UGE_EFFECTS.PORTA_UP);
@@ -404,25 +404,25 @@ describe("mod2uge integration", () => {
     const modBuf = readFileSync(join(EXAMPLES_DIR, `test.mod`));
     const out = convertMODDataToUGESong(modBuf);
     expect(out.version).toBe(6);
-    expect(out.patterns[12][0]).toEqual({
+    expect(out.patterns[12]?.[0]).toEqual({
       note: 41,
       instrument: 0,
       effectCode: 0x2,
       effectParam: 0x7,
     });
-    expect(out.patterns[12][1]).toEqual({
+    expect(out.patterns[12]?.[1]).toEqual({
       note: null,
       instrument: null,
       effectCode: 0x2,
       effectParam: 0x7,
     });
-    expect(out.patterns[12][2]).toEqual({
+    expect(out.patterns[12]?.[2]).toEqual({
       note: null,
       instrument: null,
       effectCode: 0x2,
       effectParam: 0x7,
     });
-    expect(out.patterns[12][3]).toEqual({
+    expect(out.patterns[12]?.[3]).toEqual({
       note: null,
       instrument: null,
       effectCode: 0x2,

@@ -43,14 +43,16 @@ describe("parsePatternToClipboard / parseClipboardToPattern round-trip", () => {
 
   it("round-trips a pattern with notes set in channel 0", () => {
     const pattern = createPatternMatrix();
-    pattern[0][0].note = 0; // C-3
-    pattern[0][0].instrument = 0;
+    if (pattern[0]?.[0]) {
+      pattern[0][0].note = 0; // C-3
+      pattern[0][0].instrument = 0;
+    }
 
     const clipboard = parsePatternToClipboard(pattern, 0);
     const parsed = parseClipboardToPattern(clipboard);
 
-    expect(parsed[0][0].note).toBe(0);
-    expect(parsed[0][0].instrument).toBe(0);
+    expect(parsed[0]?.[0]?.note).toBe(0);
+    expect(parsed[0]?.[0]?.instrument).toBe(0);
   });
 
   it("round-trips a null note back as null (not NO_CHANGE_ON_PASTE)", () => {
@@ -58,19 +60,21 @@ describe("parsePatternToClipboard / parseClipboardToPattern round-trip", () => {
     const pattern = createPatternMatrix();
     const clipboard = parsePatternToClipboard(pattern, 0);
     const parsed = parseClipboardToPattern(clipboard);
-    expect(parsed[0][0].note).toBeNull();
+    expect(parsed[0]?.[0]?.note).toBeNull();
   });
 
   it("round-trips a null instrument back as null", () => {
     const pattern = createPatternMatrix();
     const clipboard = parsePatternToClipboard(pattern, 0);
     const parsed = parseClipboardToPattern(clipboard);
-    expect(parsed[0][0].instrument).toBeNull();
+    expect(parsed[0]?.[0]?.instrument).toBeNull();
   });
 
   it("embeds the origin row when originAbsRow and selectedCells are provided", () => {
     const pattern = createPatternMatrix();
-    pattern[0][0].note = 0;
+    if (pattern[0]?.[0]) {
+      pattern[0][0].note = 0;
+    }
     const clipboard = parsePatternToClipboard(pattern, 0, [0], 10);
     expect(clipboard).toContain("GBStudio origin: 10");
     expect(parseClipboardOrigin(clipboard)).toBe(10);
@@ -78,25 +82,31 @@ describe("parsePatternToClipboard / parseClipboardToPattern round-trip", () => {
 
   it("includes only selected cells when selectedCells is provided", () => {
     const pattern = createPatternMatrix();
-    pattern[2][0].note = 24;
+    if (pattern[2]?.[0]) {
+      pattern[2][0].note = 24;
+    }
     const clipboard = parsePatternToClipboard(pattern, 0, [2]);
     const parsed = parseClipboardToPattern(clipboard);
     // Only one row should contain data
     expect(parsed).toHaveLength(1);
-    expect(parsed[0][0].note).toBe(24);
+    expect(parsed[0]?.[0]?.note).toBe(24);
   });
 
   it("fills gaps in selected cells with null note cells", () => {
     const pattern = createPatternMatrix();
-    pattern[0][0].note = 0;
-    pattern[2][0].note = 12;
+    if (pattern[0]?.[0]) {
+      pattern[0][0].note = 0;
+    }
+    if (pattern[2]?.[0]) {
+      pattern[2][0].note = 12;
+    }
     // select rows 0 and 2, but row 1 is not selected
     const clipboard = parsePatternToClipboard(pattern, 0, [0, 2]);
     const parsed = parseClipboardToPattern(clipboard);
     // 3 rows: row 0 (note 0), row 1 (empty gap), row 2 (note 12)
     expect(parsed).toHaveLength(3);
-    expect(parsed[0][0].note).toBe(0);
-    expect(parsed[1][0].note).toBeNull(); // empty cell parses back as null
-    expect(parsed[2][0].note).toBe(12);
+    expect(parsed[0]?.[0]?.note).toBe(0);
+    expect(parsed[1]?.[0]?.note).toBeNull(); // empty cell parses back as null
+    expect(parsed[2]?.[0]?.note).toBe(12);
   });
 });

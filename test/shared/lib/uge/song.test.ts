@@ -93,8 +93,8 @@ describe("createSubPattern", () => {
 
   it("all cells start as empty SubPatternCells", () => {
     const sub = createSubPattern();
-    expect(sub[0].note).toBeNull();
-    expect(sub[0].jump).toBeNull();
+    expect(sub[0]?.note).toBeNull();
+    expect(sub[0]?.jump).toBeNull();
   });
 });
 
@@ -123,14 +123,14 @@ describe("addDutyInstrument", () => {
     const inst = makeDutyInstrument();
     addDutyInstrument(song, inst);
     expect(song.dutyInstruments).toHaveLength(1);
-    expect(song.dutyInstruments[0].index).toBe(0);
+    expect(song.dutyInstruments[0]?.index).toBe(0);
   });
 
   it("sets incrementing indices for multiple instruments", () => {
     const song = createSong();
     addDutyInstrument(song, makeDutyInstrument());
     addDutyInstrument(song, makeDutyInstrument());
-    expect(song.dutyInstruments[1].index).toBe(1);
+    expect(song.dutyInstruments[1]?.index).toBe(1);
   });
 });
 
@@ -140,7 +140,7 @@ describe("addWaveInstrument", () => {
     const inst = makeWaveInstrument();
     addWaveInstrument(song, inst);
     expect(song.waveInstruments).toHaveLength(1);
-    expect(song.waveInstruments[0].index).toBe(0);
+    expect(song.waveInstruments[0]?.index).toBe(0);
   });
 });
 
@@ -150,6 +150,6 @@ describe("addNoiseInstrument", () => {
     const inst = makeNoiseInstrument();
     addNoiseInstrument(song, inst);
     expect(song.noiseInstruments).toHaveLength(1);
-    expect(song.noiseInstruments[0].index).toBe(0);
+    expect(song.noiseInstruments[0]?.index).toBe(0);
   });
 });

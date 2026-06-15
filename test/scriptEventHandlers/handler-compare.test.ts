@@ -631,11 +631,11 @@ describe("Compare output from trusted and untrusted plugin handlers", () => {
 
         if (testPostUpdate) {
           for (const test of testPostUpdate) {
-            const qUpdatedArgs = qPlugin.fieldsLookup[test.key].postUpdateFn?.(
+            const qUpdatedArgs = qPlugin.fieldsLookup[test.key]?.postUpdateFn?.(
               test.newArgs,
               test.prevArgs,
             );
-            const eUpdatedArgs = ePlugin.fieldsLookup[test.key].postUpdateFn?.(
+            const eUpdatedArgs = ePlugin.fieldsLookup[test.key]?.postUpdateFn?.(
               test.newArgs,
               test.prevArgs,
             );

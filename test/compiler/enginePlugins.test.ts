@@ -958,7 +958,7 @@ describe("collectPatchFiles", () => {
     const patches = await collectPatchFiles(usedEnginePluginPath, unusedFiles);
 
     expect(patches).toHaveLength(1);
-    expect(patches[0].rel).toBe("src/used.c.patch");
+    expect(patches[0]?.rel).toBe("src/used.c.patch");
   });
 
   test("It should return empty array when no patches found", async () => {
@@ -1006,7 +1006,7 @@ describe("collectPatchFiles", () => {
 
     const patches = await collectPatchFiles(usedEnginePluginPath, []);
 
-    expect(patches[0].abs).toBe(absolutePath);
+    expect(patches[0]?.abs).toBe(absolutePath);
   });
 
   test("It should use pathToPosix for comparing with unused files", async () => {
@@ -1055,9 +1055,9 @@ describe("collectPatchFiles", () => {
     const patches = await collectPatchFiles(usedEnginePluginPath, []);
 
     expect(patches).toHaveLength(3);
-    expect(patches[0].rel).toBe("src/a.c.patch");
-    expect(patches[1].rel).toBe("src/m.c.patch");
-    expect(patches[2].rel).toBe("src/z.c.patch");
+    expect(patches[0]?.rel).toBe("src/a.c.patch");
+    expect(patches[1]?.rel).toBe("src/m.c.patch");
+    expect(patches[2]?.rel).toBe("src/z.c.patch");
   });
 
   test("It should only exclude patches that exactly match unused files", async () => {
@@ -1075,7 +1075,7 @@ describe("collectPatchFiles", () => {
     ]);
 
     expect(patches).toHaveLength(1);
-    expect(patches[0].rel).toBe("src/unused_extra.c.patch");
+    expect(patches[0]?.rel).toBe("src/unused_extra.c.patch");
   });
 });
 

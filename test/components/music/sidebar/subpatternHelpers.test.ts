@@ -38,19 +38,23 @@ test("Should initialize effect param when setting effect code zero", () => {
     effectCode: 0,
   });
 
-  expect(nextSubpattern[0].effectCode).toBe(0);
-  expect(nextSubpattern[0].effectParam).toBe(0);
+  expect(nextSubpattern[0]?.effectCode).toBe(0);
+  expect(nextSubpattern[0]?.effectParam).toBe(0);
 });
 
 test("Should move a visible subpattern row without dropping data", () => {
   const subpattern = [createSubPatternCell(), createSubPatternCell()];
-  subpattern[0].note = 40;
-  subpattern[1].note = 45;
+  if (subpattern[0]) {
+    subpattern[0].note = 40;
+  }
+  if (subpattern[1]) {
+    subpattern[1].note = 45;
+  }
 
   const nextSubpattern = moveSubpatternRow(subpattern, 0, 1);
 
-  expect(nextSubpattern[0].note).toBe(45);
-  expect(nextSubpattern[1].note).toBe(40);
+  expect(nextSubpattern[0]?.note).toBe(45);
+  expect(nextSubpattern[1]?.note).toBe(40);
 });
 
 test("isSubpatternRowEmpty returns true for a blank cell", () => {
@@ -113,7 +117,7 @@ test("getVisibleSubpatternRows pads short subpatterns with empty cells", () => {
   const short = [createSubPatternCell()];
   const rows = getVisibleSubpatternRows(short);
   expect(rows).toHaveLength(TRACKER_SUBPATTERN_VISIBLE_LENGTH);
-  expect(rows[1].note).toBeNull();
+  expect(rows[1]?.note).toBeNull();
 });
 
 test("offsetToStoredPitch adds the base note (36) to the offset", () => {
@@ -124,34 +128,48 @@ test("offsetToStoredPitch adds the base note (36) to the offset", () => {
 
 test("applySubpatternCellChanges does not set effectParam when it already has a value", () => {
   const subpattern = [createSubPatternCell()];
-  subpattern[0].effectParam = 10;
+  if (subpattern[0]) {
+    subpattern[0].effectParam = 10;
+  }
   const next = applySubpatternCellChanges(subpattern, 0, { effectCode: 5 });
-  expect(next[0].effectParam).toBe(10);
+  if (next[0]) {
+    expect(next[0].effectParam).toBe(10);
+  }
 });
 
 test("doubleSubpattern doubles the spacing between rows", () => {
   const sub = createSubPattern();
-  sub[0].note = 40;
-  sub[1].note = 45;
+  if (sub[0]) {
+    sub[0].note = 40;
+  }
+  if (sub[1]) {
+    sub[1].note = 45;
+  }
   const doubled = doubleSubpattern(sub);
-  expect(doubled[0].note).toBe(40);
-  expect(doubled[1].note).toBeNull(); // gap
-  expect(doubled[2].note).toBe(45);
+  expect(doubled[0]?.note).toBe(40);
+  expect(doubled[1]?.note).toBeNull(); // gap
+  expect(doubled[2]?.note).toBe(45);
 });
 
 test("halfSubpattern halves the number of active rows", () => {
   const sub = createSubPattern();
-  sub[0].note = 40;
-  sub[2].note = 45;
+  if (sub[0]) {
+    sub[0].note = 40;
+  }
+  if (sub[2]) {
+    sub[2].note = 45;
+  }
   const halved = halfSubpattern(sub);
-  expect(halved[0].note).toBe(40);
-  expect(halved[1].note).toBe(45);
+  expect(halved[0]?.note).toBe(40);
+  expect(halved[1]?.note).toBe(45);
 });
 
 test("doubleSubpattern adjusts jump targets", () => {
   const sub = createSubPattern();
   // jump=2 means target row 1 (0-based); after doubling, target becomes row 2 (0-based) → stored as 3
-  sub[0].jump = 2;
+  if (sub[0]) {
+    sub[0].jump = 2;
+  }
   const doubled = doubleSubpattern(sub);
-  expect(doubled[0].jump).toBe(3);
+  expect(doubled[0]?.jump).toBe(3);
 });

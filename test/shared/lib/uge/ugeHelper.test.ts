@@ -101,8 +101,8 @@ describe("compactUGESong", () => {
       { splitPattern: true, channels: [4, 5, 6, 7] },
       { splitPattern: false, channels: [0, 1, 2, 3] },
     ]);
-    expect(compacted.patterns[0][0].note).toBe(1);
-    expect(compacted.patterns[4][0].note).toBe(9);
+    expect(compacted.patterns[0]?.[0]?.note).toBe(1);
+    expect(compacted.patterns[4]?.[0]?.note).toBe(9);
   });
 
   it("does not merge identical used blocks", () => {
@@ -129,8 +129,8 @@ describe("compactUGESong", () => {
     const compacted = compactUGESong(song);
 
     expect(compacted.patterns).toHaveLength(8);
-    expect(compacted.sequence[0].channels).toEqual([0, 1, 2, 3]);
-    expect(compacted.sequence[1].channels).toEqual([4, 5, 6, 7]);
+    expect(compacted.sequence[0]?.channels).toEqual([0, 1, 2, 3]);
+    expect(compacted.sequence[1]?.channels).toEqual([4, 5, 6, 7]);
   });
 
   it("compacts unused pattern blocks before saving", () => {
@@ -154,7 +154,7 @@ describe("compactUGESong", () => {
     expect(reloaded.sequence).toEqual([
       { splitPattern: false, channels: [0, 1, 2, 3] },
     ]);
-    expect(reloaded.patterns[0][0].note).toBe(5);
+    expect(reloaded.patterns[0]?.[0]?.note).toBe(5);
   });
 });
 
@@ -167,7 +167,7 @@ describe("loadUGESong", () => {
       expect(song.patterns[i]).toBeDefined();
       expect(song.patterns[i]).toHaveLength(64);
       for (let rowIndex = 0; rowIndex < 64; rowIndex++) {
-        expect(song.patterns[i][rowIndex]).toBeDefined();
+        expect(song.patterns[i]?.[rowIndex]).toBeDefined();
       }
     }
   });
@@ -188,8 +188,12 @@ describe("exportToC", () => {
       makeDutyInstrument(0, true),
       makeDutyInstrument(1, true),
     ];
-    song.dutyInstruments[0].subpattern[0].note = 24;
-    song.dutyInstruments[1].subpattern[0].note = 36;
+    if (song.dutyInstruments[0]?.subpattern[0]) {
+      song.dutyInstruments[0].subpattern[0].note = 24;
+    }
+    if (song.dutyInstruments[1]?.subpattern[0]) {
+      song.dutyInstruments[1].subpattern[0].note = 36;
+    }
 
     const exported = exportToC(song, "test_track");
 
@@ -217,8 +221,12 @@ describe("exportToC", () => {
       makeDutyInstrument(0, true),
       makeDutyInstrument(1, true),
     ];
-    song.dutyInstruments[0].subpattern[0].note = 24;
-    song.dutyInstruments[1].subpattern[0].note = 24;
+    if (song.dutyInstruments[0]?.subpattern[0]) {
+      song.dutyInstruments[0].subpattern[0].note = 24;
+    }
+    if (song.dutyInstruments[1]?.subpattern[0]) {
+      song.dutyInstruments[1].subpattern[0].note = 24;
+    }
 
     const exported = exportToC(song, "test_track");
 
@@ -241,11 +249,15 @@ describe("exportToC", () => {
       createPattern(),
       createPattern(),
     ];
-    song.patterns[0][0].instrument = 0;
+    if (song.patterns[0]?.[0]) {
+      song.patterns[0][0].instrument = 0;
+    }
     song.sequence = [{ splitPattern: false, channels: [0, 1, 2, 3] }];
 
     song.dutyInstruments = [makeDutyInstrument(0, true)];
-    song.dutyInstruments[0].subpattern[0].note = 24;
+    if (song.dutyInstruments[0]?.subpattern[0]) {
+      song.dutyInstruments[0].subpattern[0].note = 24;
+    }
 
     const exported = exportToC(song, "test_track");
 

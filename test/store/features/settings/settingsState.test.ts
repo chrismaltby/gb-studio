@@ -110,10 +110,10 @@ describe("addScriptEventPreset", () => {
     expect(newState.scriptEventPresets["EVENT_TEXT"]).toBeTruthy();
 
     const newPreset =
-      newState.scriptEventPresets["EVENT_TEXT"][action.payload.presetId];
+      newState.scriptEventPresets["EVENT_TEXT"]?.[action.payload.presetId];
     expect(newPreset).toBeTruthy();
-    expect(newPreset.groups).toEqual(["text"]);
-    expect(newPreset.args).toEqual({ text: "Hello World" });
+    expect(newPreset?.groups).toEqual(["text"]);
+    expect(newPreset?.args).toEqual({ text: "Hello World" });
   });
 
   test("Should be able to add a new script event preset when preset already defined for event type", () => {
@@ -142,20 +142,20 @@ describe("addScriptEventPreset", () => {
     expect(newState.scriptEventPresets["EVENT_TEXT"]).toBeTruthy();
 
     const newPreset =
-      newState.scriptEventPresets["EVENT_TEXT"][action.payload.presetId];
+      newState.scriptEventPresets["EVENT_TEXT"]?.[action.payload.presetId];
     expect(newPreset).toBeTruthy();
-    expect(newPreset.groups).toEqual(["layout", "behavior"]);
-    expect(newPreset.args).toEqual({
+    expect(newPreset?.groups).toEqual(["layout", "behavior"]);
+    expect(newPreset?.args).toEqual({
       position: "top",
       minHeight: 6,
       maxHeight: 6,
       speedIn: 2,
     });
 
-    const oldPreset = newState.scriptEventPresets["EVENT_TEXT"]["preset1"];
+    const oldPreset = newState.scriptEventPresets["EVENT_TEXT"]?.["preset1"];
     expect(oldPreset).toBeTruthy();
-    expect(oldPreset.groups).toEqual(["text"]);
-    expect(oldPreset.args).toEqual({ text: "Hello World" });
+    expect(oldPreset?.groups).toEqual(["text"]);
+    expect(oldPreset?.args).toEqual({ text: "Hello World" });
   });
 
   test("Should not modify other event types when adding a new preset", () => {
@@ -213,12 +213,12 @@ describe("addScriptEventPreset", () => {
     const finalState = reducer(newState, action2);
     expect(action1.payload.presetId).not.toEqual(action2.payload.presetId);
     expect(
-      finalState.scriptEventPresets["EVENT_TEXT"][action1.payload.presetId]
-        .args,
+      finalState.scriptEventPresets["EVENT_TEXT"]?.[action1.payload.presetId]
+        ?.args,
     ).toEqual({ text: "First" });
     expect(
-      finalState.scriptEventPresets["EVENT_TEXT"][action2.payload.presetId]
-        .args,
+      finalState.scriptEventPresets["EVENT_TEXT"]?.[action2.payload.presetId]
+        ?.args,
     ).toEqual({ text: "Second" });
   });
 });
@@ -246,11 +246,11 @@ describe("editScriptEventPreset", () => {
       args: { text: "Hello Universe" },
     });
     const newState = reducer(state, action);
-    const editedPreset = newState.scriptEventPresets["EVENT_TEXT"]["preset1"];
+    const editedPreset = newState.scriptEventPresets["EVENT_TEXT"]?.["preset1"];
     expect(editedPreset).toBeTruthy();
-    expect(editedPreset.name).toBe("Updated Text Preset");
-    expect(editedPreset.groups).toEqual(["layout"]);
-    expect(editedPreset.args).toEqual({ text: "Hello Universe" });
+    expect(editedPreset?.name).toBe("Updated Text Preset");
+    expect(editedPreset?.groups).toEqual(["layout"]);
+    expect(editedPreset?.args).toEqual({ text: "Hello Universe" });
   });
 
   test("Should not edit a non-existent script event preset", () => {
@@ -269,7 +269,7 @@ describe("editScriptEventPreset", () => {
     });
     const newState = reducer(state, action);
     expect(
-      newState.scriptEventPresets["EVENT_TEXT"]["nonExistentPreset"],
+      newState.scriptEventPresets["EVENT_TEXT"]?.["nonExistentPreset"],
     ).toBeUndefined();
   });
 
@@ -317,9 +317,11 @@ describe("editScriptEventPreset", () => {
       args: { text: "Hello Universe" },
     });
     const newState = reducer(state, action);
-    const editedPreset = newState.scriptEventPresets["EVENT_TEXT"]["preset1"];
-    expect(editedPreset.name).toBe("Updated Text Preset");
-    expect(newState.scriptEventPresets["EVENT_TEXT"]["preset2"].args).toEqual({
+    const editedPreset = newState.scriptEventPresets["EVENT_TEXT"]?.["preset1"];
+    expect(editedPreset?.name).toBe("Updated Text Preset");
+    expect(
+      newState.scriptEventPresets["EVENT_TEXT"]?.["preset2"]?.args,
+    ).toEqual({
       text: "Hello Mars",
     });
   });
@@ -352,9 +354,9 @@ describe("removeScriptEventPreset", () => {
     });
     const newState = reducer(state, action);
     expect(
-      newState.scriptEventPresets["EVENT_TEXT"]["preset1"],
+      newState.scriptEventPresets["EVENT_TEXT"]?.["preset1"],
     ).toBeUndefined();
-    expect(newState.scriptEventPresets["EVENT_TEXT"]["preset2"]).toBeTruthy();
+    expect(newState.scriptEventPresets["EVENT_TEXT"]?.["preset2"]).toBeTruthy();
   });
 
   test("Should do nothing if the preset does not exist", () => {
@@ -376,7 +378,7 @@ describe("removeScriptEventPreset", () => {
       presetId: "nonExistentPreset",
     });
     const newState = reducer(state, action);
-    expect(newState.scriptEventPresets["EVENT_TEXT"]["preset1"]).toBeTruthy();
+    expect(newState.scriptEventPresets["EVENT_TEXT"]?.["preset1"]).toBeTruthy();
   });
 
   test("Should do nothing if the event type does not exist", () => {
@@ -398,7 +400,7 @@ describe("removeScriptEventPreset", () => {
       presetId: "preset1",
     });
     const newState = reducer(state, action);
-    expect(newState.scriptEventPresets["EVENT_TEXT"]["preset1"]).toBeTruthy();
+    expect(newState.scriptEventPresets["EVENT_TEXT"]?.["preset1"]).toBeTruthy();
   });
 
   test("Should remove the event type entry if all presets are removed", () => {
@@ -449,9 +451,9 @@ describe("removeScriptEventPreset", () => {
     });
     const newState = reducer(state, action);
     expect(newState.scriptEventPresets["EVENT_TEXT"]).toBeTruthy();
-    expect(Object.keys(newState.scriptEventPresets["EVENT_TEXT"]).length).toBe(
-      1,
-    );
+    expect(
+      Object.keys(newState.scriptEventPresets["EVENT_TEXT"] ?? {}).length,
+    ).toBe(1);
   });
 
   test("Should delete the default preset entry if the default preset is removed", () => {
@@ -545,7 +547,9 @@ describe("removeScriptEventPreset", () => {
     const newState = reducer(state, action);
 
     expect(newState.scriptEventPresets["EVENT_TEXT"]).toBeDefined();
-    expect(newState.scriptEventPresets["EVENT_TEXT"]["preset2"]).toBeDefined();
+    expect(
+      newState.scriptEventPresets["EVENT_TEXT"]?.["preset2"],
+    ).toBeDefined();
     expect(newState.scriptEventDefaultPresets["EVENT_TEXT"]).toBeUndefined();
   });
 
@@ -581,7 +585,7 @@ describe("removeScriptEventPreset", () => {
     const newState = reducer(state, action);
 
     expect(newState.scriptEventPresets["EVENT_TEXT"]).toBeUndefined();
-    expect(newState.scriptEventPresets["EVENT_ANOTHER"]["preset2"].id).toBe(
+    expect(newState.scriptEventPresets["EVENT_ANOTHER"]?.["preset2"]?.id).toBe(
       "preset2",
     );
   });

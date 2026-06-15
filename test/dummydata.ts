@@ -852,6 +852,10 @@ export const getDummyCompiledFont = async (): Promise<PrecompiledFontData> => {
     `${projectTemplatesRoot}/gbhtml`,
   );
 
+  if (!compiledFontsRet[0]) {
+    throw new Error("Unable to compile dummy font");
+  }
+
   return compiledFontsRet[0];
 };
 

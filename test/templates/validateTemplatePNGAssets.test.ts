@@ -30,11 +30,15 @@ const templatePNGAssets = glob
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const idx = (width * y + x) << 2;
-        const alpha = data[idx + 3];
+        const alpha = data[idx + 3] ?? 0;
         if (alpha < 255) {
           containsAlpha = true;
         }
-        const hex = rgb2hex(data[idx], data[idx + 1], data[idx + 2]);
+        const hex = rgb2hex(
+          data[idx] ?? 0,
+          data[idx + 1] ?? 0,
+          data[idx + 2] ?? 0,
+        );
         palette.add(hex);
       }
     }
@@ -112,7 +116,12 @@ test.each(templatePNGAssets)(
     const indexPalette =
       (pngPalette &&
         pngPalette
-          .map((color) => rgb2hex(color[0], color[1], color[2]))
+          .map((color) => {
+            const [r, g, b] = color;
+            return r !== undefined && g !== undefined && b !== undefined
+              ? rgb2hex(r, g, b)
+              : "FAIL";
+          })
           .join("-")) ||
       "";
     expect(Array.isArray(pngPalette));

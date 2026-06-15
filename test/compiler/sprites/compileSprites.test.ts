@@ -117,34 +117,36 @@ describe("Compile Sprite", () => {
       sprite.canvasWidth = 16;
       sprite.canvasHeight = 16;
 
-      sprite.states[0].animations[0].frames[0].tiles = [
-        {
-          id: "tile1",
-          x: 0,
-          y: 0,
-          sliceX: 0,
-          sliceY: 0,
-          palette: 0,
-          flipX: false,
-          flipY: false,
-          objPalette: "OBP0",
-          paletteIndex: 0,
-          priority: false,
-        },
-        {
-          id: "tile2",
-          x: 8,
-          y: 0,
-          sliceX: 8,
-          sliceY: 0,
-          palette: 0,
-          flipX: false,
-          flipY: false,
-          objPalette: "OBP0",
-          paletteIndex: 0,
-          priority: false,
-        },
-      ];
+      if (sprite.states[0]?.animations[0]?.frames[0]) {
+        sprite.states[0].animations[0].frames[0].tiles = [
+          {
+            id: "tile1",
+            x: 0,
+            y: 0,
+            sliceX: 0,
+            sliceY: 0,
+            palette: 0,
+            flipX: false,
+            flipY: false,
+            objPalette: "OBP0",
+            paletteIndex: 0,
+            priority: false,
+          },
+          {
+            id: "tile2",
+            x: 8,
+            y: 0,
+            sliceX: 8,
+            sliceY: 0,
+            palette: 0,
+            flipX: false,
+            flipY: false,
+            objPalette: "OBP0",
+            paletteIndex: 0,
+            priority: false,
+          },
+        ];
+      }
 
       const result = await compileSprite(
         sprite,
@@ -173,47 +175,49 @@ describe("Compile Sprite", () => {
       sprite.canvasWidth = 24;
       sprite.canvasHeight = 8;
 
-      sprite.states[0].animations[0].frames[0].tiles = [
-        {
-          id: "tile1",
-          x: 0,
-          y: 0,
-          sliceX: 0,
-          sliceY: 0,
-          palette: 0,
-          flipX: false,
-          flipY: false,
-          objPalette: "OBP0",
-          paletteIndex: 0,
-          priority: false,
-        },
-        {
-          id: "tile2",
-          x: 8,
-          y: 0,
-          sliceX: 8,
-          sliceY: 0,
-          palette: 0,
-          flipX: false,
-          flipY: false,
-          objPalette: "OBP0",
-          paletteIndex: 0,
-          priority: false,
-        },
-        {
-          id: "tile3",
-          x: 16,
-          y: 0,
-          sliceX: 0,
-          sliceY: 0,
-          palette: 0,
-          flipX: false,
-          flipY: false,
-          objPalette: "OBP0",
-          paletteIndex: 0,
-          priority: false,
-        },
-      ];
+      if (sprite.states[0]?.animations[0]?.frames[0]) {
+        sprite.states[0].animations[0].frames[0].tiles = [
+          {
+            id: "tile1",
+            x: 0,
+            y: 0,
+            sliceX: 0,
+            sliceY: 0,
+            palette: 0,
+            flipX: false,
+            flipY: false,
+            objPalette: "OBP0",
+            paletteIndex: 0,
+            priority: false,
+          },
+          {
+            id: "tile2",
+            x: 8,
+            y: 0,
+            sliceX: 8,
+            sliceY: 0,
+            palette: 0,
+            flipX: false,
+            flipY: false,
+            objPalette: "OBP0",
+            paletteIndex: 0,
+            priority: false,
+          },
+          {
+            id: "tile3",
+            x: 16,
+            y: 0,
+            sliceX: 0,
+            sliceY: 0,
+            palette: 0,
+            flipX: false,
+            flipY: false,
+            objPalette: "OBP0",
+            paletteIndex: 0,
+            priority: false,
+          },
+        ];
+      }
 
       const result = await compileSprite(
         sprite,
@@ -242,34 +246,36 @@ describe("Compile Sprite", () => {
       sprite.canvasWidth = 24;
       sprite.canvasHeight = 8;
 
-      sprite.states[0].animations[0].frames[0].tiles = [
-        {
-          id: "tile1",
-          x: 0,
-          y: 0,
-          sliceX: 0,
-          sliceY: 0,
-          palette: 0,
-          flipX: false,
-          flipY: false,
-          objPalette: "OBP0",
-          paletteIndex: 0,
-          priority: false,
-        },
-        {
-          id: "tile2",
-          x: 8,
-          y: 0,
-          sliceX: 8,
-          sliceY: 0,
-          palette: 0,
-          flipX: false,
-          flipY: false,
-          objPalette: "OBP0",
-          paletteIndex: 0,
-          priority: false,
-        },
-      ];
+      if (sprite.states[0]?.animations[0]?.frames[0]) {
+        sprite.states[0].animations[0].frames[0].tiles = [
+          {
+            id: "tile1",
+            x: 0,
+            y: 0,
+            sliceX: 0,
+            sliceY: 0,
+            palette: 0,
+            flipX: false,
+            flipY: false,
+            objPalette: "OBP0",
+            paletteIndex: 0,
+            priority: false,
+          },
+          {
+            id: "tile2",
+            x: 8,
+            y: 0,
+            sliceX: 8,
+            sliceY: 0,
+            palette: 0,
+            flipX: false,
+            flipY: false,
+            objPalette: "OBP0",
+            paletteIndex: 0,
+            priority: false,
+          },
+        ];
+      }
 
       const result = await compileSprite(
         sprite,
@@ -296,34 +302,36 @@ describe("Compile Sprite", () => {
       const sprite = createTestSprite("8x8", "color");
       sprite.filename = "box_16px.png";
 
-      sprite.states[0].animations[0].frames[0].tiles = [
-        {
-          id: "tile1",
-          x: 0,
-          y: 0,
-          sliceX: 0,
-          sliceY: 0,
-          palette: 0,
-          flipX: false,
-          flipY: false,
-          objPalette: "OBP0",
-          paletteIndex: 0,
-          priority: false,
-        },
-        {
-          id: "tile2",
-          x: 8,
-          y: 0,
-          sliceX: 8,
-          sliceY: 0,
-          palette: 0,
-          flipX: false,
-          flipY: false,
-          objPalette: "OBP0",
-          paletteIndex: 0,
-          priority: false,
-        },
-      ];
+      if (sprite.states[0]?.animations[0]?.frames[0]) {
+        sprite.states[0].animations[0].frames[0].tiles = [
+          {
+            id: "tile1",
+            x: 0,
+            y: 0,
+            sliceX: 0,
+            sliceY: 0,
+            palette: 0,
+            flipX: false,
+            flipY: false,
+            objPalette: "OBP0",
+            paletteIndex: 0,
+            priority: false,
+          },
+          {
+            id: "tile2",
+            x: 8,
+            y: 0,
+            sliceX: 8,
+            sliceY: 0,
+            palette: 0,
+            flipX: false,
+            flipY: false,
+            objPalette: "OBP0",
+            paletteIndex: 0,
+            priority: false,
+          },
+        ];
+      }
 
       const result = await compileSprite(
         sprite,
@@ -393,9 +401,15 @@ describe("Optimise Tiles", () => {
     return output;
   };
 
-  const expectTileMatchAscii = (data: ArrayLike<number>, ascii: string) => {
-    expect(dataToAscii(data)).toBe(ascii.trim().replace(/ /g, ""));
-    expect(Array.from(data)).toEqual(asciiToData(ascii));
+  const expectTileMatchAscii = (
+    data: ArrayLike<number> | undefined,
+    ascii: string,
+  ) => {
+    expect(data).not.toBeUndefined();
+    if (data) {
+      expect(dataToAscii(data)).toBe(ascii.trim().replace(/ /g, ""));
+      expect(Array.from(data)).toEqual(asciiToData(ascii));
+    }
   };
 
   describe("Mode: 8x16", () => {
@@ -433,7 +447,7 @@ describe("Optimise Tiles", () => {
       expectValidTilesOfLength(result.tiles, 2);
 
       expectTileMatchAscii(
-        result.tiles[0].data,
+        result.tiles[0]?.data,
         `
         .XXXXXX.
         XxxxxxxX
@@ -445,7 +459,7 @@ describe("Optimise Tiles", () => {
         XX.X..xX`,
       );
       expectTileMatchAscii(
-        result.tiles[1].data,
+        result.tiles[1]?.data,
         `
         XX.XX.xX
         XX....xX
@@ -511,7 +525,7 @@ describe("Optimise Tiles", () => {
       const tile2Index = result.lookup.tile2?.tile ?? 0;
 
       expectTileMatchAscii(
-        result.tiles[tile1Index].data,
+        result.tiles[tile1Index]?.data,
         `
         .XXXXXXX
         Xxxxxxxx
@@ -524,7 +538,7 @@ describe("Optimise Tiles", () => {
       );
 
       expectTileMatchAscii(
-        result.tiles[tile1Index + 1].data,
+        result.tiles[tile1Index + 1]?.data,
         `
         XX.....X
         XX......
@@ -537,7 +551,7 @@ describe("Optimise Tiles", () => {
       );
 
       expectTileMatchAscii(
-        result.tiles[tile2Index].data,
+        result.tiles[tile2Index]?.data,
         `
         XXXXXXX.
         xxxxxxxX
@@ -550,7 +564,7 @@ describe("Optimise Tiles", () => {
       );
 
       expectTileMatchAscii(
-        result.tiles[tile2Index + 1].data,
+        result.tiles[tile2Index + 1]?.data,
         `
         X.....xX
         ......xX
@@ -616,7 +630,7 @@ describe("Optimise Tiles", () => {
       const tile2Index = result.lookup.tile2?.tile ?? 0;
 
       expectTileMatchAscii(
-        result.tiles[tile1Index].data,
+        result.tiles[tile1Index]?.data,
         `
         .???????
         X???????
@@ -629,7 +643,7 @@ describe("Optimise Tiles", () => {
       );
 
       expectTileMatchAscii(
-        result.tiles[tile1Index + 1].data,
+        result.tiles[tile1Index + 1]?.data,
         `
         X???????
         X???????
@@ -642,7 +656,7 @@ describe("Optimise Tiles", () => {
       );
 
       expectTileMatchAscii(
-        result.tiles[tile2Index].data,
+        result.tiles[tile2Index]?.data,
         `
         XXXXXXX.
         xxxxxxxX
@@ -655,7 +669,7 @@ describe("Optimise Tiles", () => {
       );
 
       expectTileMatchAscii(
-        result.tiles[tile2Index + 1].data,
+        result.tiles[tile2Index + 1]?.data,
         `
         X.....xX
         ......xX
@@ -754,7 +768,7 @@ describe("Optimise Tiles", () => {
       // Tile 3 and 4 contain identical tile data
       expect(tile3Index).toBe(tile4Index);
 
-      expect(Array.from(result.tiles[tile1Index].data)).toEqual(
+      expect(Array.from(result.tiles[tile1Index]?.data ?? [])).toEqual(
         asciiToData(`
         ........
         ..XXXX..
@@ -766,7 +780,7 @@ describe("Optimise Tiles", () => {
         ........`),
       );
 
-      expect(Array.from(result.tiles[tile1Index + 1].data)).toEqual(
+      expect(Array.from(result.tiles[tile1Index + 1]?.data ?? [])).toEqual(
         asciiToData(`
         ????????
         ????????
@@ -778,7 +792,7 @@ describe("Optimise Tiles", () => {
         ????????`),
       );
 
-      expect(Array.from(result.tiles[tile3Index].data)).toEqual(
+      expect(Array.from(result.tiles[tile3Index]?.data ?? [])).toEqual(
         asciiToData(`
         ........
         .XXXXX..
@@ -790,7 +804,7 @@ describe("Optimise Tiles", () => {
         ........`),
       );
 
-      expect(Array.from(result.tiles[tile3Index + 1].data)).toEqual(
+      expect(Array.from(result.tiles[tile3Index + 1]?.data ?? [])).toEqual(
         asciiToData(`
         ........
         .XXXXXX.
@@ -855,7 +869,7 @@ describe("Optimise Tiles", () => {
       const tile2Index = result.lookup.tile2?.tile ?? 0;
 
       expectTileMatchAscii(
-        result.tiles[tile2Index].data,
+        result.tiles[tile2Index]?.data,
         `
         XXXXXXX.
         xxxxxxxX
@@ -868,7 +882,7 @@ describe("Optimise Tiles", () => {
       );
 
       expectTileMatchAscii(
-        result.tiles[tile2Index + 1].data,
+        result.tiles[tile2Index + 1]?.data,
         `
         X.....xX
         ......xX
@@ -932,7 +946,7 @@ describe("Optimise Tiles", () => {
 
       const tile2Index = result.lookup.tile2?.tile ?? 0;
 
-      expect(Array.from(result.tiles[tile2Index].data)).toEqual(
+      expect(Array.from(result.tiles[tile2Index]?.data ?? [])).toEqual(
         asciiToData(`
         ........
         .XXXXX..
@@ -944,7 +958,7 @@ describe("Optimise Tiles", () => {
         ........`),
       );
 
-      expect(Array.from(result.tiles[tile2Index + 1].data)).toEqual(
+      expect(Array.from(result.tiles[tile2Index + 1]?.data ?? [])).toEqual(
         asciiToData(`
         ........
         .XXXXXX.
@@ -991,7 +1005,7 @@ describe("Optimise Tiles", () => {
       expectValidTilesOfLength(result.tiles, 2);
 
       expectTileMatchAscii(
-        result.tiles[0].data,
+        result.tiles[0]?.data,
         `
         .XXXXXX.
         XxxxxxxX
@@ -1004,7 +1018,7 @@ describe("Optimise Tiles", () => {
       );
 
       expectTileMatchAscii(
-        result.tiles[1].data,
+        result.tiles[1]?.data,
         `
         XX.XX.xX
         XX....xX
@@ -1076,7 +1090,7 @@ describe("Optimise Tiles", () => {
       expect(result.lookup.tile2?.flipX).toBe(false);
 
       expectTileMatchAscii(
-        result.tiles[tile1Index].data,
+        result.tiles[tile1Index]?.data,
         `
         XXXXXXX.
         xxxxxxxX
@@ -1089,7 +1103,7 @@ describe("Optimise Tiles", () => {
       );
 
       expectTileMatchAscii(
-        result.tiles[tile1Index + 1].data,
+        result.tiles[tile1Index + 1]?.data,
         `
         X.....XX
         ......XX
@@ -1137,7 +1151,7 @@ describe("Optimise Tiles", () => {
 
       expectValidTilesOfLength(result.tiles, 1);
       expectTileMatchAscii(
-        result.tiles[0].data,
+        result.tiles[0]?.data,
         `
         .XXXXXX.
         XxxxxxxX
@@ -1183,7 +1197,7 @@ describe("Optimise Tiles", () => {
 
       expectValidTilesOfLength(result.tiles, 1);
       expectTileMatchAscii(
-        result.tiles[0].data,
+        result.tiles[0]?.data,
         `
         ????XXX.
         ????xxxX

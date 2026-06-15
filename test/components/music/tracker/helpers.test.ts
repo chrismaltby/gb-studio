@@ -117,8 +117,8 @@ describe("trackerFieldsToPatternCells", () => {
     // Row 0 ch 0 (fields 0-3) and row 1 ch 0 (fields 16-19)
     const cells = trackerFieldsToPatternCells(0, 0, [0, TRACKER_ROW_SIZE]);
     expect(cells).toHaveLength(2);
-    expect(cells[0].rowId).toBe(0);
-    expect(cells[1].rowId).toBe(1);
+    expect(cells[0]?.rowId).toBe(0);
+    expect(cells[1]?.rowId).toBe(1);
   });
 });
 

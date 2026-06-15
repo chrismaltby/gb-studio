@@ -21,7 +21,9 @@ test("Should allow keyboard arrowing down from 100 percent volume to 50 percent"
   const knobs = getAllByRole("slider");
   const mappedVolumeKnob = knobs[knobs.length - 1];
 
-  fireEvent.keyDown(mappedVolumeKnob, { key: "ArrowLeft" });
+  if (mappedVolumeKnob) {
+    fireEvent.keyDown(mappedVolumeKnob, { key: "ArrowLeft" });
+  }
 
   expect(onChangeVolume).toHaveBeenCalledWith(2);
 });

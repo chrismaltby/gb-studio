@@ -107,8 +107,8 @@ describe("applyProjectResourcesMigration", () => {
     expect(migrated.metadata._version).toEqual("4.1.1");
     expect(migrated.metadata._release).toEqual("2");
     expect(migrated.scenes.length).toEqual(1);
-    expect(migrated.scenes[0].id).toEqual("test1");
-    expect(migrated.scenes[0].name).toEqual("Test Scene");
+    expect(migrated.scenes[0]?.id).toEqual("test1");
+    expect(migrated.scenes[0]?.name).toEqual("Test Scene");
   });
 
   test("should not apply project migration when versions don't match", () => {
@@ -255,36 +255,44 @@ describe("migrateEvents", () => {
       };
     });
 
-    expect(output.scenes[0].script[0].command).toEqual("MIGRATED_EVENT_TEST");
-    expect(output.scenes[0].script[0].args?.migrated).toEqual(true);
-    expect(output.scenes[0].actors[0].script[0].command).toEqual(
+    expect(output.scenes[0]?.script[0]?.command).toEqual("MIGRATED_EVENT_TEST");
+    expect(output.scenes[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.scenes[0]?.actors[0]?.script[0]?.command).toEqual(
       "MIGRATED_EVENT_TEST2",
     );
-    expect(output.scenes[0].actors[0].script[0].args?.migrated).toEqual(true);
-    expect(output.scenes[0].triggers[0].script[0].command).toEqual(
-      "MIGRATED_EVENT_TEST3",
-    );
-    expect(output.scenes[0].triggers[0].script[0].args?.migrated).toEqual(true);
-    expect(output.actorPrefabs[0].script[0].command).toEqual(
-      "MIGRATED_EVENT_TEST4",
-    );
-    expect(output.actorPrefabs[0].script[0].args?.migrated).toEqual(true);
-    expect(output.actorPrefabs[0].updateScript[0].command).toEqual(
-      "MIGRATED_EVENT_TEST5",
-    );
-    expect(output.actorPrefabs[0].updateScript[0].args?.migrated).toEqual(true);
-    expect(output.triggerPrefabs[0].script[0].command).toEqual(
-      "MIGRATED_EVENT_TEST6",
-    );
-    expect(output.triggerPrefabs[0].script[0].args?.migrated).toEqual(true);
-    expect(output.triggerPrefabs[0].leaveScript[0].command).toEqual(
-      "MIGRATED_EVENT_TEST7",
-    );
-    expect(output.triggerPrefabs[0].leaveScript[0].args?.migrated).toEqual(
+    expect(output.scenes[0]?.actors[0]?.script[0]?.args?.migrated).toEqual(
       true,
     );
-    expect(output.scripts[0].script[0].command).toEqual("MIGRATED_EVENT_TEST8");
-    expect(output.scripts[0].script[0].args?.migrated).toEqual(true);
+    expect(output.scenes[0]?.triggers[0]?.script[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST3",
+    );
+    expect(output.scenes[0]?.triggers[0]?.script[0]?.args?.migrated).toEqual(
+      true,
+    );
+    expect(output.actorPrefabs[0]?.script[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST4",
+    );
+    expect(output.actorPrefabs[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.actorPrefabs[0]?.updateScript[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST5",
+    );
+    expect(output.actorPrefabs[0]?.updateScript[0]?.args?.migrated).toEqual(
+      true,
+    );
+    expect(output.triggerPrefabs[0]?.script[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST6",
+    );
+    expect(output.triggerPrefabs[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.triggerPrefabs[0]?.leaveScript[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST7",
+    );
+    expect(output.triggerPrefabs[0]?.leaveScript[0]?.args?.migrated).toEqual(
+      true,
+    );
+    expect(output.scripts[0]?.script[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST8",
+    );
+    expect(output.scripts[0]?.script[0]?.args?.migrated).toEqual(true);
   });
 
   test("should not make any changes to project", () => {
@@ -501,36 +509,44 @@ describe("createScriptEventsMigrator", () => {
 
     const output = migrator(input);
 
-    expect(output.scenes[0].script[0].command).toEqual("MIGRATED_EVENT_TEST");
-    expect(output.scenes[0].script[0].args?.migrated).toEqual(true);
-    expect(output.scenes[0].actors[0].script[0].command).toEqual(
+    expect(output.scenes[0]?.script[0]?.command).toEqual("MIGRATED_EVENT_TEST");
+    expect(output.scenes[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.scenes[0]?.actors[0]?.script[0]?.command).toEqual(
       "MIGRATED_EVENT_TEST2",
     );
-    expect(output.scenes[0].actors[0].script[0].args?.migrated).toEqual(true);
-    expect(output.scenes[0].triggers[0].script[0].command).toEqual(
-      "MIGRATED_EVENT_TEST3",
-    );
-    expect(output.scenes[0].triggers[0].script[0].args?.migrated).toEqual(true);
-    expect(output.actorPrefabs[0].script[0].command).toEqual(
-      "MIGRATED_EVENT_TEST4",
-    );
-    expect(output.actorPrefabs[0].script[0].args?.migrated).toEqual(true);
-    expect(output.actorPrefabs[0].updateScript[0].command).toEqual(
-      "MIGRATED_EVENT_TEST5",
-    );
-    expect(output.actorPrefabs[0].updateScript[0].args?.migrated).toEqual(true);
-    expect(output.triggerPrefabs[0].script[0].command).toEqual(
-      "MIGRATED_EVENT_TEST6",
-    );
-    expect(output.triggerPrefabs[0].script[0].args?.migrated).toEqual(true);
-    expect(output.triggerPrefabs[0].leaveScript[0].command).toEqual(
-      "MIGRATED_EVENT_TEST7",
-    );
-    expect(output.triggerPrefabs[0].leaveScript[0].args?.migrated).toEqual(
+    expect(output.scenes[0]?.actors[0]?.script[0]?.args?.migrated).toEqual(
       true,
     );
-    expect(output.scripts[0].script[0].command).toEqual("MIGRATED_EVENT_TEST8");
-    expect(output.scripts[0].script[0].args?.migrated).toEqual(true);
+    expect(output.scenes[0]?.triggers[0]?.script[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST3",
+    );
+    expect(output.scenes[0]?.triggers[0]?.script[0]?.args?.migrated).toEqual(
+      true,
+    );
+    expect(output.actorPrefabs[0]?.script[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST4",
+    );
+    expect(output.actorPrefabs[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.actorPrefabs[0]?.updateScript[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST5",
+    );
+    expect(output.actorPrefabs[0]?.updateScript[0]?.args?.migrated).toEqual(
+      true,
+    );
+    expect(output.triggerPrefabs[0]?.script[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST6",
+    );
+    expect(output.triggerPrefabs[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.triggerPrefabs[0]?.leaveScript[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST7",
+    );
+    expect(output.triggerPrefabs[0]?.leaveScript[0]?.args?.migrated).toEqual(
+      true,
+    );
+    expect(output.scripts[0]?.script[0]?.command).toEqual(
+      "MIGRATED_EVENT_TEST8",
+    );
+    expect(output.scripts[0]?.script[0]?.args?.migrated).toEqual(true);
   });
 });
 
@@ -656,54 +672,62 @@ describe("pipeMigrationFns", () => {
 
     const output = combinedMigrations(input);
 
-    expect(output.scenes[0].script[0].command).toEqual(
+    expect(output.scenes[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST",
     );
-    expect(output.scenes[0].script[0].args?.migrated).toEqual(true);
-    expect(output.scenes[0].script[0].args?.migratedAgain).toEqual(true);
-    expect(output.scenes[0].actors[0].script[0].command).toEqual(
+    expect(output.scenes[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.scenes[0]?.script[0]?.args?.migratedAgain).toEqual(true);
+    expect(output.scenes[0]?.actors[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST2",
     );
-    expect(output.scenes[0].actors[0].script[0].args?.migrated).toEqual(true);
-    expect(output.scenes[0].actors[0].script[0].args?.migratedAgain).toEqual(
+    expect(output.scenes[0]?.actors[0]?.script[0]?.args?.migrated).toEqual(
       true,
     );
-    expect(output.scenes[0].triggers[0].script[0].command).toEqual(
+    expect(output.scenes[0]?.actors[0]?.script[0]?.args?.migratedAgain).toEqual(
+      true,
+    );
+    expect(output.scenes[0]?.triggers[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST3",
     );
-    expect(output.scenes[0].triggers[0].script[0].args?.migrated).toEqual(true);
-    expect(output.scenes[0].triggers[0].script[0].args?.migratedAgain).toEqual(
+    expect(output.scenes[0]?.triggers[0]?.script[0]?.args?.migrated).toEqual(
       true,
     );
-    expect(output.actorPrefabs[0].script[0].command).toEqual(
+    expect(
+      output.scenes[0]?.triggers[0]?.script[0]?.args?.migratedAgain,
+    ).toEqual(true);
+    expect(output.actorPrefabs[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST4",
     );
-    expect(output.actorPrefabs[0].script[0].args?.migrated).toEqual(true);
-    expect(output.actorPrefabs[0].script[0].args?.migratedAgain).toEqual(true);
-    expect(output.actorPrefabs[0].updateScript[0].command).toEqual(
+    expect(output.actorPrefabs[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.actorPrefabs[0]?.script[0]?.args?.migratedAgain).toEqual(
+      true,
+    );
+    expect(output.actorPrefabs[0]?.updateScript[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST5",
     );
-    expect(output.actorPrefabs[0].updateScript[0].args?.migrated).toEqual(true);
-    expect(output.actorPrefabs[0].updateScript[0].args?.migratedAgain).toEqual(
+    expect(output.actorPrefabs[0]?.updateScript[0]?.args?.migrated).toEqual(
       true,
     );
-    expect(output.triggerPrefabs[0].script[0].command).toEqual(
+    expect(
+      output.actorPrefabs[0]?.updateScript[0]?.args?.migratedAgain,
+    ).toEqual(true);
+    expect(output.triggerPrefabs[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST6",
     );
-    expect(output.triggerPrefabs[0].script[0].args?.migrated).toEqual(true);
-    expect(output.triggerPrefabs[0].script[0].args?.migratedAgain).toEqual(
+    expect(output.triggerPrefabs[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.triggerPrefabs[0]?.script[0]?.args?.migratedAgain).toEqual(
       true,
     );
-    expect(output.triggerPrefabs[0].leaveScript[0].command).toEqual(
+    expect(output.triggerPrefabs[0]?.leaveScript[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST7",
     );
-    expect(output.triggerPrefabs[0].leaveScript[0].args?.migrated).toEqual(
+    expect(output.triggerPrefabs[0]?.leaveScript[0]?.args?.migrated).toEqual(
       true,
     );
-    expect(output.scripts[0].script[0].command).toEqual(
+    expect(output.scripts[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST8",
     );
-    expect(output.scripts[0].script[0].args?.migrated).toEqual(true);
+    expect(output.scripts[0]?.script[0]?.args?.migrated).toEqual(true);
   });
 });
 
@@ -831,53 +855,61 @@ describe("pipeScriptEventMigrationFns", () => {
 
     const output = combinedMigrations(input);
 
-    expect(output.scenes[0].script[0].command).toEqual(
+    expect(output.scenes[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST",
     );
-    expect(output.scenes[0].script[0].args?.migrated).toEqual(true);
-    expect(output.scenes[0].script[0].args?.migratedAgain).toEqual(true);
-    expect(output.scenes[0].actors[0].script[0].command).toEqual(
+    expect(output.scenes[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.scenes[0]?.script[0]?.args?.migratedAgain).toEqual(true);
+    expect(output.scenes[0]?.actors[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST2",
     );
-    expect(output.scenes[0].actors[0].script[0].args?.migrated).toEqual(true);
-    expect(output.scenes[0].actors[0].script[0].args?.migratedAgain).toEqual(
+    expect(output.scenes[0]?.actors[0]?.script[0]?.args?.migrated).toEqual(
       true,
     );
-    expect(output.scenes[0].triggers[0].script[0].command).toEqual(
+    expect(output.scenes[0]?.actors[0]?.script[0]?.args?.migratedAgain).toEqual(
+      true,
+    );
+    expect(output.scenes[0]?.triggers[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST3",
     );
-    expect(output.scenes[0].triggers[0].script[0].args?.migrated).toEqual(true);
-    expect(output.scenes[0].triggers[0].script[0].args?.migratedAgain).toEqual(
+    expect(output.scenes[0]?.triggers[0]?.script[0]?.args?.migrated).toEqual(
       true,
     );
-    expect(output.actorPrefabs[0].script[0].command).toEqual(
+    expect(
+      output.scenes[0]?.triggers[0]?.script[0]?.args?.migratedAgain,
+    ).toEqual(true);
+    expect(output.actorPrefabs[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST4",
     );
-    expect(output.actorPrefabs[0].script[0].args?.migrated).toEqual(true);
-    expect(output.actorPrefabs[0].script[0].args?.migratedAgain).toEqual(true);
-    expect(output.actorPrefabs[0].updateScript[0].command).toEqual(
+    expect(output.actorPrefabs[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.actorPrefabs[0]?.script[0]?.args?.migratedAgain).toEqual(
+      true,
+    );
+    expect(output.actorPrefabs[0]?.updateScript[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST5",
     );
-    expect(output.actorPrefabs[0].updateScript[0].args?.migrated).toEqual(true);
-    expect(output.actorPrefabs[0].updateScript[0].args?.migratedAgain).toEqual(
+    expect(output.actorPrefabs[0]?.updateScript[0]?.args?.migrated).toEqual(
       true,
     );
-    expect(output.triggerPrefabs[0].script[0].command).toEqual(
+    expect(
+      output.actorPrefabs[0]?.updateScript[0]?.args?.migratedAgain,
+    ).toEqual(true);
+    expect(output.triggerPrefabs[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST6",
     );
-    expect(output.triggerPrefabs[0].script[0].args?.migrated).toEqual(true);
-    expect(output.triggerPrefabs[0].script[0].args?.migratedAgain).toEqual(
+    expect(output.triggerPrefabs[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.triggerPrefabs[0]?.script[0]?.args?.migratedAgain).toEqual(
       true,
     );
-    expect(output.triggerPrefabs[0].leaveScript[0].command).toEqual(
+    expect(output.triggerPrefabs[0]?.leaveScript[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST7",
     );
-    expect(output.triggerPrefabs[0].leaveScript[0].args?.migrated).toEqual(
+    expect(output.triggerPrefabs[0]?.leaveScript[0]?.args?.migrated).toEqual(
       true,
     );
-    expect(output.scripts[0].script[0].command).toEqual(
+    expect(output.scripts[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST8",
     );
-    expect(output.scripts[0].script[0].args?.migrated).toEqual(true);
+    expect(output.scripts[0]?.script[0]?.args?.migrated).toEqual(true);
   });
 });

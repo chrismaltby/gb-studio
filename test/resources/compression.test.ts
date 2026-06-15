@@ -90,10 +90,10 @@ describe("compression.ts", () => {
       };
 
       const decompressed = decompressProjectResources(compressedResources);
-      expect(decompressed.scenes[0].collisions).toEqual([
+      expect(decompressed.scenes[0]?.collisions).toEqual([
         0, 0, 42, 42, 42, 16, 16, 16, 16,
       ]);
-      expect(decompressed.backgrounds[0].tileColors).toEqual([
+      expect(decompressed.backgrounds[0]?.tileColors).toEqual([
         0, 0, 42, 42, 42, 16, 16, 16, 16,
       ]);
     });
@@ -118,8 +118,8 @@ describe("compression.ts", () => {
       };
 
       const compressed = compressProjectResources(resources);
-      expect(compressed.scenes[0].collisions).toEqual("002+2a3+104+");
-      expect(compressed.backgrounds[0].tileColors).toEqual("002+2a3+104+");
+      expect(compressed.scenes[0]?.collisions).toEqual("002+2a3+104+");
+      expect(compressed.backgrounds[0]?.tileColors).toEqual("002+2a3+104+");
     });
   });
 });

@@ -2108,9 +2108,9 @@ describe("script handlers", () => {
       const handler = await handlerLoader(pluginCode, "test.js");
       expect(handler.id).toBe("EVENT_ID");
       expect(handler.fieldsLookup["text"]).toBeDefined();
-      expect(handler.fieldsLookup["text"].hasPostUpdateFn).toBeTrue();
+      expect(handler.fieldsLookup["text"]?.hasPostUpdateFn).toBeTrue();
       expect(
-        handler.fieldsLookup["text"].postUpdateFn?.(
+        handler.fieldsLookup["text"]?.postUpdateFn?.(
           {
             after: "AFTER",
           },
@@ -2145,9 +2145,9 @@ describe("script handlers", () => {
         const handler = await handlerLoader(pluginCode, "test.js");
         expect(handler.id).toBe("EVENT_ID");
         expect(handler.fieldsLookup["text"]).toBeDefined();
-        expect(handler.fieldsLookup["text"].hasPostUpdateFn).toBeTrue();
+        expect(handler.fieldsLookup["text"]?.hasPostUpdateFn).toBeTrue();
         expect(
-          handler.fieldsLookup["text"].postUpdateFn?.(
+          handler.fieldsLookup["text"]?.postUpdateFn?.(
             {
               after: "AFTER",
             },
@@ -2185,9 +2185,9 @@ describe("script handlers", () => {
         const handler = await handlerLoader(pluginCode, "test.js");
         expect(handler.id).toBe("EVENT_ID");
         expect(handler.fieldsLookup["text"]).toBeDefined();
-        expect(handler.fieldsLookup["text"].hasPostUpdateFn).toBeTrue();
+        expect(handler.fieldsLookup["text"]?.hasPostUpdateFn).toBeTrue();
         expect(
-          handler.fieldsLookup["text"].postUpdateFn?.(
+          handler.fieldsLookup["text"]?.postUpdateFn?.(
             {
               after: "AFTER",
             },
@@ -3351,8 +3351,8 @@ describe("script handlers", () => {
       );
       expect(handler.id).toBe("EVENT_ID");
       expect(handler.description).toBe("This is a link in the description.");
-      expect(handler.fields[0].description).toBe("Field with a link.");
-      expect(handler.fields[1].fields?.[0].description).toBe(
+      expect(handler.fields[0]?.description).toBe("Field with a link.");
+      expect(handler.fields[1]?.fields?.[0]?.description).toBe(
         "Nested field with a link.",
       );
 

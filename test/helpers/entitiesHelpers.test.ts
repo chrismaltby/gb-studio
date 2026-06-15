@@ -230,8 +230,8 @@ describe("ensureEntitySymbolsUnique", () => {
     };
     const seenSymbols = new Set<string>();
     ensureEntitySymbolsUnique(state, seenSymbols);
-    expect(state.entities.e1.symbol).toBe("entity");
-    expect(state.entities.e2.symbol).toBe("entity_0");
+    expect(state.entities.e1?.symbol).toBe("entity");
+    expect(state.entities.e2?.symbol).toBe("entity_0");
   });
 
   test("Should not modify symbols that are already unique", () => {
@@ -250,8 +250,8 @@ describe("ensureEntitySymbolsUnique", () => {
     };
     const seenSymbols = new Set<string>();
     ensureEntitySymbolsUnique(state, seenSymbols);
-    expect(state.entities.e1.symbol).toBe("entity1");
-    expect(state.entities.e2.symbol).toBe("entity2");
+    expect(state.entities.e1?.symbol).toBe("entity1");
+    expect(state.entities.e2?.symbol).toBe("entity2");
   });
 
   test("Should ensure unique symbols for entities when current symbol isn't defined", () => {
@@ -268,8 +268,8 @@ describe("ensureEntitySymbolsUnique", () => {
     };
     const seenSymbols = new Set<string>();
     ensureEntitySymbolsUnique(state, seenSymbols);
-    expect(state.entities.e1.symbol).toBe("symbol");
-    expect(state.entities.e2.symbol).toBe("symbol_0");
+    expect(state.entities.e1?.symbol).toBe("symbol");
+    expect(state.entities.e2?.symbol).toBe("symbol_0");
   });
 
   test("Should ensure unique symbols for entities when current symbol is an empty string", () => {
@@ -288,8 +288,8 @@ describe("ensureEntitySymbolsUnique", () => {
     };
     const seenSymbols = new Set<string>();
     ensureEntitySymbolsUnique(state, seenSymbols);
-    expect(state.entities.e1.symbol).toBe("symbol");
-    expect(state.entities.e2.symbol).toBe("symbol_0");
+    expect(state.entities.e1?.symbol).toBe("symbol");
+    expect(state.entities.e2?.symbol).toBe("symbol_0");
   });
 });
 
@@ -766,8 +766,8 @@ describe("applyReparentFolderToCollection", () => {
 
     applyReparentFolderToCollection(collection, "folder/file.txt", "newFolder");
 
-    expect(collection.a.name).toBe("folder/file.txt");
-    expect(collection.b.name).toBe("folder/other.txt");
+    expect(collection.a?.name).toBe("folder/file.txt");
+    expect(collection.b?.name).toBe("folder/other.txt");
   });
 
   test("should move all files within folder", () => {
@@ -780,10 +780,10 @@ describe("applyReparentFolderToCollection", () => {
 
     applyReparentFolderToCollection(collection, "a", "x");
 
-    expect(collection.a.name).toBe("a");
-    expect(collection.b.name).toBe("x/a/file.txt");
-    expect(collection.c.name).toBe("x/a/sub/file2.txt");
-    expect(collection.d.name).toBe("other/file3.txt");
+    expect(collection.a?.name).toBe("a");
+    expect(collection.b?.name).toBe("x/a/file.txt");
+    expect(collection.c?.name).toBe("x/a/sub/file2.txt");
+    expect(collection.d?.name).toBe("other/file3.txt");
   });
 
   test("should move nested folder and its contents correctly", () => {
@@ -795,9 +795,9 @@ describe("applyReparentFolderToCollection", () => {
 
     applyReparentFolderToCollection(collection, "root/a", "x/y");
 
-    expect(collection.a.name).toBe("root/a");
-    expect(collection.b.name).toBe("x/y/a/file.txt");
-    expect(collection.c.name).toBe("x/y/a/sub/file2.txt");
+    expect(collection.a?.name).toBe("root/a");
+    expect(collection.b?.name).toBe("x/y/a/file.txt");
+    expect(collection.c?.name).toBe("x/y/a/sub/file2.txt");
   });
 
   test("should allow moving folder to root", () => {
@@ -808,8 +808,8 @@ describe("applyReparentFolderToCollection", () => {
 
     applyReparentFolderToCollection(collection, "a", "");
 
-    expect(collection.a.name).toBe("a");
-    expect(collection.b.name).toBe("a/file.txt");
+    expect(collection.a?.name).toBe("a");
+    expect(collection.b?.name).toBe("a/file.txt");
   });
 
   test("should do nothing if draggedPath does not match anything", () => {
@@ -820,8 +820,8 @@ describe("applyReparentFolderToCollection", () => {
 
     applyReparentFolderToCollection(collection, "x", "y");
 
-    expect(collection.a.name).toBe("a/file.txt");
-    expect(collection.b.name).toBe("b/file.txt");
+    expect(collection.a?.name).toBe("a/file.txt");
+    expect(collection.b?.name).toBe("b/file.txt");
   });
 
   test("should ignore undefined entries in collection", () => {
@@ -842,7 +842,7 @@ describe("applyReparentFolderToCollection", () => {
 
     applyReparentFolderToCollection(collection, "a", "x");
 
-    expect(collection.a.name).toBe("x/a/file.txt");
+    expect(collection.a?.name).toBe("x/a/file.txt");
   });
 
   test("should not partially match similar prefixes", () => {
@@ -852,7 +852,7 @@ describe("applyReparentFolderToCollection", () => {
 
     applyReparentFolderToCollection(collection, "folder", "x");
 
-    expect(collection.a.name).toBe("folderA/file.txt");
+    expect(collection.a?.name).toBe("folderA/file.txt");
   });
 
   test("should not allow moving folder into itself", () => {
@@ -862,7 +862,7 @@ describe("applyReparentFolderToCollection", () => {
 
     applyReparentFolderToCollection(collection, "a", "a");
 
-    expect(collection.a.name).toBe("a/file.txt");
+    expect(collection.a?.name).toBe("a/file.txt");
   });
 
   test("should not allow moving folder into its descendant", () => {
@@ -872,7 +872,7 @@ describe("applyReparentFolderToCollection", () => {
 
     applyReparentFolderToCollection(collection, "a", "a/b");
 
-    expect(collection.a.name).toBe("a/file.txt");
+    expect(collection.a?.name).toBe("a/file.txt");
   });
 });
 
@@ -887,8 +887,8 @@ describe("applyReparentEntityToCollection", () => {
 
     applyReparentEntityToCollection(collection, "a", "x");
 
-    expect(collection.a.name).toBe("x/file.txt");
-    expect(collection.b.name).toBe("other/file2.txt");
+    expect(collection.a?.name).toBe("x/file.txt");
+    expect(collection.b?.name).toBe("other/file2.txt");
   });
 
   test("should move named entity to deep folder", () => {
@@ -898,7 +898,7 @@ describe("applyReparentEntityToCollection", () => {
 
     applyReparentEntityToCollection(collection, "a", "x/y/z");
 
-    expect(collection.a.name).toBe("x/y/z/file.txt");
+    expect(collection.a?.name).toBe("x/y/z/file.txt");
   });
 
   test("should move named entity to root (empty path)", () => {
@@ -908,7 +908,7 @@ describe("applyReparentEntityToCollection", () => {
 
     applyReparentEntityToCollection(collection, "a", "");
 
-    expect(collection.a.name).toBe("file.txt");
+    expect(collection.a?.name).toBe("file.txt");
   });
 
   test("should normalize during reparenting", () => {
@@ -918,7 +918,7 @@ describe("applyReparentEntityToCollection", () => {
 
     applyReparentEntityToCollection(collection, "a", "\\x//y\\");
 
-    expect(collection.a.name).toBe("x/y/file.txt");
+    expect(collection.a?.name).toBe("x/y/file.txt");
   });
 
   test("should handle unnamed entity (trailing slash)", () => {
@@ -928,7 +928,7 @@ describe("applyReparentEntityToCollection", () => {
 
     applyReparentEntityToCollection(collection, "a", "x");
 
-    expect(collection.a.name).toBe("x/");
+    expect(collection.a?.name).toBe("x/");
   });
 
   test("should handle unnamed entity moved to deep folder", () => {
@@ -938,7 +938,7 @@ describe("applyReparentEntityToCollection", () => {
 
     applyReparentEntityToCollection(collection, "a", "x/y");
 
-    expect(collection.a.name).toBe("x/y/");
+    expect(collection.a?.name).toBe("x/y/");
   });
 
   test("should handle unnamed entity moved to root", () => {
@@ -948,7 +948,7 @@ describe("applyReparentEntityToCollection", () => {
 
     applyReparentEntityToCollection(collection, "a", "");
 
-    expect(collection.a.name).toBe("");
+    expect(collection.a?.name).toBe("");
   });
 
   test("should do nothing if id does not exist", () => {
@@ -958,7 +958,7 @@ describe("applyReparentEntityToCollection", () => {
 
     applyReparentEntityToCollection(collection, "missing", "x");
 
-    expect(collection.a.name).toBe("a/file.txt");
+    expect(collection.a?.name).toBe("a/file.txt");
   });
 
   test("should do nothing if entry is undefined", () => {
@@ -979,8 +979,8 @@ describe("applyReparentEntityToCollection", () => {
 
     applyReparentEntityToCollection(collection, "a", "x");
 
-    expect(collection.a.name).toBe("x/file.txt");
-    expect(collection.b.name).toBe("b/file.txt");
+    expect(collection.a?.name).toBe("x/file.txt");
+    expect(collection.b?.name).toBe("b/file.txt");
   });
 });
 

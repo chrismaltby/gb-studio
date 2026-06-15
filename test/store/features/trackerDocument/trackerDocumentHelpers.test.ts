@@ -116,7 +116,7 @@ describe("resolveUniqueTrackerCells", () => {
     // field 0 = ch0 row0, field 4 = ch1 row0
     const cells = resolveUniqueTrackerCells(0, [0, 4]);
     expect(cells).toHaveLength(2);
-    expect(cells[1].channelIndex).toBe(1);
+    expect(cells[1]?.channelIndex).toBe(1);
   });
 });
 
@@ -125,8 +125,8 @@ describe("resolveTrackerCellFields", () => {
     // Fields 0 and 1 are row 0 ch 0, but different fieldIndex
     const cells = resolveTrackerCellFields(0, [0, 1]);
     expect(cells).toHaveLength(2);
-    expect(cells[0].fieldIndex).toBe(0);
-    expect(cells[1].fieldIndex).toBe(1);
+    expect(cells[0]?.fieldIndex).toBe(0);
+    expect(cells[1]?.fieldIndex).toBe(1);
   });
 
   it("deduplicates identical field positions", () => {
