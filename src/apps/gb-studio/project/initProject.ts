@@ -437,6 +437,7 @@ API.events.debugger.data.subscribe((_, packet) => {
       store.dispatch(
         debuggerActions.setRAMData({
           vramPreview: packet.vram,
+          backgroundPreview: packet.background,
           variablesData: packet.data,
           scriptContexts: packet.scriptContexts,
           currentSceneSymbol: packet.currentSceneSymbol,

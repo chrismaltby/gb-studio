@@ -25,6 +25,7 @@ export type DebuggerDataPacket =
       action: "update-globals";
       data: number[];
       vram: string;
+      background: string;
       isPaused: boolean;
       scriptContexts: DebuggerScriptContext[];
       currentSceneSymbol: string;
@@ -42,3 +43,8 @@ export type DebuggerInitData = {
   watchedVariables: string[];
   variableMap: Record<string, VariableMapData>;
 };
+
+export enum BackgroundPreviewType {
+  BACKGROUND,
+  OVERLAY,
+}

@@ -106,6 +106,7 @@ import loadAllScriptEventHandlers from "lib/project/loadScriptEventHandlers";
 import { cloneDictionary } from "lib/helpers/clone";
 import { readDebuggerSymbols } from "lib/debugger/readDebuggerSymbols";
 import {
+  BackgroundPreviewType,
   DebuggerDataPacket,
   DebuggerInitData,
 } from "shared/lib/debugger/types";
@@ -1377,6 +1378,16 @@ ipcMain.handle("debugger:set-watched", (_event, variableIds: string[]) => {
     data: variableIds,
   });
 });
+
+ipcMain.handle(
+  "debugger:set-background-preview-type",
+  (_event, backgroundPreviewType: BackgroundPreviewType) => {
+    sendToGameWindow("debugger:data", {
+      action: "set-background-preview-type",
+      data: backgroundPreviewType,
+    });
+  },
+);
 
 ipcMain.handle("get-l10n-strings", () => getL10NData());
 

@@ -13,6 +13,9 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { decHexVal } from "shared/lib/helpers/8bit";
 import l10n from "shared/lib/lang/l10n";
 import { DataLabel, DataRow } from "components/debugger/DebuggerState";
+import { Button } from "ui/buttons/Button";
+import API from "renderer/lib/api";
+import { BackgroundPreviewType } from "shared/lib/debugger/types";
 
 const Content = styled.div`
   background: ${(props) => props.theme.colors.scripting.form.background};
@@ -23,6 +26,11 @@ const Content = styled.div`
 const VramPreview = styled.div`
   position: relative;
   max-height: 240px;
+`;
+
+const BackgroundPreview = styled.div`
+  position: relative;
+  max-height: 250px;
 `;
 
 const Canvas = styled.canvas`
@@ -48,10 +56,16 @@ const VramAreaLabel = styled.span`
 const DebuggerVRAMPane = () => {
   const dispatch = useAppDispatch();
   const vramPreview = useAppSelector((state) => state.debug.vramPreview);
+  const backgroundPreview = useAppSelector(
+    (state) => state.debug.backgroundPreview,
+  );
   const isCollapsed = useAppSelector((state) =>
     getSettings(state).debuggerCollapsedPanes.includes("vram"),
   );
   const themeContext = useContext(ThemeContext);
+  const [renderTileset, setRenderTileset] = useState(true);
+  const [backgroundPreviewType, setBackgroundPreviewType] =
+    useState<BackgroundPreviewType>(BackgroundPreviewType.BACKGROUND);
 
   const onToggleCollapsed = useCallback(() => {
     dispatch(settingsActions.toggleDebuggerPaneCollapsed("vram"));
@@ -62,6 +76,10 @@ const DebuggerVRAMPane = () => {
   const [vramArea, setVramArea] = useState(l10n("NAV_SPRITES"));
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    API.debugger.setBackgroundPreviewType(backgroundPreviewType);
+  }, [backgroundPreviewType]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -121,7 +139,9 @@ const DebuggerVRAMPane = () => {
       }
     };
 
-    drawGrid();
+    if (renderTileset) {
+      drawGrid();
+    }
 
     const handleMouseMove = (e: MouseEvent) => {
       if (e.target !== canvasRef.current) {
@@ -174,32 +194,87 @@ const DebuggerVRAMPane = () => {
         onToggle={onToggleCollapsed}
         collapsed={isCollapsed}
         variant="secondary"
+        buttons={
+          !isCollapsed && (
+            <>
+              <Button
+                size="small"
+                variant={renderTileset ? "underlined" : "transparent"}
+                onClick={() => setRenderTileset(true)}
+              >
+                {l10n("FIELD_TILESET")}
+              </Button>
+              /
+              <Button
+                size="small"
+                variant={
+                  !renderTileset &&
+                  backgroundPreviewType === BackgroundPreviewType.BACKGROUND
+                    ? "underlined"
+                    : "transparent"
+                }
+                onClick={() => {
+                  setRenderTileset(false);
+                  setBackgroundPreviewType(BackgroundPreviewType.BACKGROUND);
+                }}
+              >
+                {l10n("FIELD_BACKGROUND")}
+              </Button>
+              /
+              <Button
+                size="small"
+                variant={
+                  !renderTileset &&
+                  backgroundPreviewType === BackgroundPreviewType.OVERLAY
+                    ? "underlined"
+                    : "transparent"
+                }
+                onClick={() => {
+                  setRenderTileset(false);
+                  setBackgroundPreviewType(BackgroundPreviewType.OVERLAY);
+                }}
+              >
+                {l10n("FIELD_OVERLAY")}
+              </Button>
+            </>
+          )
+        }
       >
         VRAM
       </SplitPaneHeader>
-      {!isCollapsed && (
-        <>
-          <Content>
-            <VramPreview>
-              <img src={vramPreview} alt=""></img>
-              <Canvas ref={canvasRef} width={512} height={512} />
-            </VramPreview>
-            <DataRow>
-              <DataLabel>{l10n("FIELD_TILE_INDEX")}:</DataLabel>
-              <TileAddr>
-                {String(index).padStart(3, "0")} (${decHexVal(index)})
-              </TileAddr>
-            </DataRow>
-            <DataRow>
-              <DataLabel>{l10n("FIELD_MEMORY_BANK")}:</DataLabel>
-              <TileAddr>{bank}</TileAddr>
-            </DataRow>
-            <DataRow>
-              <VramAreaLabel>{vramArea}</VramAreaLabel>
-            </DataRow>
-          </Content>
-        </>
-      )}
+      {!isCollapsed &&
+        (renderTileset ? (
+          <>
+            <Content>
+              <VramPreview>
+                <img src={vramPreview} alt=""></img>
+                <Canvas ref={canvasRef} width={512} height={512} />
+              </VramPreview>
+              <DataRow>
+                <DataLabel>{l10n("FIELD_TILE_INDEX")}:</DataLabel>
+                <TileAddr>
+                  {String(index).padStart(3, "0")} (${decHexVal(index)})
+                </TileAddr>
+              </DataRow>
+              <DataRow>
+                <DataLabel>{l10n("FIELD_MEMORY_BANK")}:</DataLabel>
+                <TileAddr>{bank}</TileAddr>
+              </DataRow>
+              <DataRow>
+                <VramAreaLabel>{vramArea}</VramAreaLabel>
+              </DataRow>
+            </Content>
+          </>
+        ) : (
+          <>
+            <Content>
+              <BackgroundPreview>
+                <img src={backgroundPreview} alt=""></img>
+                <Canvas ref={canvasRef} width={512} height={512} />
+              </BackgroundPreview>
+            </Content>
+          </>
+        ))}
     </>
   );
 };

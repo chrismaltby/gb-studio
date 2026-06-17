@@ -69,6 +69,7 @@ class Debug {
     this.pausedUI = null;
     this.prevGlobals = [];
     this.watchedVariables = [];
+    this.backgroundPreviewType = 0;
 
     this.debugRunUntil = (ticks) => {
       while (true) {
@@ -396,12 +397,28 @@ class Debug {
     return this.vramCanvas.toDataURL("image/png");
   }
 
+  renderBackground(type = 1) {
+    var ctx = this.vramCanvas.getContext("2d");
+    var imgData = ctx.createImageData(256, 256);
+    var ptr = this.module._malloc(4 * 256 * 256);
+    this.module._emulator_render_background(this.e, ptr, type);
+    var buffer = new Uint8Array(this.module.HEAP8.buffer, ptr, 4 * 256 * 256);
+    imgData.data.set(buffer);
+    ctx.putImageData(imgData, 0, 0);
+    this.module._free(ptr);
+    return this.vramCanvas.toDataURL("image/png");
+  }
+
   setBreakPoints(breakpoints) {
     this.breakpoints = breakpoints;
   }
 
   setWatchedVariables(watchedVariables) {
     this.watchedVariables = watchedVariables;
+  }
+
+  setBackgroundPreviewType(type) {
+    this.backgroundPreviewType = type;
   }
 
   pause() {
@@ -526,6 +543,7 @@ let ready = setInterval(() => {
               action: "update-globals",
               data: debug.getGlobals(),
               vram: debug.renderVRam(),
+              background: debug.renderBackground(debug.backgroundPreviewType),
               isPaused: debug.isPaused(),
               scriptContexts,
               currentSceneSymbol: debug.getCurrentSceneSymbol(),
@@ -558,6 +576,9 @@ let ready = setInterval(() => {
           break;
         case "set-watched":
           debug.setWatchedVariables(data);
+          break;
+        case "set-background-preview-type":
+          debug.setBackgroundPreviewType(data)
           break;
         default:
         // console.warn(event);
