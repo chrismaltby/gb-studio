@@ -55,6 +55,8 @@ export const GBA_OPCODE_SPECS: Record<number, GbaOperandType[]> = {
   0x3a: ["i16"], // ACTOR_GET_POS idx
   0x51: ["u8"], // SET_SPRITES_VISIBLE mode
   0x54: ["u8", "i16"], // INPUT_GET joyid, idx
+  0x57: ["u8"], // FADE flags (gbavm: no-op stub - screen always shown)
+  0x5d: ["u8"], // SET_SPRITE_MODE mode (gbavm: no-op stub)
   0x76: ["i16", "i16", "i16"], // MEMSET idx, value, count
   0x77: ["i16", "i16", "i16"], // MEMCPY idxA, idxB, count
 };
