@@ -1208,6 +1208,11 @@ const editorSlice = createSlice({
           state.replaceSpriteTileMode = undefined;
         },
       )
+      // Remove script event selection when events are deleted
+      .addCase(entitiesActions.removeScriptEvents, (state, _action) => {
+        state.scriptEventSelectionIds = [];
+        state.scriptEventSelectionParentId = "";
+      })
       // When UI changes increment UI version number
       .addMatcher(
         (action): action is UnknownAction =>

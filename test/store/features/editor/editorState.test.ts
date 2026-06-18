@@ -552,7 +552,7 @@ test("should reset selection if selecting from a new parentId", () => {
   expect(store.getState).toHaveBeenCalled();
 });
 
-test("Should clearing selected script events when creating a script event group", () => {
+test("Should clear selected script events when adding script events", () => {
   const state: EditorState = {
     ...initialState,
     scriptEventSelectionIds: ["b", "c", "d"],
@@ -585,6 +585,23 @@ test("Should clearing selected script events when creating a script event group"
         args: {},
       },
     ],
+  });
+  const newState = reducer(state, action);
+  expect(newState.scriptEventSelectionIds).toEqual([]);
+  expect(newState.scriptEventSelectionParentId).toBe("");
+});
+
+test("Should clear selected script events when deleting script events", () => {
+  const state: EditorState = {
+    ...initialState,
+    scriptEventSelectionIds: ["b", "c", "d"],
+    scriptEventSelectionParentId: "scriptEvent_a_true",
+  };
+  const action = entitiesActions.removeScriptEvents({
+    scriptEventIds: ["b", "c", "d"],
+    entityId: "a",
+    type: "scriptEvent",
+    key: "true",
   });
   const newState = reducer(state, action);
   expect(newState.scriptEventSelectionIds).toEqual([]);

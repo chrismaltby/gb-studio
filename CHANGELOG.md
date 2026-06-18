@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix issue preventing build log from opening automatically on warnings
+- Fix issue where script events could not be deleted after deleting a multi selection
 
 ## [4.3.1] - 2026-06-11
 
