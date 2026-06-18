@@ -14,7 +14,12 @@ import { getROMFilename } from "shared/lib/helpers/filePaths";
 
 declare const VERSION: string;
 
-type Command = "export" | "make:rom" | "make:pocket" | "make:web";
+type Command =
+  | "export"
+  | "make:rom"
+  | "make:pocket"
+  | "make:web"
+  | "make:gba";
 
 const buildTypeForCommand = (command: Command): BuildType => {
   if (command === "make:web") {
@@ -22,6 +27,9 @@ const buildTypeForCommand = (command: Command): BuildType => {
   }
   if (command === "make:pocket") {
     return "pocket";
+  }
+  if (command === "make:gba") {
+    return "gba";
   }
   return "rom";
 };
@@ -105,6 +113,9 @@ const main = async (
   } else if (command === "make:pocket") {
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", romFilename);
     await copy(romTmpPath, destination);
+  } else if (command === "make:gba") {
+    const romTmpPath = Path.join(tmpBuildDir, "build", "gba", romFilename);
+    await copy(romTmpPath, destination);
   } else if (command === "make:web") {
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", romFilename);
     await copy(binjgbRoot, destination);
@@ -164,6 +175,13 @@ program
   .description("Build a Pocket from project file")
   .action((source, destination) => {
     main("make:pocket", source, destination);
+  });
+
+program
+  .command("make:gba <projectFile> <destination.gba>")
+  .description("Build a GBA ROM (gbavm engine) from project file")
+  .action((source, destination) => {
+    main("make:gba", source, destination);
   });
 
 program

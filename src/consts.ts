@@ -23,6 +23,11 @@ if (isDist) {
 export const buildUUID = "_gbsbuild";
 export const enginesRoot = normalize(`${rootDir}/appData/engine`);
 export const defaultEngineRoot = normalize(`${enginesRoot}/gbvm`);
+// gbavm (GBA/Butano) engine tree. Not yet vendored into appData; defaults to the
+// sibling dev checkout and can be overridden with GBAVM_ROOT. Used by the GBA build.
+export const gbaEngineRoot = normalize(
+  process.env.GBAVM_ROOT ?? "D:/source/gbavm",
+);
 export const defaultEngineMetaPath = normalize(`${enginesRoot}/engine.json`);
 export const buildToolsRoot = normalize(`${rootDir}/buildTools`);
 export const binjgbRoot = normalize(`${rootDir}/appData/wasm/binjgb`);

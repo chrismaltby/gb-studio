@@ -6,9 +6,13 @@ import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
 import ejectBuild from "./ejectBuild";
 import { validateEjectedBuild } from "./validate/validateEjectedBuild";
 import makeBuild, { cancelBuildCommandsInProgress } from "./makeBuild";
+import ejectGbaBuild from "./gba/ejectGbaBuild";
+import makeGbaBuild, {
+  cancelGbaBuildCommandsInProgress,
+} from "./gba/makeGbaBuild";
 import { EngineSchema } from "lib/project/loadEngineSchema";
 
-export type BuildType = "rom" | "web" | "pocket";
+export type BuildType = "rom" | "web" | "pocket" | "gba";
 
 export type BuildWorkerData = {
   project: ProjectResources;
@@ -74,34 +78,56 @@ const buildProject = async ({
     warnings,
   });
 
-  await ejectBuild({
-    projectRoot,
-    tmpPath,
-    projectData: project,
-    engineSchema,
-    outputRoot,
-    compiledData,
-    progress,
-    warnings,
-  });
-
-  await validateEjectedBuild({
-    buildRoot: outputRoot,
-    progress,
-    warnings,
-  });
-
-  if (make) {
-    await makeBuild({
-      buildRoot: outputRoot,
-      romFilename,
-      tmpPath,
-      buildType,
-      data: project,
-      debug: project.settings.generateDebugFilesEnabled,
+  if (buildType === "gba") {
+    // GBA target: skip the GBDK eject/validate path entirely. Generate gbavm
+    // bytecode from the start scene's compiled GBVM assembly, then build the
+    // gbavm (Butano/devkitARM) engine into a .gba. See src/lib/compiler/gba/.
+    await ejectGbaBuild({
+      projectData: project,
+      outputRoot,
+      compiledData,
       progress,
       warnings,
     });
+
+    if (make) {
+      await makeGbaBuild({
+        buildRoot: outputRoot,
+        romFilename,
+        progress,
+        warnings,
+      });
+    }
+  } else {
+    await ejectBuild({
+      projectRoot,
+      tmpPath,
+      projectData: project,
+      engineSchema,
+      outputRoot,
+      compiledData,
+      progress,
+      warnings,
+    });
+
+    await validateEjectedBuild({
+      buildRoot: outputRoot,
+      progress,
+      warnings,
+    });
+
+    if (make) {
+      await makeBuild({
+        buildRoot: outputRoot,
+        romFilename,
+        tmpPath,
+        buildType,
+        data: project,
+        debug: project.settings.generateDebugFilesEnabled,
+        progress,
+        warnings,
+      });
+    }
   }
 
   return compiledData;
@@ -150,6 +176,7 @@ parentPort?.on("message", async (message: { action: string }) => {
   if (message.action === "terminate") {
     terminating = true;
     await cancelBuildCommandsInProgress();
+    await cancelGbaBuildCommandsInProgress();
     process.exit(1);
   }
 });

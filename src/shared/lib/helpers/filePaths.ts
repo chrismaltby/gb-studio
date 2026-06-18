@@ -10,7 +10,7 @@ export const getROMFileStem = (
       : kebabCase(projectName.trim());
 
   const stem = stripInvalidFilenameCharacters(source)
-    .replace(/(\.gb|\.gbc|\.pocket)$/i, "")
+    .replace(/(\.gb|\.gbc|\.pocket|\.gba)$/i, "")
     .trim();
 
   if (stem.replace(/-/g, "").length === 0) {
@@ -24,10 +24,12 @@ export const getROMFilename = (
   overrideName: string,
   projectName: string,
   isColorOnly: boolean,
-  buildType: "rom" | "pocket" | "web",
+  buildType: "rom" | "pocket" | "web" | "gba",
 ): string => {
   let fileExt = "gb";
-  if (buildType === "pocket") {
+  if (buildType === "gba") {
+    fileExt = "gba";
+  } else if (buildType === "pocket") {
     fileExt = "pocket";
   } else if (isColorOnly && !overrideName.endsWith(".gb")) {
     fileExt = "gbc";
