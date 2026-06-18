@@ -215,6 +215,7 @@ const OptionLabelWithInfoWrapper = styled.div`
   align-items: center;
   text-overflow: ellipsis;
   white-space: nowrap;
+  justify-content: space-between;
 `;
 
 const OptionLabelInfo = styled.div`
@@ -222,6 +223,10 @@ const OptionLabelInfo = styled.div`
   text-align: right;
   opacity: 0.5;
   font-size: 0.8em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: no-wrap;
+  padding-left: 5px;
 `;
 
 export const OptionLabelWithPreview: FC<OptionLabelWithPreviewProps> = ({
