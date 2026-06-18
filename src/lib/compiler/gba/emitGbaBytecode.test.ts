@@ -1,4 +1,4 @@
-import { emitGbaBytecode, GbaItem } from "./emitGbaBytecode";
+import { emitGbaBytecode, formatGbaProgramC, GbaItem } from "./emitGbaBytecode";
 
 describe("emitGbaBytecode", () => {
   test("encodes SET_CONST operands little-endian (matches gbavm VM_STEP)", () => {
@@ -50,5 +50,20 @@ describe("emitGbaBytecode", () => {
     expect(() =>
       emitGbaBytecode([{ kind: "op", op: 0x41, operands: [0] }]), // DISPLAY_TEXT (not yet ported)
     ).toThrow(/No GBA encoding for opcode 0x41/);
+  });
+});
+
+describe("formatGbaProgramC", () => {
+  test("emits a non-empty reloc array with zero relocations (C forbids zero-size arrays)", () => {
+    const prog = emitGbaBytecode([
+      { kind: "op", op: 0x18, operands: [] }, // IDLE
+      { kind: "stop" },
+    ]);
+    expect(prog.relocations.length).toBe(0);
+    const c = formatGbaProgramC("test_prog", prog);
+    expect(c).toContain("unsigned char test_prog[] = {");
+    expect(c).toContain("const unsigned int test_prog_relocs_count = 0;");
+    // Must not produce `..._relocs[] = {};` (a zero-size array, which fails to compile).
+    expect(c).not.toMatch(/test_prog_relocs\[\]\s*=\s*\{\s*\};/);
   });
 });
