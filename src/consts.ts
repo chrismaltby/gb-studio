@@ -5,16 +5,18 @@ import {
   Settings,
 } from "shared/lib/resources/types";
 
-const isDist = __dirname.indexOf(".webpack") > -1;
-const isCli = __dirname.indexOf("out/cli") > -1;
+// Normalize separators so these checks work on Windows, where __dirname uses "\".
+const dirname = __dirname.replace(/\\/g, "/");
+const isDist = dirname.indexOf(".webpack") > -1;
+const isCli = dirname.indexOf("out/cli") > -1;
 
-let rootDir = __dirname.substring(0, __dirname.lastIndexOf("node_modules"));
+let rootDir = dirname.substring(0, dirname.lastIndexOf("node_modules"));
 if (isDist) {
-  rootDir = __dirname.substring(0, __dirname.lastIndexOf(".webpack"));
+  rootDir = dirname.substring(0, dirname.lastIndexOf(".webpack"));
 } else if (isCli) {
-  rootDir = __dirname.substring(0, __dirname.lastIndexOf("out/cli"));
+  rootDir = dirname.substring(0, dirname.lastIndexOf("out/cli"));
 } else if (process.env.NODE_ENV === "test") {
-  rootDir = normalize(`${__dirname}/../`);
+  rootDir = normalize(`${dirname}/../`);
 }
 
 // Paths
