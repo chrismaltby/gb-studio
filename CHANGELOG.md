@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add ability to view the current background and overlay tilemap in the debugger [@pau-tomas](https://github.com/pau-tomas)
 
+### Fixed
+
+- Fix issue preventing build log from opening automatically on warnings
+
 ## [4.3.1] - 2026-06-11
 
 ### Changed

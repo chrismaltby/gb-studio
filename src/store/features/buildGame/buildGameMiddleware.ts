@@ -8,6 +8,12 @@ import actions from "./buildGameActions";
 import API from "renderer/lib/api";
 import navigationActions from "store/features/navigation/navigationActions";
 
+const openBuildLogForWarning = (dispatch: Dispatch) => {
+  dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+  dispatch(navigationActions.setSection("world"));
+  dispatch(debuggerActions.setIsLogOpen(true));
+};
+
 const buildGameMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
     if (actions.buildGame.match(action)) {
@@ -113,9 +119,16 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       const state = store.getState();
       const dispatch = store.dispatch.bind(store);
       if (state.project.present.settings.openBuildLogOnWarnings) {
-        dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
-        dispatch(navigationActions.setSection("world"));
-        dispatch(debuggerActions.setIsLogOpen(true));
+        openBuildLogForWarning(dispatch);
+      }
+    } else if (consoleActions.appendMany.match(action)) {
+      const state = store.getState();
+      const dispatch = store.dispatch.bind(store);
+      if (
+        state.project.present.settings.openBuildLogOnWarnings &&
+        action.payload.some((item) => item.type === "err")
+      ) {
+        openBuildLogForWarning(dispatch);
       }
     }
 
