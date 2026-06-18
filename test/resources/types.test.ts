@@ -651,6 +651,7 @@ describe("TypeBox Schemas", () => {
       defaultSceneTypeId: "TOPDOWN",
       disabledSceneTypeIds: [],
       autoTileFlipEnabled: true,
+      webTemplate: "",
     };
     const invalidSettings = {
       _resourceType: "settings",

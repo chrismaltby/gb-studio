@@ -17,6 +17,7 @@ import scriptEventDefs from "./features/scriptEventDefs/scriptEventDefsState";
 import tracker from "./features/tracker/trackerState";
 import trackerDocument from "./features/trackerDocument/trackerDocumentState";
 import debug from "./features/debugger/debuggerState";
+import webTemplates from "./features/webTemplates/webTemplatesState";
 import { TRACKER_REDO, TRACKER_UNDO } from "consts";
 
 let lastEntityUndoStateTime = 0;
@@ -87,6 +88,7 @@ const rootReducer = combineReducers({
   }),
   error,
   assets,
+  webTemplates,
 });
 
 export default rootReducer;

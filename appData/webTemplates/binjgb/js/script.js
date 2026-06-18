@@ -6,13 +6,28 @@
  */
 "use strict";
 
-// User configurable.
-const ROM_FILENAME = "rom/game.gb";
 const ENABLE_REWIND = true;
 const ENABLE_PAUSE = false;
 const ENABLE_SWITCH_PALETTES = true;
 const OSGP_DEADZONE = 0.1; // On screen gamepad deadzone range
-const CGB_COLOR_CURVE = 2; // 0: none, 1: Sameboy "Emulate Hardware" 2: Gambatte/Gameboy Online
+const DEFAULT_WEB_CONFIG = {
+  rom: "rom/game.gb",
+  colorCorrection: "default",
+  customControls: {},
+};
+
+const toBinjgbColorCorrection = (colorCorrection) => {
+  // 0: none, 1: Sameboy "Emulate Hardware", 2: Gambatte/Gameboy Online
+  if (colorCorrection === "none") {
+    return 0;
+  }
+  return 2;
+};
+
+let webConfig = DEFAULT_WEB_CONFIG;
+const webConfigPromise = fetch("gbstudio.json")
+  .then((response) => response.json())
+  .catch(() => DEFAULT_WEB_CONFIG);
 
 // List of DMG palettes to switch between. By default it includes all 84
 // built-in palettes. If you want to restrict this, change it to an array of
@@ -139,7 +154,8 @@ const vm = new VM();
 
 // Load a ROM.
 (async function go() {
-  let response = await fetch(ROM_FILENAME);
+  webConfig = await webConfigPromise;
+  let response = await fetch(webConfig.rom);
   let romBuffer = await response.arrayBuffer();
   const extRam = new Uint8Array(JSON.parse(localStorage.getItem("extram")));
   Emulator.start(await binjgbPromise, romBuffer, extRam);
@@ -175,7 +191,7 @@ class Emulator {
       romBuffer.byteLength,
       Audio.ctx.sampleRate,
       AUDIO_FRAMES,
-      CGB_COLOR_CURVE
+      toBinjgbColorCorrection(webConfig.colorCorrection)
     );
     if (this.e == 0) {
       throw new Error("Invalid ROM.");
@@ -483,6 +499,7 @@ class Emulator {
       "]": this.keyNextPalette.bind(this),
     };
 
+    const customControls = webConfig.customControls || {};
     if (customControls.down && customControls.down.length > 0) {
       customControls.down.forEach((k) => {
         this.keyFuncs[String(k).toLowerCase()] = this.setJoypDown.bind(this);

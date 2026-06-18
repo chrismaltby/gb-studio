@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "name": "Binjgb",
+  "romPath": "rom/{{romFilename}}",
+  "configPath": "gbstudio.json"
+}

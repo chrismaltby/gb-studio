@@ -22,6 +22,7 @@ export type MenuListenerKey =
   | "run"
   | "build"
   | "ejectEngine"
+  | "ejectWebTemplate"
   | "exportProjectSrc"
   | "exportProjectData"
   | "pasteInPlace"

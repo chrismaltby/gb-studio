@@ -415,6 +415,12 @@ export const PauseIcon = () => (
   </svg>
 );
 
+export const EjectIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path d="M24 22h-24v-2h24v2zm0-4.062l-12-15.938-12 15.938h24z" />
+  </svg>
+);
+
 export const StopIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path d="M2 2h20v20h-20z" />

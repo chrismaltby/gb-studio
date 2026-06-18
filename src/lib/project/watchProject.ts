@@ -27,6 +27,7 @@ const watchProject = (
     onRemoveTileset: WatchCallback;
     onChangedEngineSchema: WatchCallback;
     onChangedEventPlugin: WatchCallback;
+    onChangedWebTemplates: WatchCallback;
   },
 ) => {
   const projectRoot = Path.dirname(projectPath);
@@ -42,6 +43,7 @@ const watchProject = (
   const sgbRoot = `${projectRoot}/assets/sgb`;
   const pluginsRoot = `${projectRoot}/plugins`;
   const engineSchema = `${projectRoot}/assets/engine/engine.json`;
+  const webTemplateManifest = "gbstudio.web-template.json";
 
   const awaitWriteFinish = {
     stabilityThreshold: 1000,
@@ -101,6 +103,9 @@ const watchProject = (
       }
       if (part === "engine" && filename.endsWith("engine.json")) {
         return part;
+      }
+      if (part === "web" && filename.endsWith(webTemplateManifest)) {
+        return "webTemplates";
       }
     }
     return null;
@@ -235,6 +240,17 @@ const watchProject = (
     .on("change", callbacks.onChangedEventPlugin)
     .on("unlink", callbacks.onChangedEventPlugin);
 
+  const webTemplatesWatcher = chokidar
+    .watch(`${projectRoot}/assets/web`, {
+      ignoreInitial: true,
+      persistent: true,
+      awaitWriteFinish,
+      ignored: ignoreUnlessExt([webTemplateManifest]),
+    })
+    .on("add", callbacks.onChangedWebTemplates)
+    .on("change", callbacks.onChangedWebTemplates)
+    .on("unlink", callbacks.onChangedWebTemplates);
+
   const pluginAssetsWatcher = chokidar
     .watch(pluginsRoot, {
       ignoreInitial: true,
@@ -249,6 +265,7 @@ const watchProject = (
         ".vgz",
         ".sav",
         "engine.json",
+        webTemplateManifest,
       ]),
     })
     .on("add", (filename) => {
@@ -274,6 +291,8 @@ const watchProject = (
         callbacks.onChangedSound(filename);
       } else if (pluginType === "engine") {
         callbacks.onChangedEngineSchema(filename);
+      } else if (pluginType === "webTemplates") {
+        callbacks.onChangedWebTemplates(filename);
       }
     })
     .on("change", (filename) => {
@@ -296,6 +315,8 @@ const watchProject = (
         callbacks.onChangedSound(filename);
       } else if (pluginType === "engine") {
         callbacks.onChangedEngineSchema(filename);
+      } else if (pluginType === "webTemplates") {
+        callbacks.onChangedWebTemplates(filename);
       }
     })
     .on("unlink", (filename) => {
@@ -318,6 +339,8 @@ const watchProject = (
         callbacks.onRemoveSound(filename);
       } else if (pluginType === "engine") {
         callbacks.onChangedEngineSchema(filename);
+      } else if (pluginType === "webTemplates") {
+        callbacks.onChangedWebTemplates(filename);
       }
     });
 
@@ -334,6 +357,7 @@ const watchProject = (
     tilesetsWatcher.close();
     engineSchemaWatcher.close();
     pluginEventsWatcher.close();
+    webTemplatesWatcher.close();
     pluginAssetsWatcher.close();
   };
 

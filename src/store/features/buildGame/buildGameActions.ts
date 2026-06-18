@@ -44,6 +44,7 @@ const buildGame = createAction(
 
 const deleteBuildCache = createAction("buildGame/deleteCache");
 const ejectEngine = createAction("buildGame/ejectEngine");
+const ejectWebTemplate = createAction("buildGame/ejectWebTemplate");
 const exportProject = createAction<ProjectExportType>(
   "buildGame/exportProject",
 );
@@ -52,6 +53,7 @@ const buildGameActions = {
   buildGame,
   deleteBuildCache,
   ejectEngine,
+  ejectWebTemplate,
   exportProject,
 };
 

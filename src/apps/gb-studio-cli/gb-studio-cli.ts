@@ -1,9 +1,8 @@
-import { copy, readFile, writeFile } from "fs-extra";
+import { copy } from "fs-extra";
 import Path from "path";
 import os from "os";
 import { rimraf as rmdir } from "rimraf";
 import { program } from "commander";
-import { binjgbRoot } from "consts";
 import initElectronL10N from "lib/lang/initElectronL10N";
 import loadProject from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
@@ -11,6 +10,7 @@ import { buildRunner } from "lib/compiler/buildRunner";
 import { BuildType } from "lib/compiler/buildWorker";
 import { loadEngineSchema } from "lib/project/loadEngineSchema";
 import { getROMFilename } from "shared/lib/helpers/filePaths";
+import { exportWebBuild } from "lib/compiler/webBuild";
 
 declare const VERSION: string;
 
@@ -107,39 +107,14 @@ const main = async (
     await copy(romTmpPath, destination);
   } else if (command === "make:web") {
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", romFilename);
-    await copy(binjgbRoot, destination);
-    await copy(romTmpPath, `${destination}/rom/${romFilename}`);
-    const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
-    const projectName = sanitize(project.metadata.name);
-    const author = sanitize(project.metadata.author);
-    const colorsHead =
-      project.settings.colorMode !== "mono"
-        ? `<style type="text/css"> body { background-color:#${project.settings.customColorsBlack}; }</style>`
-        : "";
-    const customHead = project.settings.customHead || "";
-    const customControls = JSON.stringify({
-      up: project.settings.customControlsUp,
-      down: project.settings.customControlsDown,
-      left: project.settings.customControlsLeft,
-      right: project.settings.customControlsRight,
-      a: project.settings.customControlsA,
-      b: project.settings.customControlsB,
-      start: project.settings.customControlsStart,
-      select: project.settings.customControlsSelect,
+    await exportWebBuild({
+      project,
+      projectRoot,
+      destination,
+      romFilename,
+      romPath: romTmpPath,
+      warnings,
     });
-    const html = (await readFile(`${destination}/index.html`, "utf8"))
-      .replace(/___PROJECT_NAME___/g, projectName)
-      .replace(/___AUTHOR___/g, author)
-      .replace(/___COLORS_HEAD___/g, colorsHead)
-      .replace(/___PROJECT_HEAD___/g, customHead)
-      .replace(/___CUSTOM_CONTROLS___/g, customControls);
-
-    const scriptJs = (
-      await readFile(`${destination}/js/script.js`, "utf8")
-    ).replace(/ROM_FILENAME = "[^"]*"/g, `ROM_FILENAME = "rom/${romFilename}"`);
-
-    await writeFile(`${destination}/index.html`, html);
-    await writeFile(`${destination}/js/script.js`, scriptJs);
   }
 };
 

@@ -20,6 +20,7 @@ import { initialState as initialNavigationState } from "../src/store/features/na
 import { initialState as initialDocumentState } from "../src/store/features/document/documentState";
 import { initialState as initialErrorState } from "../src/store/features/error/errorState";
 import { initialState as initialAssetsState } from "../src/store/features/assets/assetsState";
+import { initialState as initialWebTemplatesState } from "../src/store/features/webTemplates/webTemplatesState";
 import {
   EngineFieldSchema,
   initialState as initialEngineState,
@@ -384,6 +385,7 @@ export const dummyProjectData: ProjectData = {
     defaultSceneTypeId: "TOPDOWN",
     disabledSceneTypeIds: [],
     autoTileFlipEnabled: true,
+    webTemplate: "",
   },
 };
 
@@ -685,6 +687,7 @@ export const dummySettingsResource: SettingsResource = {
   defaultSceneTypeId: "TOPDOWN",
   disabledSceneTypeIds: [],
   autoTileFlipEnabled: true,
+  webTemplate: "",
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -829,6 +832,7 @@ export const dummyProjectResources: ProjectResources = {
     defaultSceneTypeId: "TOPDOWN",
     disabledSceneTypeIds: [],
     autoTileFlipEnabled: true,
+    webTemplate: "",
   },
 };
 
@@ -880,6 +884,9 @@ export const dummyRootState: RootState = {
   },
   assets: {
     ...initialAssetsState,
+  },
+  webTemplates: {
+    ...initialWebTemplatesState,
   },
   engine: {
     ...initialEngineState,

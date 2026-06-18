@@ -6,6 +6,7 @@ export const PluginType = Type.Union(
     Type.Literal("assetPack"),
     Type.Literal("enginePlugin"),
     Type.Literal("eventsPlugin"),
+    Type.Literal("webTemplatePlugin"),
     Type.Literal("theme"),
     Type.Literal("lang"),
     Type.Literal("template"),

@@ -5,6 +5,8 @@ import debuggerActions from "../../../../src/store/features/debugger/debuggerAct
 import navigationActions from "../../../../src/store/features/navigation/navigationActions";
 import settingsActions from "../../../../src/store/features/settings/settingsActions";
 import { RootState } from "store/storeTypes";
+import buildGameActions from "store/features/buildGame/buildGameActions";
+import API from "renderer/lib/api";
 
 describe("buildGameMiddleware", () => {
   it("opens the build log when a batched console warning is received", () => {
@@ -59,6 +61,36 @@ describe("buildGameMiddleware", () => {
 
     expect(store.dispatch).not.toHaveBeenCalledWith(
       debuggerActions.setIsLogOpen(true),
+    );
+  });
+
+  it("selects the ejected web template after successful ejection", async () => {
+    jest
+      .spyOn(API.project, "ejectWebTemplate")
+      .mockResolvedValue([{ id: "binjgb", name: "Default (Binjgb)" }]);
+    const store = {
+      getState: jest.fn(),
+      dispatch: jest.fn(),
+    } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
+
+    await middleware(store)(jest.fn())(buildGameActions.ejectWebTemplate());
+
+    expect(store.dispatch).toHaveBeenCalledWith(
+      settingsActions.editSettings({ webTemplate: "binjgb" }),
+    );
+  });
+
+  it("keeps the current web template when ejection is cancelled", async () => {
+    jest.spyOn(API.project, "ejectWebTemplate").mockResolvedValue(undefined);
+    const store = {
+      getState: jest.fn(),
+      dispatch: jest.fn(),
+    } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
+
+    await middleware(store)(jest.fn())(buildGameActions.ejectWebTemplate());
+
+    expect(store.dispatch).not.toHaveBeenCalledWith(
+      settingsActions.editSettings({ webTemplate: "binjgb" }),
     );
   });
 });

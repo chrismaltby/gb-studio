@@ -11,6 +11,7 @@ const APIMock = {
     onChange: () => {},
   },
   project: {
+    ejectWebTemplate: () => Promise.resolve(undefined),
     getBackgroundInfo: () =>
       Promise.resolve({
         numTiles: 1,

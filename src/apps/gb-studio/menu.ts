@@ -48,6 +48,7 @@ const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   run: [],
   build: [],
   ejectEngine: [],
+  ejectWebTemplate: [],
   exportProjectSrc: [],
   exportProjectData: [],
   pasteInPlace: [],
@@ -298,6 +299,12 @@ const buildMenu = async ({
               label: l10n("MENU_EJECT_ENGINE"),
               click() {
                 notifyListeners("ejectEngine");
+              },
+            },
+            {
+              label: l10n("MENU_EJECT_WEB_TEMPLATE"),
+              click() {
+                notifyListeners("ejectWebTemplate");
               },
             },
             { type: "separator" },

@@ -24,6 +24,7 @@ export interface RootState {
   }>;
   error: typeof import("./features/error/errorState").initialState;
   assets: import("./features/assets/assetsState").AssetsState;
+  webTemplates: import("./features/webTemplates/webTemplatesState").WebTemplatesState;
 }
 
 export type AppThunk<ReturnType = void> = ThunkAction<

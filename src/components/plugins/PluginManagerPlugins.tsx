@@ -77,6 +77,7 @@ const PluginsManagerPlugins = ({
       "": l10n("FIELD_ALL_TYPES"),
       assetPack: l10n("FIELD_ASSET_PACK"),
       eventsPlugin: l10n("FIELD_EVENTS_PLUGIN"),
+      webTemplatePlugin: l10n("FIELD_WEB_TEMPLATE_PLUGIN"),
       enginePlugin: l10n("FIELD_ENGINE_PLUGIN"),
       theme: l10n("MENU_THEME"),
       lang: l10n("FIELD_LANGUAGE_PLUGIN"),

@@ -36,6 +36,9 @@ export const pluginNameForType = (type: PluginType) => {
   if (type === "enginePlugin") {
     return l10n("FIELD_ENGINE_PLUGIN");
   }
+  if (type === "webTemplatePlugin") {
+    return l10n("FIELD_WEB_TEMPLATE_PLUGIN");
+  }
   if (type === "lang") {
     return l10n("FIELD_LANGUAGE_PLUGIN");
   }
@@ -57,6 +60,9 @@ export const pluginDescriptionForType = (type: PluginType) => {
   }
   if (type === "enginePlugin") {
     return l10n("FIELD_ENGINE_PLUGIN_DESC");
+  }
+  if (type === "webTemplatePlugin") {
+    return l10n("FIELD_WEB_TEMPLATE_PLUGIN_DESC");
   }
   if (type === "lang") {
     return l10n("FIELD_LANGUAGE_PLUGIN_DESC");

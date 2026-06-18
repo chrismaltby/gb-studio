@@ -18,6 +18,7 @@ const types: PluginType[] = [
   "assetPack",
   "eventsPlugin",
   "enginePlugin",
+  "webTemplatePlugin",
   "theme",
   "lang",
   "template",
@@ -34,6 +35,7 @@ describe("isGlobalPluginType", () => {
     expect(isGlobalPluginType("assetPack")).toEqual(false);
     expect(isGlobalPluginType("eventsPlugin")).toEqual(false);
     expect(isGlobalPluginType("enginePlugin")).toEqual(false);
+    expect(isGlobalPluginType("webTemplatePlugin")).toEqual(false);
   });
 });
 

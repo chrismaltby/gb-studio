@@ -21,6 +21,7 @@ import { NavigationSection } from "store/features/navigation/navigationState";
 import { isZoomSection } from "store/features/editor/editorHelpers";
 import trackerActions from "store/features/tracker/trackerActions";
 import { ConsoleLink } from "store/features/console/consoleState";
+import { actions as webTemplatesActions } from "store/features/webTemplates/webTemplatesState";
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectPath = urlParams.get("path");
@@ -231,6 +232,21 @@ API.events.watch.background.removed.subscribe((_, filename, plugin) => {
   );
 });
 
+// Watch Web Templates
+
+API.events.watch.webTemplates.changed.subscribe((_, templates) => {
+  store.dispatch(webTemplatesActions.setWebTemplates(templates));
+});
+
+if (projectPath) {
+  API.project
+    .getWebTemplates()
+    .then((templates) => {
+      store.dispatch(webTemplatesActions.setWebTemplates(templates));
+    })
+    .catch(console.error);
+}
+
 // Watch Music
 
 API.events.watch.music.changed.subscribe((_, _filename, data) => {
@@ -394,6 +410,10 @@ API.events.menu.build.subscribe((_, buildType) => {
 
 API.events.menu.ejectEngine.subscribe(() => {
   store.dispatch(buildGameActions.ejectEngine());
+});
+
+API.events.menu.ejectWebTemplate.subscribe(() => {
+  store.dispatch(buildGameActions.ejectWebTemplate());
 });
 
 API.events.menu.exportProject.subscribe((_, exportType) => {

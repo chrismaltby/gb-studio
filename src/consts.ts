@@ -23,7 +23,10 @@ export const enginesRoot = normalize(`${rootDir}/appData/engine`);
 export const defaultEngineRoot = normalize(`${enginesRoot}/gbvm`);
 export const defaultEngineMetaPath = normalize(`${enginesRoot}/engine.json`);
 export const buildToolsRoot = normalize(`${rootDir}/buildTools`);
-export const binjgbRoot = normalize(`${rootDir}/appData/wasm/binjgb`);
+export const binjgbWasmRoot = normalize(`${rootDir}/appData/wasm/binjgb`);
+export const defaultWebTemplateRoot = normalize(
+  `${rootDir}/appData/webTemplates/binjgb`,
+);
 export const projectTemplatesRoot = normalize(`${rootDir}/appData/templates`);
 export const musicTemplatesRoot = normalize(`${rootDir}/appData/music`);
 export const localesRoot = normalize(`${rootDir}/src/lang`);
@@ -333,6 +336,7 @@ export const defaultProjectSettings: Settings = {
   defaultSceneTypeId: "TOPDOWN",
   disabledSceneTypeIds: [],
   autoTileFlipEnabled: true,
+  webTemplate: "",
 };
 
 export const defaultPalettes: Palette[] = [
