@@ -20,6 +20,7 @@ import {
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { getPatternBlockCount } from "store/features/trackerDocument/trackerDocumentHelpers";
 import { SequenceItem } from "shared/lib/uge/types";
+import { getValidPlaybackSequenceId } from "./helpers";
 
 interface SequenceEditorProps {
   height?: number;
@@ -202,14 +203,24 @@ export const SequenceEditor = ({ height, direction }: SequenceEditorProps) => {
   const play = useAppSelector((state) => state.tracker.playing);
 
   useEffect(() => {
-    if (play && playingSequence !== -1 && playingSequence !== sequenceId) {
-      if (loopSequenceId !== undefined) {
-        setSequenceId(loopSequenceId);
-      } else {
-        setSequenceId(playingSequence);
-      }
+    const playbackSequenceId = getValidPlaybackSequenceId(
+      play,
+      playingSequence,
+      loopSequenceId,
+      sequence.length,
+    );
+
+    if (playbackSequenceId !== undefined && playbackSequenceId !== sequenceId) {
+      setSequenceId(playbackSequenceId);
     }
-  }, [play, playingSequence, loopSequenceId, sequenceId, setSequenceId]);
+  }, [
+    play,
+    playingSequence,
+    loopSequenceId,
+    sequence.length,
+    sequenceId,
+    setSequenceId,
+  ]);
 
   const onAddSequence = useCallback(() => {
     dispatch(
