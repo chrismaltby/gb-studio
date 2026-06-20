@@ -575,8 +575,8 @@ export const StyledScriptEventBranchHeader = styled.div<StyledScriptEventBranchH
       margin-right: 10px;
     }
     ${StyledFormFieldInput} {
-      width: 100%;
-      max-width: 200px;
+      flex: 1;
+      min-width: 0;
 
       .CustomSelect__control {
         height: 22px;
@@ -596,8 +596,8 @@ export const StyledScriptEventBranchHeader = styled.div<StyledScriptEventBranchH
 `;
 
 export const StyledScriptEventBranchHeaderFields = styled.div`
-  width: 100%;
-  max-width: 200px;
+  flex: 1;
+  min-width: 0;
 `;
 
 // #endregion ScriptEventBranchHeader
