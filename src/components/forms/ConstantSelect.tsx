@@ -271,6 +271,9 @@ export const ConstantSelect: FC<ConstantSelectProps> = ({
               onChange(newValue.value);
             }
           }}
+          formatOptionLabel={(option: Option) => (
+            <span title={option.label}>{option.label}</span>
+          )}
           {...selectProps}
         />
       )}
