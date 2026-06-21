@@ -33,6 +33,19 @@ jest.mock("uuid");
 
 const mockUuid = uuid as jest.MockedFunction<typeof uuid>;
 
+beforeEach(() => {
+  let id = 0;
+
+  mockUuid.mockImplementation(() => {
+    id += 1;
+    return `uuid-${id}`;
+  });
+});
+
+afterEach(() => {
+  mockUuid.mockReset();
+});
+
 test("Should fix scene widths if backgrounds has been removed since save", () => {
   const state: EntitiesState = {
     ...initialState,

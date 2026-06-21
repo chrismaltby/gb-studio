@@ -13,6 +13,21 @@ import { v4 as uuid } from "uuid";
 
 jest.mock("uuid");
 
+const mockUuid = uuid as jest.MockedFunction<typeof uuid>;
+
+beforeEach(() => {
+  let id = 0;
+
+  mockUuid.mockImplementation(() => {
+    id += 1;
+    return `uuid-${id}`;
+  });
+});
+
+afterEach(() => {
+  mockUuid.mockReset();
+});
+
 describe("Actor Prefabs", () => {
   describe("unpackActorPrefab", () => {
     test("Should unpack actor prefab when prefab exists", () => {
