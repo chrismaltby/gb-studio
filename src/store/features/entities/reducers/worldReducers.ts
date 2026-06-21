@@ -13,9 +13,7 @@ import {
   localSceneSelectById,
   localNoteSelectById,
 } from "store/features/entities/helpers";
-
-const MIN_SCENE_X = 60;
-const MIN_SCENE_Y = 30;
+import { MIN_WORLD_ENTITY_X, MIN_WORLD_ENTITY_Y } from "consts";
 
 const moveWorldEntities: CaseReducer<
   EntitiesState,
@@ -47,8 +45,8 @@ const moveWorldEntities: CaseReducer<
     );
 
     // Based on full selection determine minX and minY for current entity
-    const newX = Math.max(MIN_SCENE_X - minSelectionX, action.payload.x);
-    const newY = Math.max(MIN_SCENE_Y - minSelectionY, action.payload.y);
+    const newX = Math.max(MIN_WORLD_ENTITY_X - minSelectionX, action.payload.x);
+    const newY = Math.max(MIN_WORLD_ENTITY_Y - minSelectionY, action.payload.y);
     const diffX = newX - entity.x;
     const diffY = newY - entity.y;
 
@@ -60,8 +58,8 @@ const moveWorldEntities: CaseReducer<
     for (const additionalEntity of additionalEntities) {
       if (additionalEntity.id !== action.payload.entityId) {
         if (additionalEntity) {
-          const newX = Math.max(MIN_SCENE_X, additionalEntity.x + diffX);
-          const newY = Math.max(MIN_SCENE_Y, additionalEntity.y + diffY);
+          const newX = Math.max(MIN_WORLD_ENTITY_X, additionalEntity.x + diffX);
+          const newY = Math.max(MIN_WORLD_ENTITY_Y, additionalEntity.y + diffY);
           additionalEntity.x = newX;
           additionalEntity.y = newY;
         }
