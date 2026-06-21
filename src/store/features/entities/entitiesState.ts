@@ -33,7 +33,6 @@ import {
   ensureSymbolsUnique,
   removeAssetEntity,
   upsertAssetEntity,
-  updateEntitySymbol,
   renameAssetEntity,
   paletteName,
   updateAllCustomEventsArgs,
@@ -49,7 +48,6 @@ import type { LoadProjectResult } from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
 import {
   AvatarResourceAsset,
-  FontResourceAsset,
   MetaspriteTile,
   Palette,
   SpriteResourceAsset,
@@ -110,6 +108,7 @@ import musicReducers, {
 } from "store/features/entities/reducers/musicReducers";
 import soundsReducers from "store/features/entities/reducers/soundsReducers";
 import emotesReducers from "store/features/entities/reducers/emotesReducers";
+import fontsReducers from "store/features/entities/reducers/fontsReducers";
 export { selectScriptIds } from "store/features/entities/helpers";
 
 export const initialState: EntitiesState = {
@@ -470,46 +469,6 @@ const loadDetectedSprite: CaseReducer<
 };
 
 /**************************************************************************
- * Font
- */
-
-const setFontSymbol: CaseReducer<
-  EntitiesState,
-  PayloadAction<{ fontId: string; symbol: string }>
-> = (state, action) => {
-  updateEntitySymbol(
-    state,
-    state.fonts,
-    fontsAdapter,
-    action.payload.fontId,
-    action.payload.symbol,
-  );
-};
-
-const loadFont: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    data: FontResourceAsset;
-  }>
-> = (state, action) => {
-  upsertAssetEntity(state.fonts, fontsAdapter, action.payload.data, [
-    "id",
-    "symbol",
-  ]);
-  ensureSymbolsUnique(state);
-};
-
-const removeFont: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    filename: string;
-    plugin?: string;
-  }>
-> = (state, action) => {
-  removeAssetEntity(state.fonts, fontsAdapter, action.payload);
-};
-
-/**************************************************************************
  * Avatar
  */
 
@@ -651,19 +610,12 @@ const entitiesSlice = createSlice({
     ...musicReducers,
     ...soundsReducers,
     ...emotesReducers,
-
-    /**************************************************************************
-     * Font
-     */
-
-    setFontSymbol,
+    ...fontsReducers,
 
     /*
      * Load assets
      */
     loadSprite,
-    loadFont,
-    removeFont,
     loadAvatar,
     removeAvatar,
     removedAsset,
