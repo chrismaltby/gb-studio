@@ -57,7 +57,6 @@ import {
   Palette,
   SoundResourceAsset,
   SpriteResourceAsset,
-  TilesetResourceAsset,
 } from "shared/lib/resources/types";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import {
@@ -110,6 +109,7 @@ import backgroundsReducers, {
   fixAllScenesWithModifiedBackgrounds,
   updateMonoOverrideIds,
 } from "store/features/entities/reducers/backgroundsReducers";
+import tilesetsReducers from "store/features/entities/reducers/tilesetsReducers";
 export { selectScriptIds } from "store/features/entities/helpers";
 
 export const initialState: EntitiesState = {
@@ -649,36 +649,6 @@ const removeEmote: CaseReducer<
 };
 
 /**************************************************************************
- * Tileset
- */
-
-const setTilesetSymbol: CaseReducer<
-  EntitiesState,
-  PayloadAction<{ tilesetId: string; symbol: string }>
-> = (state, action) => {
-  updateEntitySymbol(
-    state,
-    state.tilesets,
-    tilesetsAdapter,
-    action.payload.tilesetId,
-    action.payload.symbol,
-  );
-};
-
-const loadTileset: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    data: TilesetResourceAsset;
-  }>
-> = (state, action) => {
-  upsertAssetEntity(state.tilesets, tilesetsAdapter, action.payload.data, [
-    "id",
-    "symbol",
-  ]);
-  ensureSymbolsUnique(state);
-};
-
-/**************************************************************************
  * Fix Scenes
  */
 
@@ -792,6 +762,7 @@ const entitiesSlice = createSlice({
     ...customEventsReducers,
     ...engineFieldValuesReducers,
     ...backgroundsReducers,
+    ...tilesetsReducers,
 
     /**************************************************************************
      * Music
@@ -813,12 +784,6 @@ const entitiesSlice = createSlice({
     setEmoteSymbol,
 
     /**************************************************************************
-     * Tileset
-     */
-
-    setTilesetSymbol,
-
-    /**************************************************************************
      * Font
      */
 
@@ -836,7 +801,6 @@ const entitiesSlice = createSlice({
     removeAvatar,
     loadEmote,
     removeEmote,
-    loadTileset,
     removedAsset,
     renamedAsset,
   },
