@@ -1,11 +1,15 @@
 /* eslint-disable camelcase */
-import reducer from "store/features/entities/entitiesState";
+import reducer, { initialState } from "store/features/entities/entitiesState";
 import { EntitiesState } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { MetaspriteTile } from "shared/lib/resources/types";
+import {
+  MetaspriteTile,
+  SpriteResourceAsset,
+} from "shared/lib/resources/types";
 import { v4 as uuid } from "uuid";
 import { fixAllSpritesWithMissingStates } from "store/features/entities/reducers/spritesReducers";
 import { createNextState } from "@reduxjs/toolkit";
+import { dummySpriteSheet } from "../../../../dummydata";
 
 jest.mock("uuid");
 
@@ -572,4 +576,57 @@ describe("fixAllSpritesWithMissingStates", () => {
     expect(spriteStateId).toBeDefined();
     expect(result.spriteStates.entities[spriteStateId ?? ""]).toBeDefined();
   });
+});
+
+test("Should add new sprite sheet if loaded while project is open", () => {
+  const state: EntitiesState = {
+    ...initialState,
+  };
+
+  const loadSpriteSheet: SpriteResourceAsset = {
+    ...dummySpriteSheet,
+    id: "sprite1",
+    _resourceType: "sprite",
+    states: [],
+  };
+
+  const action = entitiesActions.loadSprite({
+    data: loadSpriteSheet,
+  });
+
+  expect(state.spriteSheets.ids.length).toBe(0);
+  const newState = reducer(state, action);
+  expect(newState.spriteSheets.ids.length).toBe(1);
+});
+
+test("Should update sprite sheet if modified while project is open", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    spriteSheets: {
+      entities: {
+        sprite1: {
+          ...dummySpriteSheet,
+          id: "sprite1",
+          filename: "sprite1.png",
+        },
+      },
+      ids: ["sprite1"],
+    },
+  };
+
+  const loadSpriteSheet: SpriteResourceAsset = {
+    ...dummySpriteSheet,
+    id: "sprite1",
+    filename: "sprite1.png",
+    _resourceType: "sprite",
+    states: [],
+  };
+
+  const action = entitiesActions.loadSprite({
+    data: loadSpriteSheet,
+  });
+
+  expect(state.spriteSheets.ids.length).toBe(1);
+  const newState = reducer(state, action);
+  expect(newState.spriteSheets.ids.length).toBe(1);
 });
