@@ -111,6 +111,7 @@ import scriptEventsReducers from "store/features/entities/reducers/scriptEventsR
 import palettesReducers from "store/features/entities/reducers/palettesReducers";
 import variablesReducers from "store/features/entities/reducers/variablesReducers";
 import customEventsReducers from "store/features/entities/reducers/customEventsReducers";
+import engineFieldValuesReducers from "store/features/entities/reducers/engineFieldValuesReducers";
 export { selectScriptIds } from "store/features/entities/helpers";
 
 export const initialState: EntitiesState = {
@@ -893,33 +894,6 @@ const updateMonoOverrideIds = (state: EntitiesState) => {
 };
 
 /**************************************************************************
- * Engine Field Values
- */
-
-const editEngineFieldValue: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    engineFieldId: string;
-    value: string | number | undefined;
-  }>
-> = (state, action) => {
-  engineFieldValuesAdapter.upsertOne(state.engineFieldValues, {
-    id: action.payload.engineFieldId,
-    value: action.payload.value,
-  });
-};
-
-const removeEngineFieldValue: CaseReducer<
-  EntitiesState,
-  PayloadAction<{ engineFieldId: string }>
-> = (state, action) => {
-  engineFieldValuesAdapter.removeOne(
-    state.engineFieldValues,
-    action.payload.engineFieldId,
-  );
-};
-
-/**************************************************************************
  * General Assets
  */
 
@@ -958,6 +932,7 @@ const entitiesSlice = createSlice({
     ...palettesReducers,
     ...variablesReducers,
     ...customEventsReducers,
+    ...engineFieldValuesReducers,
 
     /**************************************************************************
      * Backgrounds
@@ -997,13 +972,6 @@ const entitiesSlice = createSlice({
      */
 
     setFontSymbol,
-
-    /**************************************************************************
-     * Engine Field Values
-     */
-
-    editEngineFieldValue,
-    removeEngineFieldValue,
 
     /*
      * Load assets
