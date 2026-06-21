@@ -134,7 +134,7 @@ import {
   localTriggerSelectAll,
   localMusicSelectAll,
 } from "store/features/entities/helpers";
-import actorReducers from "store/features/entities/reducers/actorsReducers";
+import actorsReducers from "store/features/entities/reducers/actorsReducers";
 import triggersReducers from "store/features/entities/reducers/triggersReducers";
 import scenesReducers from "store/features/entities/reducers/scenesReducers";
 import worldReducers from "store/features/entities/reducers/worldReducers";
@@ -3102,7 +3102,7 @@ const entitiesSlice = createSlice({
      * Actors
      */
 
-    ...actorReducers,
+    ...actorsReducers,
 
     /**************************************************************************
      * Triggers
