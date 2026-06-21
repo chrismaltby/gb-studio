@@ -55,7 +55,7 @@ export const SettingsSectionWeb = ({ searchTerm }: SettingsSectionWebProps) => {
         l10n("MENU_EJECT_WEB_TEMPLATE"),
       ]}
     >
-      <CardAnchor id="settingsCustomHead" />
+      <CardAnchor id="settingsWeb" />
       <CardHeading>{l10n("SETTINGS_WEB_EXPORT")}</CardHeading>
 
       <SearchableSettingRow

@@ -118,8 +118,8 @@ const SettingsPage = () => {
             <SettingsMenuItem onClick={onMenuItem("settingsBuild")}>
               {l10n("SETTINGS_BUILD")}
             </SettingsMenuItem>
-            <SettingsMenuItem onClick={onMenuItem("settingsCustomHead")}>
-              {l10n("SETTINGS_CUSTOM_HEADER")}
+            <SettingsMenuItem onClick={onMenuItem("settingsWeb")}>
+              {l10n("SETTINGS_WEB_EXPORT")}
             </SettingsMenuItem>
           </SearchableCard>
         </SettingsMenuColumn>
