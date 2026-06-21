@@ -1,7 +1,11 @@
 import uuid from "uuid";
-import type { EntitiesState } from "shared/lib/entities/entitiesTypes";
+import type {
+  EntitiesState,
+  ScriptEventParentType,
+} from "shared/lib/entities/entitiesTypes";
 import { ScriptEventArgsOverride } from "shared/lib/resources/types";
 import { scriptEventsAdapter } from "store/features/entities/adapters";
+import { assertUnreachable } from "shared/lib/helpers/assert";
 
 // Local Selectors (only for use internally within EntitiesState reducers)
 
@@ -119,4 +123,86 @@ export const duplicateScript = (
     }
   });
   return newIds;
+};
+
+// @todo CM: likely should rename to something like getOrCreateScriptIds as it can mutate input
+export const selectScriptIds = (
+  state: EntitiesState,
+  parentType: ScriptEventParentType,
+  parentId: string,
+  parentKey: string,
+): string[] | undefined => {
+  if (parentType === "scene") {
+    const scene = state.scenes.entities[parentId];
+    if (!scene) return;
+    const script = scene[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (scene[parentKey as "script"] = []);
+    return newScript;
+  } else if (parentType === "scriptEvent") {
+    const scriptEvent = state.scriptEvents.entities[parentId];
+    if (!scriptEvent) return;
+    const script = scriptEvent.children?.[parentKey];
+    if (script) {
+      return script;
+    }
+    if (!scriptEvent.children) {
+      scriptEvent.children = {
+        [parentKey]: [],
+      };
+      return scriptEvent.children?.[parentKey];
+    } else {
+      scriptEvent.children[parentKey] = [];
+      return scriptEvent.children[parentKey];
+    }
+  } else if (parentType === "actor") {
+    const actor = state.actors.entities[parentId];
+    if (!actor) return;
+    const script = actor[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (actor[parentKey as "script"] = []);
+    return newScript;
+  } else if (parentType === "trigger") {
+    const trigger = state.triggers.entities[parentId];
+    if (!trigger) return;
+    const script = trigger[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (trigger[parentKey as "script"] = []);
+    return newScript;
+  } else if (parentType === "customEvent") {
+    const customEvent = state.customEvents.entities[parentId];
+    if (!customEvent) return;
+    const script = customEvent[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (customEvent[parentKey as "script"] = []);
+    return newScript;
+  } else if (parentType === "actorPrefab") {
+    const actorPrefab = state.actorPrefabs.entities[parentId];
+    if (!actorPrefab) return;
+    const script = actorPrefab[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (actorPrefab[parentKey as "script"] = []);
+    return newScript;
+  } else if (parentType === "triggerPrefab") {
+    const triggerPrefab = state.triggerPrefabs.entities[parentId];
+    if (!triggerPrefab) return;
+    const script = triggerPrefab[parentKey as "script"];
+    if (script) {
+      return script;
+    }
+    const newScript = (triggerPrefab[parentKey as "script"] = []);
+    return newScript;
+  } else {
+    assertUnreachable(parentType);
+  }
 };
