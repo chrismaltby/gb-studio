@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect } from "react";
 import editorActions from "store/features/editor/editorActions";
-import { triggerSelectors } from "store/features/entities/entitiesState";
+import { triggerSelectors } from "store/features/entities/entitiesSelectors";
 import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
 import styled, { css } from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";

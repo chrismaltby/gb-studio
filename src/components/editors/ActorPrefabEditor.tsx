@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useState } from "react";
-import { actorPrefabSelectors } from "store/features/entities/entitiesState";
+import { actorPrefabSelectors } from "store/features/entities/entitiesSelectors";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import { FormContainer, FormHeader, FormRow } from "ui/form/layout/FormLayout";

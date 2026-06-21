@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import ScriptEditor from "components/script/ScriptEditor";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
-import { sceneSelectors } from "store/features/entities/entitiesState";
+import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import {
   ScriptEventNormalized,

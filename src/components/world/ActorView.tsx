@@ -5,7 +5,7 @@ import {
   actorPrefabSelectors,
   actorSelectors,
   spriteSheetSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";

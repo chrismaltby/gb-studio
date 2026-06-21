@@ -2,7 +2,7 @@ import React, { FC, useMemo } from "react";
 import {
   actorSelectors,
   sceneSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import { FlatList } from "ui/lists/FlatList";
 import { EntityListItem } from "ui/lists/EntityListItem";

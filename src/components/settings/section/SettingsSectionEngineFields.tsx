@@ -3,7 +3,7 @@ import {
   EngineFieldCType,
   EngineFieldSchema,
 } from "store/features/engine/engineState";
-import { engineFieldValueSelectors } from "store/features/entities/entitiesState";
+import { engineFieldValueSelectors } from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Button } from "ui/buttons/Button";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";

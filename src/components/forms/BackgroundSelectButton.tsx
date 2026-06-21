@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
-import { backgroundSelectors } from "store/features/entities/entitiesState";
+import { backgroundSelectors } from "store/features/entities/entitiesSelectors";
 import assetsActions from "store/features/assets/assetsActions";
 import {
   FormatFolderLabel,

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import styled from "styled-components";
-import { musicSelectors } from "store/features/entities/entitiesState";
+import { musicSelectors } from "store/features/entities/entitiesSelectors";
 import musicActions from "store/features/music/musicActions";
 import { Button } from "ui/buttons/Button";
 import { PauseIcon, PlayIcon } from "ui/icons/Icons";

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import uniq from "lodash/uniq";
-import { musicSelectors } from "store/features/entities/entitiesState";
+import { musicSelectors } from "store/features/entities/entitiesSelectors";
 import {
   Option,
   Select,

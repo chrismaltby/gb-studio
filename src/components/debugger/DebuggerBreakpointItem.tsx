@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import { scriptEventSelectors } from "store/features/entities/entitiesState";
+import { scriptEventSelectors } from "store/features/entities/entitiesSelectors";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import settingsActions from "store/features/settings/settingsActions";
 import { BreakpointData } from "store/features/settings/settingsState";

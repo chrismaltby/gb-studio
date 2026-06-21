@@ -3,7 +3,7 @@ import { MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { sceneSelectors } from "store/features/entities/entitiesState";
+import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import {
   ScriptEventWrapper,
   ScriptEventHeader,

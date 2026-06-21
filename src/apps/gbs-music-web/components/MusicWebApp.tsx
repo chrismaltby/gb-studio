@@ -5,7 +5,7 @@ import { saveSongFile } from "store/features/trackerDocument/trackerDocumentStat
 import { webMusicEnvironment } from "gbs-music-web/lib/adapters";
 import { MusicWebStatusBanner } from "gbs-music-web/components/MusicWebStatusBanner";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { musicSelectors } from "store/features/entities/entitiesState";
+import { musicSelectors } from "store/features/entities/entitiesSelectors";
 import WebAPI from "gbs-music-web/lib/api";
 import { ConfirmUnsavedChangesDialog } from "gbs-music-web/components/dialog/ConfirmUnsavedChangesDialog";
 import { MusicWebSplash } from "gbs-music-web/components/MusicWebSplash";

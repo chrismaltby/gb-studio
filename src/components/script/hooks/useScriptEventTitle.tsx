@@ -11,7 +11,7 @@ import {
   spriteSheetSelectors,
   emoteSelectors,
   constantSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import keyBy from "lodash/keyBy";
 import {
   actorName,

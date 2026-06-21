@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import { tilesetSelectors } from "store/features/entities/entitiesState";
+import { tilesetSelectors } from "store/features/entities/entitiesSelectors";
 import { UnitType, GridUnitType } from "shared/lib/entities/entitiesTypes";
 import {
   Option,

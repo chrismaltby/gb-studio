@@ -14,7 +14,7 @@ import {
   customEventSelectors,
   sceneSelectors,
   triggerSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import {
   ActorScriptKey,
   SceneScriptKey,

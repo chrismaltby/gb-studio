@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
-import { variableSelectors } from "store/features/entities/entitiesState";
+import { variableSelectors } from "store/features/entities/entitiesSelectors";
 import { useAppSelector } from "store/hooks";
 import { Select, SelectCommonProps } from "ui/form/Select";
 

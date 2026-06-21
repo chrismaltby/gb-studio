@@ -8,7 +8,7 @@ import {
   removeArrayElements,
   toggleArrayElement,
 } from "shared/lib/helpers/array";
-import { sceneSelectors } from "store/features/entities/entitiesState";
+import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import uniqBy from "lodash/uniqBy";
 

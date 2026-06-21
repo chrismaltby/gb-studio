@@ -6,7 +6,7 @@ import {
   SelectCommonProps,
 } from "ui/form/Select";
 import styled from "styled-components";
-import { constantSelectors } from "store/features/entities/entitiesState";
+import { constantSelectors } from "store/features/entities/entitiesSelectors";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import { IMEInput } from "ui/form/IMEInput";
 import entitiesActions from "store/features/entities/entitiesActions";

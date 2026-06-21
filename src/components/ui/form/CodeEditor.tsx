@@ -6,7 +6,7 @@ import "prismjs/components/prism-javascript";
 import styled from "styled-components";
 import gbvmGrammar from "./prism/gbvm.grammar";
 import { useAppSelector } from "store/hooks";
-import { scriptEventSelectors } from "store/features/entities/entitiesState";
+import { scriptEventSelectors } from "store/features/entities/entitiesSelectors";
 import ScriptEventTitle from "components/script/ScriptEventTitle";
 import l10n from "shared/lib/lang/l10n";
 import { ScrollTo } from "ui/util/ScrollTo";

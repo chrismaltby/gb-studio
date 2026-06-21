@@ -1,6 +1,7 @@
 import flatten from "lodash/flatten";
 import { UnknownAction, Dispatch, Middleware } from "@reduxjs/toolkit";
 import { RootState } from "store/storeTypes";
+import { generateScriptEventInsertActions } from "store/features/entities/entitiesState";
 import {
   customEventSelectors,
   actorSelectors,
@@ -11,11 +12,10 @@ import {
   spriteStateSelectors,
   spriteAnimationSelectors,
   scriptEventSelectors,
-  generateScriptEventInsertActions,
   sceneSelectors,
   actorPrefabSelectors,
   triggerPrefabSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import {
   ActorNormalized,
   ActorPrefabNormalized,

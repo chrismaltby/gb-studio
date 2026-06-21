@@ -20,7 +20,7 @@ import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
   spriteStateSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import MetaspriteEditor from "components/sprites/MetaspriteEditor";
 import SpriteTilePalette from "components/sprites/SpriteTilePalette";
 import SpriteAnimationTimeline from "components/sprites/SpriteAnimationTimeline";

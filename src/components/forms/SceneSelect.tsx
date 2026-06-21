@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import {
   backgroundSelectors,
   sceneSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import {
   Option,
   OptionLabelWithPreview,

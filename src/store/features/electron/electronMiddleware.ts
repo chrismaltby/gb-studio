@@ -15,7 +15,7 @@ import {
   actorPrefabSelectors,
   triggerPrefabSelectors,
   constantSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import actions from "./electronActions";
 import API from "renderer/lib/api";

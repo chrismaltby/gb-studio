@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { DMG_PALETTE, TILE_SIZE } from "consts";
-import { tilesetSelectors } from "store/features/entities/entitiesState";
+import { tilesetSelectors } from "store/features/entities/entitiesSelectors";
 import TilePreviewWorker, { TilePreviewResult } from "./TilePreview.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 import { GridUnitType } from "shared/lib/entities/entitiesTypes";

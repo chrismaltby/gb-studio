@@ -13,7 +13,7 @@ import {
 } from "shared/lib/scriptDataTable/types";
 import { ConstScriptValue } from "shared/lib/scriptValue/types";
 import { getNextVariableId } from "shared/lib/variables/variableNames";
-import { constantSelectors } from "store/features/entities/entitiesState";
+import { constantSelectors } from "store/features/entities/entitiesSelectors";
 import { useAppStore } from "store/hooks";
 import styled from "styled-components";
 import { Alert } from "ui/alerts/Alert";

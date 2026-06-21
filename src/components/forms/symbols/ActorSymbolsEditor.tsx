@@ -1,5 +1,5 @@
 import React from "react";
-import { actorSelectors } from "store/features/entities/entitiesState";
+import { actorSelectors } from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
   interactScriptSymbol,

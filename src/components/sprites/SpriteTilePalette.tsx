@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { SpriteTileSelection } from "store/features/editor/editorState";
-import { spriteSheetSelectors } from "store/features/entities/entitiesState";
+import { spriteSheetSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { roundDown8 } from "shared/lib/helpers/8bit";

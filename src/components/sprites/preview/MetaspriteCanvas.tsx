@@ -5,7 +5,7 @@ import {
   metaspriteSelectors,
   metaspriteTileSelectors,
   spriteSheetSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import MetaspriteCanvasWorker, {
   MetaspriteCanvasResult,
 } from "./MetaspriteCanvas.worker";

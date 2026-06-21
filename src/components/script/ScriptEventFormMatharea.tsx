@@ -5,7 +5,7 @@ import {
   constantSelectors,
   customEventSelectors,
   variableSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { Constant } from "shared/lib/resources/types";

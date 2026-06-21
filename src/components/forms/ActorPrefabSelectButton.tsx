@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
-import { actorPrefabSelectors } from "store/features/entities/entitiesState";
+import { actorPrefabSelectors } from "store/features/entities/entitiesSelectors";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { useAppSelector } from "store/hooks";

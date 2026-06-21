@@ -41,7 +41,7 @@ import {
   backgroundSelectors,
   paletteSelectors,
   sceneSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import entitiesActions from "store/features/entities/entitiesActions";

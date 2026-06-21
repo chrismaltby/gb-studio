@@ -1,6 +1,6 @@
 import { ThunkMiddleware } from "redux-thunk";
 import { RootState } from "store/storeTypes";
-import { musicSelectors } from "store/features/entities/entitiesState";
+import { musicSelectors } from "store/features/entities/entitiesSelectors";
 import navigationActions from "store/features/navigation/navigationActions";
 import {
   addNewSongFile,

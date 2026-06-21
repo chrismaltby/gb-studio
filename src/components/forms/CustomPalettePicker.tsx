@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import l10n from "shared/lib/lang/l10n";
 import ColorSlider from "./ColorSlider";
-import { paletteSelectors } from "store/features/entities/entitiesState";
+import { paletteSelectors } from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Button } from "ui/buttons/Button";
 import { hexDec } from "shared/lib/helpers/8bit";

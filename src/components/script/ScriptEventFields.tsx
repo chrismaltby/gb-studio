@@ -19,7 +19,7 @@ import {
 import {
   sceneSelectors,
   soundSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { evaluateConditions } from "shared/lib/conditionsFilter";

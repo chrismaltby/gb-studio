@@ -18,7 +18,7 @@ import {
   sceneSelectors,
   backgroundSelectors,
   paletteSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import ScenePriorityMap from "./ScenePriorityMap";

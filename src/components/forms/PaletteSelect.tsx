@@ -4,7 +4,7 @@ import styled from "styled-components";
 import {
   getLocalisedDMGPalette,
   getLocalisedPalettes,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import PaletteBlock, { PaletteBlockType } from "components/forms/PaletteBlock";
 import {
   Option,

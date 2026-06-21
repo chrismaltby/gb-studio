@@ -34,7 +34,7 @@ import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
 import {
   actorSelectors,
   triggerSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { ScriptEditorContext } from "./ScriptEditorContext";
 import { ScriptEventUserPresets } from "./ScriptEventUserPresets";
 import throttle from "lodash/throttle";

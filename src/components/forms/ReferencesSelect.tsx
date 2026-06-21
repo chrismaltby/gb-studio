@@ -17,7 +17,7 @@ import {
   spriteSheetSelectors,
   tilesetSelectors,
   variableSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { Button } from "ui/buttons/Button";
 import { CheckIcon, MinusIcon, PencilIcon } from "ui/icons/Icons";
 import l10n from "shared/lib/lang/l10n";

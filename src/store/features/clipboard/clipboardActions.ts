@@ -4,7 +4,7 @@ import {
   sceneSelectors,
   actorSelectors,
   triggerSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
 import { RootState } from "store/storeTypes";
 import editorActions from "store/features/editor/editorActions";

@@ -8,7 +8,7 @@ import {
   soundSelectors,
   spriteSheetSelectors,
   tilesetSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { Asset, AssetType } from "shared/lib/helpers/assets";
 import { assertUnreachable } from "shared/lib/helpers/assert";
 

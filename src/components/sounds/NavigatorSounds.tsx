@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { soundSelectors } from "store/features/entities/entitiesState";
+import { soundSelectors } from "store/features/entities/entitiesSelectors";
 import { FlatList } from "ui/lists/FlatList";
 import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import l10n from "shared/lib/lang/l10n";

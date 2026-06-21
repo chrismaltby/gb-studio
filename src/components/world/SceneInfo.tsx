@@ -20,7 +20,7 @@ import {
   spriteSheetSelectors,
   triggerPrefabSelectors,
   triggerSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import styled, { css } from "styled-components";
 import { TooltipWrapper } from "ui/tooltips/Tooltip";
 import l10n from "shared/lib/lang/l10n";

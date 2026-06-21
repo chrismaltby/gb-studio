@@ -9,7 +9,7 @@ import styled from "styled-components";
 import {
   customEventSelectors,
   variableSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import {
   groupVariables,
   NamedVariable,

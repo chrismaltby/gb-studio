@@ -6,7 +6,7 @@ import {
   paletteSelectors,
   sceneSelectors,
   tilesetSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import ColorizedImage from "components/world/ColorizedImage";
 import { DMG_PALETTE, TILE_SIZE } from "consts";
 import { assetURL } from "shared/lib/helpers/assets";

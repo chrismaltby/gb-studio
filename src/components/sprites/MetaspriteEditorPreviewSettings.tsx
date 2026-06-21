@@ -4,7 +4,7 @@ import {
   metaspriteSelectors,
   sceneSelectors,
   spriteSheetSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import l10n from "shared/lib/lang/l10n";
 import { SceneSelect } from "components/forms/SceneSelect";

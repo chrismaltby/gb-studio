@@ -14,7 +14,7 @@ import {
   customEventSelectors,
   getSceneActorIds,
   sceneSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";

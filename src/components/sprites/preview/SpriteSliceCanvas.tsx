@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { DMG_PALETTE } from "consts";
-import { spriteSheetSelectors } from "store/features/entities/entitiesState";
+import { spriteSheetSelectors } from "store/features/entities/entitiesSelectors";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
 } from "./SpriteSliceCanvas.worker";

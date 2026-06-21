@@ -3,7 +3,7 @@ import { useAppSelector } from "store/hooks";
 import {
   customEventSelectors,
   scriptEventSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import styled from "styled-components";
 import AddButton from "./AddButton";
 import ScriptEditorEvent from "./ScriptEditorEvent";

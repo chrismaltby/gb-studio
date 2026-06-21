@@ -7,7 +7,7 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { IMEInput } from "ui/form/IMEInput";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { variableSelectors } from "store/features/entities/entitiesState";
+import { variableSelectors } from "store/features/entities/entitiesSelectors";
 
 interface FlagFieldFieldProps {
   readonly name: string;

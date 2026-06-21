@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { paletteSelectors } from "store/features/entities/entitiesState";
+import { paletteSelectors } from "store/features/entities/entitiesSelectors";
 import { FlatList } from "ui/lists/FlatList";
 import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
