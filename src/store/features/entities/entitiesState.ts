@@ -1,10 +1,8 @@
 import {
   createSlice,
-  PayloadAction,
   ThunkDispatch,
   UnknownAction,
   createSelector,
-  CaseReducer,
 } from "@reduxjs/toolkit";
 import l10n from "shared/lib/lang/l10n";
 import {
@@ -20,21 +18,13 @@ import settingsActions from "store/features/settings/settingsActions";
 import projectActions from "store/features/project/projectActions";
 import {
   EntitiesState,
-  ScriptNormalized,
   ScriptEventNormalized,
   ScriptEventParentType,
 } from "shared/lib/entities/entitiesTypes";
-import {
-  ensureSymbolsUnique,
-  paletteName,
-  updateAllCustomEventsArgs,
-  normalizeEntityResources,
-} from "shared/lib/entities/entitiesHelpers";
+import { paletteName } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import keyBy from "lodash/keyBy";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
-import type { LoadProjectResult } from "lib/project/loadProjectData";
-import { decompressProjectResources } from "shared/lib/resources/compression";
 import { Palette } from "shared/lib/resources/types";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import {
@@ -78,10 +68,7 @@ import palettesReducers from "store/features/entities/reducers/palettesReducers"
 import variablesReducers from "store/features/entities/reducers/variablesReducers";
 import customEventsReducers from "store/features/entities/reducers/customEventsReducers";
 import engineFieldValuesReducers from "store/features/entities/reducers/engineFieldValuesReducers";
-import backgroundsReducers, {
-  fixAllScenesWithModifiedBackgrounds,
-  updateMonoOverrideIds,
-} from "store/features/entities/reducers/backgroundsReducers";
+import backgroundsReducers from "store/features/entities/reducers/backgroundsReducers";
 import tilesetsReducers from "store/features/entities/reducers/tilesetsReducers";
 import musicReducers, {
   loadMusic,
@@ -95,6 +82,7 @@ import assetsReducers, {
   removedAsset,
   renamedAsset,
 } from "store/features/entities/reducers/assetsReducers";
+import { loadProject } from "store/features/entities/reducers/projectLifecycleReducers";
 export { selectScriptIds } from "store/features/entities/helpers";
 
 export const initialState: EntitiesState = {
@@ -207,76 +195,6 @@ const removeSelectedEntity =
       dispatch(actions.removeActor({ sceneId: scene, actorId: entityId }));
     }
   };
-
-/**************************************************************************
- * Project
- */
-
-const loadProject: CaseReducer<
-  EntitiesState,
-  PayloadAction<LoadProjectResult>
-> = (state, action) => {
-  const uncompressedResources = decompressProjectResources(
-    action.payload.resources,
-  );
-
-  const data = normalizeEntityResources(uncompressedResources);
-
-  actorsAdapter.setAll(state.actors, data.entities.actors || {});
-  triggersAdapter.setAll(state.triggers, data.entities.triggers || {});
-  scenesAdapter.setAll(state.scenes, data.entities.scenes || {});
-  actorPrefabsAdapter.setAll(
-    state.actorPrefabs,
-    data.entities.actorPrefabs || {},
-  );
-  triggerPrefabsAdapter.setAll(
-    state.triggerPrefabs,
-    data.entities.triggerPrefabs || {},
-  );
-  scriptEventsAdapter.setAll(
-    state.scriptEvents,
-    data.entities.scriptEvents || {},
-  );
-  backgroundsAdapter.setAll(state.backgrounds, data.entities.backgrounds || {});
-  spriteSheetsAdapter.setAll(state.spriteSheets, data.entities.sprites || {});
-  metaspritesAdapter.setAll(state.metasprites, data.entities.metasprites || {});
-  metaspriteTilesAdapter.setAll(
-    state.metaspriteTiles,
-    data.entities.metaspriteTiles || {},
-  );
-  spriteAnimationsAdapter.setAll(
-    state.spriteAnimations,
-    data.entities.spriteAnimations || {},
-  );
-  spriteStatesAdapter.setAll(
-    state.spriteStates,
-    data.entities.spriteStates || {},
-  );
-  palettesAdapter.setAll(state.palettes, data.entities.palettes || {});
-  musicAdapter.setAll(state.music, data.entities.music || {});
-  soundsAdapter.setAll(state.sounds, data.entities.sounds || {});
-  fontsAdapter.setAll(state.fonts, data.entities.fonts || {});
-  avatarsAdapter.setAll(state.avatars, data.entities.avatars || {});
-  emotesAdapter.setAll(state.emotes, data.entities.emotes || {});
-  tilesetsAdapter.setAll(state.tilesets, data.entities.tilesets || {});
-  customEventsAdapter.setAll(state.customEvents, data.entities.scripts || {});
-  variablesAdapter.setAll(state.variables, data.entities.variables || {});
-  constantsAdapter.setAll(state.constants, data.entities.constants || {});
-  engineFieldValuesAdapter.setAll(
-    state.engineFieldValues,
-    data.entities.engineFieldValues || {},
-  );
-  notesAdapter.setAll(state.notes, data.entities.notes || {});
-
-  fixAllScenesWithModifiedBackgrounds(state);
-  updateMonoOverrideIds(state);
-  ensureSymbolsUnique(state);
-  updateAllCustomEventsArgs(
-    Object.values(state.customEvents.entities) as ScriptNormalized[],
-    state.scriptEvents.entities,
-    action.payload.scriptEventDefs,
-  );
-};
 
 // Reducer ---------------------------------------------------------------------
 
