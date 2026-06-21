@@ -17,27 +17,20 @@ import {
 } from "consts";
 import { RootState } from "store/storeTypes";
 import settingsActions from "store/features/settings/settingsActions";
-import uuid from "uuid";
 import projectActions from "store/features/project/projectActions";
 import {
   EntitiesState,
-  SpriteSheetNormalized,
   ScriptNormalized,
   ScriptEventNormalized,
-  MetaspriteNormalized,
-  SpriteAnimationNormalized,
-  SpriteStateNormalized,
   ScriptEventParentType,
 } from "shared/lib/entities/entitiesTypes";
 import {
   ensureSymbolsUnique,
   removeAssetEntity,
-  upsertAssetEntity,
   renameAssetEntity,
   paletteName,
   updateAllCustomEventsArgs,
   normalizeEntityResources,
-  normalizeSprite,
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import keyBy from "lodash/keyBy";
@@ -46,11 +39,7 @@ import { assertUnreachable } from "shared/lib/scriptValue/format";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
-import {
-  MetaspriteTile,
-  Palette,
-  SpriteResourceAsset,
-} from "shared/lib/resources/types";
+import { Palette } from "shared/lib/resources/types";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import {
   actorsAdapter,
@@ -79,7 +68,6 @@ import {
   engineFieldValuesAdapter,
 } from "store/features/entities/adapters";
 import {
-  localSpriteSheetSelectById,
   localSpriteSheetSelectAll,
   localBackgroundSelectAll,
   localMusicSelectAll,
@@ -89,7 +77,9 @@ import triggersReducers from "store/features/entities/reducers/triggersReducers"
 import scenesReducers from "store/features/entities/reducers/scenesReducers";
 import worldReducers from "store/features/entities/reducers/worldReducers";
 import notesReducers from "store/features/entities/reducers/notesReducers";
-import spritesReducers from "store/features/entities/reducers/spritesReducers";
+import spritesReducers, {
+  loadDetectedSprite,
+} from "store/features/entities/reducers/spritesReducers";
 import constantsReducers from "store/features/entities/reducers/constantsReducers";
 import prefabsReducers from "store/features/entities/reducers/prefabsReducers";
 import scriptEventsReducers from "store/features/entities/reducers/scriptEventsReducers";
@@ -367,180 +357,6 @@ const renamedAsset: CaseReducer<
   }
 };
 
-const loadSprite: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    data: SpriteResourceAsset;
-  }>
-> = (state, action) => {
-  const normalizedSpriteData = normalizeSprite(action.payload.data);
-  const normalizedSprite =
-    normalizedSpriteData.entities.spriteSheets[normalizedSpriteData.result];
-
-  const didInsert = upsertAssetEntity(
-    state.spriteSheets,
-    spriteSheetsAdapter,
-    normalizedSprite,
-    [
-      "id",
-      "symbol",
-      "states",
-      "canvasOriginX",
-      "canvasOriginY",
-      "canvasWidth",
-      "canvasHeight",
-      "boundsX",
-      "boundsY",
-      "boundsWidth",
-      "boundsHeight",
-      "animSpeed",
-      "numTiles",
-    ],
-  );
-
-  if (didInsert) {
-    // If inserted also insert metasprite + animation data
-    metaspriteTilesAdapter.addMany(
-      state.metaspriteTiles,
-      normalizedSpriteData.entities.metaspriteTiles ?? {},
-    );
-    metaspritesAdapter.addMany(
-      state.metasprites,
-      normalizedSpriteData.entities.metasprites ?? {},
-    );
-    spriteAnimationsAdapter.addMany(
-      state.spriteAnimations,
-      normalizedSpriteData.entities.spriteAnimations ?? {},
-    );
-    spriteStatesAdapter.addMany(
-      state.spriteStates,
-      normalizedSpriteData.entities.spriteStates ?? {},
-    );
-  }
-
-  fixAllSpritesWithMissingStates(state);
-  ensureSymbolsUnique(state);
-};
-
-const loadDetectedSprite: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    spriteSheetId: string;
-    spriteAnimations: SpriteAnimationNormalized[];
-    spriteStates: SpriteStateNormalized[];
-    metasprites: MetaspriteNormalized[];
-    metaspriteTiles: MetaspriteTile[];
-    state: SpriteStateNormalized;
-    changes: Partial<SpriteSheetNormalized>;
-  }>
-> = (state, action) => {
-  const spriteSheet = localSpriteSheetSelectById(
-    state,
-    action.payload.spriteSheetId,
-  );
-
-  if (!spriteSheet) {
-    return;
-  }
-
-  metaspriteTilesAdapter.addMany(
-    state.metaspriteTiles,
-    action.payload.metaspriteTiles,
-  );
-
-  metaspritesAdapter.addMany(state.metasprites, action.payload.metasprites);
-
-  spriteAnimationsAdapter.addMany(
-    state.spriteAnimations,
-    action.payload.spriteAnimations,
-  );
-
-  spriteStatesAdapter.upsertOne(state.spriteStates, action.payload.state);
-
-  const numStates = spriteSheet.states?.length || 0;
-
-  spriteSheetsAdapter.updateOne(state.spriteSheets, {
-    id: action.payload.spriteSheetId,
-    changes: {
-      ...action.payload.changes,
-      states: numStates === 0 ? [action.payload.state.id] : spriteSheet.states,
-    },
-  });
-};
-
-/**************************************************************************
- * Fix Scenes
- */
-
-const createDefaultSpriteStateData = (): {
-  metasprites: MetaspriteNormalized[];
-  animations: SpriteAnimationNormalized[];
-  spriteState: SpriteStateNormalized;
-} => {
-  const metasprites: MetaspriteNormalized[] = Array.from(Array(8)).map(() => ({
-    id: uuid(),
-    tiles: [],
-  }));
-
-  const animations: SpriteAnimationNormalized[] = metasprites.map(
-    (metasprite) => ({
-      id: uuid(),
-      frames: [metasprite.id],
-    }),
-  );
-
-  const spriteState: SpriteStateNormalized = {
-    id: uuid(),
-    name: "",
-    animationType: "multi_movement",
-    flipLeft: true,
-    animations: animations.map((animation) => animation.id),
-  };
-
-  return {
-    metasprites,
-    animations,
-    spriteState,
-  };
-};
-
-export const fixAllSpritesWithMissingStates = (state: EntitiesState) => {
-  const sprites = localSpriteSheetSelectAll(state);
-
-  for (const sprite of sprites) {
-    const validStateIds = (sprite.states ?? []).filter((spriteStateId) => {
-      return !!state.spriteStates.entities[spriteStateId];
-    });
-
-    if (validStateIds.length > 0) {
-      if (validStateIds.length !== sprite.states?.length) {
-        spriteSheetsAdapter.updateOne(state.spriteSheets, {
-          id: sprite.id,
-          changes: {
-            states: validStateIds,
-          },
-        });
-      }
-
-      continue;
-    }
-
-    const { metasprites, animations, spriteState } =
-      createDefaultSpriteStateData();
-
-    metaspritesAdapter.addMany(state.metasprites, metasprites);
-    spriteAnimationsAdapter.addMany(state.spriteAnimations, animations);
-    spriteStatesAdapter.addOne(state.spriteStates, spriteState);
-
-    spriteSheetsAdapter.updateOne(state.spriteSheets, {
-      id: sprite.id,
-      changes: {
-        states: [spriteState.id],
-      },
-    });
-  }
-};
-
 /**************************************************************************
  * General Assets
  */
@@ -592,7 +408,6 @@ const entitiesSlice = createSlice({
     /*
      * Load assets
      */
-    loadSprite,
     removedAsset,
     renamedAsset,
   },

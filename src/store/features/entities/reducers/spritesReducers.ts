@@ -15,8 +15,15 @@ import {
 import {
   updateEntitySymbol,
   getMetaspriteTilesForSpriteSheet,
+  normalizeSprite,
+  upsertAssetEntity,
+  ensureSymbolsUnique,
 } from "shared/lib/entities/entitiesHelpers";
-import { MetaspriteTile, ObjPalette } from "shared/lib/resources/types";
+import {
+  MetaspriteTile,
+  ObjPalette,
+  SpriteResourceAsset,
+} from "shared/lib/resources/types";
 import {
   insertAfterElement,
   moveArrayElement,
@@ -30,11 +37,180 @@ import {
   spriteAnimationsAdapter,
   spriteStatesAdapter,
 } from "store/features/entities/adapters";
-import { localSpriteSheetSelectById } from "store/features/entities/helpers";
+import {
+  localSpriteSheetSelectAll,
+  localSpriteSheetSelectById,
+} from "store/features/entities/helpers";
 
-/**************************************************************************
- * Sprite Sheets
- */
+const loadSprite: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    data: SpriteResourceAsset;
+  }>
+> = (state, action) => {
+  const normalizedSpriteData = normalizeSprite(action.payload.data);
+  const normalizedSprite =
+    normalizedSpriteData.entities.spriteSheets[normalizedSpriteData.result];
+
+  const didInsert = upsertAssetEntity(
+    state.spriteSheets,
+    spriteSheetsAdapter,
+    normalizedSprite,
+    [
+      "id",
+      "symbol",
+      "states",
+      "canvasOriginX",
+      "canvasOriginY",
+      "canvasWidth",
+      "canvasHeight",
+      "boundsX",
+      "boundsY",
+      "boundsWidth",
+      "boundsHeight",
+      "animSpeed",
+      "numTiles",
+    ],
+  );
+
+  if (didInsert) {
+    // If inserted also insert metasprite + animation data
+    metaspriteTilesAdapter.addMany(
+      state.metaspriteTiles,
+      normalizedSpriteData.entities.metaspriteTiles ?? {},
+    );
+    metaspritesAdapter.addMany(
+      state.metasprites,
+      normalizedSpriteData.entities.metasprites ?? {},
+    );
+    spriteAnimationsAdapter.addMany(
+      state.spriteAnimations,
+      normalizedSpriteData.entities.spriteAnimations ?? {},
+    );
+    spriteStatesAdapter.addMany(
+      state.spriteStates,
+      normalizedSpriteData.entities.spriteStates ?? {},
+    );
+  }
+
+  fixAllSpritesWithMissingStates(state);
+  ensureSymbolsUnique(state);
+};
+
+export const loadDetectedSprite: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    spriteSheetId: string;
+    spriteAnimations: SpriteAnimationNormalized[];
+    spriteStates: SpriteStateNormalized[];
+    metasprites: MetaspriteNormalized[];
+    metaspriteTiles: MetaspriteTile[];
+    state: SpriteStateNormalized;
+    changes: Partial<SpriteSheetNormalized>;
+  }>
+> = (state, action) => {
+  const spriteSheet = localSpriteSheetSelectById(
+    state,
+    action.payload.spriteSheetId,
+  );
+
+  if (!spriteSheet) {
+    return;
+  }
+
+  metaspriteTilesAdapter.addMany(
+    state.metaspriteTiles,
+    action.payload.metaspriteTiles,
+  );
+
+  metaspritesAdapter.addMany(state.metasprites, action.payload.metasprites);
+
+  spriteAnimationsAdapter.addMany(
+    state.spriteAnimations,
+    action.payload.spriteAnimations,
+  );
+
+  spriteStatesAdapter.upsertOne(state.spriteStates, action.payload.state);
+
+  const numStates = spriteSheet.states?.length || 0;
+
+  spriteSheetsAdapter.updateOne(state.spriteSheets, {
+    id: action.payload.spriteSheetId,
+    changes: {
+      ...action.payload.changes,
+      states: numStates === 0 ? [action.payload.state.id] : spriteSheet.states,
+    },
+  });
+};
+
+const createDefaultSpriteStateData = (): {
+  metasprites: MetaspriteNormalized[];
+  animations: SpriteAnimationNormalized[];
+  spriteState: SpriteStateNormalized;
+} => {
+  const metasprites: MetaspriteNormalized[] = Array.from(Array(8)).map(() => ({
+    id: uuid(),
+    tiles: [],
+  }));
+
+  const animations: SpriteAnimationNormalized[] = metasprites.map(
+    (metasprite) => ({
+      id: uuid(),
+      frames: [metasprite.id],
+    }),
+  );
+
+  const spriteState: SpriteStateNormalized = {
+    id: uuid(),
+    name: "",
+    animationType: "multi_movement",
+    flipLeft: true,
+    animations: animations.map((animation) => animation.id),
+  };
+
+  return {
+    metasprites,
+    animations,
+    spriteState,
+  };
+};
+
+export const fixAllSpritesWithMissingStates = (state: EntitiesState) => {
+  const sprites = localSpriteSheetSelectAll(state);
+
+  for (const sprite of sprites) {
+    const validStateIds = (sprite.states ?? []).filter((spriteStateId) => {
+      return !!state.spriteStates.entities[spriteStateId];
+    });
+
+    if (validStateIds.length > 0) {
+      if (validStateIds.length !== sprite.states?.length) {
+        spriteSheetsAdapter.updateOne(state.spriteSheets, {
+          id: sprite.id,
+          changes: {
+            states: validStateIds,
+          },
+        });
+      }
+
+      continue;
+    }
+
+    const { metasprites, animations, spriteState } =
+      createDefaultSpriteStateData();
+
+    metaspritesAdapter.addMany(state.metasprites, metasprites);
+    spriteAnimationsAdapter.addMany(state.spriteAnimations, animations);
+    spriteStatesAdapter.addOne(state.spriteStates, spriteState);
+
+    spriteSheetsAdapter.updateOne(state.spriteSheets, {
+      id: sprite.id,
+      changes: {
+        states: [spriteState.id],
+      },
+    });
+  }
+};
 
 const editSpriteSheet: CaseReducer<
   EntitiesState,
@@ -799,6 +975,7 @@ const spritesReducers = {
    * Sprites
    */
 
+  loadSprite,
   editSpriteSheet,
   setSpriteSheetSymbol,
 
