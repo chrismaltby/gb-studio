@@ -1,4 +1,7 @@
+import uuid from "uuid";
 import type { EntitiesState } from "shared/lib/entities/entitiesTypes";
+import { ScriptEventArgsOverride } from "shared/lib/resources/types";
+import { scriptEventsAdapter } from "store/features/entities/adapters";
 
 // Local Selectors (only for use internally within EntitiesState reducers)
 
@@ -81,3 +84,39 @@ export const localConstantSelectById = (state: EntitiesState, id: string) =>
 
 export const localConstantSelectTotal = (state: EntitiesState) =>
   state.constants.ids.length;
+
+export const duplicateScript = (
+  state: EntitiesState,
+  scriptEventIds: string[],
+  overrides?: Record<string, ScriptEventArgsOverride>,
+): string[] => {
+  const newIds = scriptEventIds.map(() => uuid());
+  scriptEventIds.forEach((scriptEventId, index) => {
+    const scriptEvent = localScriptEventSelectById(state, scriptEventId);
+    if (scriptEvent) {
+      const duplicatedChildren: Record<string, string[]> = {};
+      if (scriptEvent.children) {
+        for (const [key, childIds] of Object.entries(scriptEvent.children)) {
+          duplicatedChildren[key] = duplicateScript(
+            state,
+            childIds || [],
+            overrides,
+          );
+        }
+      }
+      const override = overrides?.[scriptEvent.id];
+      scriptEventsAdapter.addOne(state.scriptEvents, {
+        ...scriptEvent,
+        args: override
+          ? {
+              ...scriptEvent.args,
+              ...override.args,
+            }
+          : scriptEvent.args,
+        id: newIds[index],
+        children: duplicatedChildren,
+      });
+    }
+  });
+  return newIds;
+};
