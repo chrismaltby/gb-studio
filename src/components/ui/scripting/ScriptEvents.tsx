@@ -218,7 +218,6 @@ export const ScriptEventBranchHeader = ({
           {children}
         </StyledScriptEventBranchHeaderFields>
       )}
-      <FlexGrow />
     </StyledScriptEventBranchHeader>
   );
 };

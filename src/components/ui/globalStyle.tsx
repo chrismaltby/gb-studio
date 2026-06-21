@@ -169,8 +169,9 @@ const GlobalStyle = createGlobalStyle`
 
   body .CustomSelect__menu {
     z-index: 100;
-    min-width: 100px;
-    max-width: calc(100vw - 20px);
+    width: max-content;
+    min-width: max(100%, 200px);
+    max-width: calc(100vw - 100px);
     right: 0;
   }
 

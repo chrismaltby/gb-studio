@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue preventing build log from opening automatically on warnings
 - Fix issue where script events could not be deleted after deleting a multi selection
 - Fix issue where deleting patterns in music editor during playback could cause application to freeze
+- Fix issue where select input menus would often not be wide enough to display contents without cropping text
 
 ## [4.3.1] - 2026-06-11
 

@@ -576,7 +576,6 @@ export const StyledScriptEventBranchHeader = styled.div<StyledScriptEventBranchH
     }
     ${StyledFormFieldInput} {
       width: 100%;
-      max-width: 200px;
 
       .CustomSelect__control {
         height: 22px;
@@ -597,7 +596,6 @@ export const StyledScriptEventBranchHeader = styled.div<StyledScriptEventBranchH
 
 export const StyledScriptEventBranchHeaderFields = styled.div`
   width: 100%;
-  max-width: 200px;
 `;
 
 // #endregion ScriptEventBranchHeader
