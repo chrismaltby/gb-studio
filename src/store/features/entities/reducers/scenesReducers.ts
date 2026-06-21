@@ -46,6 +46,8 @@ import {
   COLLISION_ALL,
   TILE_COLOR_PROPS,
   TILE_COLOR_PALETTE,
+  MIN_WORLD_ENTITY_X,
+  MIN_WORLD_ENTITY_Y,
 } from "consts";
 import {
   paintMagic,
@@ -54,8 +56,6 @@ import {
   floodFill,
 } from "shared/lib/helpers/paint";
 
-const MIN_SCENE_X = 60;
-const MIN_SCENE_Y = 30;
 const MIN_SCENE_WIDTH = 20;
 const MIN_SCENE_HEIGHT = 18;
 
@@ -89,8 +89,8 @@ const addScene: CaseReducer<
     ...(action.payload.defaults || {}),
     id: action.payload.sceneId,
     symbol: genEntitySymbol(state, `scene_${scenesTotal + 1}`),
-    x: Math.max(MIN_SCENE_X, action.payload.x),
-    y: Math.max(MIN_SCENE_Y, action.payload.y),
+    x: Math.max(MIN_WORLD_ENTITY_X, action.payload.x),
+    y: Math.max(MIN_WORLD_ENTITY_Y, action.payload.y),
     actors: [],
     triggers: [],
     script: [],

@@ -54,6 +54,9 @@ export const MAX_TRIGGERS = 30;
 export const MAX_ONSCREEN = 10;
 export const MAX_PROJECTILES = 5;
 
+export const MIN_WORLD_ENTITY_X = 60;
+export const MIN_WORLD_ENTITY_Y = 30;
+
 // Background Limits
 export const MAX_BACKGROUND_TILES = 16 * 12;
 export const MAX_BACKGROUND_TILES_CGB = 16 * 12 * 2;
