@@ -1,5 +1,4 @@
 import {
-  createEntityAdapter,
   createSlice,
   PayloadAction,
   ThunkDispatch,
@@ -60,7 +59,6 @@ import {
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import {
-  sortByFilename,
   genEntitySymbol,
   ensureSymbolsUnique,
   removeAssetEntity,
@@ -93,15 +91,11 @@ import { decompressProjectResources } from "shared/lib/resources/compression";
 import { omit } from "shared/types";
 import isEqual from "lodash/isEqual";
 import {
-  AvatarAsset,
   AvatarResourceAsset,
   BackgroundAsset,
   CompressedBackgroundResourceAsset,
   Constant,
-  EmoteAsset,
   EmoteResourceAsset,
-  EngineFieldValue,
-  FontAsset,
   FontResourceAsset,
   MetaspriteTile,
   MusicAsset,
@@ -111,10 +105,8 @@ import {
   Palette,
   ScriptEventArgs,
   ScriptEventArgsOverride,
-  SoundAsset,
   SoundResourceAsset,
   SpriteResourceAsset,
-  TilesetAsset,
   TilesetResourceAsset,
   Variable,
 } from "shared/lib/resources/types";
@@ -126,6 +118,32 @@ import {
 } from "shared/lib/helpers/array";
 import { resizeTiles } from "shared/lib/helpers/tiles";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
+import {
+  actorsAdapter,
+  triggersAdapter,
+  scenesAdapter,
+  actorPrefabsAdapter,
+  triggerPrefabsAdapter,
+  scriptEventsAdapter,
+  backgroundsAdapter,
+  spriteSheetsAdapter,
+  metaspritesAdapter,
+  metaspriteTilesAdapter,
+  spriteAnimationsAdapter,
+  spriteStatesAdapter,
+  palettesAdapter,
+  customEventsAdapter,
+  musicAdapter,
+  soundsAdapter,
+  fontsAdapter,
+  avatarsAdapter,
+  emotesAdapter,
+  tilesetsAdapter,
+  variablesAdapter,
+  constantsAdapter,
+  notesAdapter,
+  engineFieldValuesAdapter,
+} from "store/features/entities/adapters";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -135,48 +153,6 @@ const MIN_NOTE_WIDTH = 20;
 const MIN_NOTE_HEIGHT = 3;
 const DEFAULT_NOTE_WIDTH = 20;
 const DEFAULT_NOTE_HEIGHT = 15;
-
-const scriptEventsAdapter = createEntityAdapter<ScriptEventNormalized>();
-const actorsAdapter = createEntityAdapter<ActorNormalized>();
-const triggersAdapter = createEntityAdapter<TriggerNormalized>();
-const scenesAdapter = createEntityAdapter<SceneNormalized>();
-const actorPrefabsAdapter = createEntityAdapter<ActorPrefabNormalized>();
-const triggerPrefabsAdapter = createEntityAdapter<TriggerPrefabNormalized>();
-const backgroundsAdapter = createEntityAdapter<BackgroundAsset>({
-  sortComparer: sortByFilename,
-});
-const spriteSheetsAdapter = createEntityAdapter<SpriteSheetNormalized>({
-  sortComparer: sortByFilename,
-});
-const tilesetsAdapter = createEntityAdapter<TilesetAsset>({
-  sortComparer: sortByFilename,
-});
-const metaspritesAdapter = createEntityAdapter<MetaspriteNormalized>();
-const metaspriteTilesAdapter = createEntityAdapter<MetaspriteTile>();
-const spriteAnimationsAdapter =
-  createEntityAdapter<SpriteAnimationNormalized>();
-const spriteStatesAdapter = createEntityAdapter<SpriteStateNormalized>();
-const palettesAdapter = createEntityAdapter<Palette>();
-const customEventsAdapter = createEntityAdapter<ScriptNormalized>();
-const musicAdapter = createEntityAdapter<MusicAsset>({
-  sortComparer: sortByFilename,
-});
-const soundsAdapter = createEntityAdapter<SoundAsset>({
-  sortComparer: sortByFilename,
-});
-const fontsAdapter = createEntityAdapter<FontAsset>({
-  sortComparer: sortByFilename,
-});
-const avatarsAdapter = createEntityAdapter<AvatarAsset>({
-  sortComparer: sortByFilename,
-});
-const emotesAdapter = createEntityAdapter<EmoteAsset>({
-  sortComparer: sortByFilename,
-});
-const variablesAdapter = createEntityAdapter<Variable>();
-const constantsAdapter = createEntityAdapter<Constant>();
-const notesAdapter = createEntityAdapter<Note>();
-const engineFieldValuesAdapter = createEntityAdapter<EngineFieldValue>();
 
 export const initialState: EntitiesState = {
   actors: actorsAdapter.getInitialState(),
