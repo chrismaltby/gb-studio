@@ -53,7 +53,6 @@ import {
   FontResourceAsset,
   MetaspriteTile,
   Palette,
-  SoundResourceAsset,
   SpriteResourceAsset,
 } from "shared/lib/resources/types";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
@@ -110,6 +109,7 @@ import tilesetsReducers from "store/features/entities/reducers/tilesetsReducers"
 import musicReducers, {
   loadMusic,
 } from "store/features/entities/reducers/musicReducers";
+import soundsReducers from "store/features/entities/reducers/soundsReducers";
 export { selectScriptIds } from "store/features/entities/helpers";
 
 export const initialState: EntitiesState = {
@@ -470,36 +470,6 @@ const loadDetectedSprite: CaseReducer<
 };
 
 /**************************************************************************
- * Sounds
- */
-
-const loadSound: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    data: SoundResourceAsset;
-  }>
-> = (state, action) => {
-  upsertAssetEntity(state.sounds, soundsAdapter, action.payload.data, [
-    "id",
-    "symbol",
-  ]);
-  ensureSymbolsUnique(state);
-};
-
-const setSoundSymbol: CaseReducer<
-  EntitiesState,
-  PayloadAction<{ soundId: string; symbol: string }>
-> = (state, action) => {
-  updateEntitySymbol(
-    state,
-    state.sounds,
-    soundsAdapter,
-    action.payload.soundId,
-    action.payload.symbol,
-  );
-};
-
-/**************************************************************************
  * Font
  */
 
@@ -719,12 +689,7 @@ const entitiesSlice = createSlice({
     ...backgroundsReducers,
     ...tilesetsReducers,
     ...musicReducers,
-
-    /**************************************************************************
-     * Sounds
-     */
-
-    setSoundSymbol,
+    ...soundsReducers,
 
     /**************************************************************************
      * Emote
@@ -742,7 +707,6 @@ const entitiesSlice = createSlice({
      * Load assets
      */
     loadSprite,
-    loadSound,
     loadFont,
     removeFont,
     loadAvatar,
