@@ -52,8 +52,6 @@ import {
   EmoteResourceAsset,
   FontResourceAsset,
   MetaspriteTile,
-  MusicAsset,
-  MusicSettings,
   Palette,
   SoundResourceAsset,
   SpriteResourceAsset,
@@ -87,7 +85,6 @@ import {
 } from "store/features/entities/adapters";
 import {
   localSpriteSheetSelectById,
-  localMusicSelectById,
   localSpriteSheetSelectAll,
   localBackgroundSelectAll,
   localMusicSelectAll,
@@ -110,6 +107,9 @@ import backgroundsReducers, {
   updateMonoOverrideIds,
 } from "store/features/entities/reducers/backgroundsReducers";
 import tilesetsReducers from "store/features/entities/reducers/tilesetsReducers";
+import musicReducers, {
+  loadMusic,
+} from "store/features/entities/reducers/musicReducers";
 export { selectScriptIds } from "store/features/entities/helpers";
 
 export const initialState: EntitiesState = {
@@ -469,51 +469,6 @@ const loadDetectedSprite: CaseReducer<
   });
 };
 
-const loadMusic: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    data: MusicAsset;
-  }>
-> = (state, action) => {
-  upsertAssetEntity(state.music, musicAdapter, action.payload.data, [
-    "id",
-    "symbol",
-    "settings",
-  ]);
-  ensureSymbolsUnique(state);
-};
-
-const editMusicSettings: CaseReducer<
-  EntitiesState,
-  PayloadAction<{ musicId: string; changes: Partial<MusicSettings> }>
-> = (state, action) => {
-  const music = localMusicSelectById(state, action.payload.musicId);
-  if (music) {
-    musicAdapter.updateOne(state.music, {
-      id: music.id,
-      changes: {
-        settings: {
-          ...music.settings,
-          ...action.payload.changes,
-        },
-      },
-    });
-  }
-};
-
-const setMusicSymbol: CaseReducer<
-  EntitiesState,
-  PayloadAction<{ musicId: string; symbol: string }>
-> = (state, action) => {
-  updateEntitySymbol(
-    state,
-    state.music,
-    musicAdapter,
-    action.payload.musicId,
-    action.payload.symbol,
-  );
-};
-
 /**************************************************************************
  * Sounds
  */
@@ -763,13 +718,7 @@ const entitiesSlice = createSlice({
     ...engineFieldValuesReducers,
     ...backgroundsReducers,
     ...tilesetsReducers,
-
-    /**************************************************************************
-     * Music
-     */
-
-    editMusicSettings,
-    setMusicSymbol,
+    ...musicReducers,
 
     /**************************************************************************
      * Sounds
@@ -793,7 +742,6 @@ const entitiesSlice = createSlice({
      * Load assets
      */
     loadSprite,
-    loadMusic,
     loadSound,
     loadFont,
     removeFont,
