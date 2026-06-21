@@ -112,3 +112,7 @@ export const removeArrayElement = <T>(arr: T[], element: T): T[] => {
 export const removeArrayElements = <T>(arr: T[], elements: T[]): T[] => {
   return arr.filter((e) => !elements.includes(e));
 };
+
+export const first = <T>(array: readonly T[]): T | undefined => {
+  return array[0];
+};
