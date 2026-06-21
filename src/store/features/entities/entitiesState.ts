@@ -42,7 +42,6 @@ import {
 } from "shared/lib/entities/entitiesHelpers";
 import spriteActions from "store/features/sprite/spriteActions";
 import keyBy from "lodash/keyBy";
-import { monoOverrideForFilename } from "shared/lib/assets/backgrounds";
 import { Asset, AssetType } from "shared/lib/helpers/assets";
 import { assertUnreachable } from "shared/lib/scriptValue/format";
 import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentState";
@@ -50,8 +49,6 @@ import type { LoadProjectResult } from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
 import {
   AvatarResourceAsset,
-  BackgroundAsset,
-  CompressedBackgroundResourceAsset,
   EmoteResourceAsset,
   FontResourceAsset,
   MetaspriteTile,
@@ -62,7 +59,6 @@ import {
   SpriteResourceAsset,
   TilesetResourceAsset,
 } from "shared/lib/resources/types";
-import { resizeTiles } from "shared/lib/helpers/tiles";
 import trackerDocumentActions from "store/features/trackerDocument/trackerDocumentActions";
 import {
   actorsAdapter,
@@ -91,10 +87,8 @@ import {
   engineFieldValuesAdapter,
 } from "store/features/entities/adapters";
 import {
-  localBackgroundSelectById,
   localSpriteSheetSelectById,
   localMusicSelectById,
-  localSceneSelectAll,
   localSpriteSheetSelectAll,
   localBackgroundSelectAll,
   localMusicSelectAll,
@@ -112,6 +106,10 @@ import palettesReducers from "store/features/entities/reducers/palettesReducers"
 import variablesReducers from "store/features/entities/reducers/variablesReducers";
 import customEventsReducers from "store/features/entities/reducers/customEventsReducers";
 import engineFieldValuesReducers from "store/features/entities/reducers/engineFieldValuesReducers";
+import backgroundsReducers, {
+  fixAllScenesWithModifiedBackgrounds,
+  updateMonoOverrideIds,
+} from "store/features/entities/reducers/backgroundsReducers";
 export { selectScriptIds } from "store/features/entities/helpers";
 
 export const initialState: EntitiesState = {
@@ -293,54 +291,6 @@ const loadProject: CaseReducer<
     state.scriptEvents.entities,
     action.payload.scriptEventDefs,
   );
-};
-
-const loadBackground: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    data: CompressedBackgroundResourceAsset;
-  }>
-> = (state, action) => {
-  const existingBackground = localBackgroundSelectById(
-    state,
-    action.payload.data.id,
-  );
-  const modifiedSize =
-    existingBackground &&
-    (existingBackground.width !== action.payload.data.width ||
-      existingBackground.height !== action.payload.data.height);
-
-  const originalWidth = existingBackground?.width ?? 0;
-  const originalHeight = existingBackground?.width ?? 0;
-
-  upsertAssetEntity(
-    state.backgrounds,
-    backgroundsAdapter,
-    {
-      ...action.payload.data,
-      tileColors: [],
-    },
-    ["id", "symbol", "autoColor", "tileColors"],
-  );
-
-  if (modifiedSize) {
-    backgroundsAdapter.updateOne(state.backgrounds, {
-      id: existingBackground.id,
-      changes: {
-        tileColors: resizeTiles(
-          existingBackground.tileColors,
-          originalWidth,
-          originalHeight,
-          action.payload.data.width,
-          action.payload.data.height,
-        ),
-      },
-    });
-  }
-
-  fixAllScenesWithModifiedBackgrounds(state);
-  updateMonoOverrideIds(state);
-  ensureSymbolsUnique(state);
 };
 
 const removedAsset: CaseReducer<
@@ -732,30 +682,6 @@ const loadTileset: CaseReducer<
  * Fix Scenes
  */
 
-const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
-  const scenes = localSceneSelectAll(state);
-  for (const scene of scenes) {
-    const background = localBackgroundSelectById(state, scene.backgroundId);
-    if (
-      !background ||
-      scene.width !== background.width ||
-      scene.height !== background.height
-    ) {
-      const newWidth = background ? background.width : 32;
-      const newHeight = background ? background.height : 32;
-      scene.collisions = resizeTiles(
-        scene.collisions,
-        scene.width,
-        scene.height,
-        newWidth,
-        newHeight,
-      );
-      scene.width = newWidth;
-      scene.height = newHeight;
-    }
-  }
-};
-
 const createDefaultSpriteStateData = (): {
   metasprites: MetaspriteNormalized[];
   animations: SpriteAnimationNormalized[];
@@ -826,74 +752,6 @@ export const fixAllSpritesWithMissingStates = (state: EntitiesState) => {
 };
 
 /**************************************************************************
- * Backgrounds
- */
-
-const setBackgroundSymbol: CaseReducer<
-  EntitiesState,
-  PayloadAction<{ backgroundId: string; symbol: string }>
-> = (state, action) => {
-  updateEntitySymbol(
-    state,
-    state.backgrounds,
-    backgroundsAdapter,
-    action.payload.backgroundId,
-    action.payload.symbol,
-  );
-};
-
-const editBackgroundAutoColor: CaseReducer<
-  EntitiesState,
-  PayloadAction<{ backgroundId: string; autoColor: boolean }>
-> = (state, action) => {
-  const background = localBackgroundSelectById(
-    state,
-    action.payload.backgroundId,
-  );
-  if (background) {
-    backgroundsAdapter.updateOne(state.backgrounds, {
-      id: background.id,
-      changes: {
-        autoColor: action.payload.autoColor,
-      },
-    });
-  }
-};
-
-const editBackgroundAutoTileFlipOverride: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    backgroundId: string;
-    autoTileFlipOverride: boolean | undefined;
-  }>
-> = (state, action) => {
-  const background = localBackgroundSelectById(
-    state,
-    action.payload.backgroundId,
-  );
-  if (background) {
-    backgroundsAdapter.updateOne(state.backgrounds, {
-      id: background.id,
-      changes: {
-        autoTileFlipOverride: action.payload.autoTileFlipOverride,
-      },
-    });
-  }
-};
-
-const updateMonoOverrideIds = (state: EntitiesState) => {
-  const backgrounds = localBackgroundSelectAll(state);
-  const getKey = (b: BackgroundAsset) => `${b.plugin ?? ""}_${b.filename}`;
-  const getMonoKey = (b: BackgroundAsset) =>
-    `${b.plugin ?? ""}_${monoOverrideForFilename(b.filename)}`;
-  const monoOverrideLookup = keyBy(backgrounds, getKey);
-  backgrounds.forEach((b) => {
-    const monoKey = getMonoKey(b);
-    b.monoOverrideId = monoOverrideLookup[monoKey]?.id;
-  });
-};
-
-/**************************************************************************
  * General Assets
  */
 
@@ -933,14 +791,7 @@ const entitiesSlice = createSlice({
     ...variablesReducers,
     ...customEventsReducers,
     ...engineFieldValuesReducers,
-
-    /**************************************************************************
-     * Backgrounds
-     */
-
-    setBackgroundSymbol,
-    editBackgroundAutoColor,
-    editBackgroundAutoTileFlipOverride,
+    ...backgroundsReducers,
 
     /**************************************************************************
      * Music
@@ -976,7 +827,6 @@ const entitiesSlice = createSlice({
     /*
      * Load assets
      */
-    loadBackground,
     loadSprite,
     loadMusic,
     loadSound,
