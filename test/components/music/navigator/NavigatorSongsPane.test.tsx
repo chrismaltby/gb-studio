@@ -36,7 +36,7 @@ jest.mock("../../../../src/store/hooks", () => ({
   ),
 }));
 
-jest.mock("../../../../src/store/features/entities/entitiesState", () => ({
+jest.mock("../../../../src/store/features/entities/entitiesSelectors", () => ({
   musicSelectors: {
     selectAll: () => [
       { id: "song-1", filename: "song1.uge", name: "Song 1" },
