@@ -653,7 +653,7 @@ const removeActorAt: CaseReducer<
   }
 };
 
-const actorReducers = {
+const actorsReducers = {
   addActor: {
     reducer: addActor,
     prepare: (payload: {
@@ -689,4 +689,4 @@ const actorReducers = {
   moveActorToPx,
 } satisfies SliceCaseReducers<EntitiesState>;
 
-export default actorReducers;
+export default actorsReducers;
