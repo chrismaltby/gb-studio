@@ -12,6 +12,7 @@ import {
   dummyCompressedSceneResource,
   dummyCompressedProjectResources,
   dummyCompressedBackgroundResource,
+  dummyMusic,
 } from "../../../dummydata";
 import entitiesActions from "../../../../src/store/features/entities/entitiesActions";
 import {
