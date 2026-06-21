@@ -49,7 +49,6 @@ import type { LoadProjectResult } from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
 import {
   AvatarResourceAsset,
-  EmoteResourceAsset,
   FontResourceAsset,
   MetaspriteTile,
   Palette,
@@ -110,6 +109,7 @@ import musicReducers, {
   loadMusic,
 } from "store/features/entities/reducers/musicReducers";
 import soundsReducers from "store/features/entities/reducers/soundsReducers";
+import emotesReducers from "store/features/entities/reducers/emotesReducers";
 export { selectScriptIds } from "store/features/entities/helpers";
 
 export const initialState: EntitiesState = {
@@ -534,46 +534,6 @@ const removeAvatar: CaseReducer<
 };
 
 /**************************************************************************
- * Emote
- */
-
-const setEmoteSymbol: CaseReducer<
-  EntitiesState,
-  PayloadAction<{ emoteId: string; symbol: string }>
-> = (state, action) => {
-  updateEntitySymbol(
-    state,
-    state.emotes,
-    emotesAdapter,
-    action.payload.emoteId,
-    action.payload.symbol,
-  );
-};
-
-const loadEmote: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    data: EmoteResourceAsset;
-  }>
-> = (state, action) => {
-  upsertAssetEntity(state.emotes, emotesAdapter, action.payload.data, [
-    "id",
-    "symbol",
-  ]);
-  ensureSymbolsUnique(state);
-};
-
-const removeEmote: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    filename: string;
-    plugin?: string;
-  }>
-> = (state, action) => {
-  removeAssetEntity(state.emotes, emotesAdapter, action.payload);
-};
-
-/**************************************************************************
  * Fix Scenes
  */
 
@@ -690,12 +650,7 @@ const entitiesSlice = createSlice({
     ...tilesetsReducers,
     ...musicReducers,
     ...soundsReducers,
-
-    /**************************************************************************
-     * Emote
-     */
-
-    setEmoteSymbol,
+    ...emotesReducers,
 
     /**************************************************************************
      * Font
@@ -711,8 +666,6 @@ const entitiesSlice = createSlice({
     removeFont,
     loadAvatar,
     removeAvatar,
-    loadEmote,
-    removeEmote,
     removedAsset,
     renamedAsset,
   },
