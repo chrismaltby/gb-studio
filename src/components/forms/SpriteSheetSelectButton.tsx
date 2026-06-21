@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
-import { spriteSheetSelectors } from "store/features/entities/entitiesState";
+import { spriteSheetSelectors } from "store/features/entities/entitiesSelectors";
 import { SpriteSheetNormalized } from "shared/lib/entities/entitiesTypes";
 import {
   FormatFolderLabel,

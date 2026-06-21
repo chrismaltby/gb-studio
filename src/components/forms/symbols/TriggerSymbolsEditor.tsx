@@ -1,5 +1,5 @@
 import React from "react";
-import { triggerSelectors } from "store/features/entities/entitiesState";
+import { triggerSelectors } from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { interactScriptSymbol } from "shared/lib/helpers/symbols";
 import { addBankRef, AssetReference } from "components/forms/ReferencesSelect";

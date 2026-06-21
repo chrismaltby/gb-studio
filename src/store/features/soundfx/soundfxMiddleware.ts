@@ -10,7 +10,7 @@ import { RootState } from "store/storeTypes";
 import musicActions from "store/features/music/musicActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./soundfxActions";
-import { soundSelectors } from "store/features/entities/entitiesState";
+import { soundSelectors } from "store/features/entities/entitiesSelectors";
 import { assetPath } from "shared/lib/helpers/assets";
 import API from "renderer/lib/api";
 import { SoundAsset } from "shared/lib/resources/types";

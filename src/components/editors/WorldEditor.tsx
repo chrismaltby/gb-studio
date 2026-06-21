@@ -10,7 +10,7 @@ import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import { AnimationSpeedSelect } from "components/forms/AnimationSpeedSelect";
 import settingsActions from "store/features/settings/settingsActions";
 import metadataActions from "store/features/metadata/metadataActions";
-import { sceneSelectors } from "store/features/entities/entitiesState";
+import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import { SidebarColumn, Sidebar } from "ui/sidebars/Sidebar";

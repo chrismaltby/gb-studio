@@ -20,7 +20,7 @@ import { loadSongFile } from "store/features/trackerDocument/trackerDocumentStat
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import trackerActions from "store/features/tracker/trackerActions";
 import { sortByFilename } from "shared/lib/entities/entitiesHelpers";
-import { musicSelectors } from "store/features/entities/entitiesState";
+import { musicSelectors } from "store/features/entities/entitiesSelectors";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { NavigatorInstrumentsPane } from "components/music/navigator/NavigatorInstrumentsPane";
 import { NavigatorSongsPane } from "components/music/navigator/NavigatorSongsPane";

@@ -9,7 +9,7 @@ import {
 import {
   backgroundSelectors,
   sceneSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import settingsActions from "store/features/settings/settingsActions";
 import entitiesActions from "store/features/entities/entitiesActions";

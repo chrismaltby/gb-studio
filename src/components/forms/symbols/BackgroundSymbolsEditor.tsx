@@ -1,5 +1,5 @@
 import React from "react";
-import { backgroundSelectors } from "store/features/entities/entitiesState";
+import { backgroundSelectors } from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
   tilesetSymbol,

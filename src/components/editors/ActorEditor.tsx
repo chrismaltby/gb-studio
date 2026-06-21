@@ -3,7 +3,7 @@ import {
   actorPrefabSelectors,
   actorSelectors,
   sceneSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import {

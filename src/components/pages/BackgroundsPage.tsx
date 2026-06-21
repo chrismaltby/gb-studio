@@ -8,7 +8,7 @@ import editorActions from "store/features/editor/editorActions";
 import {
   backgroundSelectors,
   tilesetSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { NavigatorBackgrounds } from "components/backgrounds/NavigatorBackgrounds";
 import BackgroundViewer from "components/backgrounds/BackgroundViewer";
 import BackgroundPreviewSettings from "components/backgrounds/BackgroundPreviewSettings";

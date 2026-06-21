@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import styled from "styled-components";
-import { spriteAnimationSelectors } from "store/features/entities/entitiesState";
+import { spriteAnimationSelectors } from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import { CloneIcon, PlusIcon } from "ui/icons/Icons";

@@ -12,7 +12,7 @@ import {
   actorSelectors,
   sceneSelectors,
   triggerSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { ConsoleLink } from "./consoleState";
 
 const getLinkToSymbol = (

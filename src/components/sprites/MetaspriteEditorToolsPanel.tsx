@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
-import { spriteAnimationSelectors } from "store/features/entities/entitiesState";
+import { spriteAnimationSelectors } from "store/features/entities/entitiesSelectors";
 import {
   PlayIcon,
   OnionSkinIcon,

@@ -5,7 +5,7 @@ import { RootState } from "store/storeTypes";
 import {
   backgroundSelectors,
   tilesetSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import API from "renderer/lib/api";
 import { HexPalette } from "shared/lib/tiles/autoColor";
 import {

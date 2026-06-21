@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "store/hooks";
-import { customEventSelectors } from "store/features/entities/entitiesState";
+import { customEventSelectors } from "store/features/entities/entitiesSelectors";
 import {
   ScriptNormalized,
   ScriptEventFieldSchema,

@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from "react";
-import { noteSelectors } from "store/features/entities/entitiesState";
+import { noteSelectors } from "store/features/entities/entitiesSelectors";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import { FormContainer, FormHeader, FormRow } from "ui/form/layout/FormLayout";

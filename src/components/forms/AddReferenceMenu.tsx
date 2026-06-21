@@ -17,7 +17,7 @@ import {
   spriteSheetSelectors,
   tilesetSelectors,
   variableSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import {
   ScriptNormalized,
   SceneNormalized,

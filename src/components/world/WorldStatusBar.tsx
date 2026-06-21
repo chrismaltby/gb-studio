@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import l10n from "shared/lib/lang/l10n";
-import { sceneSelectors } from "store/features/entities/entitiesState";
+import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import settingsActions from "store/features/settings/settingsActions";
 import styled, { css } from "styled-components";

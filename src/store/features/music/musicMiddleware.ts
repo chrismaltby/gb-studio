@@ -3,7 +3,7 @@ import { RootState } from "store/storeTypes";
 import soundfxActions from "store/features/soundfx/soundfxActions";
 import navigationActions from "store/features/navigation/navigationActions";
 import actions from "./musicActions";
-import { musicSelectors } from "store/features/entities/entitiesState";
+import { musicSelectors } from "store/features/entities/entitiesSelectors";
 import { assetPath } from "shared/lib/helpers/assets";
 import API from "renderer/lib/api";
 

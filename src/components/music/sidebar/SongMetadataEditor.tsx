@@ -25,7 +25,7 @@ import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
 import { FlexGrow } from "ui/spacing/Spacing";
 import projectActions from "store/features/project/projectActions";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
-import { musicSelectors } from "store/features/entities/entitiesState";
+import { musicSelectors } from "store/features/entities/entitiesSelectors";
 
 export const SongMetadataEditor = () => {
   const dispatch = useAppDispatch();

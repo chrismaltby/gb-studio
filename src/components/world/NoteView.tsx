@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
-import { noteSelectors } from "store/features/entities/entitiesState";
+import { noteSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { noteName } from "shared/lib/entities/entitiesHelpers";

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { SongTracker } from "components/music/tracker/SongTracker";
-import { musicSelectors } from "store/features/entities/entitiesState";
+import { musicSelectors } from "store/features/entities/entitiesSelectors";
 import l10n from "shared/lib/lang/l10n";
 import { UgePlayer } from "components/music/UgePlayer";
 import { useAppSelector } from "store/hooks";

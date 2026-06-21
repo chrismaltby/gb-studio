@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import { emoteSelectors } from "store/features/entities/entitiesState";
+import { emoteSelectors } from "store/features/entities/entitiesSelectors";
 import {
   Option,
   Select,

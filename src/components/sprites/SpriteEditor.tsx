@@ -25,7 +25,7 @@ import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
   spriteStateSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import spriteActions from "store/features/sprite/spriteActions";

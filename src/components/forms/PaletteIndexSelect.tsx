@@ -5,7 +5,7 @@ import {
   getLocalisedDMGPalette,
   getLocalisedPalettesLookup,
   sceneSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import PaletteBlock from "components/forms/PaletteBlock";
 import {
   OptionLabelWithPreview,

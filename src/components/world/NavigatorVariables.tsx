@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { variableSelectors } from "store/features/entities/entitiesState";
+import { variableSelectors } from "store/features/entities/entitiesSelectors";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import { allVariables } from "renderer/lib/variables";

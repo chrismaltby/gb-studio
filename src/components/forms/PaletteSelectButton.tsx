@@ -3,7 +3,7 @@ import styled from "styled-components";
 import {
   getLocalisedDMGPalette,
   getLocalisedPaletteById,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import PaletteBlock, { PaletteBlockType } from "components/forms/PaletteBlock";
 import { SelectMenu, selectMenuStyleProps } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";

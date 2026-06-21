@@ -13,7 +13,7 @@ import {
   sceneSelectors,
   spriteAnimationSelectors,
   spriteSheetSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import MetaspriteGrid from "./MetaspriteGrid";
 import { SpriteSliceCanvas } from "./preview/SpriteSliceCanvas";
 import entitiesActions from "store/features/entities/entitiesActions";

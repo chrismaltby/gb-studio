@@ -7,7 +7,7 @@ import { MenuPreview } from "./MenuPreview";
 import { ensureBoolean, ensureNumber, ensureString } from "shared/types";
 import { getArgValue } from "components/world/SceneEventHelper";
 import styled from "styled-components";
-import { constantSelectors } from "store/features/entities/entitiesState";
+import { constantSelectors } from "store/features/entities/entitiesSelectors";
 
 interface ScriptEditorEventHelperProps {
   event: ScriptEventNormalized;

@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
-import { spriteSheetSelectors } from "store/features/entities/entitiesState";
+import { spriteSheetSelectors } from "store/features/entities/entitiesSelectors";
 import { SpriteSheetNormalized } from "shared/lib/entities/entitiesTypes";
 import {
   Option,

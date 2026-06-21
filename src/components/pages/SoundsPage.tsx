@@ -5,7 +5,7 @@ import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
-import { soundSelectors } from "store/features/entities/entitiesState";
+import { soundSelectors } from "store/features/entities/entitiesSelectors";
 import { NavigatorSounds } from "components/sounds/NavigatorSounds";
 import { SoundViewer } from "components/sounds/SoundViewer";
 import { useAppDispatch, useAppSelector } from "store/hooks";

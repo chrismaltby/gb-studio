@@ -6,7 +6,7 @@ import { textNumNewlines } from "shared/lib/helpers/trimlines";
 import {
   avatarSelectors,
   fontSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { loadFont, drawFrame, drawFill, drawText } from "./TextPreviewHelper";
 import { assetURL } from "shared/lib/helpers/assets";
 import { calculateTextBoxHeight } from "shared/lib/helpers/dialogue";

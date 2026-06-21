@@ -4,7 +4,7 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { WorldEditor } from "./WorldEditor";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
-import { customEventSelectors } from "store/features/entities/entitiesState";
+import { customEventSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";

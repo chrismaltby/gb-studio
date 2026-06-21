@@ -19,7 +19,7 @@ import {
   customEventSelectors,
   getSceneActorIds,
   sceneSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
 import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";

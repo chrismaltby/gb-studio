@@ -1,5 +1,5 @@
 import React from "react";
-import { spriteSheetSelectors } from "store/features/entities/entitiesState";
+import { spriteSheetSelectors } from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { tilesetSymbol } from "shared/lib/helpers/symbols";
 import { addBankRef, AssetReference } from "components/forms/ReferencesSelect";

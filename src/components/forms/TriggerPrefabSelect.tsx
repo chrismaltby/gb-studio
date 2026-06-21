@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { triggerName } from "shared/lib/entities/entitiesHelpers";
-import { triggerPrefabSelectors } from "store/features/entities/entitiesState";
+import { triggerPrefabSelectors } from "store/features/entities/entitiesSelectors";
 import {
   FormatFolderLabel,
   Option,

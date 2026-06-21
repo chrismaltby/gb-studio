@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import {
   backgroundSelectors,
   tilesetSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { FlatList } from "ui/lists/FlatList";
 import { EntityListItem, EntityListSearch } from "ui/lists/EntityListItem";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";

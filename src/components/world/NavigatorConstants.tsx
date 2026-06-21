@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useMemo, useState } from "react";
-import { constantSelectors } from "store/features/entities/entitiesState";
+import { constantSelectors } from "store/features/entities/entitiesSelectors";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import { EntityListItem } from "ui/lists/EntityListItem";

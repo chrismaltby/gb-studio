@@ -1,5 +1,5 @@
 import React from "react";
-import { customEventSelectors } from "store/features/entities/entitiesState";
+import { customEventSelectors } from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { addBankRef, AssetReference } from "components/forms/ReferencesSelect";
 import { useAppDispatch } from "store/hooks";

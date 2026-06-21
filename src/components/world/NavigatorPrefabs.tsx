@@ -12,7 +12,7 @@ import { CheckIcon, BlankIcon, InstantiateIcon } from "ui/icons/Icons";
 import {
   actorPrefabSelectors,
   triggerPrefabSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { Button } from "ui/buttons/Button";
 import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
 import ItemTypes from "renderer/lib/dnd/itemTypes";

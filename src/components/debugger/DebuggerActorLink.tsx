@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { actorSelectors } from "store/features/entities/entitiesState";
+import { actorSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { actorName } from "shared/lib/entities/entitiesHelpers";

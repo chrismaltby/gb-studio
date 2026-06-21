@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { customEventSelectors } from "store/features/entities/entitiesState";
+import { customEventSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { customEventName } from "shared/lib/entities/entitiesHelpers";

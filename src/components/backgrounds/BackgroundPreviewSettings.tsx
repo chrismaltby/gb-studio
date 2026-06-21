@@ -3,7 +3,7 @@ import styled from "styled-components";
 import {
   backgroundSelectors,
   sceneSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import electronActions from "store/features/electron/electronActions";
 import { SceneSelect } from "components/forms/SceneSelect";

@@ -9,7 +9,7 @@ import {
   scriptEventSelectors,
   triggerPrefabSelectors,
   triggerSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import {
   actorName,
   sceneName,

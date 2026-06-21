@@ -2,7 +2,7 @@ import keyBy from "lodash/keyBy";
 import uniq from "lodash/uniq";
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import { fontSelectors } from "store/features/entities/entitiesState";
+import { fontSelectors } from "store/features/entities/entitiesSelectors";
 import { loadFont, drawFrame, drawText } from "./TextPreviewHelper";
 import { assetURL } from "shared/lib/helpers/assets";
 import { FontData } from "shared/lib/helpers/fonts";

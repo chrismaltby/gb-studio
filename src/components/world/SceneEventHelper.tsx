@@ -5,7 +5,7 @@ import {
   constantSelectors,
   scriptEventSelectors,
   triggerSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import styled, { keyframes } from "styled-components";
 import {

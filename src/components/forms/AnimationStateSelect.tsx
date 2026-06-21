@@ -4,7 +4,7 @@ import uniq from "lodash/uniq";
 import {
   spriteSheetSelectors,
   spriteStateSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import {
   Option as DefaultOption,
   CreatableSelect,

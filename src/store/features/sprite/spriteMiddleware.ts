@@ -8,7 +8,7 @@ import {
   spriteAnimationSelectors,
   spriteStateSelectors,
   spriteSheetSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { detectClassic } from "renderer/lib/sprites/detect";
 import {

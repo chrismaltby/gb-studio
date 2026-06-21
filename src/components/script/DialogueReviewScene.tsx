@@ -8,7 +8,7 @@ import {
   scriptEventSelectors,
   actorPrefabSelectors,
   triggerPrefabSelectors,
-} from "store/features/entities/entitiesState";
+} from "store/features/entities/entitiesSelectors";
 import navigationActions from "store/features/navigation/navigationActions";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";

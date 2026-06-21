@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect } from "react";
 import uniq from "lodash/uniq";
 import { useAppSelector } from "store/hooks";
-import { backgroundSelectors } from "store/features/entities/entitiesState";
+import { backgroundSelectors } from "store/features/entities/entitiesSelectors";
 import {
   OptGroup,
   Option,

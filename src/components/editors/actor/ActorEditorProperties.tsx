@@ -13,7 +13,7 @@ import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ActorEditorExtraCollisionFlags } from "./ActorEditorExtraCollisionFlags";
-import { sceneSelectors } from "store/features/entities/entitiesState";
+import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import { CollisionGroup } from "shared/lib/resources/types";
 
 interface ActorEditorPropertiesProps {

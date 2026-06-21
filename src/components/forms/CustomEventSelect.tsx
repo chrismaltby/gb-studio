@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { customEventName } from "shared/lib/entities/entitiesHelpers";
-import { customEventSelectors } from "store/features/entities/entitiesState";
+import { customEventSelectors } from "store/features/entities/entitiesSelectors";
 import {
   FormatFolderLabel,
   Option,

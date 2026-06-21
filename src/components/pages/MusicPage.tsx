@@ -15,7 +15,7 @@ import {
   SplitPaneVerticalDivider,
 } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
-import { musicSelectors } from "store/features/entities/entitiesState";
+import { musicSelectors } from "store/features/entities/entitiesSelectors";
 import { SongEditor } from "components/music/sidebar/SongEditor";
 import ModViewer from "components/music/mod/ModViewer";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";

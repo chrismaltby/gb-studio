@@ -12,7 +12,7 @@ import { PlayIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import soundfxActions from "store/features/soundfx/soundfxActions";
 import l10n from "shared/lib/lang/l10n";
-import { soundSelectors } from "store/features/entities/entitiesState";
+import { soundSelectors } from "store/features/entities/entitiesSelectors";
 import uniq from "lodash/uniq";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SingleValue } from "react-select";

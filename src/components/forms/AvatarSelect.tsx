@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
-import { avatarSelectors } from "store/features/entities/entitiesState";
+import { avatarSelectors } from "store/features/entities/entitiesSelectors";
 import {
   Option,
   Select,

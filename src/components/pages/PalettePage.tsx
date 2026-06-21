@@ -11,7 +11,7 @@ import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
-import { paletteSelectors } from "store/features/entities/entitiesState";
+import { paletteSelectors } from "store/features/entities/entitiesSelectors";
 import l10n from "shared/lib/lang/l10n";
 import { Button } from "ui/buttons/Button";
 import CustomPalettePicker from "components/forms/CustomPalettePicker";
