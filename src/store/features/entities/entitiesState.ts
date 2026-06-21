@@ -144,6 +144,34 @@ import {
   notesAdapter,
   engineFieldValuesAdapter,
 } from "store/features/entities/adapters";
+import {
+  localBackgroundSelectById,
+  localSpriteSheetSelectById,
+  localMusicSelectById,
+  localSceneSelectAll,
+  localSpriteSheetSelectAll,
+  localSceneSelectTotal,
+  localBackgroundSelectAll,
+  localActorSelectEntities,
+  localTriggerSelectEntities,
+  localSceneSelectById,
+  localNoteSelectById,
+  localNoteSelectTotal,
+  localActorPrefabSelectById,
+  localActorSelectById,
+  localVariableSelectById,
+  localScriptEventSelectById,
+  localTriggerPrefabSelectById,
+  localTriggerSelectById,
+  localConstantSelectTotal,
+  localConstantSelectById,
+  localPaletteSelectTotal,
+  localCustomEventSelectTotal,
+  localScriptEventSelectAll,
+  localActorSelectAll,
+  localTriggerSelectAll,
+  localMusicSelectAll,
+} from "store/features/entities/helpers";
 
 const MIN_SCENE_X = 60;
 const MIN_SCENE_Y = 30;
@@ -5575,83 +5603,6 @@ const duplicateScript = (
 /**************************************************************************
  * Selectors
  */
-
-// Local (only for use in reducers within this file)
-const localSceneSelectById = (state: EntitiesState, id: string) =>
-  state.scenes.entities[id];
-
-const localSceneSelectAll = (state: EntitiesState) =>
-  state.scenes.ids.map((id) => state.scenes.entities[id]);
-
-const localSceneSelectTotal = (state: EntitiesState) => state.scenes.ids.length;
-
-const localNoteSelectById = (state: EntitiesState, id: string) =>
-  state.notes.entities[id];
-
-const localNoteSelectTotal = (state: EntitiesState) => state.notes.ids.length;
-
-const localActorSelectById = (state: EntitiesState, id: string) =>
-  state.actors.entities[id];
-
-const localActorSelectEntities = (state: EntitiesState) =>
-  state.actors.entities;
-
-const localActorSelectAll = (state: EntitiesState) =>
-  state.actors.ids.map((id) => state.actors.entities[id]);
-
-const localTriggerSelectById = (state: EntitiesState, id: string) =>
-  state.triggers.entities[id];
-
-const localTriggerSelectEntities = (state: EntitiesState) =>
-  state.triggers.entities;
-
-const localTriggerSelectAll = (state: EntitiesState) =>
-  state.triggers.ids.map((id) => state.triggers.entities[id]);
-
-const localActorPrefabSelectById = (state: EntitiesState, id: string) =>
-  state.actorPrefabs.entities[id];
-
-const localTriggerPrefabSelectById = (state: EntitiesState, id: string) =>
-  state.triggerPrefabs.entities[id];
-
-const localScriptEventSelectById = (state: EntitiesState, id: string) =>
-  state.scriptEvents.entities[id];
-
-const localScriptEventSelectAll = (state: EntitiesState) =>
-  state.scriptEvents.ids.map((id) => state.scriptEvents.entities[id]);
-
-const localCustomEventSelectTotal = (state: EntitiesState) =>
-  state.customEvents.ids.length;
-
-const localSpriteSheetSelectById = (state: EntitiesState, id: string) =>
-  state.spriteSheets.entities[id];
-
-const localSpriteSheetSelectAll = (state: EntitiesState) =>
-  state.spriteSheets.ids.map((id) => state.spriteSheets.entities[id]);
-
-const localBackgroundSelectById = (state: EntitiesState, id: string) =>
-  state.backgrounds.entities[id];
-
-const localBackgroundSelectAll = (state: EntitiesState) =>
-  state.backgrounds.ids.map((id) => state.backgrounds.entities[id]);
-
-const localPaletteSelectTotal = (state: EntitiesState) =>
-  state.palettes.ids.length;
-
-const localMusicSelectById = (state: EntitiesState, id: string) =>
-  state.music.entities[id];
-
-const localMusicSelectAll = (state: EntitiesState) =>
-  state.music.ids.map((id) => state.music.entities[id]);
-
-const localVariableSelectById = (state: EntitiesState, id: string) =>
-  state.variables.entities[id];
-
-const localConstantSelectById = (state: EntitiesState, id: string) =>
-  state.constants.entities[id];
-
-const localConstantSelectTotal = (state: EntitiesState) =>
-  state.constants.ids.length;
 
 // Global
 export const actorSelectors = actorsAdapter.getSelectors(
