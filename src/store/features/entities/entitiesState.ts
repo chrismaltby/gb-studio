@@ -47,7 +47,6 @@ import { addNewSongFile } from "store/features/trackerDocument/trackerDocumentSt
 import type { LoadProjectResult } from "lib/project/loadProjectData";
 import { decompressProjectResources } from "shared/lib/resources/compression";
 import {
-  AvatarResourceAsset,
   MetaspriteTile,
   Palette,
   SpriteResourceAsset,
@@ -109,6 +108,7 @@ import musicReducers, {
 import soundsReducers from "store/features/entities/reducers/soundsReducers";
 import emotesReducers from "store/features/entities/reducers/emotesReducers";
 import fontsReducers from "store/features/entities/reducers/fontsReducers";
+import avatarsReducers from "store/features/entities/reducers/avatarsReducers";
 export { selectScriptIds } from "store/features/entities/helpers";
 
 export const initialState: EntitiesState = {
@@ -469,30 +469,6 @@ const loadDetectedSprite: CaseReducer<
 };
 
 /**************************************************************************
- * Avatar
- */
-
-const loadAvatar: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    data: AvatarResourceAsset;
-  }>
-> = (state, action) => {
-  upsertAssetEntity(state.avatars, avatarsAdapter, action.payload.data, ["id"]);
-  ensureSymbolsUnique(state);
-};
-
-const removeAvatar: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    filename: string;
-    plugin?: string;
-  }>
-> = (state, action) => {
-  removeAssetEntity(state.avatars, avatarsAdapter, action.payload);
-};
-
-/**************************************************************************
  * Fix Scenes
  */
 
@@ -611,13 +587,12 @@ const entitiesSlice = createSlice({
     ...soundsReducers,
     ...emotesReducers,
     ...fontsReducers,
+    ...avatarsReducers,
 
     /*
      * Load assets
      */
     loadSprite,
-    loadAvatar,
-    removeAvatar,
     removedAsset,
     renamedAsset,
   },
