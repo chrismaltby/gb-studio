@@ -209,6 +209,12 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
+// Set electron-settings filename to
+// match previous releases
+settings.configure({
+  fileName: "Settings",
+});
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let projectWindow: BrowserWindow | null = null;
