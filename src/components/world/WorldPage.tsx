@@ -3,7 +3,7 @@ import styled, { ThemeContext } from "styled-components";
 import WorldView from "components/world/WorldView";
 import ToolPicker from "components/world/toolbar/ToolPicker";
 import BrushToolbar from "components/world/toolbar/BrushToolbar";
-import WorldInspectorSidebar from "components/world/inspector/WorldInspectorSidebar";
+import WorldInspectorRouter from "components/world/inspector/WorldInspectorRouter";
 import WorldStatusBar from "components/world/WorldStatusBar";
 import useResizable from "ui/hooks/use-resizable";
 import useWindowSize from "ui/hooks/use-window-size";
@@ -304,7 +304,7 @@ const WorldPage = () => {
           position: "relative",
         }}
       >
-        <WorldInspectorSidebar />
+        <WorldInspectorRouter />
       </div>
     </Wrapper>
   );

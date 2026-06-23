@@ -11,7 +11,7 @@ import { TriggerPrefabInspector } from "./prefabs/TriggerPrefabInspector";
 import { ConstantInspector } from "./constants/ConstantInspector";
 import { NoteInspector } from "./notes/NoteInspector";
 
-const WorldInspectorSidebar = () => {
+const WorldInspectorRouter = () => {
   const type = useAppSelector((state) => state.editor.type);
   const entityId = useAppSelector((state) => state.editor.entityId);
   const sceneId = useAppSelector((state) => state.editor.scene);
@@ -49,4 +49,4 @@ const WorldInspectorSidebar = () => {
   return <div />;
 };
 
-export default WorldInspectorSidebar;
+export default WorldInspectorRouter;
