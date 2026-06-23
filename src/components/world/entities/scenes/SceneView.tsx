@@ -34,7 +34,7 @@ import renderSceneContextMenu from "components/world/contextMenus/renderSceneCon
 import SceneScrollBounds from "./SceneScrollBounds";
 import { SceneContext } from "components/script/SceneContext";
 import { WarningIcon } from "ui/icons/Icons";
-import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeIds";
+import { useEnabledSceneTypeIds } from "store/features/engine/hooks/useEnabledSceneTypeIds";
 import SceneScreenGrid from "components/world/entities/scenes/SceneScreenGrid";
 import { MonoOBJPalette } from "shared/lib/resources/types";
 import { useContextMenu } from "ui/hooks/use-context-menu";

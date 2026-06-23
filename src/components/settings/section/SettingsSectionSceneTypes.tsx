@@ -12,12 +12,12 @@ import { SettingsIcon } from "ui/icons/Icons";
 import { ButtonPrefixIcon } from "ui/buttons/style";
 import settingsActions from "store/features/settings/settingsActions";
 import styled from "styled-components";
-import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
+import { useGroupedEngineFields } from "store/features/engine/hooks/useGroupedEngineFields";
 import { SceneTypeSelect } from "components/forms/SceneTypeSelect";
 import { Alert } from "ui/alerts/Alert";
 import { FormField } from "ui/form/layout/FormLayout";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
-import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeIds";
+import { useEnabledSceneTypeIds } from "store/features/engine/hooks/useEnabledSceneTypeIds";
 
 interface SettingsSectionSceneTypesProps {
   searchTerm?: string;

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Select, Option, OptGroup, OptionLabelWithInfo } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
+import { useGroupedEngineFields } from "store/features/engine/hooks/useGroupedEngineFields";
 import { EngineFieldSchema } from "store/features/engine/engineState";
 import { SingleValue } from "react-select";
 import styled from "styled-components";

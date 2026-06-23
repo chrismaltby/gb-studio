@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useState } from "react";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import SettingsSectionEngineFields from "./section/SettingsSectionEngineFields";
 import { Input } from "ui/form/Input";
-import { useGroupedEngineFields } from "./useGroupedEngineFields";
+import { useGroupedEngineFields } from "store/features/engine/hooks/useGroupedEngineFields";
 import useWindowSize from "ui/hooks/use-window-size";
 import {
   SettingsContentColumn,
