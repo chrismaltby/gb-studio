@@ -55,7 +55,7 @@ const UsesCollapsedWrapper = styled.div`
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
-const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
+export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
   const customEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state),
   );
@@ -499,5 +499,3 @@ const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
     </Sidebar>
   );
 };
-
-export default CustomEventInspector;

@@ -2,14 +2,14 @@ import React from "react";
 import { useAppSelector } from "store/hooks";
 import { TriggerInspector } from "./triggers/TriggerInspector";
 import { ActorInspector } from "./actors/ActorInspector";
-import { SceneInspector } from "components/world/inspector/scenes/SceneInspector";
+import { SceneInspector } from "./scenes/SceneInspector";
 import { WorldInspector } from "./WorldInspector";
-import CustomEventInspector from "components/world/inspector/scripts/CustomEventInspector";
+import { CustomEventInspector } from "./scripts/CustomEventInspector";
 import { VariableInspector } from "./variables/VariableInspector";
 import { ActorPrefabInspector } from "./prefabs/ActorPrefabInspector";
 import { TriggerPrefabInspector } from "./prefabs/TriggerPrefabInspector";
 import { ConstantInspector } from "./constants/ConstantInspector";
-import { NoteInspector } from "components/world/inspector/notes/NoteInspector";
+import { NoteInspector } from "./notes/NoteInspector";
 
 const WorldInspectorSidebar = () => {
   const type = useAppSelector((state) => state.editor.type);
