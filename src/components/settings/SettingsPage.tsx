@@ -10,7 +10,7 @@ import {
   SettingsMenuItem,
   SettingsPageWrapper,
   SettingsSearchWrapper,
-} from "./SettingsLayout";
+} from "./style";
 import { SearchableCard } from "ui/cards/SearchableCard";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import SettingsSectionSceneTypes from "./section/SettingsSectionSceneTypes";

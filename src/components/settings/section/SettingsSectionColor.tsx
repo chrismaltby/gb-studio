@@ -6,7 +6,6 @@ import { CardAnchor, CardButtons, CardHeading } from "ui/cards/Card";
 import { SearchableSettingRow } from "ui/form/SearchableSettingRow";
 import { SettingRowInput, SettingRowLabel } from "ui/form/SettingRow";
 import { SearchableCard } from "ui/cards/SearchableCard";
-import { ColorAnimationText } from "components/settings/ColorAnimationText";
 import { FormInfo } from "ui/form/FormInfo";
 import { FormField } from "ui/form/layout/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
@@ -178,9 +177,7 @@ export const SettingsSectionColor = ({
       ]}
     >
       <CardAnchor id="settingsColor" />
-      <CardHeading>
-        <ColorAnimationText>{l10n("SETTINGS_COLOR")}</ColorAnimationText>
-      </CardHeading>
+      <CardHeading>{l10n("SETTINGS_COLOR")}</CardHeading>
 
       <SearchableSettingRow
         searchTerm={searchTerm}
