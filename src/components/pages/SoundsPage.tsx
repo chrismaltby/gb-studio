@@ -6,7 +6,7 @@ import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
 import { soundSelectors } from "store/features/entities/entitiesSelectors";
-import { NavigatorSounds } from "components/sounds/NavigatorSounds";
+import { SoundNavigator } from "components/sounds/SoundNavigator";
 import { SoundViewer } from "components/sounds/SoundViewer";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 
@@ -104,7 +104,7 @@ const SoundsPage = () => {
             height: "100%",
           }}
         >
-          <NavigatorSounds height={windowHeight - 38} selectedId={selectedId} />
+          <SoundNavigator height={windowHeight - 38} selectedId={selectedId} />
         </div>
       </div>
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />

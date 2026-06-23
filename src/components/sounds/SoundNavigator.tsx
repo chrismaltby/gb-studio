@@ -19,7 +19,7 @@ import { Button } from "ui/buttons/Button";
 import { SearchIcon } from "ui/icons/Icons";
 import { SoundAsset } from "shared/lib/resources/types";
 
-interface NavigatorSoundsProps {
+interface SoundNavigatorProps {
   height: number;
   selectedId: string;
 }
@@ -28,10 +28,7 @@ const Pane = styled.div`
   overflow: hidden;
 `;
 
-export const NavigatorSounds = ({
-  height,
-  selectedId,
-}: NavigatorSoundsProps) => {
+export const SoundNavigator = ({ height, selectedId }: SoundNavigatorProps) => {
   const allSounds = useAppSelector((state) => soundSelectors.selectAll(state));
   const dispatch = useAppDispatch();
 
