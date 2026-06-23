@@ -7,7 +7,7 @@ import DialoguePage from "components/pages/DialoguePage";
 import WorldPage from "components/pages/WorldPage";
 import MusicPage from "components/pages/MusicPage";
 import PalettePage from "components/pages/PalettePage";
-import SettingsPage from "components/pages/SettingsPage";
+import SettingsPage from "components/settings/SettingsPage";
 import { DropZone } from "ui/upload/DropZone";
 import projectActions from "store/features/project/projectActions";
 import SoundsPage from "components/pages/SoundsPage";

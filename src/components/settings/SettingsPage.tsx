@@ -1,8 +1,8 @@
 import React, { useCallback, useRef, useState } from "react";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import SettingsSectionEngineFields from "components/settings/section/SettingsSectionEngineFields";
+import SettingsSectionEngineFields from "./section/SettingsSectionEngineFields";
 import { Input } from "ui/form/Input";
-import { useGroupedEngineFields } from "components/settings/useGroupedEngineFields";
+import { useGroupedEngineFields } from "./useGroupedEngineFields";
 import useWindowSize from "ui/hooks/use-window-size";
 import {
   SettingsContentColumn,
@@ -10,21 +10,21 @@ import {
   SettingsMenuItem,
   SettingsPageWrapper,
   SettingsSearchWrapper,
-} from "components/settings/SettingsLayout";
+} from "./SettingsLayout";
 import { SearchableCard } from "ui/cards/SearchableCard";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import SettingsSectionSceneTypes from "components/settings/section/SettingsSectionSceneTypes";
+import SettingsSectionSceneTypes from "./section/SettingsSectionSceneTypes";
 import editorActions from "store/features/editor/editorActions";
 import { useRestoreScroll } from "ui/hooks/use-restore-scroll";
 import { useSaveScroll } from "ui/hooks/use-save-scroll";
-import { SettingsSectionColor } from "components/settings/section/SettingsSectionColor";
-import { SettingsSectionWeb } from "components/settings/section/SettingsSectionWeb";
-import { SettingsSectionBuild } from "components/settings/section/SettingsSectionBuild";
-import { SettingsSectionSGB } from "components/settings/section/SettingsSectionSGB";
-import { SettingsSectionCart } from "components/settings/section/SettingsSectionCart";
-import { SettingsSectionControls } from "components/settings/section/SettingsSectionControls";
-import { SettingsSectionUI } from "components/settings/section/SettingsSectionUI";
-import { SettingsSectionSprites } from "components/settings/section/SettingsSectionSprites";
+import { SettingsSectionColor } from "./section/SettingsSectionColor";
+import { SettingsSectionWeb } from "./section/SettingsSectionWeb";
+import { SettingsSectionBuild } from "./section/SettingsSectionBuild";
+import { SettingsSectionSGB } from "./section/SettingsSectionSGB";
+import { SettingsSectionCart } from "./section/SettingsSectionCart";
+import { SettingsSectionControls } from "./section/SettingsSectionControls";
+import { SettingsSectionUI } from "./section/SettingsSectionUI";
+import { SettingsSectionSprites } from "./section/SettingsSectionSprites";
 
 const SettingsPage = () => {
   const dispatch = useAppDispatch();
