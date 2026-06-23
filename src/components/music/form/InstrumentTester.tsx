@@ -3,7 +3,7 @@ import {
   playDutyNotePreview,
   playNoiseNotePreview,
   playWaveNotePreview,
-} from "components/music/helpers";
+} from "components/music/helpers/notePreview";
 import { testNotes } from "components/music/inspector/helpers";
 import { NOTE_C5 } from "consts";
 import isEqual from "lodash/isEqual";

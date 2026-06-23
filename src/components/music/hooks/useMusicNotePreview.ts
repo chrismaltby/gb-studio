@@ -4,7 +4,7 @@ import {
   playDutyNotePreview,
   playNoiseNotePreview,
   playWaveNotePreview,
-} from "components/music/helpers";
+} from "components/music/helpers/notePreview";
 import { NOTE_C5 } from "consts";
 import throttle from "lodash/throttle";
 import { Song } from "shared/lib/uge/types";
