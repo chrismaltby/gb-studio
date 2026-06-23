@@ -1,5 +1,5 @@
 import React from "react";
-import { SongMetadataEditor } from "components/music/sidebar/SongMetadataEditor";
+import { SongMetadataProperties } from "components/music/inspector/metadata/SongMetadataProperties";
 import { Button } from "ui/buttons/Button";
 import { CaretRightIcon, HelpIcon, UndoIcon } from "ui/icons/Icons";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -72,7 +72,7 @@ export const MusicWebSettingPane = () => {
 
   return (
     <div>
-      <SongMetadataEditor />
+      <SongMetadataProperties />
 
       <StyledViewSelection>
         <FormRow>

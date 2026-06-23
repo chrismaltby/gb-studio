@@ -5,7 +5,7 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import { Knob } from "ui/form/Knob";
 import { Label } from "ui/form/Label";
 
-interface InstrumentWaveEnvelopeEditorProps {
+interface InstrumentWaveEnvelopePropertiesProps {
   volume: number;
   length: number | null;
   onChangeVolume: (value: number) => void;
@@ -88,12 +88,12 @@ const mapDisplayValueToStoredVolume = (
   return waveVolumeDisplayToStored[closestDisplayValue];
 };
 
-export const InstrumentWaveEnvelopeEditor = ({
+export const InstrumentWaveEnvelopeProperties = ({
   volume,
   length,
   onChangeVolume,
   onChangeLength,
-}: InstrumentWaveEnvelopeEditorProps) => {
+}: InstrumentWaveEnvelopePropertiesProps) => {
   const lastRequestedDisplayValueRef = useRef(mapInput(volume));
   const lastResolvedStoredVolumeRef = useRef(volume);
 

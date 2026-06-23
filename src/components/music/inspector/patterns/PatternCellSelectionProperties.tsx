@@ -44,7 +44,7 @@ const getSharedValue = <T extends keyof PatternCell>(
   );
 };
 
-export const PatternCellSelectionEditor = () => {
+export const PatternCellSelectionProperties = () => {
   const store = useAppStore();
   const dispatch = useAppDispatch();
   const playPreview = useMusicNotePreview();

@@ -27,7 +27,7 @@ import projectActions from "store/features/project/projectActions";
 import { stripInvalidPathCharacters } from "shared/lib/helpers/stripInvalidFilenameCharacters";
 import { musicSelectors } from "store/features/entities/entitiesSelectors";
 
-export const SongMetadataEditor = () => {
+export const SongMetadataProperties = () => {
   const dispatch = useAppDispatch();
 
   const hasSong = useAppSelector(

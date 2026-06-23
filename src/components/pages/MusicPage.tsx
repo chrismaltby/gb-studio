@@ -16,7 +16,7 @@ import {
 } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
 import { musicSelectors } from "store/features/entities/entitiesSelectors";
-import { SongEditor } from "components/music/sidebar/SongEditor";
+import { SongInspector } from "components/music/inspector/SongInspector";
 import ModViewer from "components/music/mod/ModViewer";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -34,7 +34,7 @@ import SongDocument from "components/music/SongDocument";
 import { SequenceEditor } from "components/music/sequence/SequenceEditor";
 import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
-import { InstrumentEditor } from "components/music/sidebar/InstrumentEditor";
+import { InstrumentProperties } from "components/music/inspector/instruments/InstrumentProperties";
 import SongEditorToolsPanel from "components/music/toolbar/SongEditorToolsPanel";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { Grid2x2Icon } from "ui/icons/Icons";
@@ -332,7 +332,7 @@ const MusicPage = () => {
                       overflow: "auto",
                     }}
                   >
-                    {status === "loaded" && <InstrumentEditor />}
+                    {status === "loaded" && <InstrumentProperties />}
                     <FixedSpacer height={40} />
                   </div>
                 </div>
@@ -393,7 +393,7 @@ const MusicPage = () => {
                   flexShrink: 0,
                 }}
               >
-                {status === "loaded" && <SongEditor />}
+                {status === "loaded" && <SongInspector />}
               </div>
             </>
           )}

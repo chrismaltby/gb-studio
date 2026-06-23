@@ -15,7 +15,7 @@ import {
   SplitPaneVerticalDivider,
 } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
-import { SongEditor } from "components/music/sidebar/SongEditor";
+import { SongInspector } from "components/music/inspector/SongInspector";
 import { loadSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import trackerActions from "store/features/tracker/trackerActions";
@@ -32,9 +32,9 @@ import SongDocument from "components/music/SongDocument";
 import { SequenceEditor } from "components/music/sequence/SequenceEditor";
 import l10n from "shared/lib/lang/l10n";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
-import { InstrumentEditor } from "components/music/sidebar/InstrumentEditor";
+import { InstrumentProperties } from "components/music/inspector/instruments/InstrumentProperties";
 import SongEditorToolsPanel from "components/music/toolbar/SongEditorToolsPanel";
-import { PatternCellSelectionEditor } from "components/music/sidebar/PatternCellSelectionEditor";
+import { PatternCellSelectionProperties } from "components/music/inspector/patterns/PatternCellSelectionProperties";
 import { MusicWebChannelsBar } from "gbs-music-web/components/MusicWebChannelsBar";
 import { MusicWebChannelPane } from "gbs-music-web/components/MusicWebChannelPane";
 import { MusicWebSettingPane } from "gbs-music-web/components/MusicWebSettingsPane";
@@ -447,7 +447,7 @@ const StandaloneMusicPage = ({
                 >
                   <CaretUpIcon />
                 </StyledMobileBackButton>
-                <InstrumentEditor offsetHeader />
+                <InstrumentProperties offsetHeader />
               </MobileOverlay>
 
               <MobileOverlay
@@ -493,7 +493,7 @@ const StandaloneMusicPage = ({
                   setMobileOverlayView("none");
                 }}
               >
-                <PatternCellSelectionEditor />
+                <PatternCellSelectionProperties />
               </MobileOverlay>
             </>
           )}
@@ -512,7 +512,7 @@ const StandaloneMusicPage = ({
                   flexShrink: 0,
                 }}
               >
-                {status === "loaded" && <SongEditor />}
+                {status === "loaded" && <SongInspector />}
               </div>
             </>
           )}

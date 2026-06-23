@@ -10,9 +10,9 @@ import { Input } from "ui/form/Input";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { StickyTabs, TabBar, TabSettings } from "ui/tabs/Tabs";
 
-import { InstrumentDutyEditor } from "./InstrumentDutyEditor";
-import { InstrumentWaveEditor } from "./InstrumentWaveEditor";
-import { InstrumentNoiseEditor } from "./InstrumentNoiseEditor";
+import { InstrumentDutyProperties } from "./InstrumentDutyProperties";
+import { InstrumentWaveProperties } from "./InstrumentWaveProperties";
+import { InstrumentNoiseProperties } from "./InstrumentNoiseProperties";
 import { InstrumentSubpatternTracker } from "components/music/form/subpattern/InstrumentSubpatternTracker";
 import { InstrumentSubpatternScript } from "components/music/form/subpattern/InstrumentSubpatternScript";
 
@@ -227,7 +227,7 @@ const getInstrumentName = (instrument: Instrument, type: InstrumentType) => {
   return instrument.name || getDefaultInstrumentName(instrument, type);
 };
 
-export const InstrumentEditor = ({
+export const InstrumentProperties = ({
   offsetHeader,
 }: {
   offsetHeader?: boolean;
@@ -716,7 +716,7 @@ export const InstrumentEditor = ({
       {instrumentEditorTab === "main" &&
       resolvedInstrument.instrumentType === "duty" ? (
         <InstrumentEditorWrapper>
-          <InstrumentDutyEditor
+          <InstrumentDutyProperties
             id={`instrument_${resolvedInstrument.instrument.index}`}
             instrument={resolvedInstrument.instrument}
           />
@@ -726,7 +726,7 @@ export const InstrumentEditor = ({
       {instrumentEditorTab === "main" &&
       resolvedInstrument.instrumentType === "noise" ? (
         <InstrumentEditorWrapper>
-          <InstrumentNoiseEditor
+          <InstrumentNoiseProperties
             id={`instrument_${resolvedInstrument.instrument.index}`}
             instrument={resolvedInstrument.instrument}
           />
@@ -736,7 +736,7 @@ export const InstrumentEditor = ({
       {instrumentEditorTab === "main" &&
       resolvedInstrument.instrumentType === "wave" ? (
         <InstrumentEditorWrapper>
-          <InstrumentWaveEditor
+          <InstrumentWaveProperties
             id={`instrument_${resolvedInstrument.instrument.index}`}
             instrument={resolvedInstrument.instrument}
             waveForms={waves}

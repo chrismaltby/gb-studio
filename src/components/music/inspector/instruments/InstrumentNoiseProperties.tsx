@@ -6,17 +6,17 @@ import { NoiseInstrument } from "shared/lib/uge/types";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { FormDivider, FormRow } from "ui/form/layout/FormLayout";
 import { useAppDispatch } from "store/hooks";
-import { InstrumentEnvelopeEditor } from "components/music/sidebar/InstrumentEnvelopeEditor";
-import { InstrumentEnvelopePreview } from "components/music/sidebar/InstrumentEnvelopePreview";
+import { InstrumentEnvelopeProperties } from "./InstrumentEnvelopeProperties";
+import { InstrumentEnvelopePreview } from "./InstrumentEnvelopePreview";
 
-interface InstrumentNoiseEditorProps {
+interface InstrumentNoisePropertiesProps {
   id: string;
   instrument?: NoiseInstrument;
 }
 
-export const InstrumentNoiseEditor = ({
+export const InstrumentNoiseProperties = ({
   instrument,
-}: InstrumentNoiseEditorProps) => {
+}: InstrumentNoisePropertiesProps) => {
   const dispatch = useAppDispatch();
 
   const instrumentId = instrument?.index;
@@ -60,7 +60,7 @@ export const InstrumentNoiseEditor = ({
 
   return (
     <>
-      <InstrumentEnvelopeEditor
+      <InstrumentEnvelopeProperties
         volume={instrument.initialVolume}
         sweep={instrument.volumeSweepChange}
         length={instrument.length}

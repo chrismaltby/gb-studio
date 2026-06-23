@@ -1,13 +1,13 @@
 import React from "react";
 import { FormContainer, FormSectionTitle } from "ui/form/layout/FormLayout";
 import { Sidebar } from "ui/sidebars/Sidebar";
-import { SongMetadataEditor } from "./SongMetadataEditor";
+import { SongMetadataProperties } from "./metadata/SongMetadataProperties";
 import { useAppSelector } from "store/hooks";
-import { InstrumentEditor } from "./InstrumentEditor";
-import { PatternCellSelectionEditor } from "./PatternCellSelectionEditor";
+import { InstrumentProperties } from "./instruments/InstrumentProperties";
+import { PatternCellSelectionProperties } from "./patterns/PatternCellSelectionProperties";
 import l10n from "shared/lib/lang/l10n";
 
-export const SongEditor = () => {
+export const SongInspector = () => {
   const isPatternSelection = useAppSelector(
     (state) =>
       state.tracker.sidebarView === "cell" &&
@@ -24,16 +24,16 @@ export const SongEditor = () => {
 
   return (
     <Sidebar>
-      <SongMetadataEditor />
+      <SongMetadataProperties />
       <FormContainer>
         <div style={{ marginTop: -1 }}>
           {isPatternSelection ? (
             <>
               <FormSectionTitle>{l10n("FIELD_SELECTION")}</FormSectionTitle>
-              <PatternCellSelectionEditor />
+              <PatternCellSelectionProperties />
             </>
           ) : (
-            <InstrumentEditor />
+            <InstrumentProperties />
           )}
         </div>
       </FormContainer>

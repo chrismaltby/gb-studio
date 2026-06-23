@@ -4,13 +4,13 @@
 
 import React from "react";
 import { fireEvent, render } from "../../../react-utils";
-import { InstrumentWaveEnvelopeEditor } from "../../../../src/components/music/sidebar/InstrumentWaveEnvelopeEditor";
+import { InstrumentWaveEnvelopeProperties } from "components/music/inspector/instruments/InstrumentWaveEnvelopeProperties";
 
 test("Should allow keyboard arrowing down from 100 percent volume to 50 percent", () => {
   const onChangeVolume = jest.fn();
 
   const { getAllByRole } = render(
-    <InstrumentWaveEnvelopeEditor
+    <InstrumentWaveEnvelopeProperties
       volume={1}
       length={null}
       onChangeVolume={onChangeVolume}

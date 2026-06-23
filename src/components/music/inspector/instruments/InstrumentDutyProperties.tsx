@@ -5,21 +5,21 @@ import { FormDivider, FormField, FormRow } from "ui/form/layout/FormLayout";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Alert, AlertItem } from "ui/alerts/Alert";
-import { InstrumentEnvelopeEditor } from "components/music/sidebar/InstrumentEnvelopeEditor";
-import { InstrumentEnvelopePreview } from "components/music/sidebar/InstrumentEnvelopePreview";
+import { InstrumentEnvelopeProperties } from "./InstrumentEnvelopeProperties";
+import { InstrumentEnvelopePreview } from "./InstrumentEnvelopePreview";
 import { Slider } from "ui/form/Slider";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { DutyCycleSelect } from "components/music/form/DutyCycleSelect";
 import { SweepTimeSelect } from "components/music/form/SweepTimeSelect";
 
-interface InstrumentDutyEditorProps {
+interface InstrumentDutyPropertiesProps {
   id: string;
   instrument?: DutyInstrument;
 }
 
-export const InstrumentDutyEditor = ({
+export const InstrumentDutyProperties = ({
   instrument,
-}: InstrumentDutyEditorProps) => {
+}: InstrumentDutyPropertiesProps) => {
   const dispatch = useAppDispatch();
   const selectedChannel = useAppSelector(
     (state) => state.tracker.selectedChannel,
@@ -103,7 +103,7 @@ export const InstrumentDutyEditor = ({
 
   return (
     <>
-      <InstrumentEnvelopeEditor
+      <InstrumentEnvelopeProperties
         volume={instrument.initialVolume}
         sweep={instrument.volumeSweepChange}
         length={instrument.length}

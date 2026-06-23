@@ -5,7 +5,7 @@ import { CheckboxField } from "ui/form/CheckboxField";
 import { Knob } from "ui/form/Knob";
 import { Label } from "ui/form/Label";
 
-interface InstrumentEnvelopeEditorProps {
+interface InstrumentEnvelopePropertiesProps {
   volume: number;
   sweep: number;
   length: number | null;
@@ -46,14 +46,14 @@ const StyledEnvelopeField = styled.div`
   }
 `;
 
-export const InstrumentEnvelopeEditor = ({
+export const InstrumentEnvelopeProperties = ({
   volume,
   sweep,
   length,
   onChangeVolume,
   onChangeLength,
   onChangeSweep,
-}: InstrumentEnvelopeEditorProps) => {
+}: InstrumentEnvelopePropertiesProps) => {
   return (
     <StyledEnvelopeForm>
       <StyledEnvelopeField>

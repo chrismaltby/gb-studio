@@ -4,17 +4,17 @@ import { WaveInstrument } from "shared/lib/uge/types";
 import { FormDivider } from "ui/form/layout/FormLayout";
 import { WaveEditorForm } from "components/music/form/WaveEditorForm";
 import { useAppDispatch } from "store/hooks";
-import { InstrumentWaveEnvelopeEditor } from "components/music/sidebar/InstrumentWaveEnvelopeEditor";
+import { InstrumentWaveEnvelopeProperties } from "./InstrumentWaveEnvelopeProperties";
 
-interface InstrumentWaveEditorProps {
+interface InstrumentWavePropertiesProps {
   id: string;
   instrument: WaveInstrument;
   waveForms: Uint8Array[];
 }
 
-export const InstrumentWaveEditor = ({
+export const InstrumentWaveProperties = ({
   instrument,
-}: InstrumentWaveEditorProps) => {
+}: InstrumentWavePropertiesProps) => {
   const dispatch = useAppDispatch();
 
   const instrumentId = instrument?.index;
@@ -55,7 +55,7 @@ export const InstrumentWaveEditor = ({
 
   return (
     <>
-      <InstrumentWaveEnvelopeEditor
+      <InstrumentWaveEnvelopeProperties
         volume={instrument.volume}
         length={instrument.length}
         onChangeVolume={onChangeEnvelopeVolume}
