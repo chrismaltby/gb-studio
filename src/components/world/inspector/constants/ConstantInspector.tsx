@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -44,12 +44,12 @@ import {
   SIGNED_16BIT_MAX,
   SIGNED_16BIT_MIN,
 } from "shared/lib/helpers/8bit";
-import { WorldEditor } from "components/world/inspector/WorldEditor";
+import { WorldInspector } from "components/world/inspector/WorldInspector";
 import useWindowSize from "ui/hooks/use-window-size";
 
 export const worker = new ConstantUsesWorker();
 
-interface ConstantEditorProps {
+interface ConstantInspectorProps {
   id: string;
 }
 interface UsesWrapperProps {
@@ -70,7 +70,7 @@ const EditableConstantName = styled(EditableText)`
   text-transform: uppercase;
 `;
 
-export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
+export const ConstantInspector = ({ id }: ConstantInspectorProps) => {
   const [fetching, setFetching] = useState(true);
   const { observe, entry } = useDimensions();
   const { height: winHeight } = useWindowSize();
@@ -236,7 +236,7 @@ export const ConstantEditor: FC<ConstantEditorProps> = ({ id }) => {
   }, [dispatch, constant]);
 
   if (!constant && !isEngineConstant) {
-    return <WorldEditor />;
+    return <WorldInspector />;
   }
 
   const displayName = isEngineConstant ? engineConstantName : name;

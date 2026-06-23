@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import {
@@ -18,7 +18,7 @@ import { castEventToBool } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
-interface ActorPrefabEditorScriptsProps {
+interface ActorPrefabInspectorScriptsProps {
   prefab: ActorPrefabNormalized;
   actor?: ActorNormalized;
   sceneId?: string;
@@ -84,12 +84,12 @@ const getScriptKey = (
   return "script";
 };
 
-export const ActorPrefabEditorScripts: FC<ActorPrefabEditorScriptsProps> = ({
+export const ActorPrefabInspectorScripts = ({
   prefab,
   actor,
   sceneId,
   isInstance,
-}) => {
+}: ActorPrefabInspectorScriptsProps) => {
   const lockScriptEditor = useAppSelector(
     (state) => state.editor.lockScriptEditor,
   );

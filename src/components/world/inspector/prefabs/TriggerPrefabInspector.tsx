@@ -1,5 +1,5 @@
-import React, { FC, useCallback, useState } from "react";
-import { actorPrefabSelectors } from "store/features/entities/entitiesSelectors";
+import React, { useCallback, useState } from "react";
+import { triggerPrefabSelectors } from "store/features/entities/entitiesSelectors";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText } from "ui/form/EditableText";
 import { FormContainer, FormHeader, FormRow } from "ui/form/layout/FormLayout";
@@ -7,23 +7,22 @@ import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { ActorPrefabNormalized } from "shared/lib/entities/entitiesTypes";
+import { TriggerPrefabNormalized } from "shared/lib/entities/entitiesTypes";
 import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
-import { WorldEditor } from "components/world/inspector/WorldEditor";
+import { WorldInspector } from "components/world/inspector/WorldInspector";
 import { NoteField } from "ui/form/NoteField";
-import { actorName } from "shared/lib/entities/entitiesHelpers";
+import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
-import { ActorPrefabEditorProperties } from "components/world/inspector/prefabs/ActorPrefabEditorProperties";
-import { ActorPrefabEditorScripts } from "components/world/inspector/prefabs/ActorPrefabEditorScripts";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
-import { ActorPrefabUsesList } from "components/world/inspector/prefabs/ActorPrefabUsesList";
+import { TriggerPrefabUsesList } from "components/world/inspector/prefabs/TriggerPrefabUsesList";
+import { TriggerPrefabInspectorScripts } from "components/world/inspector/prefabs/TriggerPrefabInspectorScripts";
 import { CheckIcon, BlankIcon } from "ui/icons/Icons";
 
-interface ActorPrefabEditorProps {
+interface TriggerPrefabInspectorProps {
   id: string;
 }
 
@@ -41,15 +40,15 @@ const UsesCollapsedWrapper = styled.div`
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
-export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
-  const actorPrefabIds = useAppSelector(actorPrefabSelectors.selectIds);
+export const TriggerPrefabInspector = ({ id }: TriggerPrefabInspectorProps) => {
+  const triggerPrefabIds = useAppSelector(triggerPrefabSelectors.selectIds);
   const prefab = useAppSelector((state) =>
-    actorPrefabSelectors.selectById(state, id),
+    triggerPrefabSelectors.selectById(state, id),
   );
 
   const index = React.useMemo(
-    () => actorPrefabIds.indexOf(id),
-    [actorPrefabIds, id],
+    () => triggerPrefabIds.indexOf(id),
+    [triggerPrefabIds, id],
   );
 
   const [notesOpen, setNotesOpen] = useState<boolean>(!!prefab?.notes);
@@ -64,14 +63,14 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
 
   const dispatch = useAppDispatch();
 
-  const onChangeActorPrefabProp = useCallback(
-    <K extends keyof ActorPrefabNormalized>(
+  const onChangeTriggerPrefabProp = useCallback(
+    <K extends keyof TriggerPrefabNormalized>(
       key: K,
-      value: ActorPrefabNormalized[K],
+      value: TriggerPrefabNormalized[K],
     ) => {
       dispatch(
-        entitiesActions.editActorPrefab({
-          actorPrefabId: id,
+        entitiesActions.editTriggerPrefab({
+          triggerPrefabId: id,
           changes: {
             [key]: value,
           },
@@ -83,14 +82,14 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
 
   const onChangeName = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChangeActorPrefabProp("name", e.currentTarget.value),
-    [onChangeActorPrefabProp],
+      onChangeTriggerPrefabProp("name", e.currentTarget.value),
+    [onChangeTriggerPrefabProp],
   );
 
   const onChangeNotes = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-      onChangeActorPrefabProp("notes", e.currentTarget.value),
-    [onChangeActorPrefabProp],
+      onChangeTriggerPrefabProp("notes", e.currentTarget.value),
+    [onChangeTriggerPrefabProp],
   );
 
   const selectSidebar = () => {
@@ -99,7 +98,9 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
 
   const onRemove = () => {
     if (prefab) {
-      dispatch(entitiesActions.removeActorPrefab({ actorPrefabId: prefab.id }));
+      dispatch(
+        entitiesActions.removeTriggerPrefab({ triggerPrefabId: prefab.id }),
+      );
     }
   };
 
@@ -119,7 +120,7 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
   );
 
   if (!prefab) {
-    return <WorldEditor />;
+    return <WorldInspector />;
   }
 
   const showNotes = prefab.notes || notesOpen;
@@ -135,7 +136,7 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
               <FormHeader variant="prefab">
                 <EditableText
                   name="name"
-                  placeholder={actorName(prefab, index)}
+                  placeholder={triggerName(prefab, index)}
                   value={prefab.name || ""}
                   onChange={onChangeName}
                 />
@@ -175,7 +176,7 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
           )}
 
           {showUses ? (
-            <ActorPrefabUsesList id={id} onClose={() => setShowUses(false)} />
+            <TriggerPrefabUsesList id={id} onClose={() => setShowUses(false)} />
           ) : (
             <>
               {!lockScriptEditor && (
@@ -194,10 +195,9 @@ export const ActorPrefabEditor: FC<ActorPrefabEditorProps> = ({ id }) => {
                       )}
                     </SidebarColumn>
                   )}
-                  <ActorPrefabEditorProperties prefab={prefab} />
                 </SidebarColumns>
               )}
-              <ActorPrefabEditorScripts prefab={prefab} />
+              <TriggerPrefabInspectorScripts prefab={prefab} />
             </>
           )}
 

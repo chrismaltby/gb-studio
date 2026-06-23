@@ -1,0 +1,52 @@
+import React from "react";
+import { useAppSelector } from "store/hooks";
+import { TriggerInspector } from "./triggers/TriggerInspector";
+import { ActorInspector } from "./actors/ActorInspector";
+import { SceneInspector } from "components/world/inspector/scenes/SceneInspector";
+import { WorldInspector } from "./WorldInspector";
+import CustomEventInspector from "components/world/inspector/scripts/CustomEventInspector";
+import { VariableInspector } from "./variables/VariableInspector";
+import { ActorPrefabInspector } from "./prefabs/ActorPrefabInspector";
+import { TriggerPrefabInspector } from "./prefabs/TriggerPrefabInspector";
+import { ConstantInspector } from "./constants/ConstantInspector";
+import { NoteInspector } from "components/world/inspector/notes/NoteInspector";
+
+const WorldInspectorSidebar = () => {
+  const type = useAppSelector((state) => state.editor.type);
+  const entityId = useAppSelector((state) => state.editor.entityId);
+  const sceneId = useAppSelector((state) => state.editor.scene);
+
+  if (type === "trigger") {
+    return <TriggerInspector key={entityId} id={entityId} sceneId={sceneId} />;
+  }
+  if (type === "actor") {
+    return <ActorInspector key={entityId} id={entityId} sceneId={sceneId} />;
+  }
+  if (type === "scene") {
+    return <SceneInspector key={sceneId} id={sceneId} />;
+  }
+  if (type === "world") {
+    return <WorldInspector />;
+  }
+  if (type === "actorPrefab") {
+    return <ActorPrefabInspector key="entityId" id={entityId} />;
+  }
+  if (type === "triggerPrefab") {
+    return <TriggerPrefabInspector key="entityId" id={entityId} />;
+  }
+  if (type === "customEvent") {
+    return <CustomEventInspector key="entityId" id={entityId} />;
+  }
+  if (type === "variable") {
+    return <VariableInspector id={entityId} />;
+  }
+  if (type === "constant") {
+    return <ConstantInspector id={entityId} />;
+  }
+  if (type === "note") {
+    return <NoteInspector id={entityId} />;
+  }
+  return <div />;
+};
+
+export default WorldInspectorSidebar;

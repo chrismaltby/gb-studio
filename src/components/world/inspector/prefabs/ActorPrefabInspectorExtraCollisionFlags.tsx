@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react";
+import React, { useCallback } from "react";
 import { FormRow } from "ui/form/layout/FormLayout";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { ActorPrefabNormalized } from "shared/lib/entities/entitiesTypes";
@@ -12,14 +12,15 @@ import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import uniqBy from "lodash/uniqBy";
 
-interface ActorPrefabEditorExtraCollisionFlagsProps {
+interface ActorPrefabInspectorExtraCollisionFlagsProps {
   prefab: ActorPrefabNormalized;
   sceneId?: string;
 }
 
-export const ActorPrefabEditorExtraCollisionFlags: FC<
-  ActorPrefabEditorExtraCollisionFlagsProps
-> = ({ prefab, sceneId }) => {
+export const ActorPrefabInspectorExtraCollisionFlags = ({
+  prefab,
+  sceneId,
+}: ActorPrefabInspectorExtraCollisionFlagsProps) => {
   const dispatch = useAppDispatch();
 
   const scene = useAppSelector((state) =>

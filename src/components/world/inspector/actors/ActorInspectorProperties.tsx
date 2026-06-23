@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react";
+import React, { useCallback } from "react";
 import { FormContainer, FormField, FormRow } from "ui/form/layout/FormLayout";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
@@ -12,19 +12,19 @@ import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { ActorEditorExtraCollisionFlags } from "./ActorEditorExtraCollisionFlags";
+import { ActorInspectorExtraCollisionFlags } from "./ActorInspectorExtraCollisionFlags";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import { CollisionGroup } from "shared/lib/resources/types";
 
-interface ActorEditorPropertiesProps {
+interface ActorInspectorPropertiesProps {
   actor: ActorNormalized;
   sceneId?: string;
 }
 
-export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
+export const ActorInspectorProperties = ({
   actor,
   sceneId,
-}) => {
+}: ActorInspectorPropertiesProps) => {
   const dispatch = useAppDispatch();
 
   const defaultSpriteMode = useAppSelector(
@@ -148,7 +148,10 @@ export const ActorEditorProperties: FC<ActorEditorPropertiesProps> = ({
                 />
               </FormField>
             </FormRow>
-            <ActorEditorExtraCollisionFlags actor={actor} sceneId={sceneId} />
+            <ActorInspectorExtraCollisionFlags
+              actor={actor}
+              sceneId={sceneId}
+            />
           </FormContainer>
         </SidebarColumn>
       )}

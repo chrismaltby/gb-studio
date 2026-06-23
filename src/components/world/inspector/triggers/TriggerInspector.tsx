@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import { WorldEditor } from "components/world/inspector/WorldEditor";
+import { WorldInspector } from "components/world/inspector/WorldInspector";
 import {
   triggerSelectors,
   sceneSelectors,
@@ -29,19 +29,19 @@ import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
-import { TriggerPrefabEditorScripts } from "components/world/inspector/prefabs/TriggerPrefabEditorScripts";
-import { TriggerEditorScripts } from "./TriggerEditorScripts";
+import { TriggerPrefabInspectorScripts } from "components/world/inspector/prefabs/TriggerPrefabInspectorScripts";
+import { TriggerInspectorScripts } from "./TriggerInspectorScripts";
 import { PrefabHeader } from "ui/form/headers/PrefabHeader";
 import { CaretRightIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { TriggerPrefabSelectButton } from "components/forms/TriggerPrefabSelectButton";
 
-interface TriggerEditorProps {
+interface TriggerInspectorProps {
   id: string;
   sceneId: string;
 }
 
-export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
+export const TriggerInspector = ({ id, sceneId }: TriggerInspectorProps) => {
   const trigger = useAppSelector((state) =>
     triggerSelectors.selectById(state, id),
   );
@@ -174,7 +174,7 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
   const showNotes = trigger?.notes || notesOpen;
 
   if (!scene || !trigger) {
-    return <WorldEditor />;
+    return <WorldInspector />;
   }
 
   const scrollKey = `${trigger.id}_${lastScriptTab}`;
@@ -405,14 +405,14 @@ export const TriggerEditor = ({ id, sceneId }: TriggerEditorProps) => {
         )}
 
         {prefab ? (
-          <TriggerPrefabEditorScripts
+          <TriggerPrefabInspectorScripts
             prefab={prefab}
             trigger={trigger}
             sceneId={sceneId}
             isInstance
           />
         ) : (
-          <TriggerEditorScripts trigger={trigger} sceneId={sceneId} />
+          <TriggerInspectorScripts trigger={trigger} sceneId={sceneId} />
         )}
       </CachedScroll>
     </Sidebar>

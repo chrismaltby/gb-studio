@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
@@ -18,7 +18,7 @@ import { castEventToBool } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
-interface ActorEditorScriptsProps {
+interface ActorInspectorScriptsProps {
   actor: ActorNormalized;
   sceneId: string;
 }
@@ -82,10 +82,10 @@ const getScriptKey = (
   return "script";
 };
 
-export const ActorEditorScripts: FC<ActorEditorScriptsProps> = ({
+export const ActorInspectorScripts = ({
   actor,
   sceneId,
-}) => {
+}: ActorInspectorScriptsProps) => {
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId),
   );

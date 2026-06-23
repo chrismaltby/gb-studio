@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -21,7 +21,7 @@ import { Sidebar, SidebarColumn, SidebarColumns } from "ui/sidebars/Sidebar";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import { CaretRightIcon, CheckIcon, PinIcon } from "ui/icons/Icons";
 import DirectionPicker from "components/forms/DirectionPicker";
-import { WorldEditor } from "components/world/inspector/WorldEditor";
+import { WorldInspector } from "components/world/inspector/WorldInspector";
 import { NoteField } from "ui/form/NoteField";
 import { ClipboardTypeActors } from "store/features/clipboard/clipboardTypes";
 import { ActorSymbolsEditor } from "components/forms/symbols/ActorSymbolsEditor";
@@ -33,10 +33,10 @@ import { KeysMatching } from "shared/types";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
-import { ActorPrefabEditorScripts } from "components/world/inspector/prefabs/ActorPrefabEditorScripts";
-import { ActorPrefabEditorProperties } from "components/world/inspector/prefabs/ActorPrefabEditorProperties";
-import { ActorEditorScripts } from "components/world/inspector/actors/ActorEditorScripts";
-import { ActorEditorProperties } from "components/world/inspector/actors/ActorEditorProperties";
+import { ActorPrefabInspectorScripts } from "components/world/inspector/prefabs/ActorPrefabInspectorScripts";
+import { ActorPrefabInspectorProperties } from "components/world/inspector/prefabs/ActorPrefabInspectorProperties";
+import { ActorInspectorScripts } from "components/world/inspector/actors/ActorInspectorScripts";
+import { ActorInspectorProperties } from "components/world/inspector/actors/ActorInspectorProperties";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { ActorPrefabSelectButton } from "components/forms/ActorPrefabSelectButton";
 import { PrefabHeader } from "ui/form/headers/PrefabHeader";
@@ -45,12 +45,12 @@ import { ActorDirection, CoordinateType } from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
 import { Label } from "ui/form/Label";
 
-interface ActorEditorProps {
+interface ActorInspectorProps {
   id: string;
   sceneId: string;
 }
 
-export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
+export const ActorInspector = ({ id, sceneId }: ActorInspectorProps) => {
   const actor = useAppSelector((state) => actorSelectors.selectById(state, id));
   const prefab = useAppSelector((state) =>
     actorPrefabSelectors.selectById(state, actor?.prefabId ?? ""),
@@ -179,7 +179,7 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
   };
 
   if (!scene || !actor) {
-    return <WorldEditor />;
+    return <WorldInspector />;
   }
 
   const showNotes = actor.notes || notesOpen;
@@ -440,22 +440,25 @@ export const ActorEditor: FC<ActorEditorProps> = ({ id, sceneId }) => {
         {!lockScriptEditor && (
           <SidebarColumns>
             {prefab ? (
-              <ActorPrefabEditorProperties prefab={prefab} sceneId={sceneId} />
+              <ActorPrefabInspectorProperties
+                prefab={prefab}
+                sceneId={sceneId}
+              />
             ) : (
-              <ActorEditorProperties actor={actor} sceneId={sceneId} />
+              <ActorInspectorProperties actor={actor} sceneId={sceneId} />
             )}
           </SidebarColumns>
         )}
 
         {prefab ? (
-          <ActorPrefabEditorScripts
+          <ActorPrefabInspectorScripts
             prefab={prefab}
             actor={actor}
             sceneId={sceneId}
             isInstance
           />
         ) : (
-          <ActorEditorScripts actor={actor} sceneId={sceneId} />
+          <ActorInspectorScripts actor={actor} sceneId={sceneId} />
         )}
       </CachedScroll>
     </Sidebar>

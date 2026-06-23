@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -43,7 +43,7 @@ import { CodeIcon } from "ui/icons/Icons";
 
 const worker = new VariableUsesWorker();
 
-interface VariableEditorProps {
+interface VariableInspectorProps {
   id: string;
 }
 interface UsesWrapperProps {
@@ -63,7 +63,7 @@ const UseMessage = styled.div`
   font-size: 11px;
 `;
 
-export const VariableEditor: FC<VariableEditorProps> = ({ id }) => {
+export const VariableInspector = ({ id }: VariableInspectorProps) => {
   const [fetching, setFetching] = useState(true);
   const { observe, height } = useDimensions();
   const variable = useAppSelector((state) =>

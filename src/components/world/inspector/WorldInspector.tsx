@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-for */
-import React, { FC, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { SceneSelect } from "components/forms/SceneSelect";
 import DirectionPicker from "components/forms/DirectionPicker";
 import {
@@ -36,7 +36,7 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ActorDirection } from "shared/lib/resources/types";
 
-export const WorldEditor: FC = () => {
+export const WorldInspector = () => {
   const metadata = useAppSelector((state) => state.project.present.metadata);
   const settings = useAppSelector((state) => state.project.present.settings);
   const scene = useAppSelector((state) =>

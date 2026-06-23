@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react";
+import React, { useCallback } from "react";
 import { FormContainer, FormField, FormRow } from "ui/form/layout/FormLayout";
 import entitiesActions from "store/features/entities/entitiesActions";
 import {
@@ -12,18 +12,19 @@ import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { ActorPrefabEditorExtraCollisionFlags } from "./ActorPrefabEditorExtraCollisionFlags";
+import { ActorPrefabInspectorExtraCollisionFlags } from "./ActorPrefabInspectorExtraCollisionFlags";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import { CollisionGroup } from "shared/lib/resources/types";
 
-interface ActorPrefabEditorPropertiesProps {
+interface ActorPrefabInspectorPropertiesProps {
   prefab: ActorPrefabNormalized;
   sceneId?: string;
 }
 
-export const ActorPrefabEditorProperties: FC<
-  ActorPrefabEditorPropertiesProps
-> = ({ prefab, sceneId }) => {
+export const ActorPrefabInspectorProperties = ({
+  prefab,
+  sceneId,
+}: ActorPrefabInspectorPropertiesProps) => {
   const dispatch = useAppDispatch();
 
   const defaultSpriteMode = useAppSelector(
@@ -147,7 +148,7 @@ export const ActorPrefabEditorProperties: FC<
               />
             </FormField>
           </FormRow>
-          <ActorPrefabEditorExtraCollisionFlags
+          <ActorPrefabInspectorExtraCollisionFlags
             prefab={prefab}
             sceneId={sceneId}
           />

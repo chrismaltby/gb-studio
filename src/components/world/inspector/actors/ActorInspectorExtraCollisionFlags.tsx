@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react";
+import React, { useCallback } from "react";
 import { FormRow } from "ui/form/layout/FormLayout";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { ActorNormalized } from "shared/lib/entities/entitiesTypes";
@@ -12,16 +12,17 @@ import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { ExtraActorCollisionFlagDef } from "store/features/engine/engineState";
 
-interface ActorEditorExtraCollisionFlagsProps {
+interface ActorInspectorExtraCollisionFlagsProps {
   actor: ActorNormalized;
   sceneId?: string;
 }
 
 const emptyCollisionFlagDefs: ExtraActorCollisionFlagDef[] = [];
 
-export const ActorEditorExtraCollisionFlags: FC<
-  ActorEditorExtraCollisionFlagsProps
-> = ({ actor, sceneId }) => {
+export const ActorInspectorExtraCollisionFlags = ({
+  actor,
+  sceneId,
+}: ActorInspectorExtraCollisionFlagsProps) => {
   const dispatch = useAppDispatch();
 
   const scene = useAppSelector((state) =>

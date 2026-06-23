@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import ScriptEditor from "components/script/ScriptEditor";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import { WorldEditor } from "components/world/inspector/WorldEditor";
+import { WorldInspector } from "components/world/inspector/WorldInspector";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import { customEventSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
@@ -37,7 +37,7 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { customEventName } from "shared/lib/entities/entitiesHelpers";
 import styled from "styled-components";
 
-interface CustomEventEditorProps {
+interface CustomEventInspectorProps {
   id: string;
 }
 
@@ -55,7 +55,7 @@ const UsesCollapsedWrapper = styled.div`
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
-const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
+const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
   const customEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state),
   );
@@ -213,7 +213,7 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
   );
 
   if (!customEvent) {
-    return <WorldEditor />;
+    return <WorldInspector />;
   }
 
   const lockButton = (
@@ -500,4 +500,4 @@ const CustomEventEditor = ({ id }: CustomEventEditorProps) => {
   );
 };
 
-export default CustomEventEditor;
+export default CustomEventInspector;

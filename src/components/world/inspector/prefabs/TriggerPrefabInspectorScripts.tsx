@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import editorActions from "store/features/editor/editorActions";
 import {
   TriggerPrefabNormalized,
@@ -15,7 +15,7 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
-interface TriggerPrefabEditorScriptsProps {
+interface TriggerPrefabInspectorScriptsProps {
   prefab: TriggerPrefabNormalized;
   trigger?: TriggerNormalized;
   sceneId?: string;
@@ -46,9 +46,12 @@ const getScriptKey = (tab: DefaultTab): TriggerScriptKey => {
   return "script";
 };
 
-export const TriggerPrefabEditorScripts: FC<
-  TriggerPrefabEditorScriptsProps
-> = ({ prefab, trigger, sceneId, isInstance }) => {
+export const TriggerPrefabInspectorScripts = ({
+  prefab,
+  trigger,
+  sceneId,
+  isInstance,
+}: TriggerPrefabInspectorScriptsProps) => {
   const lockScriptEditor = useAppSelector(
     (state) => state.editor.lockScriptEditor,
   );

@@ -15,7 +15,7 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 
-interface TriggerEditorScriptsProps {
+interface TriggerInspectorScriptsProps {
   trigger: TriggerNormalized;
   sceneId: string;
 }
@@ -45,10 +45,10 @@ const getScriptKey = (tab: DefaultTab): TriggerScriptKey => {
   return "script";
 };
 
-export const TriggerEditorScripts = ({
+export const TriggerInspectorScripts = ({
   trigger,
   sceneId,
-}: TriggerEditorScriptsProps) => {
+}: TriggerInspectorScriptsProps) => {
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId),
   );

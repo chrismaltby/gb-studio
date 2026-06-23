@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react";
+import React, { useCallback } from "react";
 import { noteSelectors } from "store/features/entities/entitiesSelectors";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { EditableText, EditableTextOverlay } from "ui/form/EditableText";
@@ -10,17 +10,17 @@ import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { defaultLocalisedNoteName } from "shared/lib/entities/entitiesHelpers";
-import { WorldEditor } from "components/world/inspector/WorldEditor";
+import { WorldInspector } from "components/world/inspector/WorldInspector";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { labelColorValues, Note } from "shared/lib/resources/types";
 import { NoteField } from "ui/form/NoteField";
 import { LabelButton, LabelColor } from "ui/buttons/LabelButton";
 
-interface NoteEditorProps {
+interface NoteInspectorProps {
   id: string;
 }
 
-export const NoteEditor: FC<NoteEditorProps> = ({ id }) => {
+export const NoteInspector = ({ id }: NoteInspectorProps) => {
   const note = useAppSelector((state) => noteSelectors.selectById(state, id));
   const noteIndex = useAppSelector((state) =>
     noteSelectors.selectIds(state).indexOf(id),
@@ -65,7 +65,7 @@ export const NoteEditor: FC<NoteEditorProps> = ({ id }) => {
   }, [dispatch, note]);
 
   if (!note) {
-    return <WorldEditor />;
+    return <WorldInspector />;
   }
 
   return (

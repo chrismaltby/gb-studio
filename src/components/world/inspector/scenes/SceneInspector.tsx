@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import ScriptEditor from "components/script/ScriptEditor";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
-import { WorldEditor } from "components/world/inspector/WorldEditor";
+import { WorldInspector } from "components/world/inspector/WorldInspector";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "components/world/BackgroundWarnings";
 import {
@@ -102,7 +102,7 @@ import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeI
 import { AutoTileFlipSelect } from "components/forms/AutoTileFlipSelect";
 import { DMGPaletteSelectButton } from "components/forms/DMGPaletteSelectButton";
 
-interface SceneEditorProps {
+interface SceneInspectorProps {
   id: string;
 }
 
@@ -162,7 +162,7 @@ const getScriptKey = (
   return "script";
 };
 
-export const SceneEditor = ({ id }: SceneEditorProps) => {
+export const SceneInspector = ({ id }: SceneInspectorProps) => {
   const scene = useAppSelectorPick(
     (state) => sceneSelectors.selectById(state, id),
     [
@@ -680,7 +680,7 @@ export const SceneEditor = ({ id }: SceneEditorProps) => {
   }, [dispatch]);
 
   if (!scene) {
-    return <WorldEditor />;
+    return <WorldInspector />;
   }
 
   const showNotes = scene.notes || notesOpen;
