@@ -18,7 +18,7 @@ import { castEventToBool } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
-interface ActorInspectorScriptsProps {
+interface ActorScriptsProps {
   actor: ActorNormalized;
   sceneId: string;
 }
@@ -82,10 +82,7 @@ const getScriptKey = (
   return "script";
 };
 
-export const ActorInspectorScripts = ({
-  actor,
-  sceneId,
-}: ActorInspectorScriptsProps) => {
+export const ActorScripts = ({ actor, sceneId }: ActorScriptsProps) => {
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, sceneId),
   );

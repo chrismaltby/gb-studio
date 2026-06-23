@@ -15,8 +15,8 @@ import { actorName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
-import { ActorPrefabInspectorProperties } from "components/world/inspector/prefabs/ActorPrefabInspectorProperties";
-import { ActorPrefabInspectorScripts } from "components/world/inspector/prefabs/ActorPrefabInspectorScripts";
+import { ActorPrefabProperties } from "components/world/inspector/prefabs/ActorPrefabProperties";
+import { ActorPrefabScripts } from "components/world/inspector/prefabs/ActorPrefabScripts";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
@@ -194,10 +194,10 @@ export const ActorPrefabInspector = ({ id }: ActorPrefabInspectorProps) => {
                       )}
                     </SidebarColumn>
                   )}
-                  <ActorPrefabInspectorProperties prefab={prefab} />
+                  <ActorPrefabProperties prefab={prefab} />
                 </SidebarColumns>
               )}
-              <ActorPrefabInspectorScripts prefab={prefab} />
+              <ActorPrefabScripts prefab={prefab} />
             </>
           )}
 

@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { FormRow } from "ui/form/layout/FormLayout";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { ActorPrefabNormalized } from "shared/lib/entities/entitiesTypes";
+import { ActorNormalized } from "shared/lib/entities/entitiesTypes";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { CheckboxField } from "ui/form/CheckboxField";
 import {
@@ -10,17 +10,19 @@ import {
 } from "shared/lib/helpers/array";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import uniqBy from "lodash/uniqBy";
+import { ExtraActorCollisionFlagDef } from "store/features/engine/engineState";
 
-interface ActorPrefabInspectorExtraCollisionFlagsProps {
-  prefab: ActorPrefabNormalized;
+interface ActorExtraCollisionFlagsProps {
+  actor: ActorNormalized;
   sceneId?: string;
 }
 
-export const ActorPrefabInspectorExtraCollisionFlags = ({
-  prefab,
+const emptyCollisionFlagDefs: ExtraActorCollisionFlagDef[] = [];
+
+export const ActorExtraCollisionFlags = ({
+  actor,
   sceneId,
-}: ActorPrefabInspectorExtraCollisionFlagsProps) => {
+}: ActorExtraCollisionFlagsProps) => {
   const dispatch = useAppDispatch();
 
   const scene = useAppSelector((state) =>
@@ -28,42 +30,31 @@ export const ActorPrefabInspectorExtraCollisionFlags = ({
   );
 
   const extraActorCollisionFlags = useAppSelector((state) => {
-    if (!scene || !scene.type || !state.engine.sceneTypes) {
-      return uniqBy(
-        state.engine.sceneTypes
-          .map((s) => s.extraActorCollisionFlags || [])
-          .flat(),
-        "key",
-      ).map((flagDef) => ({
-        ...flagDef,
-        clearFlags: [], // Can't reliably determine which flags should be cleared without knowing the scene type, so just don't clear any
-      }));
-    }
+    if (!scene || !scene.type || !state.engine.sceneTypes)
+      return emptyCollisionFlagDefs;
     const key = scene.type || "";
     const sceneType = state.engine.sceneTypes.find((s) => s.key === key);
-    if (sceneType && sceneType.extraActorCollisionFlags)
+    if (sceneType && sceneType.extraActorCollisionFlags) {
       return sceneType.extraActorCollisionFlags;
-    return [];
+    }
+    return emptyCollisionFlagDefs;
   });
 
-  const onChangeActorPrefabProp = useCallback(
-    <K extends keyof ActorPrefabNormalized>(
-      key: K,
-      value: ActorPrefabNormalized[K],
-    ) => {
+  const onChangeActorProp = useCallback(
+    <K extends keyof ActorNormalized>(key: K, value: ActorNormalized[K]) => {
       dispatch(
-        entitiesActions.editActorPrefab({
-          actorPrefabId: prefab.id,
+        entitiesActions.editActor({
+          actorId: actor.id,
           changes: {
             [key]: value,
           },
         }),
       );
     },
-    [dispatch, prefab.id],
+    [dispatch, actor.id],
   );
 
-  if (!prefab || extraActorCollisionFlags.length === 0) {
+  if (!actor || extraActorCollisionFlags.length === 0) {
     return <></>;
   }
 
@@ -85,13 +76,13 @@ export const ActorPrefabInspectorExtraCollisionFlags = ({
                 ? l10n(flagDef.description as L10NKey)
                 : undefined
             }
-            checked={prefab.collisionExtraFlags.includes(flagDef.setFlag)}
+            checked={actor.collisionExtraFlags.includes(flagDef.setFlag)}
             onChange={() => {
-              onChangeActorPrefabProp(
+              onChangeActorProp(
                 "collisionExtraFlags",
                 removeArrayElements(
                   toggleArrayElement(
-                    prefab.collisionExtraFlags,
+                    actor.collisionExtraFlags,
                     flagDef.setFlag,
                   ),
                   flagDef.clearFlags ?? [],

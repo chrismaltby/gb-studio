@@ -15,7 +15,7 @@ import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
-interface TriggerPrefabInspectorScriptsProps {
+interface TriggerPrefabScriptsProps {
   prefab: TriggerPrefabNormalized;
   trigger?: TriggerNormalized;
   sceneId?: string;
@@ -46,12 +46,12 @@ const getScriptKey = (tab: DefaultTab): TriggerScriptKey => {
   return "script";
 };
 
-export const TriggerPrefabInspectorScripts = ({
+export const TriggerPrefabScripts = ({
   prefab,
   trigger,
   sceneId,
   isInstance,
-}: TriggerPrefabInspectorScriptsProps) => {
+}: TriggerPrefabScriptsProps) => {
   const lockScriptEditor = useAppSelector(
     (state) => state.editor.lockScriptEditor,
   );

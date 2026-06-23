@@ -12,19 +12,19 @@ import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { ActorPrefabInspectorExtraCollisionFlags } from "./ActorPrefabInspectorExtraCollisionFlags";
+import { ActorPrefabExtraCollisionFlags } from "./ActorPrefabExtraCollisionFlags";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import { CollisionGroup } from "shared/lib/resources/types";
 
-interface ActorPrefabInspectorPropertiesProps {
+interface ActorPrefabPropertiesProps {
   prefab: ActorPrefabNormalized;
   sceneId?: string;
 }
 
-export const ActorPrefabInspectorProperties = ({
+export const ActorPrefabProperties = ({
   prefab,
   sceneId,
-}: ActorPrefabInspectorPropertiesProps) => {
+}: ActorPrefabPropertiesProps) => {
   const dispatch = useAppDispatch();
 
   const defaultSpriteMode = useAppSelector(
@@ -148,10 +148,7 @@ export const ActorPrefabInspectorProperties = ({
               />
             </FormField>
           </FormRow>
-          <ActorPrefabInspectorExtraCollisionFlags
-            prefab={prefab}
-            sceneId={sceneId}
-          />
+          <ActorPrefabExtraCollisionFlags prefab={prefab} sceneId={sceneId} />
         </FormContainer>
       </SidebarColumn>
     </>

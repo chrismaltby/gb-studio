@@ -19,7 +19,7 @@ import { FlexGrow } from "ui/spacing/Spacing";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import styled from "styled-components";
 import { TriggerPrefabUsesList } from "components/world/inspector/prefabs/TriggerPrefabUsesList";
-import { TriggerPrefabInspectorScripts } from "components/world/inspector/prefabs/TriggerPrefabInspectorScripts";
+import { TriggerPrefabScripts } from "components/world/inspector/prefabs/TriggerPrefabScripts";
 import { CheckIcon, BlankIcon } from "ui/icons/Icons";
 
 interface TriggerPrefabInspectorProps {
@@ -197,7 +197,7 @@ export const TriggerPrefabInspector = ({ id }: TriggerPrefabInspectorProps) => {
                   )}
                 </SidebarColumns>
               )}
-              <TriggerPrefabInspectorScripts prefab={prefab} />
+              <TriggerPrefabScripts prefab={prefab} />
             </>
           )}
 

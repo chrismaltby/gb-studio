@@ -18,7 +18,7 @@ import { castEventToBool } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 
-interface ActorPrefabInspectorScriptsProps {
+interface ActorPrefabScriptsProps {
   prefab: ActorPrefabNormalized;
   actor?: ActorNormalized;
   sceneId?: string;
@@ -84,12 +84,12 @@ const getScriptKey = (
   return "script";
 };
 
-export const ActorPrefabInspectorScripts = ({
+export const ActorPrefabScripts = ({
   prefab,
   actor,
   sceneId,
   isInstance,
-}: ActorPrefabInspectorScriptsProps) => {
+}: ActorPrefabScriptsProps) => {
   const lockScriptEditor = useAppSelector(
     (state) => state.editor.lockScriptEditor,
   );

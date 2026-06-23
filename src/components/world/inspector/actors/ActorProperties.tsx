@@ -12,19 +12,16 @@ import { MovementSpeedSelect } from "components/forms/MovementSpeedSelect";
 import CollisionMaskPicker from "components/forms/CollisionMaskPicker";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { ActorInspectorExtraCollisionFlags } from "./ActorInspectorExtraCollisionFlags";
+import { ActorExtraCollisionFlags } from "./ActorExtraCollisionFlags";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import { CollisionGroup } from "shared/lib/resources/types";
 
-interface ActorInspectorPropertiesProps {
+interface ActorPropertiesProps {
   actor: ActorNormalized;
   sceneId?: string;
 }
 
-export const ActorInspectorProperties = ({
-  actor,
-  sceneId,
-}: ActorInspectorPropertiesProps) => {
+export const ActorProperties = ({ actor, sceneId }: ActorPropertiesProps) => {
   const dispatch = useAppDispatch();
 
   const defaultSpriteMode = useAppSelector(
@@ -148,10 +145,7 @@ export const ActorInspectorProperties = ({
                 />
               </FormField>
             </FormRow>
-            <ActorInspectorExtraCollisionFlags
-              actor={actor}
-              sceneId={sceneId}
-            />
+            <ActorExtraCollisionFlags actor={actor} sceneId={sceneId} />
           </FormContainer>
         </SidebarColumn>
       )}

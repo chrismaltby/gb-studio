@@ -33,10 +33,10 @@ import { KeysMatching } from "shared/types";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
-import { ActorPrefabInspectorScripts } from "components/world/inspector/prefabs/ActorPrefabInspectorScripts";
-import { ActorPrefabInspectorProperties } from "components/world/inspector/prefabs/ActorPrefabInspectorProperties";
-import { ActorInspectorScripts } from "components/world/inspector/actors/ActorInspectorScripts";
-import { ActorInspectorProperties } from "components/world/inspector/actors/ActorInspectorProperties";
+import { ActorPrefabScripts } from "components/world/inspector/prefabs/ActorPrefabScripts";
+import { ActorPrefabProperties } from "components/world/inspector/prefabs/ActorPrefabProperties";
+import { ActorScripts } from "components/world/inspector/actors/ActorScripts";
+import { ActorProperties } from "components/world/inspector/actors/ActorProperties";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { ActorPrefabSelectButton } from "components/forms/ActorPrefabSelectButton";
 import { PrefabHeader } from "ui/form/headers/PrefabHeader";
@@ -440,25 +440,22 @@ export const ActorInspector = ({ id, sceneId }: ActorInspectorProps) => {
         {!lockScriptEditor && (
           <SidebarColumns>
             {prefab ? (
-              <ActorPrefabInspectorProperties
-                prefab={prefab}
-                sceneId={sceneId}
-              />
+              <ActorPrefabProperties prefab={prefab} sceneId={sceneId} />
             ) : (
-              <ActorInspectorProperties actor={actor} sceneId={sceneId} />
+              <ActorProperties actor={actor} sceneId={sceneId} />
             )}
           </SidebarColumns>
         )}
 
         {prefab ? (
-          <ActorPrefabInspectorScripts
+          <ActorPrefabScripts
             prefab={prefab}
             actor={actor}
             sceneId={sceneId}
             isInstance
           />
         ) : (
-          <ActorInspectorScripts actor={actor} sceneId={sceneId} />
+          <ActorScripts actor={actor} sceneId={sceneId} />
         )}
       </CachedScroll>
     </Sidebar>

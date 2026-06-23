@@ -29,8 +29,8 @@ import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
-import { TriggerPrefabInspectorScripts } from "components/world/inspector/prefabs/TriggerPrefabInspectorScripts";
-import { TriggerInspectorScripts } from "./TriggerInspectorScripts";
+import { TriggerPrefabScripts } from "components/world/inspector/prefabs/TriggerPrefabScripts";
+import { TriggerScripts } from "./TriggerScripts";
 import { PrefabHeader } from "ui/form/headers/PrefabHeader";
 import { CaretRightIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
@@ -405,14 +405,14 @@ export const TriggerInspector = ({ id, sceneId }: TriggerInspectorProps) => {
         )}
 
         {prefab ? (
-          <TriggerPrefabInspectorScripts
+          <TriggerPrefabScripts
             prefab={prefab}
             trigger={trigger}
             sceneId={sceneId}
             isInstance
           />
         ) : (
-          <TriggerInspectorScripts trigger={trigger} sceneId={sceneId} />
+          <TriggerScripts trigger={trigger} sceneId={sceneId} />
         )}
       </CachedScroll>
     </Sidebar>
