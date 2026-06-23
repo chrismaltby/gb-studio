@@ -29,13 +29,13 @@ const WorldInspectorSidebar = () => {
     return <WorldInspector />;
   }
   if (type === "actorPrefab") {
-    return <ActorPrefabInspector key="entityId" id={entityId} />;
+    return <ActorPrefabInspector key={entityId} id={entityId} />;
   }
   if (type === "triggerPrefab") {
-    return <TriggerPrefabInspector key="entityId" id={entityId} />;
+    return <TriggerPrefabInspector key={entityId} id={entityId} />;
   }
   if (type === "customEvent") {
-    return <CustomEventInspector key="entityId" id={entityId} />;
+    return <CustomEventInspector key={entityId} id={entityId} />;
   }
   if (type === "variable") {
     return <VariableInspector id={entityId} />;

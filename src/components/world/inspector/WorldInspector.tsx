@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-for */
 import React, { useCallback, useState } from "react";
 import { SceneSelect } from "components/forms/SceneSelect";
 import DirectionPicker from "components/forms/DirectionPicker";
