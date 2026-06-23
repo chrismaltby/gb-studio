@@ -4,7 +4,7 @@ import { defaultProjectSettings, DMG_PALETTE } from "consts";
 import { avatarSelectors } from "store/features/entities/entitiesSelectors";
 import SpriteSliceCanvasWorker, {
   SpriteSliceCanvasResult,
-} from "components/sprites/preview/SpriteSliceCanvas.worker";
+} from "components/rendering/SpriteSliceCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 
 interface AvatarCanvasProps {

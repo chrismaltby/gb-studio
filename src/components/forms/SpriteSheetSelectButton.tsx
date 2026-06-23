@@ -10,7 +10,7 @@ import {
   selectMenuStyleProps,
 } from "ui/form/Select";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
+import SpriteSheetCanvas from "components/rendering/SpriteSheetCanvas";
 import { SpriteSheetSelect } from "./SpriteSheetSelect";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { ActorDirection } from "shared/lib/resources/types";

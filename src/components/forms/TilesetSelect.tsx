@@ -11,7 +11,7 @@ import {
   SelectCommonProps,
   FormatFolderLabel,
 } from "ui/form/Select";
-import { TileCanvas } from "components/world/TileCanvas";
+import { TileCanvas } from "components/rendering/TileCanvas";
 import uniq from "lodash/uniq";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";

@@ -8,7 +8,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "ui/form/Select";
-import { EmoteCanvas } from "components/world/EmoteCanvas";
+import { EmoteCanvas } from "components/rendering/EmoteCanvas";
 import { SingleValue } from "react-select";
 import { EmoteAsset } from "shared/lib/resources/types";
 

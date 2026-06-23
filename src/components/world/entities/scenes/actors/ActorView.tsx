@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect } from "react";
-import SpriteSheetCanvas from "./SpriteSheetCanvas";
+import SpriteSheetCanvas from "components/rendering/SpriteSheetCanvas";
 import { MIDDLE_MOUSE, TILE_SIZE, TOOL_COLLISIONS } from "consts";
 import {
   actorPrefabSelectors,
@@ -9,7 +9,7 @@ import {
 import editorActions from "store/features/editor/editorActions";
 import styled, { css } from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import renderActorContextMenu from "./renderActorContextMenu";
+import renderActorContextMenu from "components/world/contextMenus/renderActorContextMenu";
 import { SpriteBoundingBox } from "components/sprites/MetaspriteEditor";
 import { MonoOBJPalette, Palette } from "shared/lib/resources/types";
 import { useContextMenu } from "ui/hooks/use-context-menu";

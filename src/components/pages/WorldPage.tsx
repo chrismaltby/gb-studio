@@ -1,8 +1,8 @@
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components";
 import WorldView from "components/world/WorldView";
-import ToolPicker from "components/world/ToolPicker";
-import BrushToolbar from "components/world/BrushToolbar";
+import ToolPicker from "components/world/toolbar/ToolPicker";
+import BrushToolbar from "components/world/toolbar/BrushToolbar";
 import EditorSidebar from "components/editors/EditorSidebar";
 import WorldStatusBar from "components/world/WorldStatusBar";
 import useResizable from "ui/hooks/use-resizable";
@@ -11,7 +11,7 @@ import {
   SplitPaneHorizontalDivider,
   SplitPaneVerticalDivider,
 } from "ui/splitpane/SplitPaneDivider";
-import { Navigator } from "components/world/Navigator";
+import { Navigator } from "components/world/navigator/Navigator";
 import editorActions from "store/features/editor/editorActions";
 import settingsActions from "store/features/settings/settingsActions";
 import debounce from "lodash/debounce";

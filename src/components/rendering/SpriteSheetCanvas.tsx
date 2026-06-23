@@ -6,7 +6,7 @@ import {
   spriteSheetSelectors,
   spriteStateSelectors,
 } from "store/features/entities/entitiesSelectors";
-import { MetaspriteCanvas } from "components/sprites/preview/MetaspriteCanvas";
+import { MetaspriteCanvas } from "components/rendering/MetaspriteCanvas";
 import { SceneContext } from "components/script/SceneContext";
 import {
   ActorDirection,

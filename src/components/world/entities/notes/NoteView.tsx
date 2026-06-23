@@ -7,7 +7,7 @@ import { noteName } from "shared/lib/entities/entitiesHelpers";
 import styled, { css } from "styled-components";
 import { LabelSpan } from "ui/buttons/LabelButton";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import renderNoteContextMenu from "components/world/renderNoteContextMenu";
+import renderNoteContextMenu from "components/world/contextMenus/renderNoteContextMenu";
 import { noteColorStyles } from "ui/form/NoteField";
 import { LabelColor } from "shared/lib/resources/types";
 import l10n from "shared/lib/lang/l10n";

@@ -1,9 +1,9 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
-import WorldActor from "./ActorView";
-import TriggerView from "./TriggerView";
+import WorldActor from "./actors/ActorView";
+import TriggerView from "./triggers/TriggerView";
 import SceneCollisions from "./SceneCollisions";
 import SceneCursor from "./SceneCursor";
-import ColorizedImage from "./ColorizedImage";
+import ColorizedImage from "components/rendering/ColorizedImage";
 import {
   TOOL_COLORS,
   TOOL_COLLISIONS,
@@ -29,13 +29,13 @@ import styled, { css } from "styled-components";
 import { LabelSpan } from "ui/buttons/LabelButton";
 import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import { assetURL } from "shared/lib/helpers/assets";
-import AutoColorizedImage from "components/world/AutoColorizedImage";
-import renderSceneContextMenu from "./renderSceneContextMenu";
+import AutoColorizedImage from "components/rendering/AutoColorizedImage";
+import renderSceneContextMenu from "components/world/contextMenus/renderSceneContextMenu";
 import SceneScrollBounds from "./SceneScrollBounds";
 import { SceneContext } from "components/script/SceneContext";
 import { WarningIcon } from "ui/icons/Icons";
 import { useEnabledSceneTypeIds } from "components/settings/useEnabledSceneTypeIds";
-import SceneScreenGrid from "components/world/SceneScreenGrid";
+import SceneScreenGrid from "components/world/entities/scenes/SceneScreenGrid";
 import { MonoOBJPalette } from "shared/lib/resources/types";
 import { useContextMenu } from "ui/hooks/use-context-menu";
 

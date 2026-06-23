@@ -30,12 +30,12 @@ import {
   sceneParentFolders,
   sceneIdsInFolder,
 } from "shared/lib/entities/buildSceneNavigatorItems";
-import renderSceneContextMenu from "./renderSceneContextMenu";
-import renderActorContextMenu from "./renderActorContextMenu";
-import renderTriggerContextMenu from "./renderTriggerContextMenu";
+import renderSceneContextMenu from "components/world/contextMenus/renderSceneContextMenu";
+import renderActorContextMenu from "components/world/contextMenus/renderActorContextMenu";
+import renderTriggerContextMenu from "components/world/contextMenus/renderTriggerContextMenu";
 import { assertUnreachable } from "shared/lib/helpers/assert";
-import renderSceneFolderContextMenu from "components/world/renderSceneFolderContextMenu";
-import renderNoteContextMenu from "components/world/renderNoteContextMenu";
+import renderSceneFolderContextMenu from "components/world/contextMenus/renderSceneFolderContextMenu";
+import renderNoteContextMenu from "components/world/contextMenus/renderNoteContextMenu";
 import { EntityListItemDnD } from "ui/lists/EntityListItemDnD";
 import ItemTypes from "renderer/lib/dnd/itemTypes";
 import { getParentPath } from "shared/lib/helpers/virtualFilesystem";

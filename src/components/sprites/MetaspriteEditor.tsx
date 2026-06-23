@@ -15,15 +15,15 @@ import {
   spriteSheetSelectors,
 } from "store/features/entities/entitiesSelectors";
 import MetaspriteGrid from "./MetaspriteGrid";
-import { SpriteSliceCanvas } from "./preview/SpriteSliceCanvas";
+import { SpriteSliceCanvas } from "components/rendering/SpriteSliceCanvas";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { PayloadAction } from "@reduxjs/toolkit";
-import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
+import { MetaspriteCanvas } from "components/rendering/MetaspriteCanvas";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Selection } from "ui/document/Selection";
-import renderMetaspriteTileContextMenu from "components/world/renderMetaspriteTileContextMenu";
+import renderMetaspriteTileContextMenu from "components/sprites/renderMetaspriteTileContextMenu";
 import {
   MetaspriteTile,
   MonoOBJPalette,

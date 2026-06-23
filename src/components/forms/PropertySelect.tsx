@@ -17,7 +17,7 @@ import {
 } from "store/features/entities/entitiesSelectors";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
-import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
+import SpriteSheetCanvas from "components/rendering/SpriteSheetCanvas";
 import styled from "styled-components";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
 import { ScriptEditorContext } from "components/script/ScriptEditorContext";

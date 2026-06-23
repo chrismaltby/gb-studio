@@ -4,7 +4,7 @@ import { triggerSelectors } from "store/features/entities/entitiesSelectors";
 import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
 import styled, { css } from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import renderTriggerContextMenu from "./renderTriggerContextMenu";
+import renderTriggerContextMenu from "components/world/contextMenus/renderTriggerContextMenu";
 import { useContextMenu } from "ui/hooks/use-context-menu";
 
 interface TriggerViewProps {

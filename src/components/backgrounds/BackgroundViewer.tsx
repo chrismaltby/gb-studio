@@ -7,10 +7,10 @@ import {
   sceneSelectors,
   tilesetSelectors,
 } from "store/features/entities/entitiesSelectors";
-import ColorizedImage from "components/world/ColorizedImage";
+import ColorizedImage from "components/rendering/ColorizedImage";
 import { DMG_PALETTE, TILE_SIZE } from "consts";
 import { assetURL } from "shared/lib/helpers/assets";
-import AutoColorizedImage from "components/world/AutoColorizedImage";
+import AutoColorizedImage from "components/rendering/AutoColorizedImage";
 import { Palette } from "shared/lib/resources/types";
 
 interface MetaspriteEditorProps {

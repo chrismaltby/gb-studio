@@ -5,7 +5,7 @@ import { RelativePortal } from "ui/layout/RelativePortal";
 import { DialoguePreview } from "./DialoguePreview";
 import { MenuPreview } from "./MenuPreview";
 import { ensureBoolean, ensureNumber, ensureString } from "shared/types";
-import { getArgValue } from "components/world/SceneEventHelper";
+import { getArgValue } from "components/world/entities/scenes/SceneEventHelper";
 import styled from "styled-components";
 import { constantSelectors } from "store/features/entities/entitiesSelectors";
 

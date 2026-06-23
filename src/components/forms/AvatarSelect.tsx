@@ -8,7 +8,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
 } from "ui/form/Select";
-import { AvatarCanvas } from "components/world/AvatarCanvas";
+import { AvatarCanvas } from "components/rendering/AvatarCanvas";
 import { SingleValue } from "react-select";
 import { AvatarAsset } from "shared/lib/resources/types";
 

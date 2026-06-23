@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled, { css } from "styled-components";
-import { MetaspriteCanvas } from "./preview/MetaspriteCanvas";
+import { MetaspriteCanvas } from "components/rendering/MetaspriteCanvas";
 import renderSpriteFrameContextMenu from "components/sprites/renderSpriteFrameContextMenu";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { useCallback } from "react";

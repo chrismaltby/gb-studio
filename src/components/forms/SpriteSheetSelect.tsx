@@ -12,7 +12,7 @@ import {
   SelectCommonProps,
   FormatFolderLabel,
 } from "ui/form/Select";
-import SpriteSheetCanvas from "components/world/SpriteSheetCanvas";
+import SpriteSheetCanvas from "components/rendering/SpriteSheetCanvas";
 import { SingleValue } from "react-select";
 import { ActorDirection, SpriteModeSetting } from "shared/lib/resources/types";
 

@@ -6,9 +6,9 @@ import React, {
   useState,
 } from "react";
 import throttle from "lodash/throttle";
-import SceneView from "./SceneView";
+import SceneView from "./entities/scenes/SceneView";
 import WorldHelp from "./WorldHelp";
-import Connections from "./Connections";
+import Connections from "./connections/Connections";
 import {
   MIDDLE_MOUSE,
   TOOL_COLORS,
@@ -38,8 +38,8 @@ import {
 } from "store/hooks";
 import { Selection } from "ui/document/Selection";
 import useResizeObserver from "ui/hooks/use-resize-observer";
-import NoteView from "components/world/NoteView";
-import renderWorldContextMenu from "components/world/renderWorldContextMenu";
+import NoteView from "components/world/entities/notes/NoteView";
+import renderWorldContextMenu from "components/world/contextMenus/renderWorldContextMenu";
 import { useContextMenu } from "ui/hooks/use-context-menu";
 
 const MOUSE_ZOOM_SPEED = 0.5;
