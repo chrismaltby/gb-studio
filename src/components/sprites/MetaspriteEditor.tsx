@@ -23,7 +23,7 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { MetaspriteCanvas } from "components/rendering/MetaspriteCanvas";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { Selection } from "ui/document/Selection";
-import renderMetaspriteTileContextMenu from "components/sprites/renderMetaspriteTileContextMenu";
+import renderMetaspriteTileContextMenu from "components/sprites/contextMenus/renderMetaspriteTileContextMenu";
 import {
   MetaspriteTile,
   MonoOBJPalette,

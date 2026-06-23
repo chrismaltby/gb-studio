@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled, { css } from "styled-components";
 import { MetaspriteCanvas } from "components/rendering/MetaspriteCanvas";
-import renderSpriteFrameContextMenu from "components/sprites/renderSpriteFrameContextMenu";
+import renderSpriteFrameContextMenu from "components/sprites/contextMenus/renderSpriteFrameContextMenu";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { useCallback } from "react";
 import { pasteAny } from "store/features/clipboard/clipboardHelpers";
