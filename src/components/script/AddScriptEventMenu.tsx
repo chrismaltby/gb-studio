@@ -666,7 +666,8 @@ const AddScriptEventMenu = ({
       (
         (firstLoad.current ? favoritesCache : favoriteEvents)
           .map((id: string) => scriptEventDefs[id])
-          .filter(identity) as ScriptEventDef[]
+          .filter(identity)
+          .filter(notDeprecated) as ScriptEventDef[]
       )
         .map(eventToOption(favoriteEvents))
         .sort(sortAlphabeticallyByLabel)
