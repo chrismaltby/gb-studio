@@ -6,7 +6,7 @@ import trackerDocumentActions from "store/features/trackerDocument/trackerDocume
 export type NavigationSection =
   | "world"
   | "sprites"
-  | "backgrounds"
+  | "images"
   | "music"
   | "sounds"
   | "palettes"

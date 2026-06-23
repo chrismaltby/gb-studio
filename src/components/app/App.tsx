@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import GlobalError from "components/error/GlobalError";
 import AppToolbar from "./AppToolbar";
-import BackgroundsPage from "components/pages/BackgroundsPage";
+import ImagesPage from "components/pages/ImagesPage";
 import SpritesPage from "components/pages/SpritesPage";
 import DialoguePage from "components/pages/DialoguePage";
 import WorldPage from "components/pages/WorldPage";
@@ -107,7 +107,7 @@ const App = () => {
       ) : (
         <AppContent>
           {section === "world" && <WorldPage />}
-          {section === "backgrounds" && <BackgroundsPage />}
+          {section === "images" && <ImagesPage />}
           {section === "sprites" && <SpritesPage />}
           {section === "music" && <MusicPage />}
           {section === "sounds" && <SoundsPage />}

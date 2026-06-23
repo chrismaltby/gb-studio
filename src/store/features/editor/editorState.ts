@@ -1259,7 +1259,7 @@ export const getZoomForSection = createSelector(
     if (section === "sprites") {
       return state.zoomSprite;
     }
-    if (section === "backgrounds") {
+    if (section === "images") {
       return state.zoomImage;
     }
     return 100;

@@ -24,7 +24,7 @@ import { Button } from "ui/buttons/Button";
 import { SearchIcon } from "ui/icons/Icons";
 import { BackgroundAsset, TilesetAsset } from "shared/lib/resources/types";
 
-interface NavigatorBackgroundsProps {
+interface ImageNavigatorProps {
   height: number;
   selectedId: string;
 }
@@ -35,10 +35,7 @@ const Pane = styled.div`
 
 const COLLAPSED_SIZE = 30;
 
-export const NavigatorBackgrounds = ({
-  height,
-  selectedId,
-}: NavigatorBackgroundsProps) => {
+export const ImageNavigator = ({ height, selectedId }: ImageNavigatorProps) => {
   const allBackgrounds = useAppSelector((state) =>
     backgroundSelectors.selectAll(state),
   );

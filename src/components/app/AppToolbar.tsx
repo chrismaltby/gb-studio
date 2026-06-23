@@ -51,7 +51,7 @@ import { SongContextBar } from "components/music/toolbar/SongContextBar";
 const sectionAccelerators = {
   world: "CommandOrControl+1",
   sprites: "CommandOrControl+2",
-  backgrounds: "CommandOrControl+3",
+  images: "CommandOrControl+3",
   music: "CommandOrControl+4",
   sounds: "CommandOrControl+5",
   palettes: "CommandOrControl+6",
@@ -97,7 +97,7 @@ const AppToolbar: FC = () => {
     () => ({
       world: l10n("NAV_GAME_WORLD"),
       sprites: l10n("NAV_SPRITES"),
-      backgrounds: l10n("NAV_IMAGES"),
+      images: l10n("NAV_IMAGES"),
       music: l10n("NAV_MUSIC"),
       sounds: l10n("NAV_SFX"),
       palettes: l10n("NAV_PALETTES"),

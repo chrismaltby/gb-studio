@@ -9,7 +9,7 @@ import {
   backgroundSelectors,
   tilesetSelectors,
 } from "store/features/entities/entitiesSelectors";
-import { NavigatorBackgrounds } from "components/backgrounds/NavigatorBackgrounds";
+import { ImageNavigator } from "components/images/ImageNavigator";
 import BackgroundViewer from "components/backgrounds/BackgroundViewer";
 import BackgroundPreviewSettings from "components/backgrounds/BackgroundPreviewSettings";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -108,7 +108,7 @@ const ImagesPage = () => {
             height: "100%",
           }}
         >
-          <NavigatorBackgrounds
+          <ImageNavigator
             height={windowHeight - 38}
             selectedId={selectedId || background?.id || ""}
           />

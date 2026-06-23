@@ -407,7 +407,7 @@ test("Should fetch correct zoom level for sections", () => {
   } as RootState;
   expect(getZoomForSection(state, "world")).toBe(300);
   expect(getZoomForSection(state, "sprites")).toBe(400);
-  expect(getZoomForSection(state, "backgrounds")).toBe(500);
+  expect(getZoomForSection(state, "images")).toBe(500);
   expect(getZoomForSection(state, "settings")).toBe(100);
 });
 
