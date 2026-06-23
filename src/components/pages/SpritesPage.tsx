@@ -15,7 +15,7 @@ import {
   SplitPaneVerticalDivider,
 } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
-import { SpriteEditor } from "components/sprites/SpriteEditor";
+import { SpriteInspector } from "components/sprites/inspector/SpriteInspector";
 import {
   spriteAnimationSelectors,
   spriteSheetSelectors,
@@ -486,7 +486,7 @@ const SpritesPage = () => {
           position: "relative",
         }}
       >
-        <SpriteEditor
+        <SpriteInspector
           id={viewSpriteId}
           metaspriteId={selectedMetaspriteId}
           spriteStateId={selectedStateId}

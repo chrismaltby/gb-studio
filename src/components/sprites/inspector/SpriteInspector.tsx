@@ -69,19 +69,19 @@ import { TILE_SIZE } from "consts";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
 import { NoteField } from "ui/form/NoteField";
 
-interface SpriteEditorProps {
+interface SpriteInspectorProps {
   id: string;
   metaspriteId: string;
   spriteStateId: string;
   animationId: string;
 }
 
-export const SpriteEditor = ({
+export const SpriteInspector = ({
   id,
   metaspriteId,
   animationId,
   spriteStateId,
-}: SpriteEditorProps) => {
+}: SpriteInspectorProps) => {
   const colorsEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono",
   );
