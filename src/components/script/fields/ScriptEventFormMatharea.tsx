@@ -7,7 +7,7 @@ import {
   variableSelectors,
 } from "store/features/entities/entitiesSelectors";
 import { NamedVariable, namedVariablesByContext } from "renderer/lib/variables";
-import { ScriptEditorContext } from "./ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import { Constant } from "shared/lib/resources/types";
 import { constantName } from "shared/lib/entities/entitiesHelpers";
 

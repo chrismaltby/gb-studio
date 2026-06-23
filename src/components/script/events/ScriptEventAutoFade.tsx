@@ -20,7 +20,7 @@ import {
   useAppSelector,
   useAppSelectorPick,
 } from "store/hooks";
-import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 
 export const ScriptEventAutoFade = () => {
   const dispatch = useAppDispatch();

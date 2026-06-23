@@ -8,11 +8,11 @@ import {
 } from "shared/lib/entities/entitiesTypes";
 import { LockIcon, LockOpenIcon } from "ui/icons/Icons";
 import { CheckboxField } from "ui/form/CheckboxField";
-import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
+import ScriptEditorDropdownButton from "components/script/menus/ScriptEditorDropdownButton";
 import ScriptEditor from "components/script/ScriptEditor";
 import { StickyTabs, TabBar, TabSettings } from "ui/tabs/Tabs";
 import { Button } from "ui/buttons/Button";
-import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
 import { castEventToBool } from "renderer/lib/helpers/castEventValue";
 import { useAppDispatch, useAppSelector } from "store/hooks";

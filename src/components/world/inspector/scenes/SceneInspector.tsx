@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import ScriptEditor from "components/script/ScriptEditor";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { WorldInspector } from "components/world/inspector/WorldInspector";
-import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
+import ScriptEditorDropdownButton from "components/script/menus/ScriptEditorDropdownButton";
 import BackgroundWarnings from "components/world/BackgroundWarnings";
 import {
   backgroundSelectors,
@@ -64,11 +64,11 @@ import {
   ClipboardTypeScenes,
 } from "store/features/clipboard/clipboardTypes";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
-import { ScriptEventAutoFadeDisabledWarning } from "components/script/ScriptEventAutoFade";
+import { ScriptEventAutoFadeDisabledWarning } from "components/script/events/ScriptEventAutoFade";
 import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor";
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
-import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import { Alert, AlertItem } from "ui/alerts/Alert";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";

@@ -14,7 +14,7 @@ import {
   ensureNumber,
   ensureString,
 } from "shared/types";
-import { DialoguePreview } from "components/script/DialoguePreview";
+import { DialoguePreview } from "components/script/previews/DialoguePreview";
 import { Constant } from "shared/lib/resources/types";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 

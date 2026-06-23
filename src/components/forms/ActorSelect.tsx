@@ -22,7 +22,7 @@ import {
 } from "store/features/entities/entitiesSelectors";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
 import SpriteSheetCanvas from "components/rendering/SpriteSheetCanvas";
-import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
 import {
   components,

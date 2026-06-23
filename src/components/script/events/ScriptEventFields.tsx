@@ -20,7 +20,7 @@ import {
   sceneSelectors,
   soundSelectors,
 } from "store/features/entities/entitiesSelectors";
-import { ScriptEditorContext } from "./ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { evaluateConditions } from "shared/lib/conditionsFilter";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";

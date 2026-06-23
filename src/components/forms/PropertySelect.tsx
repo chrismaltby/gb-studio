@@ -20,7 +20,7 @@ import l10n from "shared/lib/lang/l10n";
 import SpriteSheetCanvas from "components/rendering/SpriteSheetCanvas";
 import styled from "styled-components";
 import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
-import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import { components, SingleValue } from "react-select";
 import { CameraIcon } from "ui/icons/Icons";
 import { ActorDirection } from "shared/lib/resources/types";

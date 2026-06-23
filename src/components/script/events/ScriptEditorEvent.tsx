@@ -40,7 +40,7 @@ import ItemTypes from "renderer/lib/dnd/itemTypes";
 import { MenuOverlay } from "ui/menu/Menu";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { RelativePortal } from "ui/layout/RelativePortal";
-import AddScriptEventMenu from "./AddScriptEventMenu";
+import AddScriptEventMenu from "components/script/menus/AddScriptEventMenu";
 import ScriptEventTitle from "./ScriptEventTitle";
 import useOnScreen from "ui/hooks/use-on-screen";
 import { ScriptEventSymbolsEditor } from "components/forms/symbols/ScriptEventSymbolsEditor";
@@ -48,10 +48,10 @@ import { ScriptEventSymbolEditorWrapper } from "components/forms/symbols/SymbolE
 import { EVENT_COMMENT, EVENT_END } from "consts";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import { getSettings } from "store/features/settings/settingsState";
-import renderScriptEventContextMenu from "components/script/renderScriptEventContextMenu";
-import { ScriptEventChildren } from "components/script/ScriptEventChildren";
+import renderScriptEventContextMenu from "components/script/contextMenus/renderScriptEventContextMenu";
+import { ScriptEventChildren } from "components/script/events/ScriptEventChildren";
 import { Identifier } from "dnd-core";
 import { useContextMenu } from "ui/hooks/use-context-menu";
 

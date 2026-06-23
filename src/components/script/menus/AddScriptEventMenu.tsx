@@ -33,7 +33,7 @@ import {
   fontSelectors,
 } from "store/features/entities/entitiesSelectors";
 import { useDebounce } from "ui/hooks/use-debounce";
-import { ScriptEditorContext } from "./ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
 import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_TEXT } from "consts";
 import { selectScriptEventDefsWithPresets } from "store/features/scriptEventDefs/scriptEventDefsState";

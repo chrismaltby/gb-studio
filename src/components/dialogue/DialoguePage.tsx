@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import l10n from "shared/lib/lang/l10n";
-import DialogueReviewScene from "components/script/DialogueReviewScene";
+import DialogueReviewScene from "components/dialogue/DialogueReviewScene";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -16,7 +16,7 @@ import {
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
 import { EVENT_TEXT } from "consts";
-import { DialogueLine } from "components/script/DialogueReviewLine";
+import { DialogueLine } from "components/dialogue/DialogueReviewLine";
 import styled from "styled-components";
 import { PageHeader } from "ui/layout/PageHeader";
 import {

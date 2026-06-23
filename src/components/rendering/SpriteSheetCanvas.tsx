@@ -7,7 +7,7 @@ import {
   spriteStateSelectors,
 } from "store/features/entities/entitiesSelectors";
 import { MetaspriteCanvas } from "components/rendering/MetaspriteCanvas";
-import { SceneContext } from "components/script/SceneContext";
+import { SceneContext } from "components/script/context/SceneContext";
 import {
   ActorDirection,
   MonoOBJPalette,

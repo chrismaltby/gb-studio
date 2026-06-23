@@ -5,12 +5,12 @@ import {
   scriptEventSelectors,
 } from "store/features/entities/entitiesSelectors";
 import styled from "styled-components";
-import AddButton from "./AddButton";
-import ScriptEditorEvent from "./ScriptEditorEvent";
-import { ScriptEventAutoFade } from "./ScriptEventAutoFade";
+import AddButton from "./menus/AddButton";
+import ScriptEditorEvent from "./events/ScriptEditorEvent";
+import { ScriptEventAutoFade } from "./events/ScriptEventAutoFade";
 import { calculateAutoFadeEventIdNormalized } from "shared/lib/scripts/eventHelpers";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
-import { ScriptEditorContext } from "components/script/ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 
 interface ScriptEditorProps {
   value: string[];

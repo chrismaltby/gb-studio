@@ -1,5 +1,5 @@
-import AddButton from "components/script/AddButton";
-import ScriptEditorEvent from "components/script/ScriptEditorEvent";
+import AddButton from "components/script/menus/AddButton";
+import ScriptEditorEvent from "./ScriptEditorEvent";
 import React, { useRef } from "react";
 import { ScriptEditorChildren } from "ui/scripting/ScriptEvents";
 import useOnScreen from "ui/hooks/use-on-screen";

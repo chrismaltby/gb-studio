@@ -15,7 +15,7 @@ import {
 } from "shared/lib/entities/entitiesTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { MinusIcon, PlusIcon } from "ui/icons/Icons";
-import ScriptEventFormInput from "./ScriptEventFormInput";
+import ScriptEventFormInput from "components/script/fields/ScriptEventFormInput";
 import {
   FormField,
   FormFieldProps,
@@ -35,7 +35,7 @@ import {
   actorSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesSelectors";
-import { ScriptEditorContext } from "./ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import { ScriptEventUserPresets } from "./ScriptEventUserPresets";
 import throttle from "lodash/throttle";
 import isEqual from "lodash/isEqual";

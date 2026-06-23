@@ -58,7 +58,7 @@ import {
 } from "ui/icons/Icons";
 import { MenuItem } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
-import { ScriptEditorContext } from "./ScriptEditorContext";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";

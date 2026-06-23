@@ -32,7 +32,7 @@ import { assetURL } from "shared/lib/helpers/assets";
 import AutoColorizedImage from "components/rendering/AutoColorizedImage";
 import renderSceneContextMenu from "components/world/contextMenus/renderSceneContextMenu";
 import SceneScrollBounds from "./SceneScrollBounds";
-import { SceneContext } from "components/script/SceneContext";
+import { SceneContext } from "components/script/context/SceneContext";
 import { WarningIcon } from "ui/icons/Icons";
 import { useEnabledSceneTypeIds } from "store/features/engine/hooks/useEnabledSceneTypeIds";
 import SceneScreenGrid from "components/world/entities/scenes/SceneScreenGrid";
