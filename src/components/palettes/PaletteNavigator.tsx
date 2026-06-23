@@ -29,7 +29,7 @@ import { getParentPath } from "shared/lib/helpers/virtualFilesystem";
 import { FlatListOuterDropTarget } from "ui/lists/FlatListOuterDropTarget";
 import { FlatListOuterDropProvider } from "ui/lists/FlatListOuterDropContext";
 
-interface NavigatorPalettesProps {
+interface PaletteNavigatorProps {
   height: number;
   selectedId: string;
 }
@@ -55,10 +55,10 @@ const Pane = styled.div`
   overflow: hidden;
 `;
 
-export const NavigatorPalettes = ({
+export const PaletteNavigator = ({
   height,
   selectedId,
-}: NavigatorPalettesProps) => {
+}: PaletteNavigatorProps) => {
   const allPalettes = useAppSelector((state) =>
     paletteSelectors.selectAll(state),
   );

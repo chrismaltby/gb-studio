@@ -15,7 +15,7 @@ import { paletteSelectors } from "store/features/entities/entitiesSelectors";
 import l10n from "shared/lib/lang/l10n";
 import { Button } from "ui/buttons/Button";
 import CustomPalettePicker from "components/forms/CustomPalettePicker";
-import { NavigatorPalettes } from "components/palettes/NavigatorPalettes";
+import { PaletteNavigator } from "components/palettes/PaletteNavigator";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { IMEInput } from "ui/form/IMEInput";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -201,7 +201,7 @@ const PalettePage = () => {
         }}
       >
         <SidebarContent>
-          <NavigatorPalettes
+          <PaletteNavigator
             height={windowHeight - 38}
             selectedId={selectedId}
           />
