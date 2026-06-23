@@ -17,7 +17,7 @@ import { assetPath } from "shared/lib/helpers/assets";
 import settingsActions from "store/features/settings/settingsActions";
 import { PillButton } from "ui/buttons/PillButton";
 
-interface BackgroundPreviewSettingsProps {
+interface ImageViewerSettingsProps {
   backgroundId: string;
 }
 
@@ -55,9 +55,7 @@ const ButtonCover = styled.div`
   height: 60px;
 `;
 
-const BackgroundPreviewSettings = ({
-  backgroundId,
-}: BackgroundPreviewSettingsProps) => {
+const ImageViewerSettings = ({ backgroundId }: ImageViewerSettingsProps) => {
   const dispatch = useAppDispatch();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -226,4 +224,4 @@ const BackgroundPreviewSettings = ({
   );
 };
 
-export default BackgroundPreviewSettings;
+export default ImageViewerSettings;

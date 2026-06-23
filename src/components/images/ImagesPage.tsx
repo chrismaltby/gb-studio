@@ -10,8 +10,8 @@ import {
   tilesetSelectors,
 } from "store/features/entities/entitiesSelectors";
 import { ImageNavigator } from "components/images/ImageNavigator";
-import BackgroundViewer from "components/backgrounds/BackgroundViewer";
-import BackgroundPreviewSettings from "components/backgrounds/BackgroundPreviewSettings";
+import ImageViewer from "components/images/ImageViewer";
+import ImageViewerSettings from "components/images/ImageViewerSettings";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 
 const Wrapper = styled.div`
@@ -129,8 +129,8 @@ const ImagesPage = () => {
         }}
       >
         <div style={{ flexGrow: 1, position: "relative" }}>
-          <BackgroundPreviewSettings backgroundId={background?.id || ""} />
-          <BackgroundViewer backgroundId={viewBackgroundId || ""} />
+          <ImageViewerSettings backgroundId={background?.id || ""} />
+          <ImageViewer backgroundId={viewBackgroundId || ""} />
         </div>
       </div>
     </Wrapper>

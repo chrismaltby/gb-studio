@@ -13,7 +13,7 @@ import { assetURL } from "shared/lib/helpers/assets";
 import AutoColorizedImage from "components/rendering/AutoColorizedImage";
 import { Palette } from "shared/lib/resources/types";
 
-interface MetaspriteEditorProps {
+interface ImageViewerProps {
   backgroundId: string;
 }
 
@@ -59,7 +59,7 @@ const emptyPalettes: Palette[] = [
   DMG_PALETTE,
 ] as Palette[];
 
-const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
+const ImageViewer = ({ backgroundId }: ImageViewerProps) => {
   const background = useAppSelector((state) =>
     backgroundSelectors.selectById(state, backgroundId),
   );
@@ -191,4 +191,4 @@ const BackgroundViewer = ({ backgroundId }: MetaspriteEditorProps) => {
   return <div />;
 };
 
-export default BackgroundViewer;
+export default ImageViewer;
