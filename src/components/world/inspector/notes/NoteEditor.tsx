@@ -10,7 +10,7 @@ import { Sidebar, SidebarColumn } from "ui/sidebars/Sidebar";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { defaultLocalisedNoteName } from "shared/lib/entities/entitiesHelpers";
-import { WorldEditor } from "./WorldEditor";
+import { WorldEditor } from "components/world/inspector/WorldEditor";
 import { FlexGrow } from "ui/spacing/Spacing";
 import { labelColorValues, Note } from "shared/lib/resources/types";
 import { NoteField } from "ui/form/NoteField";

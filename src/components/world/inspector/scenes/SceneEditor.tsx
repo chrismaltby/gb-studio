@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import ScriptEditor from "components/script/ScriptEditor";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
-import { WorldEditor } from "./WorldEditor";
+import { WorldEditor } from "components/world/inspector/WorldEditor";
 import ScriptEditorDropdownButton from "components/script/ScriptEditorDropdownButton";
 import BackgroundWarnings from "components/world/BackgroundWarnings";
 import {

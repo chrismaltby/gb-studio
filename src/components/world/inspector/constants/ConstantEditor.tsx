@@ -31,7 +31,7 @@ import { ConstantReference } from "components/forms/ReferencesSelect";
 import ConstantUsesWorker, {
   ConstantUse,
   ConstantUseResult,
-} from "./ConstantUses.worker";
+} from "components/world/inspector/constants/ConstantUses.worker";
 import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -44,7 +44,7 @@ import {
   SIGNED_16BIT_MAX,
   SIGNED_16BIT_MIN,
 } from "shared/lib/helpers/8bit";
-import { WorldEditor } from "./WorldEditor";
+import { WorldEditor } from "components/world/inspector/WorldEditor";
 import useWindowSize from "ui/hooks/use-window-size";
 
 export const worker = new ConstantUsesWorker();

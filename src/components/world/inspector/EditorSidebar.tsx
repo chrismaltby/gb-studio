@@ -1,15 +1,15 @@
 import React from "react";
 import { useAppSelector } from "store/hooks";
-import { TriggerEditor } from "./TriggerEditor";
-import { ActorEditor } from "./ActorEditor";
-import { SceneEditor } from "./SceneEditor";
+import { TriggerEditor } from "./triggers/TriggerEditor";
+import { ActorEditor } from "./actors/ActorEditor";
+import { SceneEditor } from "components/world/inspector/scenes/SceneEditor";
 import { WorldEditor } from "./WorldEditor";
-import CustomEventEditor from "./CustomEventEditor";
-import { VariableEditor } from "./VariableEditor";
-import { ActorPrefabEditor } from "./ActorPrefabEditor";
-import { TriggerPrefabEditor } from "./TriggerPrefabEditor";
-import { ConstantEditor } from "./ConstantEditor";
-import { NoteEditor } from "components/editors/NoteEditor";
+import CustomEventEditor from "components/world/inspector/scripts/CustomEventEditor";
+import { VariableEditor } from "./variables/VariableEditor";
+import { ActorPrefabEditor } from "./prefabs/ActorPrefabEditor";
+import { TriggerPrefabEditor } from "./prefabs/TriggerPrefabEditor";
+import { ConstantEditor } from "./constants/ConstantEditor";
+import { NoteEditor } from "components/world/inspector/notes/NoteEditor";
 
 const EditorSidebar = () => {
   const type = useAppSelector((state) => state.editor.type);

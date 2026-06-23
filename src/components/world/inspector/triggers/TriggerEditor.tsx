@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import { WorldEditor } from "./WorldEditor";
+import { WorldEditor } from "components/world/inspector/WorldEditor";
 import {
   triggerSelectors,
   sceneSelectors,
@@ -29,8 +29,8 @@ import { triggerName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import CachedScroll from "ui/util/CachedScroll";
-import { TriggerPrefabEditorScripts } from "./prefab/TriggerPrefabEditorScripts";
-import { TriggerEditorScripts } from "./trigger/TriggerEditorScripts";
+import { TriggerPrefabEditorScripts } from "components/world/inspector/prefabs/TriggerPrefabEditorScripts";
+import { TriggerEditorScripts } from "./TriggerEditorScripts";
 import { PrefabHeader } from "ui/form/headers/PrefabHeader";
 import { CaretRightIcon } from "ui/icons/Icons";
 import { FlexGrow } from "ui/spacing/Spacing";
