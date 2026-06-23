@@ -39,8 +39,8 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import SplitPaneVerticalContainer, {
   SplitPaneLayout,
 } from "ui/splitpane/SplitPaneVerticalContainer";
-import { NavigatorSpritesAnimationsPane } from "components/sprites/navigator/NavigatorSpritesAnimationsPane";
-import { NavigatorSpritesPane } from "components/sprites/navigator/NavigatorSpritesPane";
+import { SpriteAnimationNavigatorPane } from "components/sprites/navigator/SpriteAnimationNavigatorPane";
+import { SpriteNavigatorPane } from "components/sprites/navigator/SpriteNavigatorPane";
 
 const Wrapper = styled.div`
   display: flex;
@@ -366,9 +366,9 @@ const SpritesPage = () => {
             height={windowHeight - 38}
             defaultLayout={defaultPaneLayout}
           >
-            <NavigatorSpritesPane viewSpriteId={viewSpriteId} />
+            <SpriteNavigatorPane viewSpriteId={viewSpriteId} />
             {selectedSprite && (
-              <NavigatorSpritesAnimationsPane viewSpriteId={viewSpriteId} />
+              <SpriteAnimationNavigatorPane viewSpriteId={viewSpriteId} />
             )}
           </SplitPaneVerticalContainer>
         </div>

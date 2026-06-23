@@ -36,15 +36,15 @@ const SpriteModeLabel = styled.span`
 
 const COLLAPSED_SIZE = 30;
 
-interface NavigatorSpritesPaneProps extends SplitPaneChildProps {
+interface SpriteNavigatorPaneProps extends SplitPaneChildProps {
   viewSpriteId: string;
 }
 
-export const NavigatorSpritesPane = ({
+export const SpriteNavigatorPane = ({
   viewSpriteId,
   height,
   onToggle,
-}: NavigatorSpritesPaneProps) => {
+}: SpriteNavigatorPaneProps) => {
   const dispatch = useAppDispatch();
 
   const selectedId = useAppSelector(

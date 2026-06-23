@@ -84,15 +84,15 @@ const animationTypeIcons: Record<AnimationType, ReactNode> = {
 
 const EMPTY_STATE_IDS: string[] = [];
 
-interface NavigatorSpritesAnimationsPaneProps extends SplitPaneChildProps {
+interface SpriteAnimationNavigatorPaneProps extends SplitPaneChildProps {
   viewSpriteId: string;
 }
 
-export const NavigatorSpritesAnimationsPane = ({
+export const SpriteAnimationNavigatorPane = ({
   viewSpriteId,
   height,
   onToggle,
-}: NavigatorSpritesAnimationsPaneProps) => {
+}: SpriteAnimationNavigatorPaneProps) => {
   const navigationStateId = useAppSelector(
     (state) => state.editor.selectedSpriteStateId,
   );
