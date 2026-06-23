@@ -16,17 +16,20 @@ const WorldInspectorSidebar = () => {
   const entityId = useAppSelector((state) => state.editor.entityId);
   const sceneId = useAppSelector((state) => state.editor.scene);
 
-  if (type === "trigger") {
-    return <TriggerInspector key={entityId} id={entityId} sceneId={sceneId} />;
-  }
-  if (type === "actor") {
-    return <ActorInspector key={entityId} id={entityId} sceneId={sceneId} />;
+  if (type === "world") {
+    return <WorldInspector />;
   }
   if (type === "scene") {
     return <SceneInspector key={sceneId} id={sceneId} />;
   }
-  if (type === "world") {
-    return <WorldInspector />;
+  if (type === "note") {
+    return <NoteInspector id={entityId} />;
+  }
+  if (type === "actor") {
+    return <ActorInspector key={entityId} id={entityId} sceneId={sceneId} />;
+  }
+  if (type === "trigger") {
+    return <TriggerInspector key={entityId} id={entityId} sceneId={sceneId} />;
   }
   if (type === "actorPrefab") {
     return <ActorPrefabInspector key={entityId} id={entityId} />;
@@ -42,9 +45,6 @@ const WorldInspectorSidebar = () => {
   }
   if (type === "constant") {
     return <ConstantInspector id={entityId} />;
-  }
-  if (type === "note") {
-    return <NoteInspector id={entityId} />;
   }
   return <div />;
 };
