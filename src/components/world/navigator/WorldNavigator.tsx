@@ -7,18 +7,18 @@ import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { NavigatorScenes } from "./NavigatorScenes";
-import { NavigatorCustomEvents } from "./NavigatorCustomEvents";
+import { SceneNavigatorPane } from "./SceneNavigatorPane";
+import { CustomEventNavigatorPane } from "./CustomEventNavigatorPane";
 import { Button } from "ui/buttons/Button";
 import { PlusIcon, SearchIcon } from "ui/icons/Icons";
-import { NavigatorVariables } from "./NavigatorVariables";
+import { VariableNavigatorPane } from "./VariableNavigatorPane";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { EntityListSearch } from "ui/lists/EntityListItem";
 import { FixedSpacer } from "ui/spacing/Spacing";
-import { NavigatorPrefabs } from "./NavigatorPrefabs";
+import { PrefabNavigatorPane } from "./PrefabNavigatorPane";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuItem } from "ui/menu/Menu";
-import { NavigatorConstants } from "./NavigatorConstants";
+import { ConstantNavigatorPane } from "./ConstantNavigatorPane";
 import { defaultProjectSettings } from "consts";
 
 const COLLAPSED_SIZE = 30;
@@ -38,7 +38,7 @@ const Pane = styled.div`
   overflow: hidden;
 `;
 
-export const Navigator = () => {
+export const WorldNavigator = () => {
   const storedSplitSizes = useAppSelector(
     (state) => state.editor.navigatorSplitSizes,
   );
@@ -224,7 +224,7 @@ export const Navigator = () => {
             autoFocus
           />
         )}
-        <NavigatorScenes
+        <SceneNavigatorPane
           height={splitSizes[SCENES_PANE] - (showScenesSearch ? 60 : 30)}
           searchTerm={scenesSearchTerm}
         />
@@ -271,7 +271,7 @@ export const Navigator = () => {
             autoFocus
           />
         )}
-        <NavigatorPrefabs
+        <PrefabNavigatorPane
           height={splitSizes[PREFABS_PANE] - (showPrefabsSearch ? 60 : 30)}
           searchTerm={prefabsSearchTerm}
         />
@@ -314,7 +314,7 @@ export const Navigator = () => {
             autoFocus
           />
         )}
-        <NavigatorCustomEvents
+        <CustomEventNavigatorPane
           height={splitSizes[SCRIPTS_PANE] - (showScriptsSearch ? 60 : 30)}
           searchTerm={scriptsSearchTerm}
         />
@@ -358,7 +358,7 @@ export const Navigator = () => {
             autoFocus
           />
         )}
-        <NavigatorConstants
+        <ConstantNavigatorPane
           height={splitSizes[CONSTANTS_PANE] - (showConstantsSearch ? 60 : 30)}
           searchTerm={constantsSearchTerm}
         />
@@ -392,7 +392,7 @@ export const Navigator = () => {
             autoFocus
           />
         )}
-        <NavigatorVariables
+        <VariableNavigatorPane
           height={splitSizes[VARIABLES_PANE] - (showVariablesSearch ? 60 : 30)}
           searchTerm={variablesSearchTerm}
         />

@@ -11,7 +11,7 @@ import {
   SplitPaneHorizontalDivider,
   SplitPaneVerticalDivider,
 } from "ui/splitpane/SplitPaneDivider";
-import { Navigator } from "components/world/navigator/Navigator";
+import { WorldNavigator } from "components/world/navigator/WorldNavigator";
 import editorActions from "store/features/editor/editorActions";
 import settingsActions from "store/features/settings/settingsActions";
 import debounce from "lodash/debounce";
@@ -233,7 +233,7 @@ const WorldPage = () => {
             height: "100%",
           }}
         >
-          <Navigator />
+          <WorldNavigator />
         </div>
       </div>
       {showNavigator && (

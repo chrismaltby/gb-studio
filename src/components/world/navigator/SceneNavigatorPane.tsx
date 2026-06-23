@@ -1,5 +1,4 @@
 import React, {
-  FC,
   useCallback,
   useEffect,
   useMemo,
@@ -43,7 +42,7 @@ import { useFlatListReparentDnD } from "ui/hooks/use-flatlist-reparent-dnd";
 import { FlatListOuterDropProvider } from "ui/lists/FlatListOuterDropContext";
 import { FlatListOuterDropTarget } from "ui/lists/FlatListOuterDropTarget";
 
-interface NavigatorScenesProps {
+interface SceneNavigatorPaneProps {
   height: number;
   searchTerm: string;
 }
@@ -54,10 +53,10 @@ const StartSceneLabel = styled.div`
 
 const ACCEPT_TYPES = [ItemTypes.SCENE, ItemTypes.NOTE, ItemTypes.WORLD_FOLDER];
 
-export const NavigatorScenes: FC<NavigatorScenesProps> = ({
+export const SceneNavigatorPane = ({
   height,
   searchTerm,
-}) => {
+}: SceneNavigatorPaneProps) => {
   const scenes = useAppSelectorPickArray(sceneSelectors.selectAll, [
     "id",
     "name",

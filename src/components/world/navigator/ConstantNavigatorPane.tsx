@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { constantSelectors } from "store/features/entities/entitiesSelectors";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
@@ -22,7 +22,7 @@ import { useFlatListReparentDnD } from "ui/hooks/use-flatlist-reparent-dnd";
 import { assertUnreachable } from "shared/lib/helpers/assert";
 import { getParentPath } from "shared/lib/helpers/virtualFilesystem";
 
-interface NavigatorConstantsProps {
+interface ConstantNavigatorPaneProps {
   height: number;
   searchTerm: string;
 }
@@ -39,10 +39,10 @@ const ACCEPT_TYPES = [ItemTypes.CONSTANT, ItemTypes.CONSTANT_FOLDER];
 
 const isEngineConstantId = (id: string) => id.startsWith("engine::");
 
-export const NavigatorConstants: FC<NavigatorConstantsProps> = ({
+export const ConstantNavigatorPane = ({
   height,
   searchTerm,
-}) => {
+}: ConstantNavigatorPaneProps) => {
   const constants = useAppSelector(constantSelectors.selectAll);
   const constantsLookup = useAppSelector(constantSelectors.selectEntities);
   const engineConstantsLookup = useAppSelector((state) => state.engine.consts);

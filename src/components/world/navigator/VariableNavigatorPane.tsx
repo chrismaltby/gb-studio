@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { variableSelectors } from "store/features/entities/entitiesSelectors";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
@@ -11,7 +11,7 @@ import l10n from "shared/lib/lang/l10n";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Variable } from "shared/lib/resources/types";
 
-interface NavigatorVariablesProps {
+interface VariableNavigatorPaneProps {
   height: number;
   searchTerm: string;
 }
@@ -40,10 +40,10 @@ const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
   return collator.compare(a.name, b.name);
 };
 
-export const NavigatorVariables: FC<NavigatorVariablesProps> = ({
+export const VariableNavigatorPane = ({
   height,
   searchTerm,
-}) => {
+}: VariableNavigatorPaneProps) => {
   const [items, setItems] = useState<NavigatorItem[]>([]);
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state),

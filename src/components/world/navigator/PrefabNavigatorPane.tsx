@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -24,7 +24,7 @@ import {
 import { assertUnreachable } from "shared/lib/helpers/assert";
 import { useFlatListReparentDnD } from "ui/hooks/use-flatlist-reparent-dnd";
 
-interface NavigatorPrefabsProps {
+interface PrefabNavigatorPaneProps {
   height: number;
   searchTerm: string;
 }
@@ -64,10 +64,10 @@ const getPrefabCategory = (item: PrefabNavigatorItem): "actor" | "trigger" => {
   }
 };
 
-export const NavigatorPrefabs: FC<NavigatorPrefabsProps> = ({
+export const PrefabNavigatorPane = ({
   height,
   searchTerm,
-}) => {
+}: PrefabNavigatorPaneProps) => {
   const allActorPrefabs = useAppSelector(actorPrefabSelectors.selectAll);
   const allTriggerPrefabs = useAppSelector(triggerPrefabSelectors.selectAll);
   const actorPrefabsLookup = useAppSelector(
