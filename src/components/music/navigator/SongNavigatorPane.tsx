@@ -27,7 +27,7 @@ import trackerActions from "store/features/tracker/trackerActions";
 
 const COLLAPSED_SIZE = 30;
 
-interface NavigatorSongsPaneProps extends SplitPaneChildProps {
+interface SongNavigatorPaneProps extends SplitPaneChildProps {
   modified: boolean;
   selectedSongId: string;
   onCreateSong?: () => void;
@@ -40,7 +40,7 @@ interface NavigatorItem {
   name: string;
 }
 
-export const NavigatorSongsPane = ({
+export const SongNavigatorPane = ({
   height,
   onToggle,
   ensureMinHeight,
@@ -49,7 +49,7 @@ export const NavigatorSongsPane = ({
   onSelectSong,
   onCreateSong,
   onImportSong,
-}: NavigatorSongsPaneProps) => {
+}: SongNavigatorPaneProps) => {
   const dispatch = useAppDispatch();
 
   const [addSongMode, setAddSongMode] = useState(false);

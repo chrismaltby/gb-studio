@@ -7,7 +7,7 @@ import { ChannelsView } from "components/music/navigator/ChannelsView";
 
 const COLLAPSED_SIZE = 30;
 
-export const NavigatorChannelsPane = ({
+export const ChannelNavigatorPane = ({
   height,
   onToggle,
 }: SplitPaneChildProps) => {

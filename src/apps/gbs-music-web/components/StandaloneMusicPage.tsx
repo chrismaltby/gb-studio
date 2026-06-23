@@ -22,12 +22,12 @@ import trackerActions from "store/features/tracker/trackerActions";
 import { sortByFilename } from "shared/lib/entities/entitiesHelpers";
 import { musicSelectors } from "store/features/entities/entitiesSelectors";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { NavigatorInstrumentsPane } from "components/music/navigator/NavigatorInstrumentsPane";
-import { NavigatorSongsPane } from "components/music/navigator/NavigatorSongsPane";
+import { InstrumentNavigatorPane } from "components/music/navigator/InstrumentNavigatorPane";
+import { SongNavigatorPane } from "components/music/navigator/SongNavigatorPane";
 import SplitPaneVerticalContainer, {
   SplitPaneLayout,
 } from "ui/splitpane/SplitPaneVerticalContainer";
-import { NavigatorChannelsPane } from "components/music/navigator/NavigatorChannelsPane";
+import { ChannelNavigatorPane } from "components/music/navigator/ChannelNavigatorPane";
 import SongDocument from "components/music/SongDocument";
 import { SequenceEditor } from "components/music/sequence/SequenceEditor";
 import l10n from "shared/lib/lang/l10n";
@@ -303,7 +303,7 @@ const StandaloneMusicPage = ({
 
   const songsPane = useMemo(
     () => (
-      <NavigatorSongsPane
+      <SongNavigatorPane
         modified={modified}
         selectedSongId={viewSongId}
         onCreateSong={onCreateSong}
@@ -349,8 +349,8 @@ const StandaloneMusicPage = ({
                 defaultLayout={defaultPaneLayout}
               >
                 {songsPane}
-                {viewSong?.type === "uge" ? <NavigatorChannelsPane /> : null}
-                {viewSong?.type === "uge" ? <NavigatorInstrumentsPane /> : null}
+                {viewSong?.type === "uge" ? <ChannelNavigatorPane /> : null}
+                {viewSong?.type === "uge" ? <InstrumentNavigatorPane /> : null}
               </SplitPaneVerticalContainer>
             </div>
           </div>

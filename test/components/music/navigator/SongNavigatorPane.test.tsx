@@ -4,7 +4,7 @@
 
 import React from "react";
 import { fireEvent, render, screen } from "../../../react-utils";
-import { NavigatorSongsPane } from "../../../../src/components/music/navigator/NavigatorSongsPane";
+import { SongNavigatorPane } from "../../../../src/components/music/navigator/SongNavigatorPane";
 
 const mockDispatch = jest.fn();
 const mockSetSelectedId = jest.fn();
@@ -144,7 +144,7 @@ jest.mock(
 
 jest.mock("../../../../src/shared/lib/lang/l10n", () => (key: string) => key);
 
-describe("NavigatorSongsPane", () => {
+describe("SongNavigatorPane", () => {
   beforeEach(() => {
     mockDispatch.mockReset();
     mockSetSelectedId.mockReset();
@@ -172,7 +172,7 @@ describe("NavigatorSongsPane", () => {
     const onSelectSong = jest.fn();
 
     render(
-      <NavigatorSongsPane
+      <SongNavigatorPane
         height={300}
         modified
         selectedSongId="song-1"
@@ -218,7 +218,7 @@ describe("NavigatorSongsPane", () => {
     );
 
     render(
-      <NavigatorSongsPane
+      <SongNavigatorPane
         height={300}
         modified={false}
         selectedSongId="song-1"

@@ -88,7 +88,7 @@ const isInstrumentListEqual = (
   return a.every((aItem, index) => aItem.name === b[index].name);
 };
 
-export const NavigatorInstrumentsPane = ({
+export const InstrumentNavigatorPane = ({
   height,
   onToggle,
 }: SplitPaneChildProps) => {

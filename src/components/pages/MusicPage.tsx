@@ -21,12 +21,12 @@ import ModViewer from "components/music/mod/ModViewer";
 import { clampSidebarWidth } from "renderer/lib/window/sidebar";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { sortByFilename } from "shared/lib/entities/entitiesHelpers";
-import { NavigatorInstrumentsPane } from "components/music/navigator/NavigatorInstrumentsPane";
-import { NavigatorSongsPane } from "components/music/navigator/NavigatorSongsPane";
+import { InstrumentNavigatorPane } from "components/music/navigator/InstrumentNavigatorPane";
+import { SongNavigatorPane } from "components/music/navigator/SongNavigatorPane";
 import SplitPaneVerticalContainer, {
   SplitPaneLayout,
 } from "ui/splitpane/SplitPaneVerticalContainer";
-import { NavigatorChannelsPane } from "components/music/navigator/NavigatorChannelsPane";
+import { ChannelNavigatorPane } from "components/music/navigator/ChannelNavigatorPane";
 import trackerActions from "store/features/tracker/trackerActions";
 import { loadSongFile } from "store/features/trackerDocument/trackerDocumentState";
 import { assetPath } from "shared/lib/helpers/assets";
@@ -230,7 +230,7 @@ const MusicPage = () => {
 
   const songsPane = useMemo(
     () => (
-      <NavigatorSongsPane
+      <SongNavigatorPane
         modified={modified}
         selectedSongId={selectedSongId || viewSongId}
       />
@@ -265,8 +265,8 @@ const MusicPage = () => {
                 defaultLayout={defaultPaneLayout}
               >
                 {songsPane}
-                {viewSong?.type === "uge" ? <NavigatorChannelsPane /> : null}
-                {viewSong?.type === "uge" ? <NavigatorInstrumentsPane /> : null}
+                {viewSong?.type === "uge" ? <ChannelNavigatorPane /> : null}
+                {viewSong?.type === "uge" ? <InstrumentNavigatorPane /> : null}
               </SplitPaneVerticalContainer>
             </div>
           </div>
