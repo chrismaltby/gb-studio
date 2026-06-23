@@ -369,7 +369,7 @@ const buildMenu = async ({
           label: l10n("MENU_IMAGES"),
           accelerator: "CommandOrControl+3",
           click: () => {
-            notifyListeners("section", "backgrounds");
+            notifyListeners("section", "images");
           },
         },
         {
