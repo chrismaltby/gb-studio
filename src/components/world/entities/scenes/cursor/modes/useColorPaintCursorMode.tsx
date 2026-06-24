@@ -1,16 +1,14 @@
 import React, { useMemo } from "react";
 import { TOOL_COLORS } from "consts";
 import { PaintIcon } from "ui/icons/Icons";
-import type {
-  SceneCursorMode,
-  SceneCursorModeContext,
-} from "./SceneCursorMode";
+import type { SceneCursorMode } from "./SceneCursorMode";
 import { paintCursorSize } from "./helpers";
+import { useAppSelector } from "store/hooks";
 
-export const useColorPaintCursorMode = ({
-  tool,
-  brush,
-}: SceneCursorModeContext): SceneCursorMode => {
+export const useColorPaintCursorMode = (): SceneCursorMode => {
+  const tool = useAppSelector((state) => state.editor.tool);
+  const brush = useAppSelector((state) => state.editor.selectedBrush);
+
   return useMemo(() => {
     const size = paintCursorSize(brush);
 

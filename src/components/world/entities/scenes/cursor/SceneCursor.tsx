@@ -44,10 +44,10 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     y,
     sceneId: hoverSceneId,
   } = useAppSelector((state) => state.editor.hover);
+
   const {
     tool,
     selectedBrush,
-    pasteMode,
     selectedTileType,
     selectedTileMask,
     selectedPalette,
@@ -58,39 +58,23 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     (state) => state.project.present.settings.showCollisions,
   );
 
-  const editorPrefabId = useAppSelector((state) => state.editor.prefabId);
-
   const cursorModeContext = useMemo(
     () => ({
       sceneId,
       hoverSceneId,
       x,
       y,
-      tool,
-      brush: selectedBrush,
-      pasteMode,
-      editorPrefabId,
     }),
-    [
-      editorPrefabId,
-      hoverSceneId,
-      pasteMode,
-      sceneId,
-      selectedBrush,
-      tool,
-      x,
-      y,
-    ],
+    [hoverSceneId, sceneId, x, y],
   );
 
   const actorPlacementCursorMode =
     useActorPlacementCursorMode(cursorModeContext);
   const triggerPlacementCursorMode =
     useTriggerPlacementCursorMode(cursorModeContext);
-  const collisionPaintCursorMode =
-    useCollisionPaintCursorMode(cursorModeContext);
-  const colorPaintCursorMode = useColorPaintCursorMode(cursorModeContext);
-  const eraserCursorMode = useEraserCursorMode(cursorModeContext);
+  const collisionPaintCursorMode = useCollisionPaintCursorMode();
+  const colorPaintCursorMode = useColorPaintCursorMode();
+  const eraserCursorMode = useEraserCursorMode();
   const defaultCursorMode = useDefaultCursorMode();
 
   const cursorModes = useMemo(

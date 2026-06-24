@@ -1,6 +1,5 @@
 import type React from "react";
 import { TILE_SIZE } from "consts";
-import type { Brush, Tool } from "store/features/editor/editorState";
 import type { SceneCursorViewModel } from "../SceneCursorView";
 
 export interface SceneCursorModeContext {
@@ -8,10 +7,6 @@ export interface SceneCursorModeContext {
   hoverSceneId: string;
   x: number;
   y: number;
-  tool: Tool;
-  brush: Brush;
-  pasteMode: boolean;
-  editorPrefabId?: string;
 }
 
 export type SceneCursorMouseDownHandler = (
