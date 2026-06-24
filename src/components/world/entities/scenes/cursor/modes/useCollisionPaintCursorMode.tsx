@@ -18,6 +18,7 @@ export const useCollisionPaintCursorMode = ({
       id: "collisionPaint",
       enabled: tool === TOOL_COLLISIONS,
       viewPriority: 10,
+      eventPriority: 0,
       view: {
         variant: "collisions",
         width: size,

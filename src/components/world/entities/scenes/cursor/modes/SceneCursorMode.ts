@@ -1,3 +1,4 @@
+import type React from "react";
 import { TILE_SIZE } from "consts";
 import type { Brush, Tool } from "store/features/editor/editorState";
 import type { SceneCursorViewModel } from "../SceneCursorView";
@@ -8,11 +9,23 @@ export interface SceneCursorModeContext {
   isResizingTrigger: boolean;
 }
 
+export type SceneCursorMouseDownHandler = (
+  e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+) => boolean;
+
+export type SceneCursorMouseMoveHandler = () => boolean;
+
+export type SceneCursorMouseUpHandler = () => boolean;
+
 export interface SceneCursorMode {
   id: string;
   enabled: boolean;
   viewPriority: number;
+  eventPriority: number;
   view?: SceneCursorViewModel;
+  onMouseDown?: SceneCursorMouseDownHandler;
+  onMouseMove?: SceneCursorMouseMoveHandler;
+  onMouseUp?: SceneCursorMouseUpHandler;
 }
 
 export const DEFAULT_SCENE_CURSOR_VIEW: SceneCursorViewModel = {
@@ -30,4 +43,16 @@ export const getSceneCursorView = (
       .sort((a, b) => b.viewPriority - a.viewPriority)[0]?.view ??
     DEFAULT_SCENE_CURSOR_VIEW
   );
+};
+
+export const getSceneCursorEventModes = (
+  modes: readonly SceneCursorMode[],
+): SceneCursorMode[] => {
+  return [...modes]
+    .filter(
+      (mode) =>
+        mode.enabled &&
+        (mode.onMouseDown || mode.onMouseMove || mode.onMouseUp),
+    )
+    .sort((a, b) => b.eventPriority - a.eventPriority);
 };

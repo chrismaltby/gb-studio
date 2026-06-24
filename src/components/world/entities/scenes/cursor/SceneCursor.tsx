@@ -25,7 +25,11 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import { calculateSlope } from "shared/lib/helpers/slope";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SceneCursorView } from "./SceneCursorView";
-import { getSceneCursorView } from "./modes/SceneCursorMode";
+import {
+  getSceneCursorEventModes,
+  getSceneCursorView,
+} from "./modes/SceneCursorMode";
+import type { SceneCursorMode } from "./modes/SceneCursorMode";
 import { useActorPlacementCursorMode } from "./modes/useActorPlacementCursorMode";
 import { useCollisionPaintCursorMode } from "./modes/useCollisionPaintCursorMode";
 import { useColorPaintCursorMode } from "./modes/useColorPaintCursorMode";
@@ -530,15 +534,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     data.current.isDrawingSlope = false;
   }, [dispatch, hoverSceneId, sceneId, tool, x, y]);
 
-  useEffect(() => {
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-    };
-  }, [onMouseMove, onMouseUp]);
-
   const onMouseDownActor = useCallback(() => {
     if (pasteMode) {
       dispatch(
@@ -991,6 +986,69 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     ],
   );
 
+  const legacyCursorEventMode = useMemo<SceneCursorMode>(
+    () => ({
+      id: "legacySceneCursorEvents",
+      enabled: true,
+      viewPriority: -1000,
+      eventPriority: -1000,
+      onMouseDown: (e) => {
+        onMouseDown(e);
+        return true;
+      },
+      onMouseMove: () => {
+        onMouseMove();
+        return true;
+      },
+      onMouseUp: () => {
+        onMouseUp();
+        return true;
+      },
+    }),
+    [onMouseDown, onMouseMove, onMouseUp],
+  );
+
+  const eventModes = useMemo(
+    () => getSceneCursorEventModes([...cursorModes, legacyCursorEventMode]),
+    [cursorModes, legacyCursorEventMode],
+  );
+
+  const onCursorMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      for (const mode of eventModes) {
+        if (mode.onMouseDown?.(e)) {
+          return;
+        }
+      }
+    },
+    [eventModes],
+  );
+
+  const onWindowMouseMove = useCallback(() => {
+    for (const mode of eventModes) {
+      if (mode.onMouseMove?.()) {
+        return;
+      }
+    }
+  }, [eventModes]);
+
+  const onWindowMouseUp = useCallback(() => {
+    for (const mode of eventModes) {
+      if (mode.onMouseUp?.()) {
+        return;
+      }
+    }
+  }, [eventModes]);
+
+  useEffect(() => {
+    window.addEventListener("mousemove", onWindowMouseMove);
+    window.addEventListener("mouseup", onWindowMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", onWindowMouseMove);
+      window.removeEventListener("mouseup", onWindowMouseUp);
+    };
+  }, [onWindowMouseMove, onWindowMouseUp]);
+
   if (!enabled) {
     return <div />;
   }
@@ -1001,7 +1059,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       y={y}
       view={cursorView}
       onMouseMove={onMouseMoveSlopeSelect}
-      onMouseDown={onMouseDown}
+      onMouseDown={onCursorMouseDown}
     />
   );
 };
