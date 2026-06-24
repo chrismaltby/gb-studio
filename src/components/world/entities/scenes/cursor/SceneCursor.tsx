@@ -72,11 +72,16 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
 
   const cursorModeContext = useMemo(
     () => ({
+      sceneId,
+      x,
+      y,
       tool,
       brush: selectedBrush,
       isResizingTrigger: resize,
+      pasteMode,
+      editorPrefabId,
     }),
-    [tool, selectedBrush, resize],
+    [editorPrefabId, pasteMode, resize, sceneId, selectedBrush, tool, x, y],
   );
 
   const actorPlacementCursorMode =
@@ -534,32 +539,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     data.current.isDrawingSlope = false;
   }, [dispatch, hoverSceneId, sceneId, tool, x, y]);
 
-  const onMouseDownActor = useCallback(() => {
-    if (pasteMode) {
-      dispatch(
-        clipboardActions.pasteActorAt({
-          sceneId,
-          x,
-          y,
-        }),
-      );
-    } else {
-      dispatch(
-        entitiesActions.addActor({
-          sceneId,
-          x,
-          y,
-          defaults: editorPrefabId
-            ? {
-                prefabId: editorPrefabId,
-              }
-            : undefined,
-        }),
-      );
-    }
-    dispatch(editorActions.setTool({ tool: "select" }));
-  }, [dispatch, editorPrefabId, pasteMode, sceneId, x, y]);
-
   const onMouseDownTrigger = useCallback(() => {
     if (pasteMode) {
       dispatch(
@@ -932,14 +911,16 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     y,
   ]);
 
-  const onMouseDown = useCallback(
+  const prepareCursorMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       if (!scene) {
-        return;
+        return false;
       }
+
       if (e.nativeEvent.which === MIDDLE_MOUSE) {
-        return;
+        return false;
       }
+
       if (!e.shiftKey) {
         data.current.drawLine = false;
       }
@@ -953,9 +934,14 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         dispatch(editorActions.editSearchTerm(""));
       }
 
-      if (tool === "actors") {
-        onMouseDownActor();
-      } else if (tool === "triggers") {
+      return true;
+    },
+    [dispatch, scene, sceneFiltered],
+  );
+
+  const onLegacyMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (tool === "triggers") {
         onMouseDownTrigger();
       } else if (tool === "collisions") {
         if (e.nativeEvent.which === 3) {
@@ -974,13 +960,10 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     },
     [
       dispatch,
-      onMouseDownActor,
       onMouseDownCollisions,
       onMouseDownColors,
       onMouseDownEraser,
       onMouseDownTrigger,
-      scene,
-      sceneFiltered,
       sceneId,
       tool,
     ],
@@ -993,7 +976,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       viewPriority: -1000,
       eventPriority: -1000,
       onMouseDown: (e) => {
-        onMouseDown(e);
+        onLegacyMouseDown(e);
         return true;
       },
       onMouseMove: () => {
@@ -1005,7 +988,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         return true;
       },
     }),
-    [onMouseDown, onMouseMove, onMouseUp],
+    [onLegacyMouseDown, onMouseMove, onMouseUp],
   );
 
   const eventModes = useMemo(
@@ -1015,13 +998,17 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
 
   const onCursorMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (!prepareCursorMouseDown(e)) {
+        return;
+      }
+
       for (const mode of eventModes) {
         if (mode.onMouseDown?.(e)) {
           return;
         }
       }
     },
-    [eventModes],
+    [eventModes, prepareCursorMouseDown],
   );
 
   const onWindowMouseMove = useCallback(() => {
