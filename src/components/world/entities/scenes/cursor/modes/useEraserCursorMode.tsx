@@ -19,7 +19,7 @@ import type {
   SceneCursorMouseMoveHandler,
   SceneCursorMouseUpHandler,
 } from "./SceneCursorMode";
-import { paintCursorSize } from "./helpers";
+import { paintCursorSize, resolveAxisLockedLine } from "./paintCursorHelpers";
 
 interface EraserState {
   lockX?: boolean;
@@ -133,7 +133,7 @@ export const useEraserCursorMode = ({
 
   const onMouseDown = useCallback<SceneCursorMouseDownHandler>(
     (e) => {
-      if (!enabled) {
+      if (!enabled || !e.isOverScene) {
         return false;
       }
 
@@ -223,25 +223,20 @@ export const useEraserCursorMode = ({
       }
 
       if (state.drawLine) {
-        let x1 = x;
-        let y1 = y;
+        const line = resolveAxisLockedLine(
+          state,
+          state.startX,
+          state.startY,
+          x,
+          y,
+        );
 
-        if (state.lockX) {
-          x1 = state.startX;
-        } else if (state.lockY) {
-          y1 = state.startY;
-        } else if (x !== state.startX) {
-          state.lockY = true;
-          y1 = state.startY;
-        } else if (y !== state.startY) {
-          state.lockX = true;
-          x1 = state.startX;
-        }
+        eraseCollisionLine(state.startX, state.startY, line.endX, line.endY);
 
-        eraseCollisionLine(state.startX, state.startY, x1, y1);
-
-        state.startX = x1;
-        state.startY = y1;
+        state.lockX = line.lockX;
+        state.lockY = line.lockY;
+        state.startX = line.endX;
+        state.startY = line.endY;
       } else {
         eraseCollisionLine(state.startX, state.startY, x, y);
 

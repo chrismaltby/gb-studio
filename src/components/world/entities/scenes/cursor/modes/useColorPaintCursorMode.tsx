@@ -16,7 +16,7 @@ import type {
   SceneCursorMouseMoveHandler,
   SceneCursorMouseUpHandler,
 } from "./SceneCursorMode";
-import { paintCursorSize } from "./helpers";
+import { paintCursorSize, resolveAxisLockedLine } from "./paintCursorHelpers";
 
 interface ColorPaintState {
   lockX?: boolean;
@@ -251,32 +251,27 @@ export const useColorPaintCursorMode = ({
       state.drawLine = e.raw.shiftKey;
 
       if (state.drawLine) {
-        let x1 = x;
-        let y1 = y;
-
-        if (state.lockX) {
-          x1 = state.startX;
-        } else if (state.lockY) {
-          y1 = state.startY;
-        } else if (x !== state.startX) {
-          state.lockY = true;
-          y1 = state.startY;
-        } else if (y !== state.startY) {
-          state.lockX = true;
-          x1 = state.startX;
-        }
+        const line = resolveAxisLockedLine(
+          state,
+          state.startX,
+          state.startY,
+          x,
+          y,
+        );
 
         paintColorLine(
           state.startX,
           state.startY,
-          x1,
-          y1,
+          line.endX,
+          line.endY,
           state.drawTile,
           state.isTileProp,
         );
 
-        state.startX = x1;
-        state.startY = y1;
+        state.lockX = line.lockX;
+        state.lockY = line.lockY;
+        state.startX = line.endX;
+        state.startY = line.endY;
       } else {
         paintColorLine(
           state.startX,
