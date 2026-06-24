@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   backgroundSelectors,
   sceneSelectors,
@@ -14,17 +20,100 @@ import {
   MIDDLE_MOUSE,
   TILE_COLOR_PROPS,
   BRUSH_SLOPE,
+  TILE_SIZE,
+  TOOL_ACTORS,
+  TOOL_COLLISIONS,
+  TOOL_COLORS,
+  TOOL_ERASER,
+  TOOL_TRIGGERS,
 } from "consts";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { calculateSlope } from "shared/lib/helpers/slope";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { SceneCursorView } from "./SceneCursorView";
+import { SceneCursorView, SceneCursorViewModel } from "./SceneCursorView";
+import { Tool, Brush } from "store/features/editor/editorState";
+import {
+  PlusIcon,
+  ResizeIcon,
+  CloseIcon,
+  BrickIcon,
+  PaintIcon,
+} from "ui/icons/Icons";
 
 interface SceneCursorProps {
   sceneId: string;
   sceneFiltered: boolean;
   enabled: boolean;
 }
+
+const sceneCursorView = ({
+  tool,
+  brush,
+  isResizingTrigger,
+}: {
+  tool: Tool;
+  brush: Brush;
+  isResizingTrigger: boolean;
+}): SceneCursorViewModel => {
+  const size =
+    (tool === TOOL_COLORS ||
+      tool === TOOL_COLLISIONS ||
+      tool === TOOL_ERASER) &&
+    brush === BRUSH_16PX
+      ? TILE_SIZE * 2
+      : TILE_SIZE;
+
+  if (tool === TOOL_ACTORS) {
+    return {
+      variant: "actors",
+      width: TILE_SIZE * 2,
+      height: TILE_SIZE,
+      bubble: <PlusIcon />,
+    };
+  }
+
+  if (tool === TOOL_TRIGGERS) {
+    return {
+      variant: "triggers",
+      width: size,
+      height: size,
+      bubble: isResizingTrigger ? <ResizeIcon /> : <PlusIcon />,
+    };
+  }
+
+  if (tool === TOOL_ERASER) {
+    return {
+      variant: "eraser",
+      width: size,
+      height: size,
+      bubble: <CloseIcon />,
+    };
+  }
+
+  if (tool === TOOL_COLLISIONS) {
+    return {
+      variant: "collisions",
+      width: size,
+      height: size,
+      bubble: <BrickIcon />,
+    };
+  }
+
+  if (tool === TOOL_COLORS) {
+    return {
+      variant: "colors",
+      width: size,
+      height: size,
+      bubble: <PaintIcon />,
+    };
+  }
+
+  return {
+    variant: "default",
+    width: size,
+    height: size,
+  };
+};
 
 const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   const dispatch = useAppDispatch();
@@ -934,17 +1023,25 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     ],
   );
 
+  const cursorView = useMemo(
+    () =>
+      sceneCursorView({
+        tool,
+        brush: selectedBrush,
+        isResizingTrigger: resize,
+      }),
+    [tool, selectedBrush, resize],
+  );
+
   if (!enabled) {
     return <div />;
   }
   return (
     <SceneCursorView
       ref={cursorRef}
-      tool={tool}
-      brush={selectedBrush}
       x={x}
       y={y}
-      isResizingTrigger={resize}
+      view={cursorView}
       onMouseMove={onMouseMoveSlopeSelect}
       onMouseDown={onMouseDown}
     />
