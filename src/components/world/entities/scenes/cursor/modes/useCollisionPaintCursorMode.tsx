@@ -42,9 +42,6 @@ interface CollisionPaintState {
 export const useCollisionPaintCursorMode = ({
   enabled,
   sceneId,
-  hoverSceneId,
-  x,
-  y,
   getCursorRect,
 }: SceneCursorModeContext): SceneCursorMode => {
   const dispatch = useAppDispatch();
@@ -53,7 +50,7 @@ export const useCollisionPaintCursorMode = ({
     useAppSelector((state) => state.editor);
 
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, hoverSceneId),
+    sceneSelectors.selectById(state, sceneId),
   );
 
   const backgroundId = scene?.backgroundId ?? "";
@@ -77,10 +74,16 @@ export const useCollisionPaintCursorMode = ({
     slopeDirectionVertical: "left",
   });
 
-  const hoverCollision =
-    scene && Array.isArray(scene.collisions)
-      ? (scene.collisions[x + y * scene.width] ?? 0)
-      : 0;
+  const getCollisionAt = useCallback(
+    (x: number, y: number): number => {
+      if (!scene || !Array.isArray(scene.collisions)) {
+        return 0;
+      }
+
+      return scene.collisions[x + y * scene.width] ?? 0;
+    },
+    [scene],
+  );
 
   const updateSlopeDirection = useCallback(
     (e: MouseEvent) => {
@@ -104,12 +107,11 @@ export const useCollisionPaintCursorMode = ({
   );
 
   const updateSlopePreview = useCallback(
-    (drawLine: boolean, drawWall: boolean) => {
+    (x: number, y: number, drawLine: boolean, drawWall: boolean) => {
       const state = stateRef.current;
 
       if (
         !enabled ||
-        sceneId !== hoverSceneId ||
         tool !== TOOL_COLLISIONS ||
         selectedBrush !== BRUSH_SLOPE ||
         !state.isPainting
@@ -145,7 +147,7 @@ export const useCollisionPaintCursorMode = ({
         }),
       );
     },
-    [dispatch, enabled, hoverSceneId, sceneId, selectedBrush, tool, x, y],
+    [dispatch, enabled, sceneId, selectedBrush, tool],
   );
 
   const onMouseDown = useCallback<SceneCursorMouseDownHandler>(
@@ -154,20 +156,23 @@ export const useCollisionPaintCursorMode = ({
         return false;
       }
 
-      if (e.nativeEvent.which === 3) {
+      if (e.raw.nativeEvent.which === 3) {
         return false;
       }
 
+      const { x, y } = e;
       const state = stateRef.current;
 
-      state.drawLine = e.shiftKey;
-      state.drawWall = e.ctrlKey;
+      state.drawLine = e.raw.shiftKey;
+      state.drawWall = e.raw.ctrlKey;
       state.lockX = undefined;
       state.lockY = undefined;
       state.currentX = undefined;
       state.currentY = undefined;
 
-      if (e.altKey) {
+      if (e.raw.altKey) {
+        const hoverCollision = getCollisionAt(x, y);
+
         state.drawTile = hoverCollision;
         dispatch(
           editorActions.setSelectedTileType({
@@ -237,6 +242,8 @@ export const useCollisionPaintCursorMode = ({
       } else if (selectedBrush === BRUSH_SLOPE) {
         state.startX = x;
         state.startY = y;
+        state.currentX = x;
+        state.currentY = y;
         state.isPainting = true;
         state.isDrawingSlope = false;
 
@@ -289,7 +296,7 @@ export const useCollisionPaintCursorMode = ({
     },
     [
       dispatch,
-      hoverCollision,
+      getCollisionAt,
       scene,
       sceneId,
       selectedBrush,
@@ -297,8 +304,6 @@ export const useCollisionPaintCursorMode = ({
       selectedTileType,
       tileLookup,
       tool,
-      x,
-      y,
     ],
   );
 
@@ -308,21 +313,26 @@ export const useCollisionPaintCursorMode = ({
 
       if (
         !enabled ||
-        sceneId !== hoverSceneId ||
+        !e.isOverScene ||
         tool !== TOOL_COLLISIONS ||
         !state.isPainting
       ) {
         return false;
       }
 
+      const { x, y } = e;
+
       if (selectedBrush === BRUSH_SLOPE) {
-        updateSlopeDirection(e);
-        updateSlopePreview(e.shiftKey, e.ctrlKey);
+        state.currentX = x;
+        state.currentY = y;
+
+        updateSlopeDirection(e.raw);
+        updateSlopePreview(x, y, e.raw.shiftKey, e.raw.ctrlKey);
         return true;
       }
 
-      state.drawLine = e.shiftKey;
-      state.drawWall = e.ctrlKey;
+      state.drawLine = e.raw.shiftKey;
+      state.drawWall = e.raw.ctrlKey;
 
       if (state.currentX === x && state.currentY === y) {
         return true;
@@ -389,15 +399,12 @@ export const useCollisionPaintCursorMode = ({
     [
       dispatch,
       enabled,
-      hoverSceneId,
       sceneId,
       selectedBrush,
       tileLookup,
       tool,
       updateSlopeDirection,
       updateSlopePreview,
-      x,
-      y,
     ],
   );
 
@@ -409,8 +416,11 @@ export const useCollisionPaintCursorMode = ({
         return false;
       }
 
-      state.drawLine = e.shiftKey;
-      state.drawWall = e.ctrlKey;
+      const x = e.isOverScene ? e.x : (state.currentX ?? state.startX);
+      const y = e.isOverScene ? e.y : (state.currentY ?? state.startY);
+
+      state.drawLine = e.raw.shiftKey;
+      state.drawWall = e.raw.ctrlKey;
 
       if (state.isDrawingSlope) {
         const { endX, endY, slopeIncline } = calculateSlope(
@@ -447,7 +457,7 @@ export const useCollisionPaintCursorMode = ({
 
       return true;
     },
-    [dispatch, sceneId, tool, x, y],
+    [dispatch, sceneId],
   );
 
   useEffect(() => {
@@ -455,26 +465,23 @@ export const useCollisionPaintCursorMode = ({
       return;
     }
 
-    const onKeyDown = (e: KeyboardEvent) => {
+    const updateFromKeyboard = (e: KeyboardEvent) => {
       if (!(e.target instanceof HTMLElement)) return;
       if (e.target.nodeName !== "BODY") return;
 
-      updateSlopePreview(e.shiftKey, e.ctrlKey);
+      const state = stateRef.current;
+      const x = state.currentX ?? state.startX;
+      const y = state.currentY ?? state.startY;
+
+      updateSlopePreview(x, y, e.shiftKey, e.ctrlKey);
     };
 
-    const onKeyUp = (e: KeyboardEvent) => {
-      if (!(e.target instanceof HTMLElement)) return;
-      if (e.target.nodeName !== "BODY") return;
-
-      updateSlopePreview(e.shiftKey, e.ctrlKey);
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("keydown", updateFromKeyboard);
+    window.addEventListener("keyup", updateFromKeyboard);
 
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("keydown", updateFromKeyboard);
+      window.removeEventListener("keyup", updateFromKeyboard);
     };
   }, [selectedBrush, tool, updateSlopePreview]);
 
