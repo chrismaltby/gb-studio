@@ -18,6 +18,7 @@ export const useColorPaintCursorMode = ({
       id: "colorPaint",
       enabled: tool === TOOL_COLORS,
       viewPriority: 10,
+      eventPriority: 0,
       view: {
         variant: "colors",
         width: size,

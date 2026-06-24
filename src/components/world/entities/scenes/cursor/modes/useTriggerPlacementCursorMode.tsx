@@ -15,6 +15,7 @@ export const useTriggerPlacementCursorMode = ({
       id: "triggerPlacement",
       enabled: tool === TOOL_TRIGGERS,
       viewPriority: 10,
+      eventPriority: 0,
       view: {
         variant: "triggers",
         width: TILE_SIZE,

@@ -18,6 +18,7 @@ export const useEraserCursorMode = ({
       id: "eraser",
       enabled: tool === TOOL_ERASER,
       viewPriority: 10,
+      eventPriority: 0,
       view: {
         variant: "eraser",
         width: size,

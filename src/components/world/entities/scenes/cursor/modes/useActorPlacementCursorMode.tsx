@@ -14,6 +14,7 @@ export const useActorPlacementCursorMode = ({
       id: "actorPlacement",
       enabled: tool === TOOL_ACTORS,
       viewPriority: 10,
+      eventPriority: 0,
       view: {
         variant: "actors",
         width: TILE_SIZE * 2,

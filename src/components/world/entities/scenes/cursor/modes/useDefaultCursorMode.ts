@@ -8,6 +8,7 @@ export const useDefaultCursorMode = (): SceneCursorMode => {
       id: "default",
       enabled: true,
       viewPriority: -100,
+      eventPriority: -100,
       view: DEFAULT_SCENE_CURSOR_VIEW,
     }),
     [],
