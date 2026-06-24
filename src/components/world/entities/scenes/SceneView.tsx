@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import WorldActor from "./actors/ActorView";
 import TriggerView from "./triggers/TriggerView";
 import SceneCollisions from "./SceneCollisions";
-import SceneCursor from "./SceneCursor";
+import SceneCursor from "./cursor/SceneCursor";
 import ColorizedImage from "components/rendering/ColorizedImage";
 import {
   TOOL_COLORS,
