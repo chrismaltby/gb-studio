@@ -5,11 +5,11 @@ import type { SceneCursorViewModel } from "../SceneCursorView";
 
 export interface SceneCursorModeContext {
   sceneId: string;
+  hoverSceneId: string;
   x: number;
   y: number;
   tool: Tool;
   brush: Brush;
-  isResizingTrigger: boolean;
   pasteMode: boolean;
   editorPrefabId?: string;
 }
