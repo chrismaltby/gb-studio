@@ -4,7 +4,7 @@ import { PlusIcon } from "ui/icons/Icons";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
-import { useAppDispatch } from "store/hooks";
+import { useAppDispatch, useAppSelector } from "store/hooks";
 import type {
   SceneCursorMode,
   SceneCursorModeContext,
@@ -16,11 +16,11 @@ export const useActorPlacementCursorMode = ({
   sceneId,
   x,
   y,
-  tool,
-  pasteMode,
-  editorPrefabId,
 }: SceneCursorModeContext): SceneCursorMode => {
   const dispatch = useAppDispatch();
+  const tool = useAppSelector((state) => state.editor.tool);
+  const pasteMode = useAppSelector((state) => state.editor.pasteMode);
+  const editorPrefabId = useAppSelector((state) => state.editor.prefabId);
 
   const onMouseDown = useCallback<SceneCursorMouseDownHandler>(() => {
     if (pasteMode) {

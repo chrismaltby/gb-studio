@@ -19,12 +19,13 @@ export const useTriggerPlacementCursorMode = ({
   hoverSceneId,
   x,
   y,
-  tool,
-  pasteMode,
-  editorPrefabId,
 }: SceneCursorModeContext): SceneCursorMode => {
   const dispatch = useAppDispatch();
+  const tool = useAppSelector((state) => state.editor.tool);
+  const pasteMode = useAppSelector((state) => state.editor.pasteMode);
+  const editorPrefabId = useAppSelector((state) => state.editor.prefabId);
   const entityId = useAppSelector((state) => state.editor.entityId);
+
   const [isResizing, setIsResizing] = useState(false);
 
   const resizeRef = useRef<{
