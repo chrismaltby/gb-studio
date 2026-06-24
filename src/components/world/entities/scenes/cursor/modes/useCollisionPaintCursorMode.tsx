@@ -20,7 +20,7 @@ import type {
   SceneCursorMouseMoveHandler,
   SceneCursorMouseUpHandler,
 } from "./SceneCursorMode";
-import { paintCursorSize } from "./helpers";
+import { paintCursorSize, resolveAxisLockedLine } from "./paintCursorHelpers";
 
 interface CollisionPaintState {
   lockX?: boolean;
@@ -83,6 +83,50 @@ export const useCollisionPaintCursorMode = ({
       return scene.collisions[x + y * scene.width] ?? 0;
     },
     [scene],
+  );
+
+  const paintCollisionAt = useCallback(
+    (x: number, y: number, value: number, mask: number) => {
+      dispatch(
+        entitiesActions.paintCollision({
+          brush: selectedBrush,
+          sceneId,
+          x,
+          y,
+          value,
+          mask,
+          tileLookup,
+        }),
+      );
+    },
+    [dispatch, sceneId, selectedBrush, tileLookup],
+  );
+
+  const paintCollisionLine = useCallback(
+    (
+      startX: number,
+      startY: number,
+      endX: number,
+      endY: number,
+      value: number,
+      mask: number,
+    ) => {
+      dispatch(
+        entitiesActions.paintCollision({
+          brush: selectedBrush,
+          sceneId,
+          x: startX,
+          y: startY,
+          endX,
+          endY,
+          value,
+          mask,
+          drawLine: true,
+          tileLookup,
+        }),
+      );
+    },
+    [dispatch, sceneId, selectedBrush, tileLookup],
   );
 
   const updateSlopeDirection = useCallback(
@@ -212,30 +256,10 @@ export const useCollisionPaintCursorMode = ({
       }
 
       if (selectedBrush === BRUSH_FILL) {
-        dispatch(
-          entitiesActions.paintCollision({
-            brush: selectedBrush,
-            sceneId,
-            x,
-            y,
-            value: state.drawTile,
-            mask: state.mask,
-            tileLookup,
-          }),
-        );
+        paintCollisionAt(x, y, state.drawTile, state.mask);
       } else if (selectedBrush === BRUSH_MAGIC) {
         if (tileLookup) {
-          dispatch(
-            entitiesActions.paintCollision({
-              brush: selectedBrush,
-              sceneId,
-              tileLookup,
-              x,
-              y,
-              value: state.drawTile,
-              mask: state.mask,
-            }),
-          );
+          paintCollisionAt(x, y, state.drawTile, state.mask);
         } else {
           dispatch(editorActions.selectScene({ sceneId }));
         }
@@ -255,19 +279,13 @@ export const useCollisionPaintCursorMode = ({
         );
       } else {
         if (state.drawLine) {
-          dispatch(
-            entitiesActions.paintCollision({
-              brush: selectedBrush,
-              sceneId,
-              x: state.startX,
-              y: state.startY,
-              endX: x,
-              endY: y,
-              value: state.drawTile,
-              mask: state.mask,
-              drawLine: true,
-              tileLookup,
-            }),
+          paintCollisionLine(
+            state.startX,
+            state.startY,
+            x,
+            y,
+            state.drawTile,
+            state.mask,
           );
 
           state.startX = x;
@@ -276,17 +294,7 @@ export const useCollisionPaintCursorMode = ({
           state.startX = x;
           state.startY = y;
 
-          dispatch(
-            entitiesActions.paintCollision({
-              brush: selectedBrush,
-              sceneId,
-              x,
-              y,
-              value: state.drawTile,
-              mask: state.mask,
-              tileLookup,
-            }),
-          );
+          paintCollisionAt(x, y, state.drawTile, state.mask);
         }
 
         state.isPainting = true;
@@ -297,6 +305,8 @@ export const useCollisionPaintCursorMode = ({
     [
       dispatch,
       getCollisionAt,
+      paintCollisionAt,
+      paintCollisionLine,
       scene,
       sceneId,
       selectedBrush,
@@ -339,52 +349,35 @@ export const useCollisionPaintCursorMode = ({
       }
 
       if (state.drawLine) {
-        let x1 = x;
-        let y1 = y;
-
-        if (state.lockX) {
-          x1 = state.startX;
-        } else if (state.lockY) {
-          y1 = state.startY;
-        } else if (x !== state.startX) {
-          state.lockY = true;
-          y1 = state.startY;
-        } else if (y !== state.startY) {
-          state.lockX = true;
-          x1 = state.startX;
-        }
-
-        dispatch(
-          entitiesActions.paintCollision({
-            brush: selectedBrush,
-            sceneId,
-            x: state.startX,
-            y: state.startY,
-            endX: x1,
-            endY: y1,
-            value: state.drawTile,
-            mask: state.mask,
-            drawLine: true,
-            tileLookup,
-          }),
+        const line = resolveAxisLockedLine(
+          state,
+          state.startX,
+          state.startY,
+          x,
+          y,
         );
 
-        state.startX = x1;
-        state.startY = y1;
+        paintCollisionLine(
+          state.startX,
+          state.startY,
+          line.endX,
+          line.endY,
+          state.drawTile,
+          state.mask,
+        );
+
+        state.lockX = line.lockX;
+        state.lockY = line.lockY;
+        state.startX = line.endX;
+        state.startY = line.endY;
       } else {
-        dispatch(
-          entitiesActions.paintCollision({
-            brush: selectedBrush,
-            sceneId,
-            x: state.startX,
-            y: state.startY,
-            endX: x,
-            endY: y,
-            value: state.drawTile,
-            mask: state.mask,
-            drawLine: true,
-            tileLookup,
-          }),
+        paintCollisionLine(
+          state.startX,
+          state.startY,
+          x,
+          y,
+          state.drawTile,
+          state.mask,
         );
 
         state.startX = x;
@@ -397,11 +390,9 @@ export const useCollisionPaintCursorMode = ({
       return true;
     },
     [
-      dispatch,
       enabled,
-      sceneId,
+      paintCollisionLine,
       selectedBrush,
-      tileLookup,
       tool,
       updateSlopeDirection,
       updateSlopePreview,
