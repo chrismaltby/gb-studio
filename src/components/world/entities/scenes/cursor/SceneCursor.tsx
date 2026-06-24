@@ -9,7 +9,6 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import {
   BRUSH_FILL,
   BRUSH_MAGIC,
-  BRUSH_16PX,
   TOOL_SELECT,
   MIDDLE_MOUSE,
   TILE_COLOR_PROPS,
@@ -45,12 +44,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     sceneId: hoverSceneId,
   } = useAppSelector((state) => state.editor.hover);
 
-  const { tool, selectedBrush, selectedPalette, showLayers } = useAppSelector(
+  const { tool, selectedBrush, selectedPalette } = useAppSelector(
     (state) => state.editor,
-  );
-
-  const showCollisions = useAppSelector(
-    (state) => state.project.present.settings.showCollisions,
   );
 
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -64,12 +59,9 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     () => ({
       enabled,
       sceneId,
-      hoverSceneId,
-      x,
-      y,
       getCursorRect,
     }),
-    [enabled, getCursorRect, hoverSceneId, sceneId, x, y],
+    [enabled, getCursorRect, sceneId],
   );
 
   const actorPlacementCursorMode =
@@ -79,7 +71,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   const collisionPaintCursorMode =
     useCollisionPaintCursorMode(cursorModeContext);
   const colorPaintCursorMode = useColorPaintCursorMode();
-  const eraserCursorMode = useEraserCursorMode();
+  const eraserCursorMode = useEraserCursorMode(cursorModeContext);
   const defaultCursorMode = useDefaultCursorMode();
 
   const cursorModes = useMemo(
@@ -191,82 +183,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     };
   }, [onKeyDown, onKeyUp]);
 
-  const onMouseMoveCollisions = useCallback(() => {
-    if (!enabled) {
-      return;
-    }
-
-    if (data.current.currentX !== x || data.current.currentY !== y) {
-      if (data.current.drawLine) {
-        if (
-          data.current.startX === undefined ||
-          data.current.startY === undefined
-        ) {
-          data.current.startX = x;
-          data.current.startY = y;
-        }
-        let x1 = x;
-        let y1 = y;
-        if (data.current.lockX) {
-          x1 = data.current.startX;
-        } else if (data.current.lockY) {
-          y1 = data.current.startY;
-        } else if (x !== data.current.startX) {
-          data.current.lockY = true;
-          y1 = data.current.startY;
-        } else if (y !== data.current.startY) {
-          data.current.lockX = true;
-          x1 = data.current.startX;
-        }
-        dispatch(
-          entitiesActions.paintCollision({
-            brush: selectedBrush,
-            sceneId,
-            x: data.current.startX,
-            y: data.current.startY,
-            endX: x1,
-            endY: y1,
-            value: data.current.drawTile,
-            mask: data.current.mask,
-            drawLine: true,
-            tileLookup,
-          }),
-        );
-        data.current.startX = x1;
-        data.current.startY = y1;
-      } else {
-        if (
-          data.current.startX === undefined ||
-          data.current.startY === undefined
-        ) {
-          data.current.startX = x;
-          data.current.startY = y;
-        }
-        const x1 = x;
-        const y1 = y;
-        dispatch(
-          entitiesActions.paintCollision({
-            brush: selectedBrush,
-            sceneId,
-            x: data.current.startX,
-            y: data.current.startY,
-            endX: x1,
-            endY: y1,
-            value: data.current.drawTile,
-            mask: data.current.mask,
-            drawLine: true,
-            tileLookup,
-          }),
-        );
-
-        data.current.startX = x1;
-        data.current.startY = y1;
-      }
-      data.current.currentX = x;
-      data.current.currentY = y;
-    }
-  }, [dispatch, enabled, sceneId, selectedBrush, tileLookup, x, y]);
-
   const onMouseMoveColors = useCallback(() => {
     if (
       enabled &&
@@ -356,15 +272,10 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     if (sceneId !== hoverSceneId) {
       return;
     }
-    if (
-      data.current.isPainting &&
-      (tool === "collisions" || tool === "eraser")
-    ) {
-      onMouseMoveCollisions();
-    } else if (data.current.isPainting && tool === "colors") {
+    if (data.current.isPainting && tool === "colors") {
       onMouseMoveColors();
     }
-  }, [hoverSceneId, onMouseMoveCollisions, onMouseMoveColors, sceneId, tool]);
+  }, [hoverSceneId, onMouseMoveColors, sceneId, tool]);
 
   const onLegacyMouseUp = useCallback(() => {
     data.current.isPainting = false;
@@ -482,104 +393,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     ],
   );
 
-  const onMouseDownEraser = useCallback(() => {
-    if (showCollisions) {
-      data.current.drawTile = 0;
-      if (selectedBrush === BRUSH_FILL) {
-        dispatch(
-          entitiesActions.paintCollision({
-            brush: selectedBrush,
-            sceneId,
-            x,
-            y,
-            value: data.current.drawTile,
-            mask: 0xff,
-            tileLookup,
-          }),
-        );
-      } else if (selectedBrush === BRUSH_MAGIC) {
-        if (tileLookup) {
-          dispatch(
-            entitiesActions.paintCollision({
-              brush: selectedBrush,
-              sceneId,
-              tileLookup,
-              x,
-              y,
-              value: 0,
-              mask: 0xff,
-            }),
-          );
-        } else {
-          dispatch(editorActions.selectScene({ sceneId }));
-        }
-      } else {
-        if (
-          data.current.drawLine &&
-          data.current.startX !== undefined &&
-          data.current.startY !== undefined
-        ) {
-          dispatch(
-            entitiesActions.paintCollision({
-              brush: selectedBrush,
-              sceneId,
-              x: data.current.startX,
-              y: data.current.startY,
-              endX: x,
-              endY: y,
-              value: 0,
-              mask: 0xff,
-              drawLine: true,
-              tileLookup,
-            }),
-          );
-          data.current.startX = x;
-          data.current.startY = y;
-        } else {
-          data.current.startX = x;
-          data.current.startY = y;
-          dispatch(
-            entitiesActions.paintCollision({
-              brush: selectedBrush,
-              sceneId,
-              x,
-              y,
-              value: 0,
-              mask: 0xff,
-              tileLookup,
-            }),
-          );
-        }
-        data.current.isPainting = true;
-      }
-    }
-    if (showLayers) {
-      dispatch(entitiesActions.removeActorAt({ sceneId, x, y }));
-      dispatch(entitiesActions.removeTriggerAt({ sceneId, x, y }));
-      if (selectedBrush === BRUSH_16PX) {
-        dispatch(entitiesActions.removeActorAt({ sceneId, x: x + 1, y }));
-        dispatch(entitiesActions.removeTriggerAt({ sceneId, x: x + 1, y }));
-        dispatch(entitiesActions.removeActorAt({ sceneId, x, y: y + 1 }));
-        dispatch(entitiesActions.removeTriggerAt({ sceneId, x, y: y + 1 }));
-        dispatch(
-          entitiesActions.removeActorAt({ sceneId, x: x + 1, y: y + 1 }),
-        );
-        dispatch(
-          entitiesActions.removeTriggerAt({ sceneId, x: x + 1, y: y + 1 }),
-        );
-      }
-    }
-  }, [
-    dispatch,
-    sceneId,
-    selectedBrush,
-    showCollisions,
-    showLayers,
-    tileLookup,
-    x,
-    y,
-  ]);
-
   const createCursorEvent = useCallback(
     <T,>(raw: T): SceneCursorEvent<T> => ({
       x,
@@ -621,20 +434,13 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
 
   const onLegacyMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (tool === "collisions") {
-        if (e.nativeEvent.which === 3) {
-          // right mouse always erase
-          onMouseDownEraser();
-        }
-      } else if (tool === "colors") {
+      if (tool === "colors") {
         onMouseDownColors(e);
-      } else if (tool === "eraser") {
-        onMouseDownEraser();
       } else if (tool === "select") {
         dispatch(editorActions.selectScene({ sceneId }));
       }
     },
-    [dispatch, onMouseDownColors, onMouseDownEraser, sceneId, tool],
+    [dispatch, onMouseDownColors, sceneId, tool],
   );
 
   const legacyCursorEventMode = useMemo<SceneCursorMode>(
