@@ -4,9 +4,14 @@ import type { Brush, Tool } from "store/features/editor/editorState";
 import type { SceneCursorViewModel } from "../SceneCursorView";
 
 export interface SceneCursorModeContext {
+  sceneId: string;
+  x: number;
+  y: number;
   tool: Tool;
   brush: Brush;
   isResizingTrigger: boolean;
+  pasteMode: boolean;
+  editorPrefabId?: string;
 }
 
 export type SceneCursorMouseDownHandler = (
