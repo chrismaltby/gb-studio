@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   backgroundSelectors,
   sceneSelectors,
@@ -21,7 +15,6 @@ import {
   TILE_COLOR_PROPS,
   BRUSH_SLOPE,
 } from "consts";
-import clipboardActions from "store/features/clipboard/clipboardActions";
 import { calculateSlope } from "shared/lib/helpers/slope";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SceneCursorView } from "./SceneCursorView";
@@ -55,7 +48,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     tool,
     selectedBrush,
     pasteMode,
-    entityId,
     selectedTileType,
     selectedTileMask,
     selectedPalette,
@@ -68,20 +60,27 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
 
   const editorPrefabId = useAppSelector((state) => state.editor.prefabId);
 
-  const [resize, setResize] = useState<boolean>(false);
-
   const cursorModeContext = useMemo(
     () => ({
       sceneId,
+      hoverSceneId,
       x,
       y,
       tool,
       brush: selectedBrush,
-      isResizingTrigger: resize,
       pasteMode,
       editorPrefabId,
     }),
-    [editorPrefabId, pasteMode, resize, sceneId, selectedBrush, tool, x, y],
+    [
+      editorPrefabId,
+      hoverSceneId,
+      pasteMode,
+      sceneId,
+      selectedBrush,
+      tool,
+      x,
+      y,
+    ],
   );
 
   const actorPlacementCursorMode =
@@ -252,25 +251,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       window.removeEventListener("keyup", onKeyUp);
     };
   }, [onKeyDown, onKeyUp]);
-
-  const onMouseMoveTriggers = useCallback(() => {
-    if (
-      entityId &&
-      (data.current.currentX !== x || data.current.currentY !== y)
-    ) {
-      dispatch(
-        entitiesActions.resizeTrigger({
-          triggerId: entityId,
-          startX: data.current.startX,
-          startY: data.current.startY,
-          x,
-          y,
-        }),
-      );
-      data.current.currentX = x;
-      data.current.currentY = y;
-    }
-  }, [dispatch, entityId, x, y]);
 
   const onMouseMoveCollisions = useCallback(() => {
     if (!enabled) {
@@ -479,9 +459,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     if (sceneId !== hoverSceneId) {
       return;
     }
-    if (tool === "triggers" && resize) {
-      onMouseMoveTriggers();
-    } else if (
+    if (
       data.current.isPainting &&
       (tool === "collisions" || tool === "eraser")
     ) {
@@ -489,24 +467,9 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     } else if (data.current.isPainting && tool === "colors") {
       onMouseMoveColors();
     }
-  }, [
-    hoverSceneId,
-    onMouseMoveCollisions,
-    onMouseMoveColors,
-    onMouseMoveTriggers,
-    resize,
-    sceneId,
-    tool,
-  ]);
+  }, [hoverSceneId, onMouseMoveCollisions, onMouseMoveColors, sceneId, tool]);
 
   const onMouseUp = useCallback(() => {
-    if (tool === "triggers") {
-      if (sceneId !== hoverSceneId) {
-        return;
-      }
-      dispatch(editorActions.setTool({ tool: "select" }));
-      setResize(false);
-    }
     if (data.current.isDrawingSlope) {
       const { endX, endY, slopeIncline } = calculateSlope(
         data.current.startX,
@@ -537,38 +500,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     }
     data.current.isPainting = false;
     data.current.isDrawingSlope = false;
-  }, [dispatch, hoverSceneId, sceneId, tool, x, y]);
-
-  const onMouseDownTrigger = useCallback(() => {
-    if (pasteMode) {
-      dispatch(
-        clipboardActions.pasteTriggerAt({
-          sceneId,
-          x,
-          y,
-        }),
-      );
-    } else {
-      dispatch(
-        entitiesActions.addTrigger({
-          sceneId,
-          x,
-          y,
-          width: 1,
-          height: 1,
-          defaults: editorPrefabId
-            ? {
-                prefabId: editorPrefabId,
-              }
-            : undefined,
-        }),
-      );
-    }
-
-    data.current.startX = x;
-    data.current.startY = y;
-    setResize(true);
-  }, [dispatch, editorPrefabId, pasteMode, sceneId, x, y]);
+  }, [dispatch, sceneId, x, y]);
 
   const onMouseDownCollisions = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -941,9 +873,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
 
   const onLegacyMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (tool === "triggers") {
-        onMouseDownTrigger();
-      } else if (tool === "collisions") {
+      if (tool === "collisions") {
         if (e.nativeEvent.which === 3) {
           // right mouse always erase
           onMouseDownEraser();
@@ -963,7 +893,6 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       onMouseDownCollisions,
       onMouseDownColors,
       onMouseDownEraser,
-      onMouseDownTrigger,
       sceneId,
       tool,
     ],
