@@ -3,19 +3,21 @@ import { TILE_SIZE } from "consts";
 import type { SceneCursorViewModel } from "../SceneCursorView";
 
 export interface SceneCursorModeContext {
+  enabled: boolean;
   sceneId: string;
   hoverSceneId: string;
   x: number;
   y: number;
+  getCursorRect: () => DOMRect | undefined;
 }
 
 export type SceneCursorMouseDownHandler = (
   e: React.MouseEvent<HTMLDivElement, MouseEvent>,
 ) => boolean;
 
-export type SceneCursorMouseMoveHandler = () => boolean;
+export type SceneCursorMouseMoveHandler = (e: MouseEvent) => boolean;
 
-export type SceneCursorMouseUpHandler = () => boolean;
+export type SceneCursorMouseUpHandler = (e: MouseEvent) => boolean;
 
 export interface SceneCursorMode {
   id: string;
