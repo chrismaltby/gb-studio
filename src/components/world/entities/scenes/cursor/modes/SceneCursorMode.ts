@@ -5,19 +5,28 @@ import type { SceneCursorViewModel } from "../SceneCursorView";
 export interface SceneCursorModeContext {
   enabled: boolean;
   sceneId: string;
-  hoverSceneId: string;
-  x: number;
-  y: number;
   getCursorRect: () => DOMRect | undefined;
 }
 
+export type SceneCursorEvent<T> = {
+  x: number;
+  y: number;
+  sceneId: string;
+  isOverScene: boolean;
+  raw: T;
+};
+
 export type SceneCursorMouseDownHandler = (
-  e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  e: SceneCursorEvent<React.MouseEvent<HTMLDivElement, MouseEvent>>,
 ) => boolean;
 
-export type SceneCursorMouseMoveHandler = (e: MouseEvent) => boolean;
+export type SceneCursorMouseMoveHandler = (
+  e: SceneCursorEvent<MouseEvent>,
+) => boolean;
 
-export type SceneCursorMouseUpHandler = (e: MouseEvent) => boolean;
+export type SceneCursorMouseUpHandler = (
+  e: SceneCursorEvent<MouseEvent>,
+) => boolean;
 
 export interface SceneCursorMode {
   id: string;

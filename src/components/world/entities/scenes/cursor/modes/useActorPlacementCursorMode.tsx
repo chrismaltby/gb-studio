@@ -14,42 +14,43 @@ import type { SceneCursorViewModel } from "../SceneCursorView";
 
 export const useActorPlacementCursorMode = ({
   sceneId,
-  x,
-  y,
 }: SceneCursorModeContext): SceneCursorMode => {
   const dispatch = useAppDispatch();
   const tool = useAppSelector((state) => state.editor.tool);
   const pasteMode = useAppSelector((state) => state.editor.pasteMode);
   const editorPrefabId = useAppSelector((state) => state.editor.prefabId);
 
-  const onMouseDown = useCallback<SceneCursorMouseDownHandler>(() => {
-    if (pasteMode) {
-      dispatch(
-        clipboardActions.pasteActorAt({
-          sceneId,
-          x,
-          y,
-        }),
-      );
-    } else {
-      dispatch(
-        entitiesActions.addActor({
-          sceneId,
-          x,
-          y,
-          defaults: editorPrefabId
-            ? {
-                prefabId: editorPrefabId,
-              }
-            : undefined,
-        }),
-      );
-    }
+  const onMouseDown = useCallback<SceneCursorMouseDownHandler>(
+    (e) => {
+      if (pasteMode) {
+        dispatch(
+          clipboardActions.pasteActorAt({
+            sceneId,
+            x: e.x,
+            y: e.y,
+          }),
+        );
+      } else {
+        dispatch(
+          entitiesActions.addActor({
+            sceneId,
+            x: e.x,
+            y: e.y,
+            defaults: editorPrefabId
+              ? {
+                  prefabId: editorPrefabId,
+                }
+              : undefined,
+          }),
+        );
+      }
 
-    dispatch(editorActions.setTool({ tool: TOOL_SELECT }));
+      dispatch(editorActions.setTool({ tool: TOOL_SELECT }));
 
-    return true;
-  }, [dispatch, editorPrefabId, pasteMode, sceneId, x, y]);
+      return true;
+    },
+    [dispatch, editorPrefabId, pasteMode, sceneId],
+  );
 
   const view = useMemo<SceneCursorViewModel>(
     () => ({

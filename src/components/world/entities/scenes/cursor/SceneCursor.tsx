@@ -20,7 +20,10 @@ import {
   getSceneCursorEventModes,
   getSceneCursorView,
 } from "./modes/SceneCursorMode";
-import type { SceneCursorMode } from "./modes/SceneCursorMode";
+import type {
+  SceneCursorEvent,
+  SceneCursorMode,
+} from "./modes/SceneCursorMode";
 import { useActorPlacementCursorMode } from "./modes/useActorPlacementCursorMode";
 import { useCollisionPaintCursorMode } from "./modes/useCollisionPaintCursorMode";
 import { useColorPaintCursorMode } from "./modes/useColorPaintCursorMode";
@@ -124,6 +127,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     isPainting: false,
     isTileProp: false,
   });
+
   const scene = useAppSelector((state) =>
     sceneSelectors.selectById(state, hoverSceneId),
   );
@@ -576,6 +580,17 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     y,
   ]);
 
+  const createCursorEvent = useCallback(
+    <T,>(raw: T): SceneCursorEvent<T> => ({
+      x,
+      y,
+      sceneId,
+      isOverScene: sceneId === hoverSceneId,
+      raw,
+    }),
+    [hoverSceneId, sceneId, x, y],
+  );
+
   const prepareCursorMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       if (!scene) {
@@ -629,7 +644,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       viewPriority: -1000,
       eventPriority: -1000,
       onMouseDown: (e) => {
-        onLegacyMouseDown(e);
+        onLegacyMouseDown(e.raw);
         return true;
       },
       onMouseMove: () => {
@@ -650,10 +665,12 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   );
 
   const onMouseDown = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (!prepareCursorMouseDown(e)) {
+    (raw: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (!prepareCursorMouseDown(raw)) {
         return;
       }
+
+      const e = createCursorEvent(raw);
 
       for (const mode of eventModes) {
         if (mode.onMouseDown?.(e)) {
@@ -661,29 +678,33 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
         }
       }
     },
-    [eventModes, prepareCursorMouseDown],
+    [createCursorEvent, eventModes, prepareCursorMouseDown],
   );
 
   const onWindowMouseMove = useCallback(
-    (e: MouseEvent) => {
+    (raw: MouseEvent) => {
+      const e = createCursorEvent(raw);
+
       for (const mode of eventModes) {
         if (mode.onMouseMove?.(e)) {
           return;
         }
       }
     },
-    [eventModes],
+    [createCursorEvent, eventModes],
   );
 
   const onWindowMouseUp = useCallback(
-    (e: MouseEvent) => {
+    (raw: MouseEvent) => {
+      const e = createCursorEvent(raw);
+
       for (const mode of eventModes) {
         if (mode.onMouseUp?.(e)) {
           return;
         }
       }
     },
-    [eventModes],
+    [createCursorEvent, eventModes],
   );
 
   useEffect(() => {
