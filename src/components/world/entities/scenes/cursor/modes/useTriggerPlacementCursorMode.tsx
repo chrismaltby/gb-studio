@@ -21,16 +21,18 @@ export const useTriggerPlacementCursorMode = ({
   const tool = useAppSelector((state) => state.editor.tool);
   const pasteMode = useAppSelector((state) => state.editor.pasteMode);
   const editorPrefabId = useAppSelector((state) => state.editor.prefabId);
-  const entityId = useAppSelector((state) => state.editor.entityId);
 
   const [isResizing, setIsResizing] = useState(false);
 
   const resizeRef = useRef<{
+    isResizing: boolean;
+    triggerId?: string;
     startX: number;
     startY: number;
     currentX?: number;
     currentY?: number;
   }>({
+    isResizing: false,
     startX: 0,
     startY: 0,
   });
@@ -47,28 +49,33 @@ export const useTriggerPlacementCursorMode = ({
             y,
           }),
         );
+        dispatch(editorActions.setTool({ tool: TOOL_SELECT }));
+        resizeRef.current.isResizing = false;
+        setIsResizing(false);
+        resizeRef.current.triggerId = undefined;
       } else {
-        dispatch(
-          entitiesActions.addTrigger({
-            sceneId,
-            x,
-            y,
-            width: 1,
-            height: 1,
-            defaults: editorPrefabId
-              ? {
-                  prefabId: editorPrefabId,
-                }
-              : undefined,
-          }),
-        );
+        const action = entitiesActions.addTrigger({
+          sceneId,
+          x,
+          y,
+          width: 1,
+          height: 1,
+          defaults: editorPrefabId
+            ? {
+                prefabId: editorPrefabId,
+              }
+            : undefined,
+        });
+        resizeRef.current.triggerId = action.payload.triggerId;
+        dispatch(action);
+        resizeRef.current.isResizing = true;
+        setIsResizing(true);
       }
 
       resizeRef.current.startX = x;
       resizeRef.current.startY = y;
       resizeRef.current.currentX = undefined;
       resizeRef.current.currentY = undefined;
-      setIsResizing(true);
 
       return true;
     },
@@ -77,12 +84,14 @@ export const useTriggerPlacementCursorMode = ({
 
   const onMouseMove = useCallback<SceneCursorMouseMoveHandler>(
     (e) => {
-      if (!isResizing) {
-        return false;
+      if (!resizeRef.current.isResizing) {
+        return;
       }
 
-      if (tool !== TOOL_TRIGGERS || !e.isOverScene || !entityId) {
-        return true;
+      const triggerId = resizeRef.current.triggerId;
+
+      if (tool !== TOOL_TRIGGERS || !e.isOverScene || !triggerId) {
+        return;
       }
 
       const { x, y } = e;
@@ -91,12 +100,12 @@ export const useTriggerPlacementCursorMode = ({
         resizeRef.current.currentX === x &&
         resizeRef.current.currentY === y
       ) {
-        return true;
+        return;
       }
 
       dispatch(
         entitiesActions.resizeTrigger({
-          triggerId: entityId,
+          triggerId,
           startX: resizeRef.current.startX,
           startY: resizeRef.current.startY,
           x,
@@ -106,22 +115,20 @@ export const useTriggerPlacementCursorMode = ({
 
       resizeRef.current.currentX = x;
       resizeRef.current.currentY = y;
-
-      return true;
     },
-    [dispatch, entityId, isResizing, tool],
+    [dispatch, tool],
   );
 
   const onMouseUp = useCallback<SceneCursorMouseUpHandler>(() => {
-    if (!isResizing) {
-      return false;
+    if (!resizeRef.current.isResizing) {
+      return;
     }
 
+    resizeRef.current.isResizing = false;
+    resizeRef.current.triggerId = undefined;
     setIsResizing(false);
     dispatch(editorActions.setTool({ tool: TOOL_SELECT }));
-
-    return true;
-  }, [dispatch, isResizing]);
+  }, [dispatch]);
 
   const view = useMemo<SceneCursorViewModel>(
     () => ({
