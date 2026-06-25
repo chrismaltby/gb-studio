@@ -24,8 +24,8 @@ import { paintCursorSize, resolveAxisLockedLine } from "./paintCursorHelpers";
 interface EraserState {
   lockX?: boolean;
   lockY?: boolean;
-  startX: number;
-  startY: number;
+  startX?: number;
+  startY?: number;
   currentX?: number;
   currentY?: number;
   drawLine: boolean;
@@ -59,8 +59,6 @@ export const useEraserCursorMode = ({
   );
 
   const stateRef = useRef<EraserState>({
-    startX: 0,
-    startY: 0,
     drawLine: false,
     isPainting: false,
   });
@@ -164,13 +162,18 @@ export const useEraserCursorMode = ({
             dispatch(editorActions.selectScene({ sceneId }));
           }
         } else {
-          if (state.drawLine) {
-            eraseCollisionLine(state.startX, state.startY, x, y);
+          const startX = state.startX;
+          const startY = state.startY;
+
+          if (state.drawLine && startX !== undefined && startY !== undefined) {
+            eraseCollisionLine(startX, startY, x, y);
+
             state.startX = x;
             state.startY = y;
           } else {
             state.startX = x;
             state.startY = y;
+
             eraseCollisionAt(x, y);
           }
 
@@ -222,23 +225,29 @@ export const useEraserCursorMode = ({
         return true;
       }
 
-      if (state.drawLine) {
-        const line = resolveAxisLockedLine(
-          state,
-          state.startX,
-          state.startY,
-          x,
-          y,
-        );
+      let startX = state.startX;
+      let startY = state.startY;
 
-        eraseCollisionLine(state.startX, state.startY, line.endX, line.endY);
+      if (startX === undefined || startY === undefined) {
+        startX = x;
+        startY = y;
+        state.startX = x;
+        state.startY = y;
+      }
+
+      state.drawLine = e.raw.shiftKey;
+
+      if (state.drawLine) {
+        const line = resolveAxisLockedLine(state, startX, startY, x, y);
+
+        eraseCollisionLine(startX, startY, line.endX, line.endY);
 
         state.lockX = line.lockX;
         state.lockY = line.lockY;
         state.startX = line.endX;
         state.startY = line.endY;
       } else {
-        eraseCollisionLine(state.startX, state.startY, x, y);
+        eraseCollisionLine(startX, startY, x, y);
 
         state.startX = x;
         state.startY = y;

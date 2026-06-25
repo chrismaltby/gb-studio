@@ -25,8 +25,8 @@ import { paintCursorSize, resolveAxisLockedLine } from "./paintCursorHelpers";
 interface CollisionPaintState {
   lockX?: boolean;
   lockY?: boolean;
-  startX: number;
-  startY: number;
+  startX?: number;
+  startY?: number;
   currentX?: number;
   currentY?: number;
   drawLine: boolean;
@@ -62,8 +62,6 @@ export const useCollisionPaintCursorMode = ({
   );
 
   const stateRef = useRef<CollisionPaintState>({
-    startX: 0,
-    startY: 0,
     drawLine: false,
     drawWall: false,
     drawTile: 0,
@@ -158,7 +156,9 @@ export const useCollisionPaintCursorMode = ({
         !enabled ||
         tool !== TOOL_COLLISIONS ||
         selectedBrush !== BRUSH_SLOPE ||
-        !state.isPainting
+        !state.isPainting ||
+        state.startX === undefined ||
+        state.startY === undefined
       ) {
         return;
       }
@@ -231,7 +231,7 @@ export const useCollisionPaintCursorMode = ({
         return false;
       }
 
-      if (!state.drawLine) {
+      if (selectedBrush !== BRUSH_SLOPE) {
         const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
         const mask = selectedTileMask ?? 0xff;
 
@@ -278,15 +278,11 @@ export const useCollisionPaintCursorMode = ({
           }),
         );
       } else {
-        if (state.drawLine) {
-          paintCollisionLine(
-            state.startX,
-            state.startY,
-            x,
-            y,
-            state.drawTile,
-            state.mask,
-          );
+        const startX = state.startX;
+        const startY = state.startY;
+
+        if (state.drawLine && startX !== undefined && startY !== undefined) {
+          paintCollisionLine(startX, startY, x, y, state.drawTile, state.mask);
 
           state.startX = x;
           state.startY = y;
@@ -348,18 +344,22 @@ export const useCollisionPaintCursorMode = ({
         return true;
       }
 
+      let startX = state.startX;
+      let startY = state.startY;
+
+      if (startX === undefined || startY === undefined) {
+        startX = x;
+        startY = y;
+        state.startX = x;
+        state.startY = y;
+      }
+
       if (state.drawLine) {
-        const line = resolveAxisLockedLine(
-          state,
-          state.startX,
-          state.startY,
-          x,
-          y,
-        );
+        const line = resolveAxisLockedLine(state, startX, startY, x, y);
 
         paintCollisionLine(
-          state.startX,
-          state.startY,
+          startX,
+          startY,
           line.endX,
           line.endY,
           state.drawTile,
@@ -371,14 +371,7 @@ export const useCollisionPaintCursorMode = ({
         state.startX = line.endX;
         state.startY = line.endY;
       } else {
-        paintCollisionLine(
-          state.startX,
-          state.startY,
-          x,
-          y,
-          state.drawTile,
-          state.mask,
-        );
+        paintCollisionLine(startX, startY, x, y, state.drawTile, state.mask);
 
         state.startX = x;
         state.startY = y;
@@ -413,7 +406,13 @@ export const useCollisionPaintCursorMode = ({
       state.drawLine = e.raw.shiftKey;
       state.drawWall = e.raw.ctrlKey;
 
-      if (state.isDrawingSlope) {
+      if (
+        state.isDrawingSlope &&
+        state.startX !== undefined &&
+        state.startY !== undefined &&
+        x !== undefined &&
+        y !== undefined
+      ) {
         const { endX, endY, slopeIncline } = calculateSlope(
           state.startX,
           state.startY,
@@ -463,6 +462,10 @@ export const useCollisionPaintCursorMode = ({
       const state = stateRef.current;
       const x = state.currentX ?? state.startX;
       const y = state.currentY ?? state.startY;
+
+      if (x === undefined || y === undefined) {
+        return;
+      }
 
       updateSlopePreview(x, y, e.shiftKey, e.ctrlKey);
     };
