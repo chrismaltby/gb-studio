@@ -36,7 +36,7 @@ export interface SceneCursorMode {
   viewPriority: number;
   eventPriority: number;
   view?: SceneCursorViewModel;
-  onMouseDown?: SceneCursorMouseDownHandler;
+  onMouseDown: SceneCursorMouseDownHandler;
   onMouseMove?: SceneCursorMouseMoveHandler;
   onMouseUp?: SceneCursorMouseUpHandler;
   onCancel?: SceneCursorCancelHandler;
@@ -51,22 +51,25 @@ export const DEFAULT_SCENE_CURSOR_VIEW: SceneCursorViewModel = {
 export const getSceneCursorView = (
   modes: readonly SceneCursorMode[],
 ): SceneCursorViewModel => {
-  return (
-    [...modes]
-      .filter((mode) => mode.enabled && mode.view)
-      .sort((a, b) => b.viewPriority - a.viewPriority)[0]?.view ??
-    DEFAULT_SCENE_CURSOR_VIEW
-  );
+  let bestMode: SceneCursorMode | undefined;
+
+  for (const mode of modes) {
+    if (!mode.enabled || !mode.view) {
+      continue;
+    }
+
+    if (!bestMode || mode.viewPriority > bestMode.viewPriority) {
+      bestMode = mode;
+    }
+  }
+
+  return bestMode?.view ?? DEFAULT_SCENE_CURSOR_VIEW;
 };
 
 export const getSceneCursorEventModes = (
   modes: readonly SceneCursorMode[],
 ): SceneCursorMode[] => {
-  return [...modes]
-    .filter(
-      (mode) =>
-        mode.enabled &&
-        (mode.onMouseDown || mode.onMouseMove || mode.onMouseUp),
-    )
+  return modes
+    .filter((mode) => mode.enabled)
     .sort((a, b) => b.eventPriority - a.eventPriority);
 };

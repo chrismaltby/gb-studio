@@ -10,6 +10,7 @@ export const useDefaultCursorMode = (): SceneCursorMode => {
       viewPriority: -100,
       eventPriority: -100,
       view: DEFAULT_SCENE_CURSOR_VIEW,
+      onMouseDown: () => false,
     }),
     [],
   );
