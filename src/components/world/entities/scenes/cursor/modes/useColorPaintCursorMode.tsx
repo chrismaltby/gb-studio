@@ -230,17 +230,17 @@ export const useColorPaintCursorMode = ({
       const state = stateRef.current;
 
       if (!state.isPainting) {
-        return false;
+        return;
       }
 
-      if (!enabled || !e.isOverScene || tool !== TOOL_COLORS) {
-        return true;
+      if (!enabled || !e.isOverScene) {
+        return;
       }
 
       const { x, y } = e;
 
       if (state.currentX === x && state.currentY === y) {
-        return true;
+        return;
       }
 
       if (state.startX === undefined || state.startY === undefined) {
@@ -288,25 +288,23 @@ export const useColorPaintCursorMode = ({
 
       state.currentX = x;
       state.currentY = y;
-
-      return true;
     },
-    [enabled, paintColorLine, tool],
+    [enabled, paintColorLine],
   );
 
-  const onMouseUp = useCallback<SceneCursorMouseUpHandler>(() => {
+  const resetPaintState = useCallback(() => {
     const state = stateRef.current;
-
-    if (!state.isPainting) {
-      return false;
-    }
 
     state.isPainting = false;
     state.lockX = undefined;
     state.lockY = undefined;
-
-    return true;
   }, []);
+
+  const onMouseUp = useCallback<SceneCursorMouseUpHandler>(() => {
+    resetPaintState();
+  }, [resetPaintState]);
+
+  const onCancel = resetPaintState;
 
   const view = useMemo<SceneCursorViewModel>(() => {
     const size = paintCursorSize(selectedBrush);
@@ -329,7 +327,8 @@ export const useColorPaintCursorMode = ({
       onMouseDown,
       onMouseMove,
       onMouseUp,
+      onCancel,
     }),
-    [onMouseDown, onMouseMove, onMouseUp, tool, view],
+    [onCancel, onMouseDown, onMouseMove, onMouseUp, tool, view],
   );
 };

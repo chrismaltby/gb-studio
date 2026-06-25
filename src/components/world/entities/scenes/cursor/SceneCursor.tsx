@@ -9,7 +9,10 @@ import {
   getSceneCursorEventModes,
   getSceneCursorView,
 } from "./modes/SceneCursorMode";
-import type { SceneCursorEvent } from "./modes/SceneCursorMode";
+import type {
+  SceneCursorEvent,
+  SceneCursorMode,
+} from "./modes/SceneCursorMode";
 import { useSceneSelectCursorMode } from "./modes/useSceneSelectCursorMode";
 import { useActorPlacementCursorMode } from "./modes/useActorPlacementCursorMode";
 import { useCollisionPaintCursorMode } from "./modes/useCollisionPaintCursorMode";
@@ -58,6 +61,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
   const colorPaintCursorMode = useColorPaintCursorMode(cursorModeContext);
   const eraserCursorMode = useEraserCursorMode(cursorModeContext);
   const defaultCursorMode = useDefaultCursorMode();
+
+  const activeEventModeRef = useRef<SceneCursorMode | undefined>(undefined);
 
   const cursorModes = useMemo(
     () => [
@@ -116,6 +121,13 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     };
   }, [onKeyDown]);
 
+  useEffect(() => {
+    return () => {
+      activeEventModeRef.current?.onCancel?.();
+      activeEventModeRef.current = undefined;
+    };
+  }, []);
+
   const createCursorEvent = useCallback(
     <T,>(raw: T): SceneCursorEvent<T> => ({
       x,
@@ -161,8 +173,12 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
 
       const e = createCursorEvent(raw);
 
+      activeEventModeRef.current?.onCancel?.();
+      activeEventModeRef.current = undefined;
+
       for (const mode of eventModes) {
         if (mode.onMouseDown?.(e)) {
+          activeEventModeRef.current = mode;
           return;
         }
       }
@@ -172,28 +188,30 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
 
   const onWindowMouseMove = useCallback(
     (raw: MouseEvent) => {
-      const e = createCursorEvent(raw);
+      const activeMode = activeEventModeRef.current;
 
-      for (const mode of eventModes) {
-        if (mode.onMouseMove?.(e)) {
-          return;
-        }
+      if (!activeMode) {
+        return;
       }
+
+      activeMode.onMouseMove?.(createCursorEvent(raw));
     },
-    [createCursorEvent, eventModes],
+    [createCursorEvent],
   );
 
   const onWindowMouseUp = useCallback(
     (raw: MouseEvent) => {
-      const e = createCursorEvent(raw);
+      const activeMode = activeEventModeRef.current;
 
-      for (const mode of eventModes) {
-        if (mode.onMouseUp?.(e)) {
-          return;
-        }
+      activeEventModeRef.current = undefined;
+
+      if (!activeMode) {
+        return;
       }
+
+      activeMode.onMouseUp?.(createCursorEvent(raw));
     },
-    [createCursorEvent, eventModes],
+    [createCursorEvent],
   );
 
   useEffect(() => {
