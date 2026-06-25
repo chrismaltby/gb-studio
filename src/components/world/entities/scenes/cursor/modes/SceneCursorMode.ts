@@ -22,11 +22,13 @@ export type SceneCursorMouseDownHandler = (
 
 export type SceneCursorMouseMoveHandler = (
   e: SceneCursorEvent<MouseEvent>,
-) => boolean;
+) => void;
 
 export type SceneCursorMouseUpHandler = (
   e: SceneCursorEvent<MouseEvent>,
-) => boolean;
+) => void;
+
+export type SceneCursorCancelHandler = () => void;
 
 export interface SceneCursorMode {
   id: string;
@@ -37,6 +39,7 @@ export interface SceneCursorMode {
   onMouseDown?: SceneCursorMouseDownHandler;
   onMouseMove?: SceneCursorMouseMoveHandler;
   onMouseUp?: SceneCursorMouseUpHandler;
+  onCancel?: SceneCursorCancelHandler;
 }
 
 export const DEFAULT_SCENE_CURSOR_VIEW: SceneCursorViewModel = {

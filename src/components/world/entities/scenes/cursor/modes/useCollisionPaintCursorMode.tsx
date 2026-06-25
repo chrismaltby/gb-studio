@@ -317,13 +317,8 @@ export const useCollisionPaintCursorMode = ({
     (e) => {
       const state = stateRef.current;
 
-      if (
-        !enabled ||
-        !e.isOverScene ||
-        tool !== TOOL_COLLISIONS ||
-        !state.isPainting
-      ) {
-        return false;
+      if (!enabled || !e.isOverScene || !state.isPainting) {
+        return;
       }
 
       const { x, y } = e;
@@ -334,14 +329,14 @@ export const useCollisionPaintCursorMode = ({
 
         updateSlopeDirection(e.raw);
         updateSlopePreview(x, y, e.raw.shiftKey, e.raw.ctrlKey);
-        return true;
+        return;
       }
 
       state.drawLine = e.raw.shiftKey;
       state.drawWall = e.raw.ctrlKey;
 
       if (state.currentX === x && state.currentY === y) {
-        return true;
+        return;
       }
 
       let startX = state.startX;
@@ -379,25 +374,38 @@ export const useCollisionPaintCursorMode = ({
 
       state.currentX = x;
       state.currentY = y;
-
-      return true;
     },
     [
       enabled,
       paintCollisionLine,
       selectedBrush,
-      tool,
       updateSlopeDirection,
       updateSlopePreview,
     ],
   );
+
+  const resetPaintState = useCallback(() => {
+    const state = stateRef.current;
+
+    state.isPainting = false;
+    state.isDrawingSlope = false;
+    state.lockX = undefined;
+    state.lockY = undefined;
+
+    dispatch(
+      editorActions.setSlopePreview({
+        sceneId,
+        slopePreview: undefined,
+      }),
+    );
+  }, [dispatch, sceneId]);
 
   const onMouseUp = useCallback<SceneCursorMouseUpHandler>(
     (e) => {
       const state = stateRef.current;
 
       if (!state.isPainting && !state.isDrawingSlope) {
-        return false;
+        return;
       }
 
       const x = e.isOverScene ? e.x : (state.currentX ?? state.startX);
@@ -440,14 +448,9 @@ export const useCollisionPaintCursorMode = ({
         );
       }
 
-      state.isPainting = false;
-      state.isDrawingSlope = false;
-      state.lockX = undefined;
-      state.lockY = undefined;
-
-      return true;
+      resetPaintState();
     },
-    [dispatch, sceneId],
+    [dispatch, resetPaintState, sceneId],
   );
 
   useEffect(() => {
@@ -479,6 +482,8 @@ export const useCollisionPaintCursorMode = ({
     };
   }, [selectedBrush, tool, updateSlopePreview]);
 
+  const onCancel = resetPaintState;
+
   const view = useMemo<SceneCursorViewModel>(() => {
     const size = paintCursorSize(selectedBrush);
 
@@ -500,7 +505,8 @@ export const useCollisionPaintCursorMode = ({
       onMouseDown,
       onMouseMove,
       onMouseUp,
+      onCancel,
     }),
-    [onMouseDown, onMouseMove, onMouseUp, tool, view],
+    [onCancel, onMouseDown, onMouseMove, onMouseUp, tool, view],
   );
 };
