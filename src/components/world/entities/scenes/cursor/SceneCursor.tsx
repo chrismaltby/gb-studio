@@ -20,6 +20,7 @@ import { useColorPaintCursorMode } from "./modes/useColorPaintCursorMode";
 import { useDefaultCursorMode } from "./modes/useDefaultCursorMode";
 import { useEraserCursorMode } from "./modes/useEraserCursorMode";
 import { useTriggerPlacementCursorMode } from "./modes/useTriggerPlacementCursorMode";
+import { useSceneGridSelectionCursorMode } from "./modes/useSceneGridSelectionCursorMode";
 
 interface SceneCursorProps {
   sceneId: string;
@@ -60,6 +61,8 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
     useCollisionPaintCursorMode(cursorModeContext);
   const colorPaintCursorMode = useColorPaintCursorMode(cursorModeContext);
   const eraserCursorMode = useEraserCursorMode(cursorModeContext);
+  const sceneGridSelectionCursorMode =
+    useSceneGridSelectionCursorMode(cursorModeContext);
   const defaultCursorMode = useDefaultCursorMode();
 
   const activeEventModeRef = useRef<SceneCursorMode | undefined>(undefined);
@@ -72,6 +75,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       collisionPaintCursorMode,
       colorPaintCursorMode,
       eraserCursorMode,
+      sceneGridSelectionCursorMode,
       defaultCursorMode,
     ],
     [
@@ -81,6 +85,7 @@ const SceneCursor = ({ sceneId, enabled, sceneFiltered }: SceneCursorProps) => {
       collisionPaintCursorMode,
       colorPaintCursorMode,
       eraserCursorMode,
+      sceneGridSelectionCursorMode,
       defaultCursorMode,
     ],
   );

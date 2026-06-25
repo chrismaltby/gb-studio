@@ -300,3 +300,390 @@ test("Should be able to paint collision line", () => {
   expect(newState.scenes.entities["scene1"]?.collisions.length).toBe(50);
   expect(newState.scenes.entities["scene1"]?.collisions).toEqual(expectedCols);
 });
+
+describe("moveSceneCollisionSelection", () => {
+  test("Should be able to move a collision selection", () => {
+    const state: EntitiesState = {
+      ...initialState,
+      scenes: {
+        entities: {
+          scene1: {
+            ...dummySceneNormalized,
+            id: "scene1",
+            backgroundId: "bg1",
+            width: 4,
+            height: 3,
+            collisions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            actors: [],
+            triggers: [],
+          },
+        },
+        ids: ["scene1"],
+      },
+      backgrounds: {
+        entities: {
+          bg1: {
+            ...dummyBackground,
+            id: "bg1",
+            width: 4,
+            height: 3,
+          },
+        },
+        ids: ["bg1"],
+      },
+    };
+
+    const action = actions.moveSceneCollisionSelection({
+      sceneId: "scene1",
+      selection: { x: 0, y: 0, width: 2, height: 2 },
+      offset: { x: 1, y: 1 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState.scenes.entities["scene1"]?.collisions).toEqual([
+      0, 0, 3, 4, 0, 1, 2, 8, 9, 5, 6, 12,
+    ]);
+  });
+
+  test("Should not mutate the original collision array", () => {
+    const collisions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+    const state: EntitiesState = {
+      ...initialState,
+      scenes: {
+        entities: {
+          scene1: {
+            ...dummySceneNormalized,
+            id: "scene1",
+            backgroundId: "bg1",
+            width: 4,
+            height: 3,
+            collisions,
+            actors: [],
+            triggers: [],
+          },
+        },
+        ids: ["scene1"],
+      },
+      backgrounds: {
+        entities: {},
+        ids: [],
+      },
+    };
+
+    const action = actions.moveSceneCollisionSelection({
+      sceneId: "scene1",
+      selection: { x: 0, y: 0, width: 2, height: 2 },
+      offset: { x: 1, y: 1 },
+    });
+
+    reducer(state, action);
+
+    expect(collisions).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+  });
+
+  test("Should do nothing if scene does not exist", () => {
+    const state: EntitiesState = {
+      ...initialState,
+    };
+
+    const action = actions.moveSceneCollisionSelection({
+      sceneId: "missing",
+      selection: { x: 0, y: 0, width: 1, height: 1 },
+      offset: { x: 1, y: 1 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState).toEqual(state);
+  });
+});
+
+describe("clearSceneCollisionSelection", () => {
+  test("Should be able to clear a collision selection", () => {
+    const state: EntitiesState = {
+      ...initialState,
+      scenes: {
+        entities: {
+          scene1: {
+            ...dummySceneNormalized,
+            id: "scene1",
+            backgroundId: "bg1",
+            width: 4,
+            height: 3,
+            collisions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            actors: [],
+            triggers: [],
+          },
+        },
+        ids: ["scene1"],
+      },
+      backgrounds: {
+        entities: {},
+        ids: [],
+      },
+    };
+
+    const action = actions.clearSceneCollisionSelection({
+      sceneId: "scene1",
+      selection: { x: 1, y: 1, width: 2, height: 2 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState.scenes.entities["scene1"]?.collisions).toEqual([
+      1, 2, 3, 4, 5, 0, 0, 8, 9, 0, 0, 12,
+    ]);
+  });
+
+  test("Should clip collision selections that extend outside the scene", () => {
+    const state: EntitiesState = {
+      ...initialState,
+      scenes: {
+        entities: {
+          scene1: {
+            ...dummySceneNormalized,
+            id: "scene1",
+            backgroundId: "bg1",
+            width: 4,
+            height: 3,
+            collisions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            actors: [],
+            triggers: [],
+          },
+        },
+        ids: ["scene1"],
+      },
+      backgrounds: {
+        entities: {},
+        ids: [],
+      },
+    };
+
+    const action = actions.clearSceneCollisionSelection({
+      sceneId: "scene1",
+      selection: { x: 2, y: 1, width: 4, height: 4 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState.scenes.entities["scene1"]?.collisions).toEqual([
+      1, 2, 3, 4, 5, 6, 0, 0, 9, 10, 0, 0,
+    ]);
+  });
+});
+
+describe("moveSceneColorSelection", () => {
+  test("Should be able to move a color selection", () => {
+    const state: EntitiesState = {
+      ...initialState,
+      scenes: {
+        entities: {
+          scene1: {
+            ...dummySceneNormalized,
+            id: "scene1",
+            backgroundId: "bg1",
+            width: 4,
+            height: 3,
+            actors: [],
+            triggers: [],
+          },
+        },
+        ids: ["scene1"],
+      },
+      backgrounds: {
+        entities: {
+          bg1: {
+            ...dummyBackground,
+            id: "bg1",
+            width: 4,
+            height: 3,
+            tileColors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+          },
+        },
+        ids: ["bg1"],
+      },
+    };
+
+    const action = actions.moveSceneColorSelection({
+      sceneId: "scene1",
+      selection: { x: 0, y: 0, width: 2, height: 2 },
+      offset: { x: 1, y: 1 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState.backgrounds.entities["bg1"]?.tileColors).toEqual([
+      0, 0, 3, 4, 0, 1, 2, 8, 9, 5, 6, 12,
+    ]);
+  });
+
+  test("Should not change scene collisions when moving a color selection", () => {
+    const collisions = [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
+
+    const state: EntitiesState = {
+      ...initialState,
+      scenes: {
+        entities: {
+          scene1: {
+            ...dummySceneNormalized,
+            id: "scene1",
+            backgroundId: "bg1",
+            width: 4,
+            height: 3,
+            collisions,
+            actors: [],
+            triggers: [],
+          },
+        },
+        ids: ["scene1"],
+      },
+      backgrounds: {
+        entities: {
+          bg1: {
+            ...dummyBackground,
+            id: "bg1",
+            width: 4,
+            height: 3,
+            tileColors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+          },
+        },
+        ids: ["bg1"],
+      },
+    };
+
+    const action = actions.moveSceneColorSelection({
+      sceneId: "scene1",
+      selection: { x: 0, y: 0, width: 2, height: 2 },
+      offset: { x: 1, y: 1 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState.scenes.entities["scene1"]?.collisions).toEqual(collisions);
+  });
+
+  test("Should do nothing if scene background does not exist", () => {
+    const state: EntitiesState = {
+      ...initialState,
+      scenes: {
+        entities: {
+          scene1: {
+            ...dummySceneNormalized,
+            id: "scene1",
+            backgroundId: "missing",
+            width: 4,
+            height: 3,
+            actors: [],
+            triggers: [],
+          },
+        },
+        ids: ["scene1"],
+      },
+      backgrounds: {
+        entities: {},
+        ids: [],
+      },
+    };
+
+    const action = actions.moveSceneColorSelection({
+      sceneId: "scene1",
+      selection: { x: 0, y: 0, width: 1, height: 1 },
+      offset: { x: 1, y: 1 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState).toEqual(state);
+  });
+});
+
+describe("clearSceneColorSelection", () => {
+  test("Should be able to clear a color selection", () => {
+    const state: EntitiesState = {
+      ...initialState,
+      scenes: {
+        entities: {
+          scene1: {
+            ...dummySceneNormalized,
+            id: "scene1",
+            backgroundId: "bg1",
+            width: 4,
+            height: 3,
+            actors: [],
+            triggers: [],
+          },
+        },
+        ids: ["scene1"],
+      },
+      backgrounds: {
+        entities: {
+          bg1: {
+            ...dummyBackground,
+            id: "bg1",
+            width: 4,
+            height: 3,
+            tileColors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+          },
+        },
+        ids: ["bg1"],
+      },
+    };
+
+    const action = actions.clearSceneColorSelection({
+      sceneId: "scene1",
+      selection: { x: 1, y: 1, width: 2, height: 2 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState.backgrounds.entities["bg1"]?.tileColors).toEqual([
+      1, 2, 3, 4, 5, 0, 0, 8, 9, 0, 0, 12,
+    ]);
+  });
+
+  test("Should not change scene collisions when clearing a color selection", () => {
+    const collisions = [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
+
+    const state: EntitiesState = {
+      ...initialState,
+      scenes: {
+        entities: {
+          scene1: {
+            ...dummySceneNormalized,
+            id: "scene1",
+            backgroundId: "bg1",
+            width: 4,
+            height: 3,
+            collisions,
+            actors: [],
+            triggers: [],
+          },
+        },
+        ids: ["scene1"],
+      },
+      backgrounds: {
+        entities: {
+          bg1: {
+            ...dummyBackground,
+            id: "bg1",
+            width: 4,
+            height: 3,
+            tileColors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+          },
+        },
+        ids: ["bg1"],
+      },
+    };
+
+    const action = actions.clearSceneColorSelection({
+      sceneId: "scene1",
+      selection: { x: 1, y: 1, width: 2, height: 2 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState.scenes.entities["scene1"]?.collisions).toEqual(collisions);
+  });
+});
