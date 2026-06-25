@@ -407,6 +407,7 @@ const editorSlice = createSlice({
       state.type = "world";
       state.worldFocus = true;
       state.sceneSelectionIds = [];
+      state.scenePaintSelection = undefined;
     },
 
     selectSidebar: (state, _action: PayloadAction<void>) => {
@@ -475,6 +476,7 @@ const editorSlice = createSlice({
       state.previewAsSceneId = action.payload.sceneId;
       state.worldFocus = true;
       state.entityId = "";
+      state.scenePaintSelection = undefined;
       if (!state.sceneSelectionIds.includes(state.scene)) {
         state.sceneSelectionIds = [action.payload.sceneId];
       }
@@ -486,6 +488,7 @@ const editorSlice = createSlice({
       state.scene = "";
       state.entityId = action.payload.noteId;
       state.searchTerm = "";
+      state.scenePaintSelection = undefined;
       if (!state.sceneSelectionIds.includes(state.entityId)) {
         state.sceneSelectionIds = [action.payload.noteId];
       }
