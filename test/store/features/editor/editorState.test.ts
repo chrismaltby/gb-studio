@@ -1206,3 +1206,93 @@ describe("editor reducer", () => {
     });
   });
 });
+
+describe("scenePaintSelection", () => {
+  test("Should clear scene paint selection when clearing collision selection for the same scene", () => {
+    const state: EditorState = {
+      ...initialState,
+      scenePaintSelection: {
+        sceneId: "scene1",
+        mode: "collisions",
+        selection: { x: 1, y: 1, width: 2, height: 2 },
+        offset: { x: 0, y: 0 },
+      },
+    };
+
+    const action = entitiesActions.clearSceneCollisionSelection({
+      sceneId: "scene1",
+      selection: { x: 1, y: 1, width: 2, height: 2 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState.scenePaintSelection).toBeUndefined();
+  });
+
+  test("Should clear scene paint selection when clearing color selection for the same scene", () => {
+    const state: EditorState = {
+      ...initialState,
+      scenePaintSelection: {
+        sceneId: "scene1",
+        mode: "colors",
+        selection: { x: 1, y: 1, width: 2, height: 2 },
+        offset: { x: 0, y: 0 },
+      },
+    };
+
+    const action = entitiesActions.clearSceneColorSelection({
+      sceneId: "scene1",
+      selection: { x: 1, y: 1, width: 2, height: 2 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState.scenePaintSelection).toBeUndefined();
+  });
+
+  test("Should not clear scene paint selection when clearing collision selection for another scene", () => {
+    const scenePaintSelection = {
+      sceneId: "scene1",
+      mode: "collisions" as const,
+      selection: { x: 1, y: 1, width: 2, height: 2 },
+      offset: { x: 0, y: 0 },
+    };
+
+    const state: EditorState = {
+      ...initialState,
+      scenePaintSelection,
+    };
+
+    const action = entitiesActions.clearSceneCollisionSelection({
+      sceneId: "scene2",
+      selection: { x: 1, y: 1, width: 2, height: 2 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState.scenePaintSelection).toEqual(scenePaintSelection);
+  });
+
+  test("Should not clear scene paint selection when clearing color selection for another scene", () => {
+    const scenePaintSelection = {
+      sceneId: "scene1",
+      mode: "colors" as const,
+      selection: { x: 1, y: 1, width: 2, height: 2 },
+      offset: { x: 0, y: 0 },
+    };
+
+    const state: EditorState = {
+      ...initialState,
+      scenePaintSelection,
+    };
+
+    const action = entitiesActions.clearSceneColorSelection({
+      sceneId: "scene2",
+      selection: { x: 1, y: 1, width: 2, height: 2 },
+    });
+
+    const newState = reducer(state, action);
+
+    expect(newState.scenePaintSelection).toEqual(scenePaintSelection);
+  });
+});

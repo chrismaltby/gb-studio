@@ -20,6 +20,7 @@ import {
   CheckIcon,
   BlankIcon,
   TileValueIcon,
+  SelectionIcon,
 } from "ui/icons/Icons";
 import {
   TOOL_COLORS,
@@ -29,6 +30,7 @@ import {
   BRUSH_16PX,
   BRUSH_FILL,
   BRUSH_MAGIC,
+  BRUSH_SELECTION,
   DMG_PALETTE,
   TILE_COLOR_PROP_PRIORITY,
   BRUSH_SLOPE,
@@ -577,6 +579,17 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
           >
             <WandIcon />
           </Button>
+          {(selectedTool === TOOL_COLLISIONS ||
+            selectedTool === TOOL_COLORS) && (
+            <Button
+              variant="transparent"
+              onClick={() => setBrush(BRUSH_SELECTION)}
+              active={selectedBrush === BRUSH_SELECTION}
+              title={l10n("TOOL_SELECT_LABEL")}
+            >
+              <SelectionIcon />
+            </Button>
+          )}
           {showTileTypes && slopesAvailable && (
             <Button
               variant="transparent"
@@ -599,7 +612,10 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                 key={paletteIndex}
                 onClick={setSelectedPalette(paletteIndex)}
                 onMouseDown={startReplacePalette(paletteIndex)}
-                active={paletteIndex === selectedPalette}
+                active={
+                  paletteIndex === selectedPalette &&
+                  selectedBrush !== BRUSH_SELECTION
+                }
                 title={`${l10n("TOOL_PALETTE_N", {
                   number: paletteIndex + 1,
                 })} (${paletteIndex + 1}) - ${paletteName(
@@ -632,7 +648,10 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                   ? setSelectedPalette(TILE_COLOR_PROP_PRIORITY)
                   : setSelectedPalette(0)
               }
-              active={TILE_COLOR_PROP_PRIORITY === selectedPalette}
+              active={
+                TILE_COLOR_PROP_PRIORITY === selectedPalette &&
+                selectedBrush !== BRUSH_SELECTION
+              }
               title={l10n("TOOL_TILE_PRIORITY")}
             >
               <PriorityTileIcon />
@@ -668,7 +687,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                         variant="transparent"
                         key={tileDef.key}
                         onClick={setSelectedPalette(tileTypeIndex)}
-                        active={selected}
+                        active={selected && selectedBrush !== BRUSH_SELECTION}
                         title={
                           tileTypeIndex < 6
                             ? `${tileDef.name} (${tileTypeIndex + 1})`

@@ -100,6 +100,7 @@ export const BRUSH_16PX = "16px";
 export const BRUSH_FILL = "fill";
 export const BRUSH_MAGIC = "magic";
 export const BRUSH_SLOPE = "slope";
+export const BRUSH_SELECTION = "selection";
 
 // Collisions
 export const COLLISIONS_EXTRA_SYMBOLS = "89ABCDEF";

@@ -12,6 +12,7 @@ import {
   MIDDLE_MOUSE,
   TILE_COLOR_PROP_PRIORITY,
   TOOL_SELECT,
+  BRUSH_SELECTION,
 } from "consts";
 import SceneInfo from "./SceneInfo";
 import {
@@ -38,6 +39,7 @@ import { useEnabledSceneTypeIds } from "store/features/engine/hooks/useEnabledSc
 import SceneScreenGrid from "components/world/entities/scenes/SceneScreenGrid";
 import { MonoOBJPalette } from "shared/lib/resources/types";
 import { useContextMenu } from "ui/hooks/use-context-menu";
+import { moveGridSelection } from "shared/lib/tiles/gridSelection";
 
 const TILE_SIZE = 8;
 
@@ -224,6 +226,20 @@ const SceneErrorOverlay = styled.div`
   }
 `;
 
+const TileSelectionOutline = styled.div`
+  position: absolute;
+  z-index: 90;
+  box-sizing: border-box;
+  border: 1px solid ${(props) => props.theme.colors.highlightText};
+  outline: 1px solid ${(props) => props.theme.colors.highlight};
+  background: color-mix(
+    in srgb,
+    ${(props) => props.theme.colors.highlight} 15%,
+    transparent
+  );
+  pointer-events: none;
+`;
+
 const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const dispatch = useAppDispatch();
   const store = useAppStore();
@@ -301,7 +317,80 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   }, [scene?.monoOBP0, defaultMonoOBP0, scene?.monoOBP1, defaultMonoOBP1]);
 
   const tool = useAppSelector((state) => state.editor.tool);
+  const selectedBrush = useAppSelector((state) => state.editor.selectedBrush);
+
   const showLayers = useAppSelector((state) => state.editor.showLayers);
+
+  const scenePaintSelection = useAppSelector((state) => {
+    const selection = state.editor.scenePaintSelection;
+    return selection?.sceneId === id ? selection : undefined;
+  });
+
+  const scenePaintSelectionMode =
+    tool === TOOL_COLLISIONS
+      ? "collisions"
+      : tool === TOOL_COLORS
+        ? "colors"
+        : undefined;
+
+  const activeScenePaintSelection =
+    scenePaintSelection?.mode === scenePaintSelectionMode
+      ? scenePaintSelection
+      : undefined;
+
+  const selectionOffsetActive =
+    !!activeScenePaintSelection &&
+    (activeScenePaintSelection.offset.x !== 0 ||
+      activeScenePaintSelection.offset.y !== 0);
+
+  const tileColors = useMemo(
+    () => background?.tileColors ?? [],
+    [background?.tileColors],
+  );
+
+  const collisionSelectionPreview = useMemo(() => {
+    if (
+      !scene ||
+      !activeScenePaintSelection ||
+      activeScenePaintSelection.mode !== "collisions" ||
+      !selectionOffsetActive
+    ) {
+      return undefined;
+    }
+
+    return moveGridSelection(
+      scene.collisions,
+      scene.width,
+      scene.height,
+      activeScenePaintSelection.selection,
+      activeScenePaintSelection.offset,
+      0,
+    );
+  }, [scene, activeScenePaintSelection, selectionOffsetActive]);
+
+  const colorSelectionPreview = useMemo(() => {
+    if (
+      !scene ||
+      !activeScenePaintSelection ||
+      activeScenePaintSelection.mode !== "colors" ||
+      !selectionOffsetActive
+    ) {
+      return undefined;
+    }
+
+    return moveGridSelection(
+      tileColors,
+      scene.width,
+      scene.height,
+      activeScenePaintSelection.selection,
+      activeScenePaintSelection.offset,
+      0,
+    );
+  }, [scene, activeScenePaintSelection, selectionOffsetActive, tileColors]);
+
+  const displayCollisions =
+    collisionSelectionPreview ?? scene?.collisions ?? [];
+  const displayTileColors = colorSelectionPreview ?? tileColors;
 
   const showEntities =
     (tool !== TOOL_COLORS &&
@@ -398,11 +487,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         )
       : 0;
   });
-
-  const tileColors = useMemo(
-    () => background?.tileColors ?? [],
-    [background?.tileColors],
-  );
 
   const palettesLookup = useAppSelector((state) =>
     paletteSelectors.selectEntities(state),
@@ -732,7 +816,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
                     ? assetURL("backgrounds", tilesOverride)
                     : assetURL("backgrounds", background)
                 }
-                tiles={tileColors}
+                tiles={displayTileColors}
                 palettes={palettes}
                 previewAsMono={previewAsMono}
                 monoBGP={monoBGP}
@@ -745,7 +829,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
             <SceneCollisions
               width={scene.width}
               height={scene.height}
-              collisions={scene.collisions}
+              collisions={displayCollisions}
               sceneTypeKey={scene.type}
             />
             {selected && slopePreview && (
@@ -782,7 +866,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
             <ScenePriorityMap
               width={scene.width}
               height={scene.height}
-              tileColors={tileColors}
+              tileColors={displayTileColors}
             />
           </SceneOverlay>
         )}
@@ -840,6 +924,23 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
           <SceneErrorOverlay>
             <WarningIcon />
           </SceneErrorOverlay>
+        )}
+
+        {selectedBrush === BRUSH_SELECTION && activeScenePaintSelection && (
+          <TileSelectionOutline
+            style={{
+              left:
+                (activeScenePaintSelection.selection.x +
+                  activeScenePaintSelection.offset.x) *
+                TILE_SIZE,
+              top:
+                (activeScenePaintSelection.selection.y +
+                  activeScenePaintSelection.offset.y) *
+                TILE_SIZE,
+              width: activeScenePaintSelection.selection.width * TILE_SIZE,
+              height: activeScenePaintSelection.selection.height * TILE_SIZE,
+            }}
+          />
         )}
 
         {editable && (hovered || selected) && (

@@ -15,6 +15,7 @@ import {
   DRAG_PLAYER,
   BRUSH_SLOPE,
   MAX_ZOOM_LEVEL,
+  BRUSH_SELECTION,
 } from "consts";
 import { zoomIn, zoomOut } from "shared/lib/helpers/zoom";
 import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
@@ -28,6 +29,8 @@ import type { NavigationSection } from "store/features/navigation/navigationStat
 import type { RootState } from "store/storeTypes";
 import { selectScriptIds } from "store/features/entities/entitiesState";
 import { Variable } from "shared/lib/resources/types";
+import { ActionTypes } from "redux-undo";
+import type { GridOffset, GridSelection } from "shared/lib/tiles/gridSelection";
 
 export type Tool =
   | "triggers"
@@ -39,7 +42,7 @@ export type Tool =
   | "eraser"
   | "select";
 
-export type Brush = "8px" | "16px" | "fill" | "magic" | "slope";
+export type Brush = "8px" | "16px" | "fill" | "magic" | "slope" | "selection";
 
 export type EditorSelectionType =
   | "world"
@@ -79,6 +82,15 @@ export interface SlopePreview {
   endY: number;
   offset: boolean;
   slopeIncline: SlopeIncline;
+}
+
+export type SceneGridSelectionMode = "collisions" | "colors";
+
+export interface ScenePaintSelection {
+  sceneId: string;
+  mode: SceneGridSelectionMode;
+  selection: GridSelection;
+  offset: GridOffset;
 }
 
 export interface EditorState {
@@ -154,6 +166,7 @@ export interface EditorState {
   showScriptUses: boolean;
   prefabId: string;
   settingsScrollTop: number;
+  scenePaintSelection?: ScenePaintSelection;
 }
 
 export const initialState: EditorState = {
@@ -228,6 +241,7 @@ export const initialState: EditorState = {
   showScriptUses: false,
   prefabId: "",
   settingsScrollTop: 0,
+  scenePaintSelection: undefined,
 };
 
 const toggleEntitySelection = (
@@ -354,6 +368,9 @@ const editorSlice = createSlice({
       action: PayloadAction<{ paletteIndex: number }>,
     ) => {
       state.selectedPalette = action.payload.paletteIndex;
+      if (state.selectedBrush === BRUSH_SELECTION) {
+        state.selectedBrush = BRUSH_8PX;
+      }
     },
 
     setSelectedTileType: (
@@ -362,6 +379,9 @@ const editorSlice = createSlice({
     ) => {
       state.selectedTileType = action.payload.tileType;
       state.selectedTileMask = action.payload.tileMask;
+      if (state.selectedBrush === BRUSH_SELECTION) {
+        state.selectedBrush = BRUSH_8PX;
+      }
     },
 
     setShowLayers: (state, action: PayloadAction<{ showLayers: boolean }>) => {
@@ -1019,6 +1039,12 @@ const editorSlice = createSlice({
     setSettingsScrollTop: (state, action: PayloadAction<number>) => {
       state.settingsScrollTop = action.payload;
     },
+    setScenePaintSelection: (
+      state,
+      action: PayloadAction<ScenePaintSelection | undefined>,
+    ) => {
+      state.scenePaintSelection = action.payload;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -1235,6 +1261,25 @@ const editorSlice = createSlice({
           if (!state.sceneSelectionIds.includes(state.scene)) {
             state.sceneSelectionIds = [action.payload.sceneId];
           }
+        },
+      )
+      // On clear selection tiles from scene also remove selection
+      .addMatcher(
+        (action): action is PayloadAction<{ sceneId: string }> =>
+          entitiesActions.clearSceneCollisionSelection.match(action) ||
+          entitiesActions.clearSceneColorSelection.match(action),
+        (state, action) => {
+          if (state.scenePaintSelection?.sceneId === action.payload.sceneId) {
+            state.scenePaintSelection = undefined;
+          }
+        },
+      )
+      // On undo/redo clear paint selection
+      .addMatcher(
+        (action) =>
+          action.type === ActionTypes.UNDO || action.type === ActionTypes.REDO,
+        (state) => {
+          state.scenePaintSelection = undefined;
         },
       ),
 });
