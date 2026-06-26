@@ -1,15 +1,22 @@
-import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import { useAppSelector } from "store/hooks";
-import { TILE_SIZE } from "consts";
 
 const VIEW_MARGIN = 400;
-const SCENE_LABEL_MARGIN = 50;
 
-export const useSceneVisibleInViewport = (sceneId: string) => {
+interface UseRectVisibleInWorldViewportArgs {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export const useRectVisibleInWorldViewport = ({
+  x,
+  y,
+  width,
+  height,
+}: UseRectVisibleInWorldViewportArgs) => {
   return useAppSelector((state) => {
-    const scene = sceneSelectors.selectById(state, sceneId);
-
-    if (!scene) {
+    if (width <= 0 || height <= 0) {
       return false;
     }
 
@@ -37,14 +44,11 @@ export const useSceneVisibleInViewport = (sceneId: string) => {
 
     const viewBoundsHeight = (worldViewHeight + VIEW_MARGIN * 2) / zoomRatio;
 
-    const sceneWidthPx = scene.width * TILE_SIZE;
-    const sceneHeightPx = scene.height * TILE_SIZE;
-
     return (
-      scene.x + sceneWidthPx > viewBoundsX &&
-      scene.x < viewBoundsX + viewBoundsWidth &&
-      scene.y + sceneHeightPx + SCENE_LABEL_MARGIN > viewBoundsY &&
-      scene.y < viewBoundsY + viewBoundsHeight
+      x + width > viewBoundsX &&
+      x < viewBoundsX + viewBoundsWidth &&
+      y + height > viewBoundsY &&
+      y < viewBoundsY + viewBoundsHeight
     );
   });
 };

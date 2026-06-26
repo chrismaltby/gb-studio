@@ -13,9 +13,11 @@ import { LabelColor } from "shared/lib/resources/types";
 import l10n from "shared/lib/lang/l10n";
 import { useContextMenu } from "ui/hooks/use-context-menu";
 import { useWorldEntityDrag } from "components/world/hooks/useWorldEntityDrag";
+import { useRectVisibleInWorldViewport } from "components/world/hooks/useRectVisibleInWorldViewport";
 
 const ALIGNMENT_OFFSET_X = -1;
 const ALIGNMENT_OFFSET_Y = 3;
+const NOTE_LABEL_MARGIN = 50;
 
 interface NoteViewProps {
   id: string;
@@ -213,32 +215,11 @@ const NoteView = memo(({ id, index, editable }: NoteViewProps) => {
   const zoom = useAppSelector((state) => state.editor.zoom);
   const zoomRatio = zoom / 100;
 
-  const visible = useAppSelector((state) => {
-    const worldScrollX = state.editor.worldScrollX;
-    const worldScrollY = state.editor.worldScrollY;
-    const worldViewWidth = state.editor.worldViewWidth;
-    const worldViewHeight = state.editor.worldViewHeight;
-    const sidebarWidth = state.editor.worldSidebarWidth;
-    const navigatorWidth = state.project.present.settings.showNavigator
-      ? state.editor.navigatorSidebarWidth
-      : 0;
-
-    const viewMargin = 400;
-
-    const viewBoundsX = (worldScrollX - viewMargin) / zoomRatio;
-    const viewBoundsY = (worldScrollY - viewMargin) / zoomRatio;
-
-    const viewBoundsWidth =
-      (worldViewWidth - sidebarWidth - navigatorWidth + viewMargin * 2) /
-      zoomRatio;
-    const viewBoundsHeight = (worldViewHeight + viewMargin * 2) / zoomRatio;
-
-    return note
-      ? note.x + note.width * 8 > viewBoundsX &&
-          note.x < viewBoundsX + viewBoundsWidth &&
-          note.y + note.height * 8 + 50 > viewBoundsY &&
-          note.y < viewBoundsY + viewBoundsHeight
-      : false;
+  const visible = useRectVisibleInWorldViewport({
+    x: note?.x ?? 0,
+    y: note?.y ?? 0,
+    width: (note?.width ?? 0) * TILE_SIZE,
+    height: (note?.height ?? 0) * TILE_SIZE + NOTE_LABEL_MARGIN,
   });
 
   const onSelect = useCallback(() => {
