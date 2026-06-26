@@ -1,21 +1,15 @@
 import React, { memo, useCallback, useMemo, useRef } from "react";
-import WorldActor from "./actors/ActorView";
-import TriggerView from "./triggers/TriggerView";
 import SceneCursor from "./cursor/SceneCursor";
 import {
   TOOL_COLORS,
   TOOL_COLLISIONS,
   TOOL_ERASER,
-  DMG_PALETTE,
   TOOL_SELECT,
   BRUSH_SELECTION,
   TILE_SIZE,
 } from "consts";
 import SceneInfo from "./SceneInfo";
-import {
-  sceneSelectors,
-  paletteSelectors,
-} from "store/features/entities/entitiesSelectors";
+import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { SceneEventHelper } from "./SceneEventHelper";
@@ -25,17 +19,16 @@ import { LabelSpan } from "ui/buttons/LabelButton";
 import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import renderSceneContextMenu from "components/world/contextMenus/renderSceneContextMenu";
 import SceneScrollBounds from "./SceneScrollBounds";
-import { SceneContext } from "components/script/context/SceneContext";
 import { WarningIcon } from "ui/icons/Icons";
 import { useEnabledSceneTypeIds } from "store/features/engine/hooks/useEnabledSceneTypeIds";
 import SceneScreenGrid from "components/world/entities/scenes/SceneScreenGrid";
-import { MonoOBJPalette } from "shared/lib/resources/types";
 import { useContextMenu } from "ui/hooks/use-context-menu";
 import { SceneParallaxOverlay } from "components/world/entities/scenes/SceneParallaxOverlay";
 import { SceneTitle } from "components/world/entities/scenes/SceneTitle";
 import { useWorldEntityDrag } from "components/world/hooks/useWorldEntityDrag";
 import { useRectVisibleInWorldViewport } from "components/world/hooks/useRectVisibleInWorldViewport";
 import { SceneTileLayers } from "components/world/entities/scenes/SceneTileLayers";
+import { SceneEntities } from "components/world/entities/scenes/SceneEntities";
 
 const SCENE_LABEL_MARGIN = 50;
 
@@ -215,9 +208,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const store = useAppStore();
 
   const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
-  const defaultSpriteMode = useAppSelector(
-    (state) => state.project.present.settings.spriteMode,
-  );
   const enabledSceneTypeIds = useEnabledSceneTypeIds();
   const sceneTypeEnabled = useMemo(() => {
     return enabledSceneTypeIds.includes(scene?.type);
@@ -253,18 +243,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const gbcEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono",
   );
-  const defaultMonoOBP0 = useAppSelector(
-    (state) => state.project.present.settings.defaultMonoOBP0,
-  );
-  const defaultMonoOBP1 = useAppSelector(
-    (state) => state.project.present.settings.defaultMonoOBP1,
-  );
-  const monoOBJPalettes = useMemo(() => {
-    return [
-      scene?.monoOBP0 || defaultMonoOBP0,
-      scene?.monoOBP1 || defaultMonoOBP1,
-    ] as [MonoOBJPalette, MonoOBJPalette];
-  }, [scene?.monoOBP0, defaultMonoOBP0, scene?.monoOBP1, defaultMonoOBP1]);
 
   const tool = useAppSelector((state) => state.editor.tool);
   const selectedBrush = useAppSelector((state) => state.editor.selectedBrush);
@@ -305,46 +283,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     width: (scene?.width ?? 0) * TILE_SIZE,
     height: (scene?.height ?? 0) * TILE_SIZE + SCENE_LABEL_MARGIN,
   });
-
-  const palettesLookup = useAppSelector((state) =>
-    paletteSelectors.selectEntities(state),
-  );
-
-  const defaultSpritePaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultSpritePaletteIds ?? [],
-  );
-
-  const getSpritePalette = useCallback(
-    (paletteIndex: number) => {
-      const sceneSpritePaletteIds = scene?.spritePaletteIds ?? [];
-      if (sceneSpritePaletteIds[paletteIndex] === "dmg") {
-        return DMG_PALETTE;
-      }
-      return (
-        palettesLookup[sceneSpritePaletteIds[paletteIndex]] ||
-        palettesLookup[defaultSpritePaletteIds[paletteIndex]] ||
-        DMG_PALETTE
-      );
-    },
-    [defaultSpritePaletteIds, palettesLookup, scene?.spritePaletteIds],
-  );
-
-  const spritePalettes = useMemo(
-    () =>
-      gbcEnabled
-        ? [
-            getSpritePalette(0),
-            getSpritePalette(1),
-            getSpritePalette(2),
-            getSpritePalette(3),
-            getSpritePalette(4),
-            getSpritePalette(5),
-            getSpritePalette(6),
-            getSpritePalette(7),
-          ]
-        : undefined,
-    [gbcEnabled, getSpritePalette],
-  );
 
   const hovered = useAppSelector((state) => state.editor.hover.sceneId === id);
 
@@ -547,30 +485,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
             sceneFiltered={sceneFiltered}
           />
         )}
-        {showEntities &&
-          scene.triggers.map((triggerId) => (
-            <TriggerView
-              key={triggerId}
-              id={triggerId}
-              sceneId={id}
-              editable={editable}
-            />
-          ))}
-        <SceneContext.Provider
-          value={{ spriteMode: scene.spriteMode ?? defaultSpriteMode }}
-        >
-          {showEntities &&
-            scene.actors.map((actorId) => (
-              <WorldActor
-                key={actorId}
-                id={actorId}
-                sceneId={id}
-                palettes={spritePalettes}
-                monoPalettes={monoOBJPalettes}
-                editable={editable}
-              />
-            ))}
-        </SceneContext.Provider>
+        {showEntities && <SceneEntities sceneId={id} editable={editable} />}
         {selected && (
           <SceneOverlay $noPointerEvents>
             <SceneEventHelper scene={scene} />
