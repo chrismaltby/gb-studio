@@ -30,6 +30,11 @@ import clamp from "shared/lib/helpers/clamp";
 import { useDebounce } from "ui/hooks/use-debounce";
 import { maxSpriteTilesForBackgroundTilesLength } from "shared/lib/helpers/sprites";
 import { walkNormalizedSceneScripts } from "shared/lib/scripts/walk";
+import { SceneMetadata } from "components/world/entities/scenes/SceneMetadata";
+
+interface SceneInfoProps {
+  sceneId: string;
+}
 
 interface SceneInfoWrapperProps {
   $loaded: boolean;
@@ -95,13 +100,11 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
       : ""}
 `;
 
-const SceneInfo = () => {
+const SceneInfo = ({ sceneId }: SceneInfoProps) => {
   const store = useAppStore();
 
-  const selectedSceneId = useAppSelector((state) => state.editor.scene);
-
   const scene = useAppSelectorPick(
-    (state) => sceneSelectors.selectById(state, selectedSceneId),
+    (state) => sceneSelectors.selectById(state, sceneId),
     [
       "id",
       "type",
@@ -160,7 +163,7 @@ const SceneInfo = () => {
 
   const recalculateCounts = useCallback(() => {
     const state = store.getState();
-    const scene = sceneSelectors.selectById(state, selectedSceneId);
+    const scene = sceneSelectors.selectById(state, sceneId);
 
     if (!scene) {
       return;
@@ -399,7 +402,7 @@ const SceneInfo = () => {
     setLoaded(true);
   }, [
     store,
-    selectedSceneId,
+    sceneId,
     spriteSheetsLookup,
     scriptEventsLookup,
     actorsLookup,
@@ -453,83 +456,85 @@ const SceneInfo = () => {
       : MAX_LOGO_SPRITE_TILES;
 
   return (
-    <SceneInfoWrapper $loaded={loaded}>
-      <TooltipWrapper
-        tooltip={
-          <>
-            <div>{l10n("FIELD_NUM_ACTORS_LABEL")}</div>
-            <div>
-              {l10n("FIELD_ACTORS_COUNT", {
-                actorCount: String(actorCount),
-                maxActors: String(maxActors),
-              })}
-            </div>
-            {actorWarnings.length > 0 && <div>{l10n("FIELD_WARNING")}</div>}
-            {actorWarnings.length > 0 &&
-              actorWarnings.map((warning) => (
-                <div key={warning}>{warning}</div>
-              ))}
-          </>
-        }
-      >
-        <SceneInfoButton $warning={actorWarning} $error={actorError}>
-          A: {actorCount}/{maxActors}
-        </SceneInfoButton>
-      </TooltipWrapper>
-
-      <TooltipWrapper
-        tooltip={
-          <>
-            <div>{l10n("FIELD_NUM_SPRITE_TILES_LABEL")}</div>
-            <div>
-              {l10n("FIELD_SPRITE_TILES_COUNT", {
-                tileCount: String(tileCount),
-                maxTiles: String(maxSpriteTiles),
-              })}
-            </div>
-            {tileCount > maxSpriteTiles && <div>{l10n("FIELD_WARNING")}</div>}
-            {tileCount > maxSpriteTiles && (
-              <div>{l10n("WARNING_SPRITE_TILES_LIMIT")}</div>
-            )}
-          </>
-        }
-      >
-        <SceneInfoButton
-          $warning={tileCount === maxSpriteTiles}
-          $error={tileCount > maxSpriteTiles}
+    <SceneMetadata sceneId={sceneId}>
+      <SceneInfoWrapper $loaded={loaded}>
+        <TooltipWrapper
+          tooltip={
+            <>
+              <div>{l10n("FIELD_NUM_ACTORS_LABEL")}</div>
+              <div>
+                {l10n("FIELD_ACTORS_COUNT", {
+                  actorCount: String(actorCount),
+                  maxActors: String(maxActors),
+                })}
+              </div>
+              {actorWarnings.length > 0 && <div>{l10n("FIELD_WARNING")}</div>}
+              {actorWarnings.length > 0 &&
+                actorWarnings.map((warning) => (
+                  <div key={warning}>{warning}</div>
+                ))}
+            </>
+          }
         >
-          S: {tileCount}/{maxSpriteTiles}
-        </SceneInfoButton>
-      </TooltipWrapper>
+          <SceneInfoButton $warning={actorWarning} $error={actorError}>
+            A: {actorCount}/{maxActors}
+          </SceneInfoButton>
+        </TooltipWrapper>
 
-      <TooltipWrapper
-        tooltip={
-          <>
-            <div>{l10n("FIELD_NUM_TRIGGERS_LABEL")}</div>
-            <div>
-              {l10n("FIELD_TRIGGERS_COUNT", {
-                triggerCount: String(triggerCount),
-                maxTriggers: String(maxTriggers),
-              })}
-            </div>
-            {triggerCount > maxTriggers && <div>{l10n("FIELD_WARNING")}</div>}
-            {triggerCount > maxTriggers && (
-              <div>{l10n("WARNING_TRIGGERS_LIMIT")}</div>
-            )}
-            {scene.type === "LOGO" && (
-              <div>{l10n("WARNING_LOGO_ENTITIES")}</div>
-            )}
-          </>
-        }
-      >
-        <SceneInfoButton
-          $warning={maxTriggers > 0 && triggerCount === maxTriggers}
-          $error={triggerCount > maxTriggers}
+        <TooltipWrapper
+          tooltip={
+            <>
+              <div>{l10n("FIELD_NUM_SPRITE_TILES_LABEL")}</div>
+              <div>
+                {l10n("FIELD_SPRITE_TILES_COUNT", {
+                  tileCount: String(tileCount),
+                  maxTiles: String(maxSpriteTiles),
+                })}
+              </div>
+              {tileCount > maxSpriteTiles && <div>{l10n("FIELD_WARNING")}</div>}
+              {tileCount > maxSpriteTiles && (
+                <div>{l10n("WARNING_SPRITE_TILES_LIMIT")}</div>
+              )}
+            </>
+          }
         >
-          T: {triggerCount}/{maxTriggers}
-        </SceneInfoButton>
-      </TooltipWrapper>
-    </SceneInfoWrapper>
+          <SceneInfoButton
+            $warning={tileCount === maxSpriteTiles}
+            $error={tileCount > maxSpriteTiles}
+          >
+            S: {tileCount}/{maxSpriteTiles}
+          </SceneInfoButton>
+        </TooltipWrapper>
+
+        <TooltipWrapper
+          tooltip={
+            <>
+              <div>{l10n("FIELD_NUM_TRIGGERS_LABEL")}</div>
+              <div>
+                {l10n("FIELD_TRIGGERS_COUNT", {
+                  triggerCount: String(triggerCount),
+                  maxTriggers: String(maxTriggers),
+                })}
+              </div>
+              {triggerCount > maxTriggers && <div>{l10n("FIELD_WARNING")}</div>}
+              {triggerCount > maxTriggers && (
+                <div>{l10n("WARNING_TRIGGERS_LIMIT")}</div>
+              )}
+              {scene.type === "LOGO" && (
+                <div>{l10n("WARNING_LOGO_ENTITIES")}</div>
+              )}
+            </>
+          }
+        >
+          <SceneInfoButton
+            $warning={maxTriggers > 0 && triggerCount === maxTriggers}
+            $error={triggerCount > maxTriggers}
+          >
+            T: {triggerCount}/{maxTriggers}
+          </SceneInfoButton>
+        </TooltipWrapper>
+      </SceneInfoWrapper>
+    </SceneMetadata>
   );
 };
 

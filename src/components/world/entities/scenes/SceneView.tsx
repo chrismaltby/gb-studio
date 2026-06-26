@@ -41,6 +41,7 @@ import { MonoOBJPalette } from "shared/lib/resources/types";
 import { useContextMenu } from "ui/hooks/use-context-menu";
 import { moveGridSelection } from "shared/lib/tiles/gridSelection";
 import { SceneParallaxOverlay } from "components/world/entities/scenes/SceneParallaxOverlay";
+import { SceneTitle } from "components/world/entities/scenes/SceneTitle";
 
 const TILE_SIZE = 8;
 
@@ -70,21 +71,6 @@ const SceneName = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`;
-
-const SceneMetadata = styled.div`
-  white-space: nowrap;
-  overflow: hidden;
-  line-height: 20px;
-  font-size: 11px;
-  transition:
-    padding-left 0.1s ease-in-out,
-    padding-right 0.1s ease-in-out;
-  transition-delay: 0.3s;
-
-  &:hover {
-    cursor: move;
-  }
 `;
 
 const SceneContent = styled.div`
@@ -281,7 +267,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     () => (scene ? sceneName(scene, index) : ""),
     [index, scene],
   );
-  const lastNamePart = useMemo(() => name.replace(/.*[/\\]/, ""), [name]);
 
   const sceneFiltered =
     (searchTerm &&
@@ -441,52 +426,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
           scene.y + scene.height * 8 + 50 > viewBoundsY &&
           scene.y < viewBoundsY + viewBoundsHeight
       : false;
-  });
-
-  const labelOffsetLeft = useAppSelector((state) => {
-    if (!visible) {
-      return 0;
-    }
-    const worldScrollX = state.editor.worldScrollX;
-    const worldViewWidth = state.editor.worldViewWidth;
-    const sidebarWidth = state.editor.worldSidebarWidth;
-    const navigatorWidth = state.project.present.settings.showNavigator
-      ? state.editor.navigatorSidebarWidth
-      : 0;
-    const viewBoundsX = worldScrollX / zoomRatio;
-
-    const viewBoundsWidth =
-      (worldViewWidth - sidebarWidth - navigatorWidth) / zoomRatio;
-
-    const offsetLabels = scene ? scene.width * 8 > viewBoundsWidth / 2 : 0;
-    return offsetLabels && scene
-      ? Math.min(Math.max(0, viewBoundsX - scene.x), scene.width * 8 - 160)
-      : 0;
-  });
-
-  const labelOffsetRight = useAppSelector((state) => {
-    if (!visible) {
-      return 0;
-    }
-    const worldScrollX = state.editor.worldScrollX;
-    const worldViewWidth = state.editor.worldViewWidth;
-    const sidebarWidth = state.editor.worldSidebarWidth;
-    const navigatorWidth = state.project.present.settings.showNavigator
-      ? state.editor.navigatorSidebarWidth
-      : 0;
-    const viewBoundsX = worldScrollX / zoomRatio;
-    const viewBoundsWidth =
-      (worldViewWidth - sidebarWidth - navigatorWidth) / zoomRatio;
-    const offsetLabels = scene ? scene.width * 8 > viewBoundsWidth / 2 : 0;
-    return offsetLabels && scene
-      ? Math.min(
-          Math.max(
-            0,
-            scene.x + scene.width * 8 - (viewBoundsX + viewBoundsWidth),
-          ),
-          scene.width * 8 - 160,
-        )
-      : 0;
   });
 
   const palettesLookup = useAppSelector((state) =>
@@ -761,23 +700,9 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       onContextMenu={onContextMenu}
       onMouseDownCapture={onToggleSelection}
     >
-      <SceneMetadata
-        onMouseDown={onStartDrag}
-        style={{
-          paddingLeft: labelOffsetLeft,
-          paddingRight: labelOffsetRight,
-        }}
-      >
-        <SceneName
-          title={scene.notes}
-          style={{
-            maxWidth:
-              scene.width * TILE_SIZE - (labelOffsetLeft + labelOffsetRight),
-          }}
-        >
-          <LabelSpan color={scene.labelColor}>{lastNamePart}</LabelSpan>
-        </SceneName>
-      </SceneMetadata>
+      <div onMouseDown={onStartDrag}>
+        <SceneTitle sceneId={id} sceneIndex={index} />
+      </div>
       <SceneContent
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
@@ -931,15 +856,9 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         )}
       </SceneContent>
       {selected && (
-        <SceneMetadata
-          onMouseDown={onStartDrag}
-          style={{
-            paddingLeft: labelOffsetLeft,
-            paddingRight: labelOffsetRight,
-          }}
-        >
-          <SceneInfo />
-        </SceneMetadata>
+        <div onMouseDown={onStartDrag}>
+          <SceneInfo sceneId={id} />
+        </div>
       )}
       {contextMenuElement}
     </Wrapper>
