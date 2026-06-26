@@ -12,6 +12,7 @@ import {
   TILE_COLOR_PROP_PRIORITY,
   TOOL_SELECT,
   BRUSH_SELECTION,
+  TILE_SIZE,
 } from "consts";
 import SceneInfo from "./SceneInfo";
 import {
@@ -41,10 +42,10 @@ import { useContextMenu } from "ui/hooks/use-context-menu";
 import { moveGridSelection } from "shared/lib/tiles/gridSelection";
 import { SceneParallaxOverlay } from "components/world/entities/scenes/SceneParallaxOverlay";
 import { SceneTitle } from "components/world/entities/scenes/SceneTitle";
-import { useSceneVisibleInViewport } from "components/world/entities/scenes/hooks/useSceneVisibleInViewport";
 import { useWorldEntityDrag } from "components/world/hooks/useWorldEntityDrag";
+import { useRectVisibleInWorldViewport } from "components/world/hooks/useRectVisibleInWorldViewport";
 
-const TILE_SIZE = 8;
+const SCENE_LABEL_MARGIN = 50;
 
 const dmgPalettes = [
   DMG_PALETTE,
@@ -401,7 +402,12 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const zoom = useAppSelector((state) => state.editor.zoom);
   const zoomRatio = zoom / 100;
 
-  const visible = useSceneVisibleInViewport(id);
+  const visible = useRectVisibleInWorldViewport({
+    x: scene?.x ?? 0,
+    y: scene?.y ?? 0,
+    width: (scene?.width ?? 0) * TILE_SIZE,
+    height: (scene?.height ?? 0) * TILE_SIZE + SCENE_LABEL_MARGIN,
+  });
 
   const palettesLookup = useAppSelector((state) =>
     paletteSelectors.selectEntities(state),
