@@ -323,19 +323,24 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       ) {
         if (tX >= 0 && tY >= 0 && tX < scene.width && tY < scene.height) {
           dispatch(editorActions.sceneHover({ sceneId: id, x: tX, y: tY }));
-          dispatch(
-            entitiesActions.moveSelectedEntityToPx({
-              sceneId: id,
-              x: pX,
-              y: pY,
-            }),
-          );
+          const state = store.getState();
+          const dragging = state.editor.dragging;
+          if (dragging) {
+            dispatch(
+              entitiesActions.moveSelectedEntityToPx({
+                sceneId: id,
+                x: pX,
+                y: pY,
+                dragging,
+              }),
+            );
+          }
         }
         hoverState.current.lastPX = pX;
         hoverState.current.lastPY = pY;
       }
     },
-    [dispatch, hovered, id, scene, zoomRatio],
+    [dispatch, hovered, id, scene, store, zoomRatio],
   );
 
   const onMouseLeave = useCallback(() => {

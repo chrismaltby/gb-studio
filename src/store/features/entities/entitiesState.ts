@@ -105,13 +105,23 @@ export const initialState: EntitiesState = {
 const pxToTiles = (x: number) => Math.floor(x / TILE_SIZE);
 
 const moveSelectedEntityToPx =
-  ({ sceneId, x, y }: { sceneId: string; x: number; y: number }) =>
+  ({
+    dragging,
+    sceneId,
+    x,
+    y,
+  }: {
+    dragging: string;
+    sceneId: string;
+    x: number;
+    y: number;
+  }) =>
   (
     dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
     getState: () => RootState,
   ) => {
     const state = getState();
-    const { dragging, scene, eventId, entityId } = state.editor;
+    const { scene, eventId, entityId } = state.editor;
     if (dragging === DRAG_PLAYER) {
       dispatch(
         settingsActions.editPlayerStartAt({
