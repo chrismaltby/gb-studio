@@ -212,15 +212,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const sceneTypeEnabled = useMemo(() => {
     return enabledSceneTypeIds.includes(scene?.type);
   }, [enabledSceneTypeIds, scene?.type]);
-  const startSceneId = useAppSelector(
-    (state) => state.project.present.settings.startSceneId,
-  );
-  const startDirection = useAppSelector(
-    (state) => state.project.present.settings.startDirection,
-  );
-  const runSceneSelectionOnly = useAppSelector(
-    (state) => state.project.present.settings.runSceneSelectionOnly,
-  );
   const selected = useAppSelector((state) => state.editor.scene === id);
   const sceneSelectionIds = useAppSelector(
     (state) => state.editor.sceneSelectionIds,
@@ -239,10 +230,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       id !== searchTerm) ||
     (sceneSelectionIds.length > 1 && !multiSelected) ||
     false;
-
-  const gbcEnabled = useAppSelector(
-    (state) => state.project.present.settings.colorMode !== "mono",
-  );
 
   const tool = useAppSelector((state) => state.editor.tool);
   const selectedBrush = useAppSelector((state) => state.editor.selectedBrush);
@@ -358,32 +345,30 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const getContextMenu = useCallback(
     ({ closeMenu: onClose }: { closeMenu: () => void }) => {
       const state = store.getState();
+      const scene = sceneSelectors.selectById(state, id);
+
+      if (!scene) {
+        return undefined;
+      }
+
       const { x: hoverX, y: hoverY } = state.editor.hover;
+
       return renderSceneContextMenu({
         dispatch,
         sceneId: id,
-        additionalSceneIds: sceneSelectionIds,
-        startSceneId,
-        startDirection,
+        additionalSceneIds: state.editor.sceneSelectionIds,
+        startSceneId: state.project.present.settings.startSceneId,
+        startDirection: state.project.present.settings.startDirection,
         hoverX,
         hoverY,
-        colorsEnabled: gbcEnabled,
+        colorsEnabled: state.project.present.settings.colorMode !== "mono",
         colorModeOverride: scene.colorModeOverride,
-        runSceneSelectionOnly,
+        runSceneSelectionOnly:
+          state.project.present.settings.runSceneSelectionOnly,
         onClose,
       });
     },
-    [
-      dispatch,
-      store,
-      id,
-      sceneSelectionIds,
-      startDirection,
-      startSceneId,
-      runSceneSelectionOnly,
-      gbcEnabled,
-      scene.colorModeOverride,
-    ],
+    [dispatch, id, store],
   );
 
   const getContextMenuEnabled = useCallback(() => {
