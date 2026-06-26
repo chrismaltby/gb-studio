@@ -16,7 +16,12 @@ import { SceneEventHelper } from "./SceneEventHelper";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import styled, { css } from "styled-components";
 import { LabelSpan } from "ui/buttons/LabelButton";
-import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useAppSelectorPick,
+  useAppStore,
+} from "store/hooks";
 import renderSceneContextMenu from "components/world/contextMenus/renderSceneContextMenu";
 import SceneScrollBounds from "./SceneScrollBounds";
 import { WarningIcon } from "ui/icons/Icons";
@@ -207,11 +212,16 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const dispatch = useAppDispatch();
   const store = useAppStore();
 
-  const scene = useAppSelector((state) => sceneSelectors.selectById(state, id));
+  const scene = useAppSelectorPick(
+    (state) => sceneSelectors.selectById(state, id),
+    ["name", "type", "x", "y", "width", "height", "scrollBounds"],
+  );
   const enabledSceneTypeIds = useEnabledSceneTypeIds();
+  const sceneType = scene?.type;
   const sceneTypeEnabled = useMemo(() => {
-    return enabledSceneTypeIds.includes(scene?.type);
-  }, [enabledSceneTypeIds, scene?.type]);
+    return !!sceneType && enabledSceneTypeIds.includes(sceneType);
+  }, [enabledSceneTypeIds, sceneType]);
+
   const selected = useAppSelector((state) => state.editor.scene === id);
   const sceneSelectionIds = useAppSelector(
     (state) => state.editor.sceneSelectionIds,
@@ -478,7 +488,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         {showEntities && <SceneEntities sceneId={id} editable={editable} />}
         {selected && (
           <SceneOverlay $noPointerEvents>
-            <SceneEventHelper scene={scene} />
+            <SceneEventHelper sceneId={id} />
           </SceneOverlay>
         )}
       </SceneContent>

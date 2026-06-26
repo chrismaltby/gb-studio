@@ -1,12 +1,12 @@
-import React, { FC, useCallback, useMemo } from "react";
-import { useAppSelector } from "store/hooks";
+import React, { memo, useCallback, useMemo } from "react";
+import { useAppSelector, useAppSelectorPick } from "store/hooks";
 import {
   actorSelectors,
   constantSelectors,
+  sceneSelectors,
   scriptEventSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesSelectors";
-import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import styled, { keyframes } from "styled-components";
 import {
   ensureMaybeNumber,
@@ -21,7 +21,7 @@ import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 const TILE_SIZE = 8;
 
 interface SceneEventHelperProps {
-  scene: SceneNormalized;
+  sceneId: string;
 }
 
 const EventHelperWrapper = styled.div`
@@ -180,7 +180,12 @@ export const getArgValue = (
   return arg;
 };
 
-export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
+export const SceneEventHelper = memo(({ sceneId }: SceneEventHelperProps) => {
+  const scene = useAppSelectorPick(
+    (state) => sceneSelectors.selectById(state, sceneId),
+    ["width", "height"],
+  );
+
   const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state),
   );
@@ -203,9 +208,9 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   );
 
   const eventId = useAppSelector((state) => state.editor.eventId);
-  const sceneId = useAppSelector((state) => state.editor.scene);
+  const selectedSceneId = useAppSelector((state) => state.editor.scene);
 
-  const sceneEventVisible = eventId && sceneId === scene.id;
+  const sceneEventVisible = eventId && selectedSceneId === sceneId;
   const event = sceneEventVisible ? scriptEventsLookup[eventId] : undefined;
   const scriptEventDef = useAppSelector(
     (state) => state.scriptEventDefs.lookup[event?.command ?? ""],
@@ -250,7 +255,7 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
     event,
   ]);
 
-  if (!event || !scriptEventDef || !scriptEventDef.helper) {
+  if (!scene || !event || !scriptEventDef || !scriptEventDef.helper) {
     return <></>;
   }
 
@@ -606,4 +611,4 @@ export const SceneEventHelper: FC<SceneEventHelperProps> = ({ scene }) => {
   }
 
   return <div />;
-};
+});
