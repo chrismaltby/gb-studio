@@ -1,15 +1,12 @@
 import React, { memo, useCallback, useMemo, useRef } from "react";
 import WorldActor from "./actors/ActorView";
 import TriggerView from "./triggers/TriggerView";
-import SceneCollisions from "./SceneCollisions";
 import SceneCursor from "./cursor/SceneCursor";
-import ColorizedImage from "components/rendering/ColorizedImage";
 import {
   TOOL_COLORS,
   TOOL_COLLISIONS,
   TOOL_ERASER,
   DMG_PALETTE,
-  TILE_COLOR_PROP_PRIORITY,
   TOOL_SELECT,
   BRUSH_SELECTION,
   TILE_SIZE,
@@ -17,20 +14,15 @@ import {
 import SceneInfo from "./SceneInfo";
 import {
   sceneSelectors,
-  backgroundSelectors,
   paletteSelectors,
 } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import ScenePriorityMap from "./ScenePriorityMap";
-import SceneSlopePreview from "./SceneSlopePreview";
 import { SceneEventHelper } from "./SceneEventHelper";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import styled, { css } from "styled-components";
 import { LabelSpan } from "ui/buttons/LabelButton";
 import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
-import { assetURL } from "shared/lib/helpers/assets";
-import AutoColorizedImage from "components/rendering/AutoColorizedImage";
 import renderSceneContextMenu from "components/world/contextMenus/renderSceneContextMenu";
 import SceneScrollBounds from "./SceneScrollBounds";
 import { SceneContext } from "components/script/context/SceneContext";
@@ -39,24 +31,13 @@ import { useEnabledSceneTypeIds } from "store/features/engine/hooks/useEnabledSc
 import SceneScreenGrid from "components/world/entities/scenes/SceneScreenGrid";
 import { MonoOBJPalette } from "shared/lib/resources/types";
 import { useContextMenu } from "ui/hooks/use-context-menu";
-import { moveGridSelection } from "shared/lib/tiles/gridSelection";
 import { SceneParallaxOverlay } from "components/world/entities/scenes/SceneParallaxOverlay";
 import { SceneTitle } from "components/world/entities/scenes/SceneTitle";
 import { useWorldEntityDrag } from "components/world/hooks/useWorldEntityDrag";
 import { useRectVisibleInWorldViewport } from "components/world/hooks/useRectVisibleInWorldViewport";
+import { SceneTileLayers } from "components/world/entities/scenes/SceneTileLayers";
 
 const SCENE_LABEL_MARGIN = 50;
-
-const dmgPalettes = [
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-];
 
 interface SceneViewProps {
   id: string;
@@ -237,14 +218,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const defaultSpriteMode = useAppSelector(
     (state) => state.project.present.settings.spriteMode,
   );
-  const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, scene?.backgroundId ?? ""),
-  );
-  const tilesOverride = useAppSelector((state) =>
-    background && background.monoOverrideId
-      ? backgroundSelectors.selectById(state, background.monoOverrideId ?? "")
-      : undefined,
-  );
   const enabledSceneTypeIds = useEnabledSceneTypeIds();
   const sceneTypeEnabled = useMemo(() => {
     return enabledSceneTypeIds.includes(scene?.type);
@@ -280,17 +253,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const gbcEnabled = useAppSelector(
     (state) => state.project.present.settings.colorMode !== "mono",
   );
-  const previewAsMono = useAppSelector(
-    (state) =>
-      state.project.present.settings.colorMode === "mono" ||
-      (state.project.present.settings.colorMode === "mixed" &&
-        state.project.present.settings.previewAsMono),
-  );
-  const defaultMonoBGP = useAppSelector(
-    (state) => state.project.present.settings.defaultMonoBGP,
-  );
-  const monoBGP = scene?.monoBGP || defaultMonoBGP;
-
   const defaultMonoOBP0 = useAppSelector(
     (state) => state.project.present.settings.defaultMonoOBP0,
   );
@@ -326,76 +288,11 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       ? scenePaintSelection
       : undefined;
 
-  const selectionOffsetActive =
-    !!activeScenePaintSelection &&
-    (activeScenePaintSelection.offset.x !== 0 ||
-      activeScenePaintSelection.offset.y !== 0);
-
-  const tileColors = useMemo(
-    () => background?.tileColors ?? [],
-    [background?.tileColors],
-  );
-
-  const collisionSelectionPreview = useMemo(() => {
-    if (
-      !scene ||
-      !activeScenePaintSelection ||
-      activeScenePaintSelection.mode !== "collisions" ||
-      !selectionOffsetActive
-    ) {
-      return undefined;
-    }
-
-    return moveGridSelection(
-      scene.collisions,
-      scene.width,
-      scene.height,
-      activeScenePaintSelection.selection,
-      activeScenePaintSelection.offset,
-      0,
-    );
-  }, [scene, activeScenePaintSelection, selectionOffsetActive]);
-
-  const colorSelectionPreview = useMemo(() => {
-    if (
-      !scene ||
-      !activeScenePaintSelection ||
-      activeScenePaintSelection.mode !== "colors" ||
-      !selectionOffsetActive
-    ) {
-      return undefined;
-    }
-
-    return moveGridSelection(
-      tileColors,
-      scene.width,
-      scene.height,
-      activeScenePaintSelection.selection,
-      activeScenePaintSelection.offset,
-      0,
-    );
-  }, [scene, activeScenePaintSelection, selectionOffsetActive, tileColors]);
-
-  const displayCollisions =
-    collisionSelectionPreview ?? scene?.collisions ?? [];
-  const displayTileColors = colorSelectionPreview ?? tileColors;
-
   const showEntities =
     (tool !== TOOL_COLORS &&
       tool !== TOOL_COLLISIONS &&
       tool !== TOOL_ERASER) ||
     showLayers;
-  const showCollisions = useAppSelector(
-    (state) =>
-      (tool !== TOOL_COLORS || showLayers) &&
-      (state.project.present.settings.showCollisions ||
-        tool === TOOL_COLLISIONS),
-  );
-  const showPriorityMap = useAppSelector(
-    (state) =>
-      tool === TOOL_COLORS &&
-      state.editor.selectedPalette === TILE_COLOR_PROP_PRIORITY,
-  );
   const showSceneScreenGrid = useAppSelector(
     (state) => state.project.present.settings.showSceneScreenGrid,
   );
@@ -411,41 +308,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
 
   const palettesLookup = useAppSelector((state) =>
     paletteSelectors.selectEntities(state),
-  );
-  const defaultBackgroundPaletteIds = useAppSelector(
-    (state) => state.project.present.settings.defaultBackgroundPaletteIds ?? [],
-  );
-
-  const getPalette = useCallback(
-    (paletteIndex: number) => {
-      const sceneBackgroundPaletteIds = scene?.paletteIds ?? [];
-      if (sceneBackgroundPaletteIds[paletteIndex] === "dmg") {
-        return DMG_PALETTE;
-      }
-      return (
-        palettesLookup[sceneBackgroundPaletteIds[paletteIndex]] ||
-        palettesLookup[defaultBackgroundPaletteIds[paletteIndex]] ||
-        DMG_PALETTE
-      );
-    },
-    [defaultBackgroundPaletteIds, palettesLookup, scene?.paletteIds],
-  );
-
-  const palettes = useMemo(
-    () =>
-      gbcEnabled
-        ? [
-            getPalette(0),
-            getPalette(1),
-            getPalette(2),
-            getPalette(3),
-            getPalette(4),
-            getPalette(5),
-            getPalette(6),
-            getPalette(7),
-          ]
-        : dmgPalettes,
-    [gbcEnabled, getPalette],
   );
 
   const defaultSpritePaletteIds = useAppSelector(
@@ -483,8 +345,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         : undefined,
     [gbcEnabled, getSpritePalette],
   );
-
-  const slopePreview = useAppSelector((state) => state.editor.slopePreview);
 
   const hovered = useAppSelector((state) => state.editor.hover.sceneId === id);
 
@@ -635,59 +495,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
           height: scenePxHeight,
         }}
       >
-        {background && (
-          <>
-            {gbcEnabled && background.autoColor ? (
-              <AutoColorizedImage
-                width={scenePxWidth}
-                height={scenePxHeight}
-                src={assetURL("backgrounds", background)}
-                tilesSrc={
-                  tilesOverride
-                    ? assetURL("backgrounds", tilesOverride)
-                    : undefined
-                }
-                uiPalette={
-                  scene?.paletteIds?.[7] === "auto" ? undefined : palettes[7]
-                }
-                previewAsMono={previewAsMono}
-                monoBGP={monoBGP}
-              />
-            ) : (
-              <ColorizedImage
-                width={scenePxWidth}
-                height={scenePxHeight}
-                src={
-                  tilesOverride
-                    ? assetURL("backgrounds", tilesOverride)
-                    : assetURL("backgrounds", background)
-                }
-                tiles={displayTileColors}
-                palettes={palettes}
-                previewAsMono={previewAsMono}
-                monoBGP={monoBGP}
-              />
-            )}
-          </>
-        )}
-        {showCollisions && (
-          <SceneOverlay>
-            <SceneCollisions
-              width={scene.width}
-              height={scene.height}
-              collisions={displayCollisions}
-              sceneTypeKey={scene.type}
-            />
-            {selected && slopePreview && (
-              <SceneSlopePreview
-                width={scene.width}
-                height={scene.height}
-                slopePreview={slopePreview}
-              />
-            )}
-          </SceneOverlay>
-        )}
-
+        <SceneTileLayers sceneId={id} />
         {scene.scrollBounds && showLayers && (
           <SceneOverlay $noPointerEvents>
             <SceneScrollBounds
@@ -703,16 +511,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
               width={scene.width}
               height={scene.height}
               scrollBounds={scene.scrollBounds}
-            />
-          </SceneOverlay>
-        )}
-
-        {background && showPriorityMap && (
-          <SceneOverlay>
-            <ScenePriorityMap
-              width={scene.width}
-              height={scene.height}
-              tileColors={displayTileColors}
             />
           </SceneOverlay>
         )}
