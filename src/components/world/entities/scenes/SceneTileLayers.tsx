@@ -1,7 +1,6 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 import {
-  DMG_PALETTE,
   TILE_COLOR_PROP_PRIORITY,
   TILE_SIZE,
   TOOL_COLLISIONS,
@@ -20,17 +19,7 @@ import { useAppSelector } from "store/hooks";
 import ScenePriorityMap from "./ScenePriorityMap";
 import SceneCollisions from "./SceneCollisions";
 import SceneSlopePreview from "./SceneSlopePreview";
-
-const dmgPalettes = [
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-  DMG_PALETTE,
-];
+import { resolveScenePalettes } from "components/world/entities/scenes/helpers/scenePalettes";
 
 const SceneOverlay = styled.div`
   position: absolute;
@@ -159,38 +148,20 @@ export const SceneTileLayers = ({ sceneId }: SceneTileLayersProps) => {
     );
   }, [scene, scenePaintSelection, selectionOffsetActive]);
 
-  const getPalette = useCallback(
-    (paletteIndex: number) => {
-      const sceneBackgroundPaletteIds = scene?.paletteIds ?? [];
-
-      if (sceneBackgroundPaletteIds[paletteIndex] === "dmg") {
-        return DMG_PALETTE;
-      }
-
-      return (
-        palettesLookup[sceneBackgroundPaletteIds[paletteIndex]] ||
-        palettesLookup[defaultBackgroundPaletteIds[paletteIndex]] ||
-        DMG_PALETTE
-      );
-    },
-    [defaultBackgroundPaletteIds, palettesLookup, scene?.paletteIds],
-  );
-
   const palettes = useMemo(
     () =>
-      gbcEnabled
-        ? [
-            getPalette(0),
-            getPalette(1),
-            getPalette(2),
-            getPalette(3),
-            getPalette(4),
-            getPalette(5),
-            getPalette(6),
-            getPalette(7),
-          ]
-        : dmgPalettes,
-    [gbcEnabled, getPalette],
+      resolveScenePalettes(
+        scene?.paletteIds,
+        defaultBackgroundPaletteIds,
+        palettesLookup,
+        gbcEnabled,
+      ),
+    [
+      gbcEnabled,
+      scene?.paletteIds,
+      defaultBackgroundPaletteIds,
+      palettesLookup,
+    ],
   );
 
   if (!scene) {
