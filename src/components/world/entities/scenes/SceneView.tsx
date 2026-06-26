@@ -42,6 +42,7 @@ import { useContextMenu } from "ui/hooks/use-context-menu";
 import { moveGridSelection } from "shared/lib/tiles/gridSelection";
 import { SceneParallaxOverlay } from "components/world/entities/scenes/SceneParallaxOverlay";
 import { SceneTitle } from "components/world/entities/scenes/SceneTitle";
+import { useSceneVisibleInViewport } from "components/world/entities/scenes/hooks/useSceneVisibleInViewport";
 
 const TILE_SIZE = 8;
 
@@ -400,33 +401,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const zoom = useAppSelector((state) => state.editor.zoom);
   const zoomRatio = zoom / 100;
 
-  const visible = useAppSelector((state) => {
-    const worldScrollX = state.editor.worldScrollX;
-    const worldScrollY = state.editor.worldScrollY;
-    const worldViewWidth = state.editor.worldViewWidth;
-    const worldViewHeight = state.editor.worldViewHeight;
-    const sidebarWidth = state.editor.worldSidebarWidth;
-    const navigatorWidth = state.project.present.settings.showNavigator
-      ? state.editor.navigatorSidebarWidth
-      : 0;
-
-    const viewMargin = 400;
-
-    const viewBoundsX = (worldScrollX - viewMargin) / zoomRatio;
-    const viewBoundsY = (worldScrollY - viewMargin) / zoomRatio;
-
-    const viewBoundsWidth =
-      (worldViewWidth - sidebarWidth - navigatorWidth + viewMargin * 2) /
-      zoomRatio;
-    const viewBoundsHeight = (worldViewHeight + viewMargin * 2) / zoomRatio;
-
-    return scene
-      ? scene.x + scene.width * 8 > viewBoundsX &&
-          scene.x < viewBoundsX + viewBoundsWidth &&
-          scene.y + scene.height * 8 + 50 > viewBoundsY &&
-          scene.y < viewBoundsY + viewBoundsHeight
-      : false;
-  });
+  const visible = useSceneVisibleInViewport(id);
 
   const palettesLookup = useAppSelector((state) =>
     paletteSelectors.selectEntities(state),
@@ -688,6 +663,9 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     return <></>;
   }
 
+  const scenePxWidth = scene.width * TILE_SIZE;
+  const scenePxHeight = scene.height * TILE_SIZE;
+
   return (
     <Wrapper
       $selected={selected}
@@ -707,16 +685,16 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
         style={{
-          width: scene.width * TILE_SIZE,
-          height: scene.height * TILE_SIZE,
+          width: scenePxWidth,
+          height: scenePxHeight,
         }}
       >
         {background && (
           <>
             {gbcEnabled && background.autoColor ? (
               <AutoColorizedImage
-                width={scene.width * TILE_SIZE}
-                height={scene.height * TILE_SIZE}
+                width={scenePxWidth}
+                height={scenePxHeight}
                 src={assetURL("backgrounds", background)}
                 tilesSrc={
                   tilesOverride
@@ -731,8 +709,8 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
               />
             ) : (
               <ColorizedImage
-                width={scene.width * TILE_SIZE}
-                height={scene.height * TILE_SIZE}
+                width={scenePxWidth}
+                height={scenePxHeight}
                 src={
                   tilesOverride
                     ? assetURL("backgrounds", tilesOverride)
