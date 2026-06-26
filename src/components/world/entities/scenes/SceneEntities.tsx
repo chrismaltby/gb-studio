@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import WorldActor from "./actors/ActorView";
 import TriggerView from "./triggers/TriggerView";
 import { SceneContext } from "components/script/context/SceneContext";
@@ -7,8 +7,8 @@ import {
   paletteSelectors,
   sceneSelectors,
 } from "store/features/entities/entitiesSelectors";
-import { DMG_PALETTE } from "consts";
 import { MonoOBJPalette } from "shared/lib/resources/types";
+import { resolveScenePalettes } from "components/world/entities/scenes/helpers/scenePalettes";
 
 interface SceneEntitiesProps {
   sceneId: string;
@@ -53,6 +53,7 @@ export const SceneEntities = memo(
     const defaultMonoOBP1 = useAppSelector(
       (state) => state.project.present.settings.defaultMonoOBP1,
     );
+
     const monoOBJPalettes = useMemo(() => {
       return [
         scene?.monoOBP0 || defaultMonoOBP0,
@@ -60,36 +61,20 @@ export const SceneEntities = memo(
       ] as [MonoOBJPalette, MonoOBJPalette];
     }, [scene?.monoOBP0, defaultMonoOBP0, scene?.monoOBP1, defaultMonoOBP1]);
 
-    const getSpritePalette = useCallback(
-      (paletteIndex: number) => {
-        const sceneSpritePaletteIds = scene?.spritePaletteIds ?? [];
-        if (sceneSpritePaletteIds[paletteIndex] === "dmg") {
-          return DMG_PALETTE;
-        }
-        return (
-          palettesLookup[sceneSpritePaletteIds[paletteIndex]] ||
-          palettesLookup[defaultSpritePaletteIds[paletteIndex]] ||
-          DMG_PALETTE
-        );
-      },
-      [defaultSpritePaletteIds, palettesLookup, scene?.spritePaletteIds],
-    );
-
     const spritePalettes = useMemo(
       () =>
-        gbcEnabled
-          ? [
-              getSpritePalette(0),
-              getSpritePalette(1),
-              getSpritePalette(2),
-              getSpritePalette(3),
-              getSpritePalette(4),
-              getSpritePalette(5),
-              getSpritePalette(6),
-              getSpritePalette(7),
-            ]
-          : undefined,
-      [gbcEnabled, getSpritePalette],
+        resolveScenePalettes(
+          scene?.spritePaletteIds,
+          defaultSpritePaletteIds,
+          palettesLookup,
+          gbcEnabled,
+        ),
+      [
+        gbcEnabled,
+        scene?.spritePaletteIds,
+        defaultSpritePaletteIds,
+        palettesLookup,
+      ],
     );
 
     if (!scene) {
