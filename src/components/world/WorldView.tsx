@@ -41,6 +41,7 @@ import useResizeObserver from "ui/hooks/use-resize-observer";
 import NoteView from "components/world/entities/notes/NoteView";
 import renderWorldContextMenu from "components/world/contextMenus/renderWorldContextMenu";
 import { useContextMenu } from "ui/hooks/use-context-menu";
+import WorldCursor from "components/world/WorldCursor";
 
 const MOUSE_ZOOM_SPEED = 0.5;
 
@@ -955,6 +956,11 @@ const WorldView = () => {
           zoomRatio={zoomRatio}
           showConnections={showConnections}
           editable={!dragMode}
+        />
+        <WorldCursor
+          editable={!dragMode}
+          scrollRef={scrollRef}
+          zoomRatio={zoomRatio}
         />
         <WorldInteractionOverlay
           tool={tool}
