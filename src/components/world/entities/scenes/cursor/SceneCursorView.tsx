@@ -1,6 +1,5 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { TILE_SIZE } from "consts";
 
 export type SceneCursorViewVariant =
   | "default"
@@ -33,6 +32,7 @@ const Wrapper = styled.div<WrapperProps>`
   outline: 1px solid rgb(140, 150, 156);
   background: rgba(140, 150, 156, 0.4);
   -webkit-transform: translate3d(0, 0, 0);
+  z-index: 200;
 
   &:after {
     content: "";
@@ -50,7 +50,6 @@ const Wrapper = styled.div<WrapperProps>`
           background-color: rgba(247, 45, 220, 0.5);
           outline: 1px solid rgba(140, 0, 177, 0.8);
           pointer-events: all;
-          z-index: 200;
         `
       : ""}
 
@@ -60,7 +59,6 @@ const Wrapper = styled.div<WrapperProps>`
           background-color: rgba(255, 120, 0, 0.5);
           outline: 1px solid rgba(255, 120, 0, 1);
           pointer-events: all;
-          z-index: 200;
         `
       : ""}
 
@@ -70,7 +68,6 @@ const Wrapper = styled.div<WrapperProps>`
           background-color: rgba(255, 0, 0, 0.8);
           outline: 1px solid rgba(255, 0, 0, 1);
           pointer-events: all;
-          z-index: 200;
         `
       : ""}
 
@@ -137,7 +134,8 @@ export const SceneCursorView = React.forwardRef<
       onMouseMove={onMouseMove}
       onMouseDown={onMouseDown}
       style={{
-        transform: `translate3d(${x * TILE_SIZE}px, ${y * TILE_SIZE}px, 0)`,
+        pointerEvents: "none",
+        transform: `translate3d(${x}px, ${y}px, 0)`,
       }}
     >
       {view.bubble && <Bubble>{view.bubble}</Bubble>}

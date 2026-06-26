@@ -1,5 +1,4 @@
-import React, { memo, useCallback, useMemo, useRef } from "react";
-import SceneCursor from "./cursor/SceneCursor";
+import React, { memo, useCallback, useMemo } from "react";
 import {
   TOOL_COLORS,
   TOOL_COLLISIONS,
@@ -11,7 +10,6 @@ import {
 import SceneInfo from "./SceneInfo";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
-import entitiesActions from "store/features/entities/entitiesActions";
 import { SceneEventHelper } from "./SceneEventHelper";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import styled, { css } from "styled-components";
@@ -271,21 +269,12 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const showSceneScreenGrid = useAppSelector(
     (state) => state.project.present.settings.showSceneScreenGrid,
   );
-  const zoom = useAppSelector((state) => state.editor.zoom);
-  const zoomRatio = zoom / 100;
 
   const visible = useRectVisibleInWorldViewport({
     x: scene?.x ?? 0,
     y: scene?.y ?? 0,
     width: (scene?.width ?? 0) * TILE_SIZE,
     height: (scene?.height ?? 0) * TILE_SIZE + SCENE_LABEL_MARGIN,
-  });
-
-  const hovered = useAppSelector((state) => state.editor.hover.sceneId === id);
-
-  const hoverState = useRef({
-    lastPX: -1,
-    lastPY: -1,
   });
 
   const onSelect = useCallback(() => {
@@ -299,56 +288,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     y: scene?.y ?? 0,
     onSelect,
   });
-
-  const onMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (!scene) {
-        return;
-      }
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.pageX - rect.left;
-      const y = e.pageY - rect.top;
-      const pX = Math.floor(x / zoomRatio);
-      const pY = Math.floor(y / zoomRatio);
-      const tX = Math.floor(pX / TILE_SIZE);
-      const tY = Math.floor(pY / TILE_SIZE);
-
-      if (
-        pX !== hoverState.current.lastPX ||
-        pY !== hoverState.current.lastPY ||
-        !hovered
-      ) {
-        if (tX >= 0 && tY >= 0 && tX < scene.width && tY < scene.height) {
-          dispatch(editorActions.sceneHover({ sceneId: id, x: tX, y: tY }));
-          const state = store.getState();
-          const dragging = state.editor.dragging;
-          if (dragging) {
-            dispatch(
-              entitiesActions.moveSelectedEntityToPx({
-                sceneId: id,
-                x: pX,
-                y: pY,
-                dragging,
-              }),
-            );
-          }
-        }
-        hoverState.current.lastPX = pX;
-        hoverState.current.lastPY = pY;
-      }
-    },
-    [dispatch, hovered, id, scene, store, zoomRatio],
-  );
-
-  const onMouseLeave = useCallback(() => {
-    dispatch(
-      editorActions.sceneHover({
-        sceneId: "",
-        x: 0,
-        y: 0,
-      }),
-    );
-  }, [dispatch]);
 
   //#region Context Menu
 
@@ -426,8 +365,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         <SceneTitle sceneId={id} sceneIndex={index} />
       </div>
       <SceneContent
-        onMouseMove={onMouseMove}
-        onMouseLeave={onMouseLeave}
+        data-scene-content-id={id}
         style={{
           width: scenePxWidth,
           height: scenePxHeight,
@@ -478,13 +416,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
           />
         )}
 
-        {editable && (hovered || selected) && (
-          <SceneCursor
-            sceneId={id}
-            enabled={hovered}
-            sceneFiltered={sceneFiltered}
-          />
-        )}
         {showEntities && <SceneEntities sceneId={id} editable={editable} />}
         {selected && (
           <SceneOverlay $noPointerEvents>

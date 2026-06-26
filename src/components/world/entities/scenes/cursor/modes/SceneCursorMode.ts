@@ -16,8 +16,14 @@ export type SceneCursorEvent<T> = {
   raw: T;
 };
 
+export type SceneCursorMouseDownRawEvent =
+  | React.MouseEvent<HTMLDivElement, MouseEvent>
+  | (Pick<MouseEvent, "altKey" | "ctrlKey" | "metaKey" | "shiftKey"> & {
+      nativeEvent: MouseEvent;
+    });
+
 export type SceneCursorMouseDownHandler = (
-  e: SceneCursorEvent<React.MouseEvent<HTMLDivElement, MouseEvent>>,
+  e: SceneCursorEvent<SceneCursorMouseDownRawEvent>,
 ) => boolean;
 
 export type SceneCursorMouseMoveHandler = (
