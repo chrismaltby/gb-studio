@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
-import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
+import { TILE_SIZE } from "consts";
 import { noteSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -12,6 +12,7 @@ import { noteColorStyles } from "ui/form/NoteField";
 import { LabelColor } from "shared/lib/resources/types";
 import l10n from "shared/lib/lang/l10n";
 import { useContextMenu } from "ui/hooks/use-context-menu";
+import { useWorldEntityDrag } from "components/world/hooks/useWorldEntityDrag";
 
 const ALIGNMENT_OFFSET_X = -1;
 const ALIGNMENT_OFFSET_Y = 3;
@@ -240,82 +241,17 @@ const NoteView = memo(({ id, index, editable }: NoteViewProps) => {
       : false;
   });
 
-  const dragState = useRef({
-    lastTX: -1,
-    lastTY: -1,
-    lastPageX: -1,
-    lastPageY: -1,
-    noteX: 0,
-    noteY: 0,
-    zoomRatio: 0,
+  const onSelect = useCallback(() => {
+    dispatch(editorActions.selectNote({ noteId: id }));
+  }, [dispatch, id]);
+
+  const { onStartDrag } = useWorldEntityDrag({
+    entityId: id,
+    editable,
+    x: note?.x ?? 0,
+    y: note?.y ?? 0,
+    onSelect,
   });
-
-  // Store selection as ref to prevent onMoveDrag from being recreated
-  // every time multi selection changes (causes first drag to fail)
-  const currentSceneSelectionIds = useRef<string[]>([]);
-  useEffect(() => {
-    currentSceneSelectionIds.current = sceneSelectionIds;
-  }, [sceneSelectionIds]);
-
-  const onMoveDrag = useCallback(
-    (e: MouseEvent) => {
-      const dragDeltaX =
-        (e.pageX - dragState.current.lastPageX) / dragState.current.zoomRatio;
-      const dragDeltaY =
-        (e.pageY - dragState.current.lastPageY) / dragState.current.zoomRatio;
-
-      dragState.current.lastPageX = e.pageX;
-      dragState.current.lastPageY = e.pageY;
-      dragState.current.noteX += dragDeltaX;
-      dragState.current.noteY += dragDeltaY;
-
-      dispatch(
-        entitiesActions.moveWorldEntities({
-          entityId: id,
-          x: Math.round(dragState.current.noteX / TILE_SIZE) * TILE_SIZE,
-          y: Math.round(dragState.current.noteY / TILE_SIZE) * TILE_SIZE,
-          additionalEntityIds: currentSceneSelectionIds.current,
-        }),
-      );
-    },
-    [dispatch, id],
-  );
-
-  const onEndDrag = useCallback(() => {
-    window.removeEventListener("mousemove", onMoveDrag);
-    window.removeEventListener("mouseup", onEndDrag);
-  }, [onMoveDrag]);
-
-  const onStartDrag = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (!note) {
-        return;
-      }
-
-      if (!editable || e.nativeEvent.which === MIDDLE_MOUSE) {
-        return;
-      }
-
-      dragState.current.lastPageX = e.pageX;
-      dragState.current.lastPageY = e.pageY;
-      dragState.current.noteX = note.x;
-      dragState.current.noteY = note.y;
-      dragState.current.zoomRatio = zoomRatio;
-
-      dispatch(editorActions.selectNote({ noteId: id }));
-
-      window.addEventListener("mousemove", onMoveDrag);
-      window.addEventListener("mouseup", onEndDrag);
-    },
-    [dispatch, editable, id, onEndDrag, onMoveDrag, note, zoomRatio],
-  );
-
-  useEffect(() => {
-    return () => {
-      window.removeEventListener("mousemove", onMoveDrag);
-      window.removeEventListener("mouseup", onEndDrag);
-    };
-  }, [onEndDrag, onMoveDrag]);
 
   useEffect(() => {
     const el = textAreaRef.current;
