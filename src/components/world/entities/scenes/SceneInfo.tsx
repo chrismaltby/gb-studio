@@ -9,7 +9,7 @@ import {
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
 } from "consts";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { useAppSelector, useAppSelectorPick, useAppStore } from "store/hooks";
 import {
   actorPrefabSelectors,
@@ -100,7 +100,7 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
       : ""}
 `;
 
-const SceneInfo = ({ sceneId }: SceneInfoProps) => {
+const SceneInfo = memo(({ sceneId }: SceneInfoProps) => {
   const store = useAppStore();
 
   const scene = useAppSelectorPick(
@@ -536,6 +536,6 @@ const SceneInfo = ({ sceneId }: SceneInfoProps) => {
       </SceneInfoWrapper>
     </SceneMetadata>
   );
-};
+});
 
 export default SceneInfo;
