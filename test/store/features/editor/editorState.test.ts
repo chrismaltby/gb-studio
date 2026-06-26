@@ -750,7 +750,7 @@ describe("editor reducer", () => {
 
     test("should reset eventId if not dragging", () => {
       state.eventId = "event_1";
-      state.dragging = "";
+      state.dragging = undefined;
       const action = actions.sceneHover({
         sceneId: "scene_1",
         x: 10,
@@ -762,7 +762,12 @@ describe("editor reducer", () => {
 
     test("should not reset eventId if dragging", () => {
       state.eventId = "event_1";
-      state.dragging = DRAG_ACTOR;
+      state.dragging = {
+        type: DRAG_ACTOR,
+        actorId: "actor_1",
+        offsetX: 0,
+        offsetY: 0,
+      };
       const action = actions.sceneHover({
         sceneId: "scene_1",
         x: 10,
@@ -828,9 +833,16 @@ describe("editor reducer", () => {
       const action = actions.dragActorStart({
         actorId: "actor_1",
         sceneId: "scene_1",
+        offsetX: 4,
+        offsetY: 2,
       });
       const newState = reducer(state, action);
-      expect(newState.dragging).toBe(DRAG_ACTOR);
+      expect(newState.dragging).toEqual({
+        type: DRAG_ACTOR,
+        actorId: "actor_1",
+        offsetX: 4,
+        offsetY: 2,
+      });
       expect(newState.entityId).toBe("actor_1");
       expect(newState.scene).toBe("scene_1");
       expect(newState.worldFocus).toBe(true);
@@ -841,10 +853,15 @@ describe("editor reducer", () => {
 
   describe("dragActorStop", () => {
     test("should reset dragging", () => {
-      state.dragging = DRAG_ACTOR;
+      state.dragging = {
+        type: DRAG_ACTOR,
+        actorId: "actor_1",
+        offsetX: 0,
+        offsetY: 0,
+      };
       const action = actions.dragActorStop();
       const newState = reducer(state, action);
-      expect(newState.dragging).toBe("");
+      expect(newState.dragging).toBeUndefined();
     });
   });
 

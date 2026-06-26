@@ -176,11 +176,6 @@ const DestinationMarker = ({
 }: DestinationMarkerProps) => {
   const dispatch = useAppDispatch();
 
-  const onDragDestinationStop = useCallback(() => {
-    dispatch(editorActions.dragDestinationStop());
-    window.removeEventListener("mouseup", onDragDestinationStop);
-  }, [dispatch]);
-
   const onDragDestinationStart = useCallback(
     (e: React.MouseEvent<SVGGElement>) => {
       if (editable && e.nativeEvent.button !== MIDDLE_MOUSE) {
@@ -194,18 +189,9 @@ const DestinationMarker = ({
             entityId,
           }),
         );
-        window.addEventListener("mouseup", onDragDestinationStop);
       }
     },
-    [
-      dispatch,
-      editable,
-      entityId,
-      eventId,
-      onDragDestinationStop,
-      sceneId,
-      selectionType,
-    ],
+    [dispatch, editable, entityId, eventId, sceneId, selectionType],
   );
 
   return (
@@ -355,21 +341,15 @@ const Connections = ({
     throttledCalculate();
   }, [calculate, throttledCalculate]);
 
-  const onDragPlayerStop = useCallback(() => {
-    dispatch(editorActions.dragPlayerStop());
-    window.removeEventListener("mouseup", onDragPlayerStop);
-  }, [dispatch]);
-
   const onDragPlayerStart = useCallback(
     (e: React.MouseEvent<SVGGElement>) => {
       if (editable && e.nativeEvent.button !== MIDDLE_MOUSE) {
         e.stopPropagation();
         e.preventDefault();
         dispatch(editorActions.dragPlayerStart());
-        window.addEventListener("mouseup", onDragPlayerStop);
       }
     },
-    [dispatch, editable, onDragPlayerStop],
+    [dispatch, editable],
   );
 
   const startX2 = startScene && startScene.x + (startX || 0) * 8 + 5;
