@@ -115,6 +115,9 @@ export const useWorldEntityDrag = ({
         return;
       }
 
+      onSelect();
+
+      const selectedEntityIds = store.getState().editor.sceneSelectionIds;
       const snappedX = snapToGrid(x);
       const snappedY = snapToGrid(y);
 
@@ -123,11 +126,9 @@ export const useWorldEntityDrag = ({
       dragState.current.entityX = x;
       dragState.current.entityY = y;
       dragState.current.zoomRatio = zoomRatio;
-      dragState.current.additionalEntityIds = state.editor.sceneSelectionIds;
+      dragState.current.additionalEntityIds = selectedEntityIds;
       dragState.current.lastSnappedX = snappedX;
       dragState.current.lastSnappedY = snappedY;
-
-      onSelect();
 
       window.addEventListener("mousemove", onMoveDrag);
       window.addEventListener("mouseup", onEndDrag);
