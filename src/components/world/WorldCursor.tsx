@@ -9,11 +9,11 @@ import { MIDDLE_MOUSE, TILE_SIZE, TOOL_SELECT } from "consts";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import settingsActions from "store/features/settings/settingsActions";
-import entitiesActions from "store/features/entities/entitiesActions";
 import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import { SceneCursorView } from "components/world/entities/scenes/cursor/SceneCursorView";
 import {
+  getCapturedSceneCursorEventMode,
   getSceneCursorEventModes,
   getSceneCursorView,
 } from "components/world/entities/scenes/cursor/modes/SceneCursorMode";
@@ -27,6 +27,7 @@ import { useCollisionPaintCursorMode } from "components/world/entities/scenes/cu
 import { useColorPaintCursorMode } from "components/world/entities/scenes/cursor/modes/useColorPaintCursorMode";
 import { useDefaultCursorMode } from "components/world/entities/scenes/cursor/modes/useDefaultCursorMode";
 import { useEraserCursorMode } from "components/world/entities/scenes/cursor/modes/useEraserCursorMode";
+import { useEntityDragCursorMode } from "components/world/entities/scenes/cursor/modes/useEntityDragCursorMode";
 import { useSceneGridSelectionCursorMode } from "components/world/entities/scenes/cursor/modes/useSceneGridSelectionCursorMode";
 import { useSceneSelectCursorMode } from "components/world/entities/scenes/cursor/modes/useSceneSelectCursorMode";
 import { useTriggerPlacementCursorMode } from "components/world/entities/scenes/cursor/modes/useTriggerPlacementCursorMode";
@@ -88,6 +89,7 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
   const cursorRef = useRef<HTMLDivElement>(null);
   const activeEventModeRef = useRef<SceneCursorMode | undefined>(undefined);
   const activeEventSceneIdRef = useRef("");
+  const capturedEventModeRef = useRef<SceneCursorMode | undefined>(undefined);
   const hoverRef = useRef<CursorHover>(EMPTY_HOVER);
 
   const scene = useMemo(
@@ -130,6 +132,7 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
   const eraserCursorMode = useEraserCursorMode(cursorModeContext);
   const sceneGridSelectionCursorMode =
     useSceneGridSelectionCursorMode(cursorModeContext);
+  const entityDragCursorMode = useEntityDragCursorMode();
   const defaultCursorMode = useDefaultCursorMode();
 
   const cursorModes = useMemo(
@@ -141,6 +144,7 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
       colorPaintCursorMode,
       eraserCursorMode,
       sceneGridSelectionCursorMode,
+      entityDragCursorMode,
       defaultCursorMode,
     ],
     [
@@ -151,6 +155,7 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
       colorPaintCursorMode,
       eraserCursorMode,
       sceneGridSelectionCursorMode,
+      entityDragCursorMode,
       defaultCursorMode,
     ],
   );
@@ -164,6 +169,13 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
     () => getSceneCursorEventModes(cursorModes),
     [cursorModes],
   );
+
+  const capturedEventMode = useMemo(
+    () => getCapturedSceneCursorEventMode(cursorModes),
+    [cursorModes],
+  );
+
+  capturedEventModeRef.current = capturedEventMode;
 
   const getSceneFiltered = useCallback(
     (sceneId: string) => {
@@ -277,22 +289,9 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
 
       setHover(nextHover);
 
-      const dragging = store.getState().editor.dragging;
-
-      if (dragging) {
-        dispatch(
-          entitiesActions.moveSelectedEntityToPx({
-            sceneId,
-            x: pX,
-            y: pY,
-            dragging,
-          }),
-        );
-      }
-
       return nextHover;
     },
-    [dispatch, scenes, scrollRef, setHover, store, zoomRatio],
+    [scenes, scrollRef, setHover, zoomRatio],
   );
 
   const onKeyDown = useCallback(
@@ -323,26 +322,34 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
 
   useEffect(() => {
     return () => {
+      capturedEventModeRef.current?.onCancel?.();
       activeEventModeRef.current?.onCancel?.();
+      capturedEventModeRef.current = undefined;
       activeEventModeRef.current = undefined;
       activeEventSceneIdRef.current = "";
     };
   }, []);
 
-  const createCursorEvent = useCallback(<T,>(raw: T): SceneCursorEvent<T> => {
-    const hover = hoverRef.current;
-    const sceneId = activeEventModeRef.current
-      ? activeEventSceneIdRef.current
-      : hover.sceneId;
+  const createCursorEvent = useCallback(
+    <T,>(raw: T, useActiveScene = true): SceneCursorEvent<T> => {
+      const hover = hoverRef.current;
+      const sceneId =
+        useActiveScene && activeEventModeRef.current
+          ? activeEventSceneIdRef.current
+          : hover.sceneId;
 
-    return {
-      x: hover.x,
-      y: hover.y,
-      sceneId,
-      isOverScene: !!sceneId && hover.sceneId === sceneId,
-      raw,
-    };
-  }, []);
+      return {
+        x: hover.x,
+        y: hover.y,
+        pX: hover.pX,
+        pY: hover.pY,
+        sceneId,
+        isOverScene: !!sceneId && hover.sceneId === sceneId,
+        raw,
+      };
+    },
+    [],
+  );
 
   const prepareCursorMouseDown = useCallback(
     (raw: MouseEvent) => {
@@ -396,6 +403,11 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
     (raw: MouseEvent) => {
       updateHoverFromMouseEvent(raw);
 
+      if (capturedEventMode) {
+        capturedEventMode.onMouseMove?.(createCursorEvent(raw, false));
+        return;
+      }
+
       const activeMode = activeEventModeRef.current;
 
       if (!activeMode) {
@@ -404,11 +416,17 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
 
       activeMode.onMouseMove?.(createCursorEvent(raw));
     },
-    [createCursorEvent, updateHoverFromMouseEvent],
+    [capturedEventMode, createCursorEvent, updateHoverFromMouseEvent],
   );
 
   const onWindowMouseUp = useCallback(
     (raw: MouseEvent) => {
+      if (capturedEventMode) {
+        updateHoverFromMouseEvent(raw);
+        capturedEventMode.onMouseUp?.(createCursorEvent(raw, false));
+        return;
+      }
+
       const activeMode = activeEventModeRef.current;
 
       if (!activeMode) {
@@ -424,7 +442,7 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
 
       activeMode.onMouseUp?.(e);
     },
-    [createCursorEvent, updateHoverFromMouseEvent],
+    [capturedEventMode, createCursorEvent, updateHoverFromMouseEvent],
   );
 
   useEffect(() => {

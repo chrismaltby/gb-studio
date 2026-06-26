@@ -56,6 +56,22 @@ export type EditorSelectionType =
   | "actorPrefab"
   | "triggerPrefab";
 
+export type EditorDragState =
+  | {
+      type: typeof DRAG_ACTOR;
+      actorId: string;
+      offsetX: number;
+      offsetY: number;
+    }
+  | {
+      type: typeof DRAG_TRIGGER;
+      triggerId: string;
+      offsetX: number;
+      offsetY: number;
+    }
+  | { type: typeof DRAG_DESTINATION; eventId: string }
+  | { type: typeof DRAG_PLAYER };
+
 export const zoomSections = [
   "world",
   "sprites",
@@ -114,7 +130,7 @@ export interface EditorState {
   zoomImage: number;
   zoomUI: number;
   zoomSpriteTiles: number;
-  dragging: string;
+  dragging?: EditorDragState;
   sceneDragging: boolean;
   sceneDragX: number;
   sceneDragY: number;
@@ -189,7 +205,7 @@ export const initialState: EditorState = {
   zoomImage: 200,
   zoomUI: 200,
   zoomSpriteTiles: 400,
-  dragging: "",
+  dragging: undefined,
   sceneDragging: false,
   sceneDragX: 0,
   sceneDragY: 0,
@@ -431,7 +447,7 @@ const editorSlice = createSlice({
         x: action.payload.x,
         y: action.payload.y,
       };
-      state.eventId = state.dragging === "" ? "" : state.eventId;
+      state.eventId = state.dragging ? state.eventId : "";
     },
 
     selectScriptEvent: (
@@ -568,10 +584,20 @@ const editorSlice = createSlice({
 
     dragTriggerStart: (
       state,
-      action: PayloadAction<{ triggerId: string; sceneId: string }>,
+      action: PayloadAction<{
+        triggerId: string;
+        sceneId: string;
+        offsetX: number;
+        offsetY: number;
+      }>,
     ) => {
       state.type = "trigger";
-      state.dragging = DRAG_TRIGGER;
+      state.dragging = {
+        type: DRAG_TRIGGER,
+        triggerId: action.payload.triggerId,
+        offsetX: action.payload.offsetX,
+        offsetY: action.payload.offsetY,
+      };
       state.entityId = action.payload.triggerId;
       state.scene = action.payload.sceneId;
       state.worldFocus = true;
@@ -582,15 +608,25 @@ const editorSlice = createSlice({
     },
 
     dragTriggerStop: (state, _action: PayloadAction<void>) => {
-      state.dragging = "";
+      state.dragging = undefined;
     },
 
     dragActorStart: (
       state,
-      action: PayloadAction<{ actorId: string; sceneId: string }>,
+      action: PayloadAction<{
+        actorId: string;
+        sceneId: string;
+        offsetX: number;
+        offsetY: number;
+      }>,
     ) => {
       state.type = "actor";
-      state.dragging = DRAG_ACTOR;
+      state.dragging = {
+        type: DRAG_ACTOR,
+        actorId: action.payload.actorId,
+        offsetX: action.payload.offsetX,
+        offsetY: action.payload.offsetY,
+      };
       state.entityId = action.payload.actorId;
       state.scene = action.payload.sceneId;
       state.worldFocus = true;
@@ -601,7 +637,7 @@ const editorSlice = createSlice({
     },
 
     dragActorStop: (state, _action: PayloadAction<void>) => {
-      state.dragging = "";
+      state.dragging = undefined;
     },
 
     dragDestinationStart: (
@@ -614,7 +650,10 @@ const editorSlice = createSlice({
       }>,
     ) => {
       state.eventId = action.payload.eventId;
-      state.dragging = DRAG_DESTINATION;
+      state.dragging = {
+        type: DRAG_DESTINATION,
+        eventId: action.payload.eventId,
+      };
       state.type = action.payload.selectionType;
       state.entityId = action.payload.entityId;
       state.scene = action.payload.sceneId;
@@ -623,16 +662,16 @@ const editorSlice = createSlice({
 
     dragDestinationStop: (state, _action: PayloadAction<void>) => {
       state.eventId = "";
-      state.dragging = "";
+      state.dragging = undefined;
     },
 
     dragPlayerStart: (state, _action: PayloadAction<void>) => {
-      state.dragging = DRAG_PLAYER;
+      state.dragging = { type: DRAG_PLAYER };
       state.worldFocus = true;
     },
 
     dragPlayerStop: (state, _action: PayloadAction<void>) => {
-      state.dragging = "";
+      state.dragging = undefined;
     },
 
     zoomIn: (
@@ -1139,7 +1178,7 @@ const editorSlice = createSlice({
         state.scene = "";
         state.entityId = action.payload.constantId;
       })
-      .addCase(entitiesActions.moveActorToPx, (state, action) => {
+      .addCase(entitiesActions.moveActor, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {
           state.scene = action.payload.newSceneId;
           state.worldFocus = true;

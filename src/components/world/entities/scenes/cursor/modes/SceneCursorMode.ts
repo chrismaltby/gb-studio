@@ -11,6 +11,8 @@ export interface SceneCursorModeContext {
 export type SceneCursorEvent<T> = {
   x: number;
   y: number;
+  pX: number;
+  pY: number;
   sceneId: string;
   isOverScene: boolean;
   raw: T;
@@ -41,8 +43,9 @@ export interface SceneCursorMode {
   enabled: boolean;
   viewPriority: number;
   eventPriority: number;
+  captureEventsWhenEnabled?: boolean;
   view?: SceneCursorViewModel;
-  onMouseDown: SceneCursorMouseDownHandler;
+  onMouseDown?: SceneCursorMouseDownHandler;
   onMouseMove?: SceneCursorMouseMoveHandler;
   onMouseUp?: SceneCursorMouseUpHandler;
   onCancel?: SceneCursorCancelHandler;
@@ -78,4 +81,12 @@ export const getSceneCursorEventModes = (
   return modes
     .filter((mode) => mode.enabled)
     .sort((a, b) => b.eventPriority - a.eventPriority);
+};
+
+export const getCapturedSceneCursorEventMode = (
+  modes: readonly SceneCursorMode[],
+): SceneCursorMode | undefined => {
+  return getSceneCursorEventModes(modes).find(
+    (mode) => mode.captureEventsWhenEnabled,
+  );
 };

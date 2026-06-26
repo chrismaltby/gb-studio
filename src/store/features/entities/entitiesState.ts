@@ -1,13 +1,5 @@
 import { createSlice, ThunkDispatch, UnknownAction } from "@reduxjs/toolkit";
-import {
-  DRAG_PLAYER,
-  DRAG_DESTINATION,
-  DRAG_TRIGGER,
-  DRAG_ACTOR,
-  TILE_SIZE,
-} from "consts";
 import { RootState } from "store/storeTypes";
-import settingsActions from "store/features/settings/settingsActions";
 import projectActions from "store/features/project/projectActions";
 import {
   EntitiesState,
@@ -102,66 +94,6 @@ export const initialState: EntitiesState = {
   engineFieldValues: engineFieldValuesAdapter.getInitialState(),
 };
 
-const pxToTiles = (x: number) => Math.floor(x / TILE_SIZE);
-
-const moveSelectedEntityToPx =
-  ({
-    dragging,
-    sceneId,
-    x,
-    y,
-  }: {
-    dragging: string;
-    sceneId: string;
-    x: number;
-    y: number;
-  }) =>
-  (
-    dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
-    getState: () => RootState,
-  ) => {
-    const state = getState();
-    const { scene, eventId, entityId } = state.editor;
-    if (dragging === DRAG_PLAYER) {
-      dispatch(
-        settingsActions.editPlayerStartAt({
-          sceneId,
-          x: pxToTiles(x),
-          y: pxToTiles(y),
-        }),
-      );
-    } else if (dragging === DRAG_DESTINATION) {
-      dispatch(
-        actions.editScriptEventDestination({
-          scriptEventId: eventId,
-          destSceneId: sceneId,
-          x: pxToTiles(x),
-          y: pxToTiles(y),
-        }),
-      );
-    } else if (dragging === DRAG_ACTOR) {
-      dispatch(
-        actions.moveActorToPx({
-          actorId: entityId,
-          sceneId: scene,
-          newSceneId: sceneId,
-          x,
-          y,
-        }),
-      );
-    } else if (dragging === DRAG_TRIGGER) {
-      dispatch(
-        actions.moveTrigger({
-          sceneId: scene,
-          triggerId: entityId,
-          newSceneId: sceneId,
-          x: pxToTiles(x),
-          y: pxToTiles(y),
-        }),
-      );
-    }
-  };
-
 const removeSelectedEntity =
   () =>
   (
@@ -237,7 +169,6 @@ const entitiesSlice = createSlice({
 
 export const actions = {
   ...entitiesSlice.actions,
-  moveSelectedEntityToPx,
   removeSelectedEntity,
 };
 

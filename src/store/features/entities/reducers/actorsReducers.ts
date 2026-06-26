@@ -253,7 +253,7 @@ const setActorSymbol: CaseReducer<
   );
 };
 
-const moveActorToPx: CaseReducer<
+const moveActor: CaseReducer<
   EntitiesState,
   PayloadAction<{
     actorId: string;
@@ -301,13 +301,11 @@ const moveActorToPx: CaseReducer<
     return;
   }
 
-  const UNIT_SIZE = actor.coordinateType === "pixels" ? 1 : TILE_SIZE;
-
   actorsAdapter.updateOne(state.actors, {
     id: action.payload.actorId,
     changes: {
-      x: Math.floor(action.payload.x / UNIT_SIZE),
-      y: Math.floor(action.payload.y / UNIT_SIZE),
+      x: action.payload.x,
+      y: action.payload.y,
     },
   });
 };
@@ -686,7 +684,7 @@ const actorsReducers = {
   applyActorPrefabScriptEventOverride,
   removeActor,
   removeActorAt,
-  moveActorToPx,
+  moveActor,
 } satisfies SliceCaseReducers<EntitiesState>;
 
 export default actorsReducers;

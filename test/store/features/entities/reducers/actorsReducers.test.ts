@@ -7,7 +7,6 @@ import {
   dummySpriteSheet,
   dummyActorNormalized,
 } from "../../../../dummydata";
-import { TILE_SIZE } from "consts";
 
 test("Should be able to add an actor to a scene", () => {
   const state: EntitiesState = {
@@ -138,12 +137,12 @@ test("Should be able to move an actor with a scene", () => {
     },
   };
 
-  const action = actions.moveActorToPx({
+  const action = actions.moveActor({
     actorId: "actor1",
     sceneId: "scene1",
     newSceneId: "scene1",
-    x: 1 * TILE_SIZE,
-    y: 3 * TILE_SIZE,
+    x: 1,
+    y: 3,
   });
 
   const newState = reducer(state, action);
@@ -182,7 +181,7 @@ test("Should be able to move an actor with pixel units", () => {
     },
   };
 
-  const action = actions.moveActorToPx({
+  const action = actions.moveActor({
     actorId: "actor1",
     sceneId: "scene1",
     newSceneId: "scene1",
@@ -233,12 +232,12 @@ test("Should be able to move an actor between scenes", () => {
     },
   };
 
-  const action = actions.moveActorToPx({
+  const action = actions.moveActor({
     actorId: "actor1",
     sceneId: "scene1",
     newSceneId: "scene2",
-    x: 4 * TILE_SIZE,
-    y: 1 * TILE_SIZE,
+    x: 4,
+    y: 1,
   });
 
   const newState = reducer(state, action);

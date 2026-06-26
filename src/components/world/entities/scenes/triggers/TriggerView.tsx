@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect } from "react";
+import React, { memo, useCallback } from "react";
 import editorActions from "store/features/editor/editorActions";
 import { triggerSelectors } from "store/features/entities/entitiesSelectors";
 import { MIDDLE_MOUSE, TILE_SIZE } from "consts";
@@ -6,6 +6,7 @@ import styled, { css } from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import renderTriggerContextMenu from "components/world/contextMenus/renderTriggerContextMenu";
 import { useContextMenu } from "ui/hooks/use-context-menu";
+import { getDragOffset } from "components/world/entities/scenes/cursor/getDragOffset";
 
 interface TriggerViewProps {
   id: string;
@@ -44,34 +45,23 @@ const TriggerView = memo(({ id, sceneId, editable }: TriggerViewProps) => {
       state.editor.scene === sceneId &&
       state.editor.entityId === id,
   );
-  const isDragging = useAppSelector(
-    (state) => selected && state.editor.dragging,
-  );
-
-  const onMouseUp = useCallback(() => {
-    dispatch(editorActions.dragTriggerStop());
-    window.removeEventListener("mouseup", onMouseUp);
-  }, [dispatch]);
-
   const onMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       if (editable && e.nativeEvent.which !== MIDDLE_MOUSE) {
-        dispatch(editorActions.dragTriggerStart({ sceneId, triggerId: id }));
+        const offset = getDragOffset(e.currentTarget, e.clientX, e.clientY);
+        dispatch(
+          editorActions.dragTriggerStart({
+            sceneId,
+            triggerId: id,
+            offsetX: offset.x,
+            offsetY: offset.y,
+          }),
+        );
         dispatch(editorActions.setTool({ tool: "select" }));
-        window.addEventListener("mouseup", onMouseUp);
       }
     },
-    [dispatch, editable, id, onMouseUp, sceneId],
+    [dispatch, editable, id, sceneId],
   );
-
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener("mouseup", onMouseUp);
-    }
-    return () => {
-      window.removeEventListener("mouseup", onMouseUp);
-    };
-  }, [onMouseUp, isDragging]);
 
   //#region Context Menu
 

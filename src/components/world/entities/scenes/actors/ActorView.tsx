@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect } from "react";
+import React, { memo, useCallback } from "react";
 import SpriteSheetCanvas from "components/rendering/SpriteSheetCanvas";
 import { MIDDLE_MOUSE, TILE_SIZE, TOOL_COLLISIONS } from "consts";
 import {
@@ -13,6 +13,7 @@ import renderActorContextMenu from "components/world/contextMenus/renderActorCon
 import { SpriteBoundingBox } from "components/sprites/MetaspriteEditor";
 import { MonoOBJPalette, Palette } from "shared/lib/resources/types";
 import { useContextMenu } from "ui/hooks/use-context-menu";
+import { getDragOffset } from "components/world/entities/scenes/cursor/getDragOffset";
 
 interface ActorViewProps {
   id: string;
@@ -91,9 +92,6 @@ const ActorView = memo(
         state.editor.scene === sceneId &&
         state.editor.entityId === id,
     );
-    const isDragging = useAppSelector(
-      (state) => selected && state.editor.dragging,
-    );
     const showSprite = useAppSelector((state) => state.editor.zoom > 80);
     const previewAsMono = useAppSelector(
       (state) =>
@@ -109,30 +107,23 @@ const ActorView = memo(
       (state) => state.editor.tool === TOOL_COLLISIONS,
     );
 
-    const onMouseUp = useCallback(() => {
-      dispatch(editorActions.dragActorStop());
-      window.removeEventListener("mouseup", onMouseUp);
-    }, [dispatch]);
-
     const onMouseDown = useCallback(
       (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (editable && e.nativeEvent.which !== MIDDLE_MOUSE) {
-          dispatch(editorActions.dragActorStart({ sceneId, actorId: id }));
+          const offset = getDragOffset(e.currentTarget, e.clientX, e.clientY);
+          dispatch(
+            editorActions.dragActorStart({
+              sceneId,
+              actorId: id,
+              offsetX: offset.x,
+              offsetY: offset.y,
+            }),
+          );
           dispatch(editorActions.setTool({ tool: "select" }));
-          window.addEventListener("mouseup", onMouseUp);
         }
       },
-      [dispatch, editable, id, onMouseUp, sceneId],
+      [dispatch, editable, id, sceneId],
     );
-
-    useEffect(() => {
-      if (isDragging) {
-        window.addEventListener("mouseup", onMouseUp);
-      }
-      return () => {
-        window.removeEventListener("mouseup", onMouseUp);
-      };
-    }, [onMouseUp, isDragging]);
 
     //#region Context Menu
 
