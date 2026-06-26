@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { memo, useCallback, useMemo, useRef } from "react";
 import WorldActor from "./actors/ActorView";
 import TriggerView from "./triggers/TriggerView";
 import SceneCollisions from "./SceneCollisions";
@@ -9,7 +9,6 @@ import {
   TOOL_COLLISIONS,
   TOOL_ERASER,
   DMG_PALETTE,
-  MIDDLE_MOUSE,
   TILE_COLOR_PROP_PRIORITY,
   TOOL_SELECT,
   BRUSH_SELECTION,
@@ -43,6 +42,7 @@ import { moveGridSelection } from "shared/lib/tiles/gridSelection";
 import { SceneParallaxOverlay } from "components/world/entities/scenes/SceneParallaxOverlay";
 import { SceneTitle } from "components/world/entities/scenes/SceneTitle";
 import { useSceneVisibleInViewport } from "components/world/entities/scenes/hooks/useSceneVisibleInViewport";
+import { useWorldEntityDrag } from "components/world/hooks/useWorldEntityDrag";
 
 const TILE_SIZE = 8;
 
@@ -482,82 +482,22 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
 
   const hovered = useAppSelector((state) => state.editor.hover.sceneId === id);
 
-  const dragState = useRef({
-    lastTX: -1,
-    lastTY: -1,
-    lastPageX: -1,
-    lastPageY: -1,
-    sceneX: 0,
-    sceneY: 0,
-    zoomRatio: 0,
+  const hoverState = useRef({
+    lastPX: -1,
+    lastPY: -1,
   });
 
-  // Store selection as ref to prevent onMoveDrag from being recreated
-  // every time multi selection changes (causes first drag to fail)
-  const currentSceneSelectionIds = useRef<string[]>([]);
-  useEffect(() => {
-    currentSceneSelectionIds.current = sceneSelectionIds;
-  }, [sceneSelectionIds]);
+  const onSelect = useCallback(() => {
+    dispatch(editorActions.selectScene({ sceneId: id }));
+  }, [dispatch, id]);
 
-  const onMoveDrag = useCallback(
-    (e: MouseEvent) => {
-      const dragDeltaX =
-        (e.pageX - dragState.current.lastPageX) / dragState.current.zoomRatio;
-      const dragDeltaY =
-        (e.pageY - dragState.current.lastPageY) / dragState.current.zoomRatio;
-
-      dragState.current.lastPageX = e.pageX;
-      dragState.current.lastPageY = e.pageY;
-      dragState.current.sceneX += dragDeltaX;
-      dragState.current.sceneY += dragDeltaY;
-
-      dispatch(
-        entitiesActions.moveWorldEntities({
-          entityId: id,
-          x: Math.round(dragState.current.sceneX / TILE_SIZE) * TILE_SIZE,
-          y: Math.round(dragState.current.sceneY / TILE_SIZE) * TILE_SIZE,
-          additionalEntityIds: currentSceneSelectionIds.current,
-        }),
-      );
-    },
-    [dispatch, id],
-  );
-
-  const onEndDrag = useCallback(() => {
-    window.removeEventListener("mousemove", onMoveDrag);
-    window.removeEventListener("mouseup", onEndDrag);
-  }, [onMoveDrag]);
-
-  const onStartDrag = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (!scene) {
-        return;
-      }
-
-      if (!editable || e.nativeEvent.which === MIDDLE_MOUSE) {
-        return;
-      }
-
-      dragState.current.lastPageX = e.pageX;
-      dragState.current.lastPageY = e.pageY;
-      dragState.current.sceneX = scene.x;
-      dragState.current.sceneY = scene.y;
-      dragState.current.zoomRatio = zoomRatio;
-
-      dispatch(editorActions.selectScene({ sceneId: id }));
-
-      window.addEventListener("mousemove", onMoveDrag);
-      window.addEventListener("mouseup", onEndDrag);
-    },
-    [dispatch, editable, id, onEndDrag, onMoveDrag, scene, zoomRatio],
-  );
-
-  useEffect(() => {
-    return () => {
-      window.removeEventListener("mousemove", onMoveDrag);
-      window.removeEventListener("mouseup", onEndDrag);
-    };
-  }, [onEndDrag, onMoveDrag]);
+  const { onStartDrag } = useWorldEntityDrag({
+    entityId: id,
+    editable,
+    x: scene?.x ?? 0,
+    y: scene?.y ?? 0,
+    onSelect,
+  });
 
   const onMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -573,8 +513,8 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       const tY = Math.floor(pY / TILE_SIZE);
 
       if (
-        pX !== dragState.current.lastTX ||
-        pY !== dragState.current.lastTY ||
+        pX !== hoverState.current.lastPX ||
+        pY !== hoverState.current.lastPY ||
         !hovered
       ) {
         if (tX >= 0 && tY >= 0 && tX < scene.width && tY < scene.height) {
@@ -587,8 +527,8 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
             }),
           );
         }
-        dragState.current.lastTX = pX;
-        dragState.current.lastTY = pY;
+        hoverState.current.lastPX = pX;
+        hoverState.current.lastPY = pY;
       }
     },
     [dispatch, hovered, id, scene, zoomRatio],
@@ -598,8 +538,8 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     dispatch(
       editorActions.sceneHover({
         sceneId: "",
-        x: dragState.current.lastTX,
-        y: dragState.current.lastTY,
+        x: 0,
+        y: 0,
       }),
     );
   }, [dispatch]);
