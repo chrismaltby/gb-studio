@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
 import {
@@ -130,7 +130,6 @@ const AnimationStateSelect = ({
 }: AnimationStateSelectProps) => {
   const [renameVisible, setRenameVisible] = useState(false);
   const [editValue, setEditValue] = useState("");
-  const [currentValue, setCurrentValue] = useState<Option>();
 
   const [options, setOptions] = useState<(Option | OptGroup)[]>([]);
   const spriteStates = useAppSelector((state) =>
@@ -266,12 +265,13 @@ const AnimationStateSelect = ({
     );
   }, [allowDefault, groupBySprites, spriteStates, spriteStatesLookup, sprites]);
 
-  useEffect(() => {
-    setCurrentValue({
+  const currentValue = useMemo(
+    () => ({
       value: value || "",
       label: value || (allowDefault ? l10n("FIELD_DEFAULT") : ""),
-    });
-  }, [allowDefault, value]);
+    }),
+    [allowDefault, value],
+  );
 
   return (
     <Wrapper>
@@ -330,4 +330,4 @@ const AnimationStateSelect = ({
   );
 };
 
-export default AnimationStateSelect;
+export default memo<AnimationStateSelectProps>(AnimationStateSelect);

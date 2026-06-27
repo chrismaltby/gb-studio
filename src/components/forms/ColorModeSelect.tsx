@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { ColorModeSetting } from "store/features/settings/settingsState";
 import {
   Option,
@@ -20,11 +20,10 @@ interface ColorModeOption {
   label: string;
 }
 
-export const ColorModeSelect: FC<ColorModeSelectProps> = ({
+const ColorModeSelectComponent = ({
   value,
   onChange,
-}) => {
-  const [currentValue, setCurrentValue] = useState<ColorModeOption>();
+}: ColorModeSelectProps) => {
   const colorModeOptionsInfo: { [key: string]: string } = useMemo(
     () => ({
       mono: l10n("FIELD_COLOR_MODE_MONO_INFO"),
@@ -52,12 +51,10 @@ export const ColorModeSelect: FC<ColorModeSelectProps> = ({
     [],
   );
 
-  useEffect(() => {
-    const currentColorMode = colorModeOptions.find((e) => e.value === value);
-    if (currentColorMode) {
-      setCurrentValue(currentColorMode);
-    }
-  }, [colorModeOptions, value]);
+  const currentValue = useMemo(
+    () => colorModeOptions.find((option) => option.value === value),
+    [colorModeOptions, value],
+  );
 
   const onSelectChange = useCallback(
     (newValue: SingleValue<ColorModeOption>) => {
@@ -88,3 +85,7 @@ export const ColorModeSelect: FC<ColorModeSelectProps> = ({
     />
   );
 };
+
+export const ColorModeSelect = memo<ColorModeSelectProps>(
+  ColorModeSelectComponent,
+);

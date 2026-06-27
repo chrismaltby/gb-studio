@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { Select, SelectCommonProps } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import { SingleValue } from "react-select";
@@ -15,12 +15,10 @@ interface ColorCorrectionOption {
   label: string;
 }
 
-export const ColorCorrectionSelect: FC<ColorCorrectionSelectProps> = ({
+const ColorCorrectionSelectComponent = ({
   value,
   onChange,
-}) => {
-  const [currentValue, setCurrentValue] = useState<ColorCorrectionOption>();
-
+}: ColorCorrectionSelectProps) => {
   const colorCorrectionOptions: ColorCorrectionOption[] = useMemo(
     () => [
       {
@@ -35,14 +33,10 @@ export const ColorCorrectionSelect: FC<ColorCorrectionSelectProps> = ({
     [],
   );
 
-  useEffect(() => {
-    const currentColorCorrection = colorCorrectionOptions.find(
-      (e) => e.value === value,
-    );
-    if (currentColorCorrection) {
-      setCurrentValue(currentColorCorrection);
-    }
-  }, [colorCorrectionOptions, value]);
+  const currentValue = useMemo(
+    () => colorCorrectionOptions.find((option) => option.value === value),
+    [colorCorrectionOptions, value],
+  );
 
   const onSelectChange = useCallback(
     (newValue: SingleValue<ColorCorrectionOption>) => {
@@ -61,3 +55,7 @@ export const ColorCorrectionSelect: FC<ColorCorrectionSelectProps> = ({
     />
   );
 };
+
+export const ColorCorrectionSelect = memo<ColorCorrectionSelectProps>(
+  ColorCorrectionSelectComponent,
+);

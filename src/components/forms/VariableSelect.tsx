@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FC, useContext } from "react";
+import React, { memo, useContext, useEffect, useMemo, useState } from "react";
 import {
   Select as DefaultSelect,
   Option,
@@ -128,7 +128,7 @@ const VariableRenameCompleteButton = styled.button`
   }
 `;
 
-export const VariableSelect: FC<VariableSelectProps> = ({
+const VariableSelectComponent = ({
   value,
   onChange,
   entityId,
@@ -137,15 +137,13 @@ export const VariableSelect: FC<VariableSelectProps> = ({
   unitsAllowed,
   onChangeUnits,
   ...selectProps
-}) => {
+}: VariableSelectProps) => {
   const context = useContext(ScriptEditorContext);
   const [renameVisible, setRenameVisible] = useState(false);
   const [editValue, setEditValue] = useState("");
   const [renameId, setRenameId] = useState("");
   const [variables, setVariables] = useState<NamedVariable[]>([]);
   const [options, setOptions] = useState<OptGroup[]>([]);
-  const [currentVariable, setCurrentVariable] = useState<NamedVariable>();
-  const [currentValue, setCurrentValue] = useState<Option>();
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state),
   );
@@ -180,18 +178,12 @@ export const VariableSelect: FC<VariableSelectProps> = ({
     setOptions(groupedOptions);
   }, [entityId, variablesLookup, context, customEvent]);
 
-  useEffect(() => {
-    setCurrentVariable(variables.find((v) => v.id === value));
+  const currentValue = useMemo(() => {
+    const currentVariable = variables.find((variable) => variable.id === value);
+    return currentVariable
+      ? { value: currentVariable.id, label: `$${currentVariable.name}` }
+      : undefined;
   }, [variables, value]);
-
-  useEffect(() => {
-    if (currentVariable) {
-      setCurrentValue({
-        value: currentVariable.id,
-        label: `$${currentVariable.name}`,
-      });
-    }
-  }, [currentVariable]);
 
   const onRenameStart = () => {
     if (currentValue) {
@@ -304,3 +296,7 @@ export const VariableSelect: FC<VariableSelectProps> = ({
     </VariableSelectWrapper>
   );
 };
+
+export const VariableSelect = memo<VariableSelectProps>(
+  VariableSelectComponent,
+);

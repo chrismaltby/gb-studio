@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { memo, useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import l10n from "shared/lib/lang/l10n";
 import {
@@ -27,14 +27,11 @@ interface PaletteIndexOption {
   palette?: Palette;
 }
 
-export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
+const PaletteIndexSelectComponent = ({
   name,
   value = 0,
   onChange,
-}) => {
-  const [options, setOptions] = useState<PaletteIndexOption[]>([]);
-  const [currentValue, setCurrentValue] = useState<PaletteIndexOption>();
-
+}: PaletteIndexSelectProps) => {
   const previewAsSceneId = useAppSelector(
     (state) => state.editor.previewAsSceneId,
   );
@@ -49,8 +46,8 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
   );
   const dmgPalette = useMemo(getLocalisedDMGPalette, []);
 
-  useEffect(() => {
-    setOptions(
+  const options = useMemo(
+    () =>
       Array.from(Array(8)).map((_, index) => ({
         value: index,
         label: l10n("TOOL_PALETTE_N", { number: index + 1 }),
@@ -62,12 +59,13 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
               : defaultSpritePaletteIds[index]
           ],
       })),
-    );
-  }, [scene, palettesLookup, defaultSpritePaletteIds]);
+    [scene, palettesLookup, defaultSpritePaletteIds],
+  );
 
-  useEffect(() => {
-    setCurrentValue(options.find((o) => o.value === value));
-  }, [value, options]);
+  const currentValue = useMemo(
+    () => options.find((option) => option.value === value),
+    [value, options],
+  );
 
   return (
     <Select
@@ -116,3 +114,7 @@ export const PaletteIndexSelect: FC<PaletteIndexSelectProps> = ({
     />
   );
 };
+
+export const PaletteIndexSelect = memo<PaletteIndexSelectProps>(
+  PaletteIndexSelectComponent,
+);

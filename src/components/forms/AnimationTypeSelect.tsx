@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { memo, useMemo } from "react";
 import { OptGroup, Option, Select } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import { SingleValue } from "react-select";
@@ -18,13 +18,11 @@ interface AnimationTypeOptGroup extends OptGroup {
   options: AnimationTypeOption[];
 }
 
-export const AnimationTypeSelect: FC<AnimationTypeSelectProps> = ({
+const AnimationTypeSelectComponent = ({
   name,
   value = "fixed",
   onChange,
-}) => {
-  const [currentValue, setCurrentValue] = useState<AnimationTypeOption>();
-
+}: AnimationTypeSelectProps) => {
   const options: AnimationTypeOptGroup[] = useMemo(
     () => [
       {
@@ -71,23 +69,11 @@ export const AnimationTypeSelect: FC<AnimationTypeSelectProps> = ({
     [],
   );
 
-  useEffect(() => {
-    if (value) {
-      let found = false;
-      for (const group of options) {
-        for (const option of group.options) {
-          if (option.value === value) {
-            setCurrentValue(option);
-            found = true;
-            break;
-          }
-        }
-        if (found) {
-          break;
-        }
-      }
-    }
-  }, [options, value]);
+  const currentValue = useMemo(
+    () =>
+      options.flatMap((group) => group.options).find((o) => o.value === value),
+    [options, value],
+  );
 
   return (
     <Select
@@ -102,3 +88,7 @@ export const AnimationTypeSelect: FC<AnimationTypeSelectProps> = ({
     />
   );
 };
+
+export const AnimationTypeSelect = memo<AnimationTypeSelectProps>(
+  AnimationTypeSelectComponent,
+);

@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import {
   Option,
   OptionLabelWithInfo,
@@ -20,11 +20,10 @@ interface ColorModeOverrideOption {
   label: string;
 }
 
-export const ColorModeOverrideSelect: FC<ColorModeOverrideSelectProps> = ({
+const ColorModeOverrideSelectComponent = ({
   value,
   onChange,
-}) => {
-  const [currentValue, setCurrentValue] = useState<ColorModeOverrideOption>();
+}: ColorModeOverrideSelectProps) => {
   const colorModeOptionsInfo: { [key: string]: string } = useMemo(
     () => ({
       mono: l10n("FIELD_COLOR_MODE_MONO_INFO"),
@@ -52,12 +51,10 @@ export const ColorModeOverrideSelect: FC<ColorModeOverrideSelectProps> = ({
     [],
   );
 
-  useEffect(() => {
-    const currentColorMode = colorModeOptions.find((e) => e.value === value);
-    if (currentColorMode) {
-      setCurrentValue(currentColorMode);
-    }
-  }, [colorModeOptions, value]);
+  const currentValue = useMemo(
+    () => colorModeOptions.find((option) => option.value === value),
+    [colorModeOptions, value],
+  );
 
   const onSelectChange = useCallback(
     (newValue: SingleValue<ColorModeOverrideOption>) => {
@@ -88,3 +85,7 @@ export const ColorModeOverrideSelect: FC<ColorModeOverrideSelectProps> = ({
     />
   );
 };
+
+export const ColorModeOverrideSelect = memo<ColorModeOverrideSelectProps>(
+  ColorModeOverrideSelectComponent,
+);

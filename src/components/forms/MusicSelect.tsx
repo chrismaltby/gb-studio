@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import uniq from "lodash/uniq";
 import { musicSelectors } from "store/features/entities/entitiesSelectors";
 import {
@@ -67,14 +67,13 @@ const PlayPauseTrack = ({ musicId }: PlayPauseTrackProps) => {
   );
 };
 
-export const MusicSelect = ({
+const MusicSelectComponent = ({
   value,
   onChange,
   ...selectProps
 }: MusicSelectProps) => {
   const tracks = useAppSelector((state) => musicSelectors.selectAll(state));
   const [options, setOptions] = useState<OptGroup[]>([]);
-  const [currentValue, setCurrentValue] = useState<Option>();
 
   useEffect(() => {
     const plugins = uniq(tracks.map((s) => s.plugin || "")).sort();
@@ -91,18 +90,13 @@ export const MusicSelect = ({
     );
   }, [tracks]);
 
-  useEffect(() => {
-    let option: Option | null = null;
-    options.find((optGroup) => {
-      const foundOption = optGroup.options.find((opt) => opt.value === value);
-      if (foundOption) {
-        option = foundOption;
-        return true;
-      }
-      return false;
-    });
-    setCurrentValue(option || options[0]?.options[0]);
-  }, [options, value]);
+  const currentValue = useMemo(
+    () =>
+      options
+        .flatMap((group) => group.options)
+        .find((option) => option.value === value) || options[0]?.options[0],
+    [options, value],
+  );
 
   const onSelectChange = useCallback(
     (newValue: SingleValue<Option>) => {
@@ -140,3 +134,5 @@ export const MusicSelect = ({
     />
   );
 };
+
+export const MusicSelect = memo<MusicSelectProps>(MusicSelectComponent);
