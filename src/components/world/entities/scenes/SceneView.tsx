@@ -4,7 +4,6 @@ import {
   TOOL_COLLISIONS,
   TOOL_ERASER,
   TOOL_SELECT,
-  BRUSH_SELECTION,
   TILE_SIZE,
 } from "consts";
 import SceneInfo from "./SceneInfo";
@@ -32,6 +31,7 @@ import { useWorldEntityDrag } from "components/world/hooks/useWorldEntityDrag";
 import { useRectVisibleInWorldViewport } from "components/world/hooks/useRectVisibleInWorldViewport";
 import { SceneTileLayers } from "components/world/entities/scenes/SceneTileLayers";
 import { SceneEntities } from "components/world/entities/scenes/SceneEntities";
+import { SceneTileSelectionOverlay } from "components/world/entities/scenes/SceneTileSelectionOverlay";
 
 const SCENE_LABEL_MARGIN = 50;
 
@@ -192,20 +192,6 @@ const SceneErrorOverlay = styled.div`
   }
 `;
 
-const TileSelectionOutline = styled.div`
-  position: absolute;
-  z-index: 90;
-  box-sizing: border-box;
-  border: 1px solid ${(props) => props.theme.colors.highlightText};
-  outline: 1px solid ${(props) => props.theme.colors.highlight};
-  background: color-mix(
-    in srgb,
-    ${(props) => props.theme.colors.highlight} 15%,
-    transparent
-  );
-  pointer-events: none;
-`;
-
 const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const dispatch = useAppDispatch();
   const store = useAppStore();
@@ -240,26 +226,8 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     false;
 
   const tool = useAppSelector((state) => state.editor.tool);
-  const selectedBrush = useAppSelector((state) => state.editor.selectedBrush);
 
   const showLayers = useAppSelector((state) => state.editor.showLayers);
-
-  const scenePaintSelection = useAppSelector((state) => {
-    const selection = state.editor.scenePaintSelection;
-    return selection?.sceneId === id ? selection : undefined;
-  });
-
-  const scenePaintSelectionMode =
-    tool === TOOL_COLLISIONS
-      ? "collisions"
-      : tool === TOOL_COLORS
-        ? "colors"
-        : undefined;
-
-  const activeScenePaintSelection =
-    scenePaintSelection?.mode === scenePaintSelectionMode
-      ? scenePaintSelection
-      : undefined;
 
   const showEntities =
     (tool !== TOOL_COLORS &&
@@ -392,30 +360,12 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
         )}
 
         {selected && <SceneParallaxOverlay sceneId={id} />}
-
         {!sceneTypeEnabled && (
           <SceneErrorOverlay>
             <WarningIcon />
           </SceneErrorOverlay>
         )}
-
-        {selectedBrush === BRUSH_SELECTION && activeScenePaintSelection && (
-          <TileSelectionOutline
-            style={{
-              left:
-                (activeScenePaintSelection.selection.x +
-                  activeScenePaintSelection.offset.x) *
-                TILE_SIZE,
-              top:
-                (activeScenePaintSelection.selection.y +
-                  activeScenePaintSelection.offset.y) *
-                TILE_SIZE,
-              width: activeScenePaintSelection.selection.width * TILE_SIZE,
-              height: activeScenePaintSelection.selection.height * TILE_SIZE,
-            }}
-          />
-        )}
-
+        {selected && <SceneTileSelectionOverlay sceneId={id} />}
         {showEntities && <SceneEntities sceneId={id} editable={editable} />}
         {selected && (
           <SceneOverlay $noPointerEvents>
