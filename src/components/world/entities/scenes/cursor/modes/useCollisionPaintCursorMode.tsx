@@ -21,6 +21,7 @@ import type {
 } from "./SceneCursorMode";
 import {
   paintCursorSize,
+  resetPaintInteractionForScene,
   resolveAxisLockedLine,
   shouldPaintCollisionBrush,
 } from "./paintCursorHelpers";
@@ -218,7 +219,7 @@ export const useCollisionPaintCursorMode = (
       const scene = sceneSelectors.selectById(rootState, sceneId);
       const state = stateRef.current;
 
-      state.sceneId = sceneId;
+      resetPaintInteractionForScene(state, sceneId);
       state.drawLine = e.raw.shiftKey;
       state.drawWall = e.raw.ctrlKey;
       state.lockX = undefined;
