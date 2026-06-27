@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { FormRow } from "ui/form/layout/FormLayout";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { ActorNormalized } from "shared/lib/entities/entitiesTypes";
@@ -10,14 +10,11 @@ import {
 } from "shared/lib/helpers/array";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import { ExtraActorCollisionFlagDef } from "store/features/engine/engineState";
 
 interface ActorExtraCollisionFlagsProps {
   actor: ActorNormalized;
   sceneId?: string;
 }
-
-const emptyCollisionFlagDefs: ExtraActorCollisionFlagDef[] = [];
 
 export const ActorExtraCollisionFlags = ({
   actor,
@@ -25,20 +22,21 @@ export const ActorExtraCollisionFlags = ({
 }: ActorExtraCollisionFlagsProps) => {
   const dispatch = useAppDispatch();
 
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId ?? ""),
+  const sceneTypeKey = useAppSelector(
+    (state) => sceneSelectors.selectById(state, sceneId ?? "")?.type,
   );
 
-  const extraActorCollisionFlags = useAppSelector((state) => {
-    if (!scene || !scene.type || !state.engine.sceneTypes)
-      return emptyCollisionFlagDefs;
-    const key = scene.type || "";
-    const sceneType = state.engine.sceneTypes.find((s) => s.key === key);
-    if (sceneType && sceneType.extraActorCollisionFlags) {
-      return sceneType.extraActorCollisionFlags;
+  const sceneTypeSchemas = useAppSelector((state) => state.engine.sceneTypes);
+
+  const extraActorCollisionFlags = useMemo(() => {
+    if (!sceneTypeKey || !sceneTypeSchemas) {
+      return [];
     }
-    return emptyCollisionFlagDefs;
-  });
+    return (
+      sceneTypeSchemas.find((s) => s.key === sceneTypeKey)
+        ?.extraActorCollisionFlags ?? []
+    );
+  }, [sceneTypeKey, sceneTypeSchemas]);
 
   const onChangeActorProp = useCallback(
     <K extends keyof ActorNormalized>(key: K, value: ActorNormalized[K]) => {

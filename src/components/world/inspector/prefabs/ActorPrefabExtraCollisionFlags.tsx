@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { FormRow } from "ui/form/layout/FormLayout";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { ActorPrefabNormalized } from "shared/lib/entities/entitiesTypes";
@@ -23,28 +23,32 @@ export const ActorPrefabExtraCollisionFlags = ({
 }: ActorPrefabExtraCollisionFlagsProps) => {
   const dispatch = useAppDispatch();
 
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId ?? ""),
+  const sceneTypeKey = useAppSelector(
+    (state) => sceneSelectors.selectById(state, sceneId ?? "")?.type,
   );
 
-  const extraActorCollisionFlags = useAppSelector((state) => {
-    if (!scene || !scene.type || !state.engine.sceneTypes) {
-      return uniqBy(
-        state.engine.sceneTypes
-          .map((s) => s.extraActorCollisionFlags || [])
-          .flat(),
-        "key",
-      ).map((flagDef) => ({
-        ...flagDef,
-        clearFlags: [], // Can't reliably determine which flags should be cleared without knowing the scene type, so just don't clear any
-      }));
+  const sceneTypeSchemas = useAppSelector((state) => state.engine.sceneTypes);
+
+  const extraActorCollisionFlags = useMemo(() => {
+    if (!sceneTypeSchemas) {
+      return [];
     }
-    const key = scene.type || "";
-    const sceneType = state.engine.sceneTypes.find((s) => s.key === key);
-    if (sceneType && sceneType.extraActorCollisionFlags)
-      return sceneType.extraActorCollisionFlags;
-    return [];
-  });
+
+    if (sceneTypeKey) {
+      return (
+        sceneTypeSchemas.find((s) => s.key === sceneTypeKey)
+          ?.extraActorCollisionFlags ?? []
+      );
+    }
+
+    return uniqBy(
+      sceneTypeSchemas.flatMap((s) => s.extraActorCollisionFlags || []),
+      "key",
+    ).map((flagDef) => ({
+      ...flagDef,
+      clearFlags: [], // Can't reliably determine which flags should be cleared without knowing the scene type, so just don't clear any
+    }));
+  }, [sceneTypeKey, sceneTypeSchemas]);
 
   const onChangeActorPrefabProp = useCallback(
     <K extends keyof ActorPrefabNormalized>(
