@@ -1,5 +1,5 @@
-import React, { FC, useEffect, useState } from "react";
-import { useAppSelector } from "store/hooks";
+import React, { memo, useMemo } from "react";
+import { useAppSelectorPickArray } from "store/hooks";
 import { emoteSelectors } from "store/features/entities/entitiesSelectors";
 import {
   Option,
@@ -10,7 +10,6 @@ import {
 } from "ui/form/Select";
 import { EmoteCanvas } from "components/rendering/EmoteCanvas";
 import { SingleValue } from "react-select";
-import { EmoteAsset } from "shared/lib/resources/types";
 
 interface EmoteSelectProps extends SelectCommonProps {
   name: string;
@@ -18,76 +17,61 @@ interface EmoteSelectProps extends SelectCommonProps {
   onChange?: (newId: string) => void;
   optional?: boolean;
   optionalLabel?: string;
-  optionalDefaultEmoteId?: string;
 }
 
-interface EmoteOption extends Option {
-  emote: EmoteAsset;
-}
+type EmoteOption = Option;
 
-export const EmoteSelect: FC<EmoteSelectProps> = ({
+const EmoteSelectComponent = ({
   value,
   onChange,
   optional,
   optionalLabel,
-  optionalDefaultEmoteId,
   ...selectProps
-}) => {
-  const emotes = useAppSelector((state) => emoteSelectors.selectAll(state));
-  const [options, setOptions] = useState<EmoteOption[]>([]);
-  const [currentEmote, setCurrentEmote] = useState<EmoteAsset>();
-  const [currentValue, setCurrentValue] = useState<EmoteOption>();
-
-  useEffect(() => {
-    setOptions(
+}: EmoteSelectProps) => {
+  const emotes = useAppSelectorPickArray(emoteSelectors.selectAll, [
+    "id",
+    "name",
+  ] as const);
+  const options = useMemo(
+    () =>
       ([] as EmoteOption[]).concat(
         optional
           ? ([
               {
                 value: "",
                 label: optionalLabel || "None",
-                emote: emotes.find((p) => p.id === optionalDefaultEmoteId),
               },
             ] as EmoteOption[])
           : ([] as EmoteOption[]),
         emotes.map((emote) => ({
           value: emote.id,
           label: emote.name,
-          emote,
         })),
       ),
-    );
-  }, [emotes, optional, optionalDefaultEmoteId, optionalLabel]);
-
-  useEffect(() => {
-    setCurrentEmote(emotes.find((v) => v.id === value));
-  }, [emotes, value]);
-
-  useEffect(() => {
+    [emotes, optional, optionalLabel],
+  );
+  const currentValue = useMemo(() => {
+    const currentEmote = emotes.find((item) => item.id === value);
     if (currentEmote) {
-      setCurrentValue({
+      return {
         value: currentEmote.id,
         label: `${currentEmote.name}`,
-        emote: currentEmote,
-      });
-    } else if (optional) {
-      const optionalEmote = emotes.find((p) => p.id === optionalDefaultEmoteId);
-      setCurrentValue({
+      };
+    }
+    if (optional) {
+      return {
         value: "",
         label: optionalLabel || "None",
-        emote: optionalEmote as EmoteAsset,
-      });
-    } else {
-      const firstEmote = emotes[0];
-      if (firstEmote) {
-        setCurrentValue({
+      };
+    }
+    const firstEmote = emotes[0];
+    return firstEmote
+      ? {
           value: firstEmote.id,
           label: `${firstEmote.name}`,
-          emote: firstEmote,
-        });
-      }
-    }
-  }, [currentEmote, emotes, optional, optionalDefaultEmoteId, optionalLabel]);
+        }
+      : undefined;
+  }, [emotes, value, optional, optionalLabel]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {
@@ -122,3 +106,5 @@ export const EmoteSelect: FC<EmoteSelectProps> = ({
     />
   );
 };
+
+export const EmoteSelect = memo(EmoteSelectComponent);

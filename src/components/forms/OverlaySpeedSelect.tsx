@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select } from "ui/form/Select";
@@ -17,13 +17,13 @@ interface OverlaySpeedOption {
   label: string;
 }
 
-export const OverlaySpeedSelect: FC<OverlaySpeedSelectProps> = ({
+const OverlaySpeedSelectComponent = ({
   name,
   value = 2,
   allowNone,
   allowDefault,
   onChange,
-}) => {
+}: OverlaySpeedSelectProps) => {
   const options = useMemo(
     () => [
       ...(allowDefault
@@ -56,3 +56,5 @@ export const OverlaySpeedSelect: FC<OverlaySpeedSelectProps> = ({
     />
   );
 };
+
+export const OverlaySpeedSelect = memo(OverlaySpeedSelectComponent);
