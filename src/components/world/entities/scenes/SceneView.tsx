@@ -21,8 +21,6 @@ import {
 } from "store/hooks";
 import renderSceneContextMenu from "components/world/contextMenus/renderSceneContextMenu";
 import SceneScrollBounds from "./SceneScrollBounds";
-import { WarningIcon } from "ui/icons/Icons";
-import { useEnabledSceneTypeIds } from "store/features/engine/hooks/useEnabledSceneTypeIds";
 import SceneScreenGrid from "components/world/entities/scenes/SceneScreenGrid";
 import { useContextMenu } from "ui/hooks/use-context-menu";
 import { SceneParallaxOverlay } from "components/world/entities/scenes/SceneParallaxOverlay";
@@ -32,6 +30,7 @@ import { useRectVisibleInWorldViewport } from "components/world/hooks/useRectVis
 import { SceneTileLayers } from "components/world/entities/scenes/SceneTileLayers";
 import { SceneEntities } from "components/world/entities/scenes/SceneEntities";
 import { SceneTileSelectionOverlay } from "components/world/entities/scenes/SceneTileSelectionOverlay";
+import { SceneTypeDisabledOverlay } from "components/world/entities/scenes/SceneTypeDisabledOverlay";
 
 const SCENE_LABEL_MARGIN = 50;
 
@@ -170,41 +169,14 @@ const SceneOverlay = styled.div<SceneOverlayProps>`
       : ""}
 `;
 
-const SceneErrorOverlay = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 100;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.8);
-  pointer-events: none;
-
-  svg {
-    background: ${(props) => props.theme.colors.highlight};
-    fill: ${(props) => props.theme.colors.highlightText};
-    padding: 10px;
-    border-radius: 4px;
-  }
-`;
-
 const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const dispatch = useAppDispatch();
   const store = useAppStore();
 
   const scene = useAppSelectorPick(
     (state) => sceneSelectors.selectById(state, id),
-    ["name", "type", "x", "y", "width", "height", "scrollBounds"],
+    ["name", "x", "y", "width", "height", "scrollBounds"],
   );
-  const enabledSceneTypeIds = useEnabledSceneTypeIds();
-  const sceneType = scene?.type;
-  const sceneTypeEnabled = useMemo(() => {
-    return !!sceneType && enabledSceneTypeIds.includes(sceneType);
-  }, [enabledSceneTypeIds, sceneType]);
 
   const selected = useAppSelector((state) => state.editor.scene === id);
   const sceneSelectionIds = useAppSelector(
@@ -358,13 +330,8 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
             />
           </SceneOverlay>
         )}
-
         {selected && <SceneParallaxOverlay sceneId={id} />}
-        {!sceneTypeEnabled && (
-          <SceneErrorOverlay>
-            <WarningIcon />
-          </SceneErrorOverlay>
-        )}
+        <SceneTypeDisabledOverlay sceneId={id} />
         {selected && <SceneTileSelectionOverlay sceneId={id} />}
         {showEntities && <SceneEntities sceneId={id} editable={editable} />}
         {selected && (
