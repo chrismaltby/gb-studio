@@ -1,5 +1,5 @@
-import React, { FC, useEffect, useState } from "react";
-import { useAppSelector } from "store/hooks";
+import React, { memo, useMemo } from "react";
+import { useAppSelectorPickArray } from "store/hooks";
 import { avatarSelectors } from "store/features/entities/entitiesSelectors";
 import {
   Option,
@@ -10,7 +10,6 @@ import {
 } from "ui/form/Select";
 import { AvatarCanvas } from "components/rendering/AvatarCanvas";
 import { SingleValue } from "react-select";
-import { AvatarAsset } from "shared/lib/resources/types";
 
 interface AvatarSelectProps extends SelectCommonProps {
   name: string;
@@ -18,84 +17,61 @@ interface AvatarSelectProps extends SelectCommonProps {
   onChange?: (newId: string) => void;
   optional?: boolean;
   optionalLabel?: string;
-  optionalDefaultAvatarId?: string;
 }
 
-interface AvatarOption extends Option {
-  avatar: AvatarAsset;
-}
+type AvatarOption = Option;
 
-export const AvatarSelect: FC<AvatarSelectProps> = ({
+const AvatarSelectComponent = ({
   value,
   onChange,
   optional,
   optionalLabel,
-  optionalDefaultAvatarId,
   ...selectProps
-}) => {
-  const avatars = useAppSelector((state) => avatarSelectors.selectAll(state));
-  const [options, setOptions] = useState<AvatarOption[]>([]);
-  const [currentAvatar, setCurrentAvatar] = useState<AvatarAsset>();
-  const [currentValue, setCurrentValue] = useState<AvatarOption>();
-
-  useEffect(() => {
-    setOptions(
+}: AvatarSelectProps) => {
+  const avatars = useAppSelectorPickArray(avatarSelectors.selectAll, [
+    "id",
+    "name",
+  ] as const);
+  const options = useMemo(
+    () =>
       ([] as AvatarOption[]).concat(
         optional
           ? ([
               {
                 value: "",
                 label: optionalLabel || "None",
-                avatar: avatars.find((p) => p.id === optionalDefaultAvatarId),
               },
             ] as AvatarOption[])
           : ([] as AvatarOption[]),
         avatars.map((avatar) => ({
           value: avatar.id,
           label: avatar.name,
-          avatar,
         })),
       ),
-    );
-  }, [avatars, optional, optionalDefaultAvatarId, optionalLabel]);
-
-  useEffect(() => {
-    setCurrentAvatar(avatars.find((v) => v.id === value));
-  }, [avatars, value]);
-
-  useEffect(() => {
+    [avatars, optional, optionalLabel],
+  );
+  const currentValue = useMemo(() => {
+    const currentAvatar = avatars.find((item) => item.id === value);
     if (currentAvatar) {
-      setCurrentValue({
+      return {
         value: currentAvatar.id,
         label: `${currentAvatar.name}`,
-        avatar: currentAvatar,
-      });
-    } else if (optional) {
-      const optionalAvatar = avatars.find(
-        (p) => p.id === optionalDefaultAvatarId,
-      );
-      setCurrentValue({
+      };
+    }
+    if (optional) {
+      return {
         value: "",
         label: optionalLabel || "None",
-        avatar: optionalAvatar as AvatarAsset,
-      });
-    } else {
-      const firstAvatar = avatars[0];
-      if (firstAvatar) {
-        setCurrentValue({
+      };
+    }
+    const firstAvatar = avatars[0];
+    return firstAvatar
+      ? {
           value: firstAvatar.id,
           label: `${firstAvatar.name}`,
-          avatar: firstAvatar,
-        });
-      }
-    }
-  }, [
-    currentAvatar,
-    avatars,
-    optional,
-    optionalDefaultAvatarId,
-    optionalLabel,
-  ]);
+        }
+      : undefined;
+  }, [avatars, value, optional, optionalLabel]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {
@@ -130,3 +106,5 @@ export const AvatarSelect: FC<AvatarSelectProps> = ({
     />
   );
 };
+
+export const AvatarSelect = memo(AvatarSelectComponent);

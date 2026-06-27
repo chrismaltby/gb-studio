@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select } from "ui/form/Select";
@@ -16,13 +16,13 @@ interface CameraSpeedOption {
   label: string;
 }
 
-export const CameraSpeedSelect: FC<CameraSpeedSelectProps> = ({
+const CameraSpeedSelectComponent = ({
   name,
   value = 2,
   allowNone,
   allowDefault,
   onChange,
-}) => {
+}: CameraSpeedSelectProps) => {
   const options = useMemo(
     () => [
       ...(allowDefault
@@ -52,3 +52,5 @@ export const CameraSpeedSelect: FC<CameraSpeedSelectProps> = ({
     />
   );
 };
+
+export const CameraSpeedSelect = memo(CameraSpeedSelectComponent);

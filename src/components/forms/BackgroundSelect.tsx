@@ -1,6 +1,6 @@
-import React, { FC, useState, useEffect } from "react";
+import React, { memo, useMemo } from "react";
 import uniq from "lodash/uniq";
-import { useAppSelector } from "store/hooks";
+import { useAppSelectorPick, useAppSelectorPickArray } from "store/hooks";
 import { backgroundSelectors } from "store/features/entities/entitiesSelectors";
 import {
   OptGroup,
@@ -15,7 +15,6 @@ import styled from "styled-components";
 import { assetURLStyleProp } from "shared/lib/helpers/assets";
 import { isMonoOverride } from "shared/lib/assets/backgrounds";
 import { SingleValue } from "react-select";
-import { BackgroundAsset } from "shared/lib/resources/types";
 
 interface BackgroundSelectProps extends SelectCommonProps {
   name: string;
@@ -31,27 +30,28 @@ const Thumbnail = styled.div`
   background-position: center;
 `;
 
-export const BackgroundSelect: FC<BackgroundSelectProps> = ({
+const BackgroundSelectComponent = ({
   value,
   onChange,
   ...selectProps
-}) => {
-  const backgrounds = useAppSelector((state) =>
-    backgroundSelectors.selectAll(state),
+}: BackgroundSelectProps) => {
+  const backgrounds = useAppSelectorPickArray(backgroundSelectors.selectAll, [
+    "id",
+    "name",
+    "filename",
+    "plugin",
+  ] as const);
+  const background = useAppSelectorPick(
+    (state) => backgroundSelectors.selectById(state, value || ""),
+    ["id", "filename", "plugin"] as const,
   );
-  const backgroundsLookup = useAppSelector((state) =>
-    backgroundSelectors.selectEntities(state),
+  const backgroundsLookup = useMemo(
+    () => Object.fromEntries(backgrounds.map((item) => [item.id, item])),
+    [backgrounds],
   );
-  const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, value || ""),
-  );
-  const [options, setOptions] = useState<OptGroup[]>([]);
-  const [currentBackground, setCurrentBackground] = useState<BackgroundAsset>();
-  const [currentValue, setCurrentValue] = useState<Option>();
-
-  useEffect(() => {
+  const options = useMemo(() => {
     const plugins = uniq(backgrounds.map((s) => s.plugin || "")).sort();
-    const options = plugins.reduce((memo, plugin) => {
+    return plugins.reduce((memo, plugin) => {
       memo.push({
         label: plugin,
         options: backgrounds
@@ -69,22 +69,13 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
       });
       return memo;
     }, [] as OptGroup[]);
-
-    setOptions(options);
   }, [backgrounds]);
-
-  useEffect(() => {
-    setCurrentBackground(backgrounds.find((v) => v.id === value));
+  const currentValue = useMemo(() => {
+    const currentBackground = backgrounds.find((item) => item.id === value);
+    return currentBackground
+      ? { value: currentBackground.id, label: currentBackground.name }
+      : undefined;
   }, [backgrounds, value]);
-
-  useEffect(() => {
-    if (currentBackground) {
-      setCurrentValue({
-        value: currentBackground.id,
-        label: `${currentBackground.name}`,
-      });
-    }
-  }, [currentBackground]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {
@@ -134,3 +125,5 @@ export const BackgroundSelect: FC<BackgroundSelectProps> = ({
     />
   );
 };
+
+export const BackgroundSelect = memo(BackgroundSelectComponent);

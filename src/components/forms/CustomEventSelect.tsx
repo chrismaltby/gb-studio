@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useAppSelector } from "store/hooks";
+import React, { memo, useCallback, useMemo } from "react";
+import { useAppSelectorPickArray } from "store/hooks";
 import { customEventName } from "shared/lib/entities/entitiesHelpers";
 import { customEventSelectors } from "store/features/entities/entitiesSelectors";
 import {
@@ -17,35 +17,27 @@ interface CustomEventSelectProps extends SelectCommonProps {
   onChange?: (newId: string) => void;
 }
 
-export const CustomEventSelect = ({
+const CustomEventSelectComponent = ({
   value,
   onChange,
   ...selectProps
 }: CustomEventSelectProps) => {
-  const customEvents = useAppSelector((state) =>
-    customEventSelectors.selectAll(state),
-  );
-  const [options, setOptions] = useState<Option[]>([]);
-  const [currentValue, setCurrentValue] = useState<Option>();
-
-  useEffect(() => {
-    setOptions(
-      customEvents
-        .map((customEvent, customEventIndex) => ({
-          label: customEventName(customEvent, customEventIndex),
-          value: customEvent.id,
-        }))
-        .sort(sortByLabel),
-    );
+  const customEvents = useAppSelectorPickArray(customEventSelectors.selectAll, [
+    "id",
+    "name",
+  ] as const);
+  const options = useMemo(() => {
+    return customEvents
+      .map((customEvent, customEventIndex) => ({
+        label: customEventName(customEvent, customEventIndex),
+        value: customEvent.id,
+      }))
+      .sort(sortByLabel);
   }, [customEvents]);
-
-  useEffect(() => {
-    setCurrentValue(
-      options.find((option) => {
-        return option.value === value;
-      }),
-    );
-  }, [options, value]);
+  const currentValue = useMemo(
+    () => options.find((option) => option.value === value),
+    [options, value],
+  );
 
   const onSelectChange = useCallback(
     (newValue: SingleValue<Option>) => {
@@ -68,3 +60,5 @@ export const CustomEventSelect = ({
     />
   );
 };
+
+export const CustomEventSelect = memo(CustomEventSelectComponent);

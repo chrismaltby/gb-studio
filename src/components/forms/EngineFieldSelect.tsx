@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { memo, useMemo } from "react";
 import { Select, Option, OptGroup, OptionLabelWithInfo } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { useGroupedEngineFields } from "store/features/engine/hooks/useGroupedEngineFields";
@@ -22,7 +22,7 @@ const AlertWrapper = styled.div`
   margin-top: 5px;
 `;
 
-const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
+const EngineFieldSelect = ({
   name,
   value,
   onChange,
@@ -32,18 +32,14 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
   const engineFields = useMemo(() => {
     return groupedFields.flatMap((g) => g.fields);
   }, [groupedFields]);
-  const [options, setOptions] = useState<OptGroup[]>([]);
-
-  useEffect(() => {
-    setOptions(
-      groupedFields.map((g) => ({
-        label: l10n(g.name as L10NKey),
-        options: g.fields.filter(notEditable).map((f) => ({
-          value: f.key,
-          label: l10n(f.label as L10NKey),
-        })),
+  const options = useMemo<OptGroup[]>(() => {
+    return groupedFields.map((g) => ({
+      label: l10n(g.name as L10NKey),
+      options: g.fields.filter(notEditable).map((f) => ({
+        value: f.key,
+        label: l10n(f.label as L10NKey),
       })),
-    );
+    }));
   }, [groupedFields]);
 
   const currentField = engineFields.find((f) => f.key === value);
@@ -100,4 +96,4 @@ const EngineFieldSelect: React.FC<EngineFieldSelectProps> = ({
   );
 };
 
-export default EngineFieldSelect;
+export default memo(EngineFieldSelect);

@@ -1,5 +1,5 @@
-import React, { FC, useEffect, useState } from "react";
-import { useAppSelector } from "store/hooks";
+import React, { memo, useMemo } from "react";
+import { useAppSelectorPickArray } from "store/hooks";
 import { fontSelectors } from "store/features/entities/entitiesSelectors";
 import {
   Option,
@@ -10,7 +10,6 @@ import {
 } from "ui/form/Select";
 import { FontIcon } from "ui/icons/Icons";
 import { SingleValue } from "react-select";
-import { FontAsset } from "shared/lib/resources/types";
 
 interface FontSelectProps extends SelectCommonProps {
   name: string;
@@ -18,76 +17,61 @@ interface FontSelectProps extends SelectCommonProps {
   onChange?: (newId: string) => void;
   optional?: boolean;
   optionalLabel?: string;
-  optionalDefaultFontId?: string;
 }
 
-interface FontOption extends Option {
-  font: FontAsset;
-}
+type FontOption = Option;
 
-export const FontSelect: FC<FontSelectProps> = ({
+const FontSelectComponent = ({
   value,
   onChange,
   optional,
   optionalLabel,
-  optionalDefaultFontId,
   ...selectProps
-}) => {
-  const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
-  const [options, setOptions] = useState<FontOption[]>([]);
-  const [currentFont, setCurrentFont] = useState<FontAsset>();
-  const [currentValue, setCurrentValue] = useState<FontOption>();
-
-  useEffect(() => {
-    setOptions(
+}: FontSelectProps) => {
+  const fonts = useAppSelectorPickArray(fontSelectors.selectAll, [
+    "id",
+    "name",
+  ] as const);
+  const options = useMemo(
+    () =>
       ([] as FontOption[]).concat(
         optional
           ? ([
               {
                 value: "",
                 label: optionalLabel || "None",
-                font: fonts.find((p) => p.id === optionalDefaultFontId),
               },
             ] as FontOption[])
           : ([] as FontOption[]),
         fonts.map((font) => ({
           value: font.id,
           label: font.name,
-          font,
         })),
       ),
-    );
-  }, [fonts, optional, optionalDefaultFontId, optionalLabel]);
-
-  useEffect(() => {
-    setCurrentFont(fonts.find((v) => v.id === value));
-  }, [fonts, value]);
-
-  useEffect(() => {
+    [fonts, optional, optionalLabel],
+  );
+  const currentValue = useMemo(() => {
+    const currentFont = fonts.find((item) => item.id === value);
     if (currentFont) {
-      setCurrentValue({
+      return {
         value: currentFont.id,
         label: `${currentFont.name}`,
-        font: currentFont,
-      });
-    } else if (optional) {
-      const optionalFont = fonts.find((p) => p.id === optionalDefaultFontId);
-      setCurrentValue({
+      };
+    }
+    if (optional) {
+      return {
         value: "",
         label: optionalLabel || "None",
-        font: optionalFont as FontAsset,
-      });
-    } else {
-      const firstFont = fonts[0];
-      if (firstFont) {
-        setCurrentValue({
+      };
+    }
+    const firstFont = fonts[0];
+    return firstFont
+      ? {
           value: firstFont.id,
           label: `${firstFont.name}`,
-          font: firstFont,
-        });
-      }
-    }
-  }, [currentFont, fonts, optional, optionalDefaultFontId, optionalLabel]);
+        }
+      : undefined;
+  }, [fonts, value, optional, optionalLabel]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {
@@ -118,3 +102,5 @@ export const FontSelect: FC<FontSelectProps> = ({
     />
   );
 };
+
+export const FontSelect = memo(FontSelectComponent);
