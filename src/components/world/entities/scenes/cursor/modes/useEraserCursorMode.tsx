@@ -18,9 +18,14 @@ import type {
   SceneCursorMouseMoveHandler,
   SceneCursorMouseUpHandler,
 } from "./SceneCursorMode";
-import { paintCursorSize, resolveAxisLockedLine } from "./paintCursorHelpers";
+import {
+  paintCursorSize,
+  resetPaintInteractionForScene,
+  resolveAxisLockedLine,
+} from "./paintCursorHelpers";
 
 interface EraserState {
+  sceneId?: string;
   lockX?: boolean;
   lockY?: boolean;
   startX?: number;
@@ -152,6 +157,7 @@ export const useEraserCursorMode = (): SceneCursorMode => {
       const sceneId = e.sceneId;
       const state = stateRef.current;
 
+      resetPaintInteractionForScene(state, sceneId);
       state.drawLine = e.raw.shiftKey;
       state.lockX = undefined;
       state.lockY = undefined;

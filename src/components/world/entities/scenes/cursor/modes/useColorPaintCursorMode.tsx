@@ -15,9 +15,14 @@ import type {
   SceneCursorMouseMoveHandler,
   SceneCursorMouseUpHandler,
 } from "./SceneCursorMode";
-import { paintCursorSize, resolveAxisLockedLine } from "./paintCursorHelpers";
+import {
+  paintCursorSize,
+  resetPaintInteractionForScene,
+  resolveAxisLockedLine,
+} from "./paintCursorHelpers";
 
 interface ColorPaintState {
+  sceneId?: string;
   lockX?: boolean;
   lockY?: boolean;
   startX?: number;
@@ -144,6 +149,9 @@ export const useColorPaintCursorMode = (): SceneCursorMode => {
       const scene = sceneSelectors.selectById(rootState, sceneId);
       const backgroundId = scene?.backgroundId ?? "";
       const tileLookup = rootState.assets.backgrounds[backgroundId]?.lookup;
+      const state = stateRef.current;
+
+      resetPaintInteractionForScene(state, sceneId);
 
       if (e.raw.altKey) {
         dispatch(
@@ -158,7 +166,6 @@ export const useColorPaintCursorMode = (): SceneCursorMode => {
         return false;
       }
 
-      const state = stateRef.current;
       const hoverPalette = getPaletteAt(sceneId, x, y);
 
       state.drawLine = e.raw.shiftKey;

@@ -9,6 +9,31 @@ export interface AxisLockState {
   lockY?: boolean;
 }
 
+export interface PaintInteractionSceneState extends AxisLockState {
+  sceneId?: string;
+  startX?: number;
+  startY?: number;
+  currentX?: number;
+  currentY?: number;
+}
+
+export const resetPaintInteractionForScene = (
+  state: PaintInteractionSceneState,
+  sceneId: string,
+) => {
+  if (state.sceneId === sceneId) {
+    return;
+  }
+
+  state.sceneId = sceneId;
+  state.startX = undefined;
+  state.startY = undefined;
+  state.currentX = undefined;
+  state.currentY = undefined;
+  state.lockX = undefined;
+  state.lockY = undefined;
+};
+
 export interface AxisLockedLine extends AxisLockState {
   endX: number;
   endY: number;
