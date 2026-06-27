@@ -1,12 +1,9 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { memo, useCallback, useContext, useMemo } from "react";
 import { useAppSelector } from "store/hooks";
-import { ActorNormalized } from "shared/lib/entities/entitiesTypes";
+import {
+  ActorNormalized,
+  ActorPrefabNormalized,
+} from "shared/lib/entities/entitiesTypes";
 import {
   Option,
   OptionLabelWithPreview,
@@ -24,12 +21,8 @@ import { actorName } from "shared/lib/entities/entitiesHelpers";
 import SpriteSheetCanvas from "components/rendering/SpriteSheetCanvas";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import l10n from "shared/lib/lang/l10n";
-import {
-  components,
-  GroupBase,
-  SingleValue,
-  SingleValueProps,
-} from "react-select";
+import { components, GroupBase } from "react-select";
+import type { SingleValue, SingleValueProps } from "react-select";
 import { ActorDirection } from "shared/lib/resources/types";
 
 interface ActorSelectProps {
@@ -50,7 +43,7 @@ const allCustomEventActors = Array.from(Array(10).keys()).map((i) => ({
   letter: String.fromCharCode("A".charCodeAt(0) + i),
 }));
 
-export const ActorSelect = ({
+const ActorSelectComponent = ({
   name,
   value,
   onChange,
@@ -58,36 +51,44 @@ export const ActorSelect = ({
   frame,
 }: ActorSelectProps) => {
   const context = useContext(ScriptEditorContext);
-  const [options, setOptions] = useState<ActorOption[]>([]);
-  const [currentValue, setCurrentValue] = useState<ActorOption>();
+
   const sceneType = useAppSelector(
     (state) => sceneSelectors.selectById(state, context.sceneId)?.type,
   );
+
   const scenePlayerSpriteSheetId = useAppSelector(
     (state) =>
       sceneSelectors.selectById(state, context.sceneId)?.playerSpriteSheetId,
   );
+
   const defaultPlayerSprites = useAppSelector(
     (state) => state.project.present.settings.defaultPlayerSprites,
   );
+
   const sceneActorIds = useAppSelector((state) =>
     getSceneActorIds(state, { id: context.sceneId }),
   );
+
   const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state),
   );
+
   const actorPrefabsLookup = useAppSelector((state) =>
     actorPrefabSelectors.selectEntities(state),
   );
+
   const actorPrefabIds = useAppSelector((state) =>
     actorPrefabSelectors.selectIds(state),
   );
+
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, context.entityId),
   );
+
   const sceneActorId = context.instanceId
     ? context.instanceId
     : context.entityId;
+
   const sceneActorIndex = sceneActorIds?.indexOf(sceneActorId);
   const sceneActor = actorsLookup[sceneActorId];
   const selfPrefab = actorPrefabsLookup[context.entityId];
@@ -99,48 +100,73 @@ export const ActorSelect = ({
   const getActorSpriteId = useCallback(
     (actorId: string): string => {
       const actor = actorsLookup[actorId];
+
       if (!actor) {
         return "";
       }
+
       const prefab = actorPrefabsLookup[actor.prefabId];
+
       if (!prefab) {
         return actor.spriteSheetId;
       }
+
       return prefab.spriteSheetId;
     },
     [actorPrefabsLookup, actorsLookup],
   );
 
-  useEffect(() => {
+  const options = useMemo<ActorOption[]>(() => {
     if (context.type === "script" && customEvent) {
-      setOptions([
+      return [
         {
           label: l10n("FIELD_PLAYER"),
           value: "player",
           spriteSheetId: playerSpriteSheetId,
         },
-        ...allCustomEventActors.map((actor) => {
-          return {
-            label:
-              customEvent.actors[actor.id]?.name ??
-              `${l10n("FIELD_ACTOR")} ${actor.letter}`,
-            value: actor.id,
-          };
-        }),
-      ]);
-    } else if (
+        ...allCustomEventActors.map((actor) => ({
+          label:
+            customEvent.actors[actor.id]?.name ??
+            `${l10n("FIELD_ACTOR")} ${actor.letter}`,
+          value: actor.id,
+        })),
+      ];
+    }
+
+    if (
       (context.type === "entity" || context.type === "prefab") &&
       sceneActorIds
     ) {
-      setOptions([
+      const sceneActorOptions = sceneActorIds.reduce<ActorOption[]>(
+        (memo, actorId, actorIndex) => {
+          const actor = actorsLookup[actorId];
+
+          if (!actor) {
+            return memo;
+          }
+
+          memo.push({
+            label: actorName(actor as ActorNormalized, actorIndex),
+            value: actor.id,
+            spriteSheetId: getActorSpriteId(actor.id),
+            direction: actor.direction,
+          });
+
+          return memo;
+        },
+        [],
+      );
+
+      return [
         ...((context.entityType === "actor" ||
           context.entityType === "actorPrefab") &&
         sceneActor &&
-        sceneActorIndex !== undefined
+        sceneActorIndex !== undefined &&
+        sceneActorIndex >= 0
           ? [
               {
                 label: `${l10n("FIELD_SELF")} (${actorName(
-                  sceneActor,
+                  sceneActor as ActorNormalized,
                   sceneActorIndex,
                 )})`,
                 value: "$self$",
@@ -154,25 +180,19 @@ export const ActorSelect = ({
           value: "player",
           spriteSheetId: playerSpriteSheetId,
         },
-        ...sceneActorIds.map((actorId, actorIndex) => {
-          const actor = actorsLookup[actorId] as ActorNormalized;
-          return {
-            label: actorName(actor, actorIndex),
-            value: actor.id,
-            spriteSheetId: getActorSpriteId(actor.id),
-            direction: actor.direction,
-          };
-        }),
-      ]);
-    } else if (context.type === "prefab") {
-      setOptions([
+        ...sceneActorOptions,
+      ];
+    }
+
+    if (context.type === "prefab") {
+      return [
         ...(context.entityType === "actorPrefab" &&
         selfPrefab &&
-        selfPrefabIndex !== undefined
+        selfPrefabIndex >= 0
           ? [
               {
                 label: `${l10n("FIELD_SELF")} (${actorName(
-                  selfPrefab,
+                  selfPrefab as ActorPrefabNormalized,
                   selfPrefabIndex,
                 )})`,
                 value: "$self$",
@@ -186,36 +206,42 @@ export const ActorSelect = ({
           value: "player",
           spriteSheetId: playerSpriteSheetId,
         },
-      ]);
-    } else {
-      setOptions([
-        {
-          label: "Player",
-          value: "player",
-          spriteSheetId: playerSpriteSheetId,
-        },
-      ]);
+      ];
     }
+
+    return [
+      {
+        label: l10n("FIELD_PLAYER"),
+        value: "player",
+        spriteSheetId: playerSpriteSheetId,
+      },
+    ];
   }, [
     actorsLookup,
     context,
     customEvent,
+    getActorSpriteId,
     playerSpriteSheetId,
-    sceneActorIds,
     sceneActor,
+    sceneActorIds,
     sceneActorIndex,
     selfPrefab,
     selfPrefabIndex,
-    getActorSpriteId,
   ]);
 
-  useEffect(() => {
-    setCurrentValue(
-      options.find((option) => {
-        return option.value === value;
-      }) || options[0],
-    );
-  }, [options, value]);
+  const currentValue = useMemo(
+    () => options.find((option) => option.value === value) || options[0],
+    [options, value],
+  );
+
+  const onSelectChange = useCallback(
+    (newValue: SingleValue<ActorOption>) => {
+      if (newValue) {
+        onChange(newValue.value);
+      }
+    },
+    [onChange],
+  );
 
   const formatOptionLabel = useCallback(
     (option: ActorOption) => {
@@ -238,7 +264,7 @@ export const ActorSelect = ({
     [direction, frame],
   );
 
-  const SingleValue = useCallback(
+  const SingleValueComponent = useCallback(
     (props: SingleValueProps<ActorOption, false, GroupBase<ActorOption>>) => {
       return currentValue?.spriteSheetId ? (
         <SingleValueWithPreview
@@ -250,7 +276,7 @@ export const ActorSelect = ({
             />
           }
         >
-          {currentValue?.label}
+          {currentValue.label}
         </SingleValueWithPreview>
       ) : (
         <components.SingleValue {...props}>
@@ -269,9 +295,9 @@ export const ActorSelect = ({
 
   const selectComponents = useMemo(
     () => ({
-      SingleValue,
+      SingleValue: SingleValueComponent,
     }),
-    [SingleValue],
+    [SingleValueComponent],
   );
 
   return (
@@ -279,13 +305,11 @@ export const ActorSelect = ({
       name={name}
       value={currentValue}
       options={options}
-      onChange={(newValue: SingleValue<ActorOption>) => {
-        if (newValue) {
-          onChange?.(newValue.value);
-        }
-      }}
+      onChange={onSelectChange}
       formatOptionLabel={formatOptionLabel}
       components={selectComponents}
     />
   );
 };
+
+export const ActorSelect = memo(ActorSelectComponent);
