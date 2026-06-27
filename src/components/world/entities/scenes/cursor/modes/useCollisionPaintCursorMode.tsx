@@ -11,18 +11,22 @@ import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { calculateSlope } from "shared/lib/helpers/slope";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import type { SceneCursorViewModel } from "../SceneCursorView";
 import type {
   SceneCursorMode,
-  SceneCursorModeContext,
   SceneCursorMouseDownHandler,
   SceneCursorMouseMoveHandler,
   SceneCursorMouseUpHandler,
 } from "./SceneCursorMode";
-import { paintCursorSize, resolveAxisLockedLine } from "./paintCursorHelpers";
+import {
+  paintCursorSize,
+  resolveAxisLockedLine,
+  shouldPaintCollisionBrush,
+} from "./paintCursorHelpers";
 
 interface CollisionPaintState {
+  sceneId?: string;
   lockX?: boolean;
   lockY?: boolean;
   startX?: number;
@@ -39,27 +43,14 @@ interface CollisionPaintState {
   slopeDirectionVertical: "left" | "right";
 }
 
-export const useCollisionPaintCursorMode = ({
-  enabled,
-  sceneId,
-  getCursorRect,
-}: SceneCursorModeContext): SceneCursorMode => {
+export const useCollisionPaintCursorMode = (
+  getCursorRect: () => DOMRect | undefined,
+): SceneCursorMode => {
   const dispatch = useAppDispatch();
+  const store = useAppStore();
 
   const { tool, selectedBrush, selectedTileType, selectedTileMask } =
     useAppSelector((state) => state.editor);
-
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId),
-  );
-
-  const backgroundId = scene?.backgroundId ?? "";
-
-  const tileLookup = useAppSelector((state) =>
-    selectedBrush === BRUSH_MAGIC
-      ? state.assets.backgrounds[backgroundId]?.lookup
-      : undefined,
-  );
 
   const stateRef = useRef<CollisionPaintState>({
     drawLine: false,
@@ -73,18 +64,27 @@ export const useCollisionPaintCursorMode = ({
   });
 
   const getCollisionAt = useCallback(
-    (x: number, y: number): number => {
+    (sceneId: string, x: number, y: number): number => {
+      const scene = sceneSelectors.selectById(store.getState(), sceneId);
+
       if (!scene || !Array.isArray(scene.collisions)) {
         return 0;
       }
 
       return scene.collisions[x + y * scene.width] ?? 0;
     },
-    [scene],
+    [store],
   );
 
   const paintCollisionAt = useCallback(
-    (x: number, y: number, value: number, mask: number) => {
+    (sceneId: string, x: number, y: number, value: number, mask: number) => {
+      const rootState = store.getState();
+      const scene = sceneSelectors.selectById(rootState, sceneId);
+      const tileLookup =
+        selectedBrush === BRUSH_MAGIC
+          ? rootState.assets.backgrounds[scene?.backgroundId ?? ""]?.lookup
+          : undefined;
+
       dispatch(
         entitiesActions.paintCollision({
           brush: selectedBrush,
@@ -97,11 +97,12 @@ export const useCollisionPaintCursorMode = ({
         }),
       );
     },
-    [dispatch, sceneId, selectedBrush, tileLookup],
+    [dispatch, selectedBrush, store],
   );
 
   const paintCollisionLine = useCallback(
     (
+      sceneId: string,
       startX: number,
       startY: number,
       endX: number,
@@ -109,6 +110,13 @@ export const useCollisionPaintCursorMode = ({
       value: number,
       mask: number,
     ) => {
+      const rootState = store.getState();
+      const scene = sceneSelectors.selectById(rootState, sceneId);
+      const tileLookup =
+        selectedBrush === BRUSH_MAGIC
+          ? rootState.assets.backgrounds[scene?.backgroundId ?? ""]?.lookup
+          : undefined;
+
       dispatch(
         entitiesActions.paintCollision({
           brush: selectedBrush,
@@ -124,7 +132,7 @@ export const useCollisionPaintCursorMode = ({
         }),
       );
     },
-    [dispatch, sceneId, selectedBrush, tileLookup],
+    [dispatch, selectedBrush, store],
   );
 
   const updateSlopeDirection = useCallback(
@@ -153,10 +161,10 @@ export const useCollisionPaintCursorMode = ({
       const state = stateRef.current;
 
       if (
-        !enabled ||
         tool !== TOOL_COLLISIONS ||
         selectedBrush !== BRUSH_SLOPE ||
         !state.isPainting ||
+        !state.sceneId ||
         state.startX === undefined ||
         state.startY === undefined
       ) {
@@ -179,7 +187,7 @@ export const useCollisionPaintCursorMode = ({
 
       dispatch(
         editorActions.setSlopePreview({
-          sceneId,
+          sceneId: state.sceneId,
           slopePreview: {
             startX: state.startX,
             startY: state.startY,
@@ -191,7 +199,7 @@ export const useCollisionPaintCursorMode = ({
         }),
       );
     },
-    [dispatch, enabled, sceneId, selectedBrush, tool],
+    [dispatch, selectedBrush, tool],
   );
 
   const onMouseDown = useCallback<SceneCursorMouseDownHandler>(
@@ -205,8 +213,12 @@ export const useCollisionPaintCursorMode = ({
       }
 
       const { x, y } = e;
+      const sceneId = e.sceneId;
+      const rootState = store.getState();
+      const scene = sceneSelectors.selectById(rootState, sceneId);
       const state = stateRef.current;
 
+      state.sceneId = sceneId;
       state.drawLine = e.raw.shiftKey;
       state.drawWall = e.raw.ctrlKey;
       state.lockX = undefined;
@@ -215,7 +227,7 @@ export const useCollisionPaintCursorMode = ({
       state.currentY = undefined;
 
       if (e.raw.altKey) {
-        const hoverCollision = getCollisionAt(x, y);
+        const hoverCollision = getCollisionAt(sceneId, x, y);
 
         state.drawTile = hoverCollision;
         dispatch(
@@ -235,31 +247,32 @@ export const useCollisionPaintCursorMode = ({
         const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
         const mask = selectedTileMask ?? 0xff;
 
-        state.drawTile = 0;
         state.mask = mask;
 
         // If any tile under brush is currently not filled then
         // paint collisions rather than remove them.
-        for (let xi = x; xi < x + brushSize; xi++) {
-          for (let yi = y; yi < y + brushSize; yi++) {
-            const collisionIndex = scene.width * yi + xi;
-            const currentTileOverlap =
-              (scene.collisions[collisionIndex] ?? 0) & mask;
-
-            if (currentTileOverlap === (selectedTileType & mask)) {
-              state.drawTile = 0;
-            } else {
-              state.drawTile = selectedTileType;
-            }
-          }
-        }
+        state.drawTile = shouldPaintCollisionBrush(
+          scene.collisions,
+          scene.width,
+          scene.height,
+          x,
+          y,
+          brushSize,
+          selectedTileType,
+          mask,
+        )
+          ? selectedTileType
+          : 0;
       }
 
       if (selectedBrush === BRUSH_FILL) {
-        paintCollisionAt(x, y, state.drawTile, state.mask);
+        paintCollisionAt(sceneId, x, y, state.drawTile, state.mask);
       } else if (selectedBrush === BRUSH_MAGIC) {
+        const tileLookup =
+          rootState.assets.backgrounds[scene.backgroundId]?.lookup;
+
         if (tileLookup) {
-          paintCollisionAt(x, y, state.drawTile, state.mask);
+          paintCollisionAt(sceneId, x, y, state.drawTile, state.mask);
         } else {
           dispatch(editorActions.selectScene({ sceneId }));
         }
@@ -282,7 +295,15 @@ export const useCollisionPaintCursorMode = ({
         const startY = state.startY;
 
         if (state.drawLine && startX !== undefined && startY !== undefined) {
-          paintCollisionLine(startX, startY, x, y, state.drawTile, state.mask);
+          paintCollisionLine(
+            sceneId,
+            startX,
+            startY,
+            x,
+            y,
+            state.drawTile,
+            state.mask,
+          );
 
           state.startX = x;
           state.startY = y;
@@ -290,7 +311,7 @@ export const useCollisionPaintCursorMode = ({
           state.startX = x;
           state.startY = y;
 
-          paintCollisionAt(x, y, state.drawTile, state.mask);
+          paintCollisionAt(sceneId, x, y, state.drawTile, state.mask);
         }
 
         state.isPainting = true;
@@ -303,12 +324,10 @@ export const useCollisionPaintCursorMode = ({
       getCollisionAt,
       paintCollisionAt,
       paintCollisionLine,
-      scene,
-      sceneId,
       selectedBrush,
       selectedTileMask,
       selectedTileType,
-      tileLookup,
+      store,
       tool,
     ],
   );
@@ -317,7 +336,7 @@ export const useCollisionPaintCursorMode = ({
     (e) => {
       const state = stateRef.current;
 
-      if (!enabled || !e.isOverScene || !state.isPainting) {
+      if (!e.isOverScene || !state.isPainting) {
         return;
       }
 
@@ -353,6 +372,7 @@ export const useCollisionPaintCursorMode = ({
         const line = resolveAxisLockedLine(state, startX, startY, x, y);
 
         paintCollisionLine(
+          e.sceneId,
           startX,
           startY,
           line.endX,
@@ -366,7 +386,15 @@ export const useCollisionPaintCursorMode = ({
         state.startX = line.endX;
         state.startY = line.endY;
       } else {
-        paintCollisionLine(startX, startY, x, y, state.drawTile, state.mask);
+        paintCollisionLine(
+          e.sceneId,
+          startX,
+          startY,
+          x,
+          y,
+          state.drawTile,
+          state.mask,
+        );
 
         state.startX = x;
         state.startY = y;
@@ -376,7 +404,6 @@ export const useCollisionPaintCursorMode = ({
       state.currentY = y;
     },
     [
-      enabled,
       paintCollisionLine,
       selectedBrush,
       updateSlopeDirection,
@@ -392,13 +419,15 @@ export const useCollisionPaintCursorMode = ({
     state.lockX = undefined;
     state.lockY = undefined;
 
-    dispatch(
-      editorActions.setSlopePreview({
-        sceneId,
-        slopePreview: undefined,
-      }),
-    );
-  }, [dispatch, sceneId]);
+    if (state.sceneId) {
+      dispatch(
+        editorActions.setSlopePreview({
+          sceneId: state.sceneId,
+          slopePreview: undefined,
+        }),
+      );
+    }
+  }, [dispatch]);
 
   const onMouseUp = useCallback<SceneCursorMouseUpHandler>(
     (e) => {
@@ -433,7 +462,7 @@ export const useCollisionPaintCursorMode = ({
 
         dispatch(
           entitiesActions.paintSlopeCollision({
-            sceneId,
+            sceneId: state.sceneId ?? e.sceneId,
             startX: state.startX,
             startY: state.startY,
             endX,
@@ -450,7 +479,7 @@ export const useCollisionPaintCursorMode = ({
 
       resetPaintState();
     },
-    [dispatch, resetPaintState, sceneId],
+    [dispatch, resetPaintState],
   );
 
   useEffect(() => {

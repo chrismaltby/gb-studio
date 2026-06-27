@@ -41,3 +41,30 @@ export const resolveAxisLockedLine = (
 
   return { lockX, lockY, endX: x, endY: y };
 };
+
+export const shouldPaintCollisionBrush = (
+  collisions: readonly number[],
+  sceneWidth: number,
+  sceneHeight: number,
+  x: number,
+  y: number,
+  brushSize: number,
+  tile: number,
+  mask: number,
+): boolean => {
+  const expectedTile = tile & mask;
+  const endX = Math.min(x + brushSize, sceneWidth);
+  const endY = Math.min(y + brushSize, sceneHeight);
+
+  for (let xi = x; xi < endX; xi++) {
+    for (let yi = y; yi < endY; yi++) {
+      const currentTile = collisions[sceneWidth * yi + xi] ?? 0;
+
+      if ((currentTile & mask) !== expectedTile) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+};

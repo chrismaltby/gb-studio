@@ -7,11 +7,10 @@ import {
 } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import type { SceneCursorViewModel } from "../SceneCursorView";
 import type {
   SceneCursorMode,
-  SceneCursorModeContext,
   SceneCursorMouseDownHandler,
   SceneCursorMouseMoveHandler,
   SceneCursorMouseUpHandler,
@@ -31,30 +30,12 @@ interface ColorPaintState {
   isTileProp: boolean;
 }
 
-export const useColorPaintCursorMode = ({
-  enabled,
-  sceneId,
-}: SceneCursorModeContext): SceneCursorMode => {
+export const useColorPaintCursorMode = (): SceneCursorMode => {
   const dispatch = useAppDispatch();
+  const store = useAppStore();
 
   const { tool, selectedBrush, selectedPalette } = useAppSelector(
     (state) => state.editor,
-  );
-
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId),
-  );
-
-  const backgroundId = scene?.backgroundId ?? "";
-
-  const background = useAppSelector((state) =>
-    backgroundSelectors.selectById(state, backgroundId),
-  );
-
-  const tileLookup = useAppSelector((state) =>
-    selectedBrush === BRUSH_MAGIC
-      ? state.assets.backgrounds[backgroundId]?.lookup
-      : undefined,
   );
 
   const stateRef = useRef<ColorPaintState>({
@@ -65,18 +46,39 @@ export const useColorPaintCursorMode = ({
   });
 
   const getPaletteAt = useCallback(
-    (x: number, y: number): number => {
+    (sceneId: string, x: number, y: number): number => {
+      const rootState = store.getState();
+      const scene = sceneSelectors.selectById(rootState, sceneId);
+      const background = backgroundSelectors.selectById(
+        rootState,
+        scene?.backgroundId ?? "",
+      );
+
       if (!background || !scene || !Array.isArray(background.tileColors)) {
         return 0;
       }
 
       return background.tileColors[x + y * scene.width] ?? 0;
     },
-    [background, scene],
+    [store],
   );
 
   const paintColorAt = useCallback(
-    (x: number, y: number, paletteIndex: number, isTileProp: boolean) => {
+    (
+      sceneId: string,
+      x: number,
+      y: number,
+      paletteIndex: number,
+      isTileProp: boolean,
+    ) => {
+      const rootState = store.getState();
+      const scene = sceneSelectors.selectById(rootState, sceneId);
+      const backgroundId = scene?.backgroundId ?? "";
+      const tileLookup =
+        selectedBrush === BRUSH_MAGIC
+          ? rootState.assets.backgrounds[backgroundId]?.lookup
+          : undefined;
+
       dispatch(
         entitiesActions.paintColor({
           brush: selectedBrush,
@@ -90,11 +92,12 @@ export const useColorPaintCursorMode = ({
         }),
       );
     },
-    [backgroundId, dispatch, sceneId, selectedBrush, tileLookup],
+    [dispatch, selectedBrush, store],
   );
 
   const paintColorLine = useCallback(
     (
+      sceneId: string,
       startX: number,
       startY: number,
       endX: number,
@@ -102,6 +105,14 @@ export const useColorPaintCursorMode = ({
       paletteIndex: number,
       isTileProp: boolean,
     ) => {
+      const rootState = store.getState();
+      const scene = sceneSelectors.selectById(rootState, sceneId);
+      const backgroundId = scene?.backgroundId ?? "";
+      const tileLookup =
+        selectedBrush === BRUSH_MAGIC
+          ? rootState.assets.backgrounds[backgroundId]?.lookup
+          : undefined;
+
       dispatch(
         entitiesActions.paintColor({
           brush: selectedBrush,
@@ -118,21 +129,26 @@ export const useColorPaintCursorMode = ({
         }),
       );
     },
-    [backgroundId, dispatch, sceneId, selectedBrush, tileLookup],
+    [dispatch, selectedBrush, store],
   );
 
   const onMouseDown = useCallback<SceneCursorMouseDownHandler>(
     (e) => {
-      if (!enabled || !e.isOverScene || tool !== TOOL_COLORS) {
+      if (!e.isOverScene || tool !== TOOL_COLORS) {
         return false;
       }
 
       const { x, y } = e;
+      const sceneId = e.sceneId;
+      const rootState = store.getState();
+      const scene = sceneSelectors.selectById(rootState, sceneId);
+      const backgroundId = scene?.backgroundId ?? "";
+      const tileLookup = rootState.assets.backgrounds[backgroundId]?.lookup;
 
       if (e.raw.altKey) {
         dispatch(
           editorActions.setSelectedPalette({
-            paletteIndex: getPaletteAt(x, y),
+            paletteIndex: getPaletteAt(sceneId, x, y),
           }),
         );
         return true;
@@ -143,7 +159,7 @@ export const useColorPaintCursorMode = ({
       }
 
       const state = stateRef.current;
-      const hoverPalette = getPaletteAt(x, y);
+      const hoverPalette = getPaletteAt(sceneId, x, y);
 
       state.drawLine = e.raw.shiftKey;
       state.lockX = undefined;
@@ -163,7 +179,7 @@ export const useColorPaintCursorMode = ({
       }
 
       if (selectedBrush === BRUSH_FILL) {
-        paintColorAt(x, y, state.drawTile, state.isTileProp);
+        paintColorAt(sceneId, x, y, state.drawTile, state.isTileProp);
       } else if (selectedBrush === BRUSH_MAGIC) {
         if (tileLookup) {
           dispatch(
@@ -188,6 +204,7 @@ export const useColorPaintCursorMode = ({
           state.startY !== undefined
         ) {
           paintColorLine(
+            sceneId,
             state.startX,
             state.startY,
             x,
@@ -201,7 +218,7 @@ export const useColorPaintCursorMode = ({
         } else {
           state.startX = x;
           state.startY = y;
-          paintColorAt(x, y, state.drawTile, state.isTileProp);
+          paintColorAt(sceneId, x, y, state.drawTile, state.isTileProp);
         }
 
         state.isPainting = true;
@@ -210,17 +227,13 @@ export const useColorPaintCursorMode = ({
       return true;
     },
     [
-      backgroundId,
       dispatch,
-      enabled,
       getPaletteAt,
       paintColorAt,
       paintColorLine,
-      scene,
-      sceneId,
       selectedBrush,
       selectedPalette,
-      tileLookup,
+      store,
       tool,
     ],
   );
@@ -233,7 +246,7 @@ export const useColorPaintCursorMode = ({
         return;
       }
 
-      if (!enabled || !e.isOverScene) {
+      if (!e.isOverScene) {
         return;
       }
 
@@ -260,6 +273,7 @@ export const useColorPaintCursorMode = ({
         );
 
         paintColorLine(
+          e.sceneId,
           state.startX,
           state.startY,
           line.endX,
@@ -274,6 +288,7 @@ export const useColorPaintCursorMode = ({
         state.startY = line.endY;
       } else {
         paintColorLine(
+          e.sceneId,
           state.startX,
           state.startY,
           x,
@@ -289,7 +304,7 @@ export const useColorPaintCursorMode = ({
       state.currentX = x;
       state.currentY = y;
     },
-    [enabled, paintColorLine],
+    [paintColorLine],
   );
 
   const resetPaintState = useCallback(() => {

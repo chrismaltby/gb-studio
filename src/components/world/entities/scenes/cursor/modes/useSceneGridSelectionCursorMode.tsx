@@ -8,10 +8,9 @@ import {
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import type {
   SceneCursorMode,
-  SceneCursorModeContext,
   SceneCursorMouseDownHandler,
   SceneCursorMouseMoveHandler,
   SceneCursorMouseUpHandler,
@@ -26,6 +25,7 @@ type SceneGridSelectionInteraction =
       type: "select";
       originX: number;
       originY: number;
+      sceneId: string;
       mode: SceneGridSelectionMode;
     }
   | {
@@ -34,6 +34,7 @@ type SceneGridSelectionInteraction =
       startY: number;
       selection: GridSelection;
       offset: GridOffset;
+      sceneId: string;
       mode: SceneGridSelectionMode;
     };
 
@@ -72,22 +73,15 @@ const clamp = (value: number, min: number, max: number): number => {
   return Math.max(min, Math.min(max, value));
 };
 
-export const useSceneGridSelectionCursorMode = ({
-  enabled,
-  sceneId,
-}: SceneCursorModeContext): SceneCursorMode => {
+export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
   const dispatch = useAppDispatch();
+  const store = useAppStore();
 
   const { tool, selectedBrush } = useAppSelector((state) => state.editor);
 
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId),
+  const scenePaintSelection = useAppSelector(
+    (state) => state.editor.scenePaintSelection,
   );
-
-  const scenePaintSelection = useAppSelector((state) => {
-    const value = state.editor.scenePaintSelection;
-    return value?.sceneId === sceneId ? value : undefined;
-  });
 
   const selectionMode = getSelectionMode(tool);
 
@@ -96,12 +90,11 @@ export const useSceneGridSelectionCursorMode = ({
       ? scenePaintSelection
       : undefined;
 
-  const selection = activeScenePaintSelection?.selection;
-
   const stateRef = useRef<SceneGridSelectionState>({});
 
   const setScenePaintSelection = useCallback(
     (
+      sceneId: string,
       next:
         | {
             mode: SceneGridSelectionMode;
@@ -123,7 +116,7 @@ export const useSceneGridSelectionCursorMode = ({
         ),
       );
     },
-    [dispatch, sceneId],
+    [dispatch],
   );
 
   const resetInteraction = useCallback(() => {
@@ -131,7 +124,7 @@ export const useSceneGridSelectionCursorMode = ({
     stateRef.current.interaction = undefined;
 
     if (interaction?.type === "move") {
-      setScenePaintSelection({
+      setScenePaintSelection(interaction.sceneId, {
         mode: interaction.mode,
         selection: interaction.selection,
         offset: ZERO_SELECTION_OFFSET,
@@ -140,7 +133,7 @@ export const useSceneGridSelectionCursorMode = ({
     }
 
     if (activeScenePaintSelection) {
-      setScenePaintSelection({
+      setScenePaintSelection(activeScenePaintSelection.sceneId, {
         mode: activeScenePaintSelection.mode,
         selection: activeScenePaintSelection.selection,
         offset: ZERO_SELECTION_OFFSET,
@@ -159,7 +152,7 @@ export const useSceneGridSelectionCursorMode = ({
       scenePaintSelection.mode !== selectionMode
     ) {
       stateRef.current.interaction = undefined;
-      setScenePaintSelection(undefined);
+      setScenePaintSelection(scenePaintSelection.sceneId, undefined);
     }
   }, [
     selectedBrush,
@@ -171,7 +164,6 @@ export const useSceneGridSelectionCursorMode = ({
   const onMouseDown = useCallback<SceneCursorMouseDownHandler>(
     (e) => {
       if (
-        !enabled ||
         !e.isOverScene ||
         selectedBrush !== BRUSH_SELECTION ||
         !selectionMode
@@ -183,6 +175,8 @@ export const useSceneGridSelectionCursorMode = ({
         return false;
       }
 
+      const scene = sceneSelectors.selectById(store.getState(), e.sceneId);
+
       if (!scene) {
         return false;
       }
@@ -190,12 +184,17 @@ export const useSceneGridSelectionCursorMode = ({
       const x = clamp(e.x, 0, scene.width - 1);
       const y = clamp(e.y, 0, scene.height - 1);
 
-      dispatch(editorActions.selectScene({ sceneId }));
+      dispatch(editorActions.selectScene({ sceneId: e.sceneId }));
 
-      if (selection && isPointInSelection(x, y, selection)) {
-        setScenePaintSelection({
+      const sceneSelection =
+        activeScenePaintSelection?.sceneId === e.sceneId
+          ? activeScenePaintSelection.selection
+          : undefined;
+
+      if (sceneSelection && isPointInSelection(x, y, sceneSelection)) {
+        setScenePaintSelection(e.sceneId, {
           mode: selectionMode,
-          selection,
+          selection: sceneSelection,
           offset: ZERO_SELECTION_OFFSET,
         });
 
@@ -203,8 +202,9 @@ export const useSceneGridSelectionCursorMode = ({
           type: "move",
           startX: x,
           startY: y,
-          selection,
+          selection: sceneSelection,
           offset: ZERO_SELECTION_OFFSET,
+          sceneId: e.sceneId,
           mode: selectionMode,
         };
 
@@ -222,10 +222,11 @@ export const useSceneGridSelectionCursorMode = ({
         type: "select",
         originX: x,
         originY: y,
+        sceneId: e.sceneId,
         mode: selectionMode,
       };
 
-      setScenePaintSelection({
+      setScenePaintSelection(e.sceneId, {
         mode: selectionMode,
         selection: nextSelection,
         offset: ZERO_SELECTION_OFFSET,
@@ -235,13 +236,11 @@ export const useSceneGridSelectionCursorMode = ({
     },
     [
       dispatch,
-      enabled,
-      scene,
-      sceneId,
+      activeScenePaintSelection,
       selectedBrush,
-      selection,
       selectionMode,
       setScenePaintSelection,
+      store,
     ],
   );
 
@@ -253,7 +252,12 @@ export const useSceneGridSelectionCursorMode = ({
         return;
       }
 
-      if (!enabled || !e.isOverScene || !scene) {
+      const scene = sceneSelectors.selectById(
+        store.getState(),
+        interaction.sceneId,
+      );
+
+      if (!e.isOverScene || !scene) {
         return;
       }
 
@@ -261,7 +265,7 @@ export const useSceneGridSelectionCursorMode = ({
       const y = clamp(e.y, 0, scene.height - 1);
 
       if (interaction.type === "select") {
-        setScenePaintSelection({
+        setScenePaintSelection(interaction.sceneId, {
           mode: interaction.mode,
           selection: {
             x: Math.min(interaction.originX, x),
@@ -302,13 +306,13 @@ export const useSceneGridSelectionCursorMode = ({
         offset,
       };
 
-      setScenePaintSelection({
+      setScenePaintSelection(interaction.sceneId, {
         mode: interaction.mode,
         selection,
         offset,
       });
     },
-    [enabled, scene, setScenePaintSelection],
+    [setScenePaintSelection, store],
   );
 
   const onMouseUp = useCallback<SceneCursorMouseUpHandler>(() => {
@@ -330,7 +334,7 @@ export const useSceneGridSelectionCursorMode = ({
       if (interaction.mode === "colors") {
         dispatch(
           entitiesActions.moveSceneColorSelection({
-            sceneId,
+            sceneId: interaction.sceneId,
             selection,
             offset,
           }),
@@ -338,7 +342,7 @@ export const useSceneGridSelectionCursorMode = ({
       } else {
         dispatch(
           entitiesActions.moveSceneCollisionSelection({
-            sceneId,
+            sceneId: interaction.sceneId,
             selection,
             offset,
           }),
@@ -346,7 +350,7 @@ export const useSceneGridSelectionCursorMode = ({
       }
     }
 
-    setScenePaintSelection({
+    setScenePaintSelection(interaction.sceneId, {
       mode: interaction.mode,
       selection: {
         ...selection,
@@ -355,66 +359,9 @@ export const useSceneGridSelectionCursorMode = ({
       },
       offset: ZERO_SELECTION_OFFSET,
     });
-  }, [dispatch, sceneId, setScenePaintSelection]);
+  }, [dispatch, setScenePaintSelection]);
 
   const onCancel = resetInteraction;
-
-  useEffect(() => {
-    if (
-      !enabled ||
-      selectedBrush !== BRUSH_SELECTION ||
-      !activeScenePaintSelection ||
-      !selection
-    ) {
-      return;
-    }
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Backspace" && e.key !== "Delete") {
-        return;
-      }
-
-      const target = e.target as HTMLElement | null;
-      const isEditableTarget =
-        target?.tagName === "INPUT" ||
-        target?.tagName === "TEXTAREA" ||
-        target?.isContentEditable;
-
-      if (isEditableTarget) {
-        return;
-      }
-
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation?.();
-
-      if (activeScenePaintSelection.mode === "colors") {
-        dispatch(
-          entitiesActions.clearSceneColorSelection({
-            sceneId,
-            selection,
-          }),
-        );
-      } else {
-        dispatch(
-          entitiesActions.clearSceneCollisionSelection({
-            sceneId,
-            selection,
-          }),
-        );
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown, true);
-    return () => window.removeEventListener("keydown", onKeyDown, true);
-  }, [
-    activeScenePaintSelection,
-    dispatch,
-    enabled,
-    sceneId,
-    selectedBrush,
-    selection,
-  ]);
 
   const view = useMemo<SceneCursorViewModel>(() => {
     return {
@@ -429,7 +376,6 @@ export const useSceneGridSelectionCursorMode = ({
     () => ({
       id: "sceneGridSelection",
       enabled:
-        enabled &&
         selectedBrush === BRUSH_SELECTION &&
         (tool === TOOL_COLLISIONS || tool === TOOL_COLORS),
       viewPriority: 20,
@@ -440,15 +386,6 @@ export const useSceneGridSelectionCursorMode = ({
       onMouseUp,
       onCancel,
     }),
-    [
-      enabled,
-      onCancel,
-      onMouseDown,
-      onMouseMove,
-      onMouseUp,
-      selectedBrush,
-      tool,
-      view,
-    ],
+    [onCancel, onMouseDown, onMouseMove, onMouseUp, selectedBrush, tool, view],
   );
 };

@@ -10,11 +10,10 @@ import { CloseIcon } from "ui/icons/Icons";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import type { SceneCursorViewModel } from "../SceneCursorView";
 import type {
   SceneCursorMode,
-  SceneCursorModeContext,
   SceneCursorMouseDownHandler,
   SceneCursorMouseMoveHandler,
   SceneCursorMouseUpHandler,
@@ -32,11 +31,9 @@ interface EraserState {
   isPainting: boolean;
 }
 
-export const useEraserCursorMode = ({
-  enabled,
-  sceneId,
-}: SceneCursorModeContext): SceneCursorMode => {
+export const useEraserCursorMode = (): SceneCursorMode => {
   const dispatch = useAppDispatch();
+  const store = useAppStore();
 
   const { tool, selectedBrush, showLayers } = useAppSelector(
     (state) => state.editor,
@@ -46,25 +43,20 @@ export const useEraserCursorMode = ({
     (state) => state.project.present.settings.showCollisions,
   );
 
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId),
-  );
-
-  const backgroundId = scene?.backgroundId ?? "";
-
-  const tileLookup = useAppSelector((state) =>
-    selectedBrush === BRUSH_MAGIC
-      ? state.assets.backgrounds[backgroundId]?.lookup
-      : undefined,
-  );
-
   const stateRef = useRef<EraserState>({
     drawLine: false,
     isPainting: false,
   });
 
   const eraseCollisionAt = useCallback(
-    (x: number, y: number) => {
+    (sceneId: string, x: number, y: number) => {
+      const rootState = store.getState();
+      const scene = sceneSelectors.selectById(rootState, sceneId);
+      const tileLookup =
+        selectedBrush === BRUSH_MAGIC
+          ? rootState.assets.backgrounds[scene?.backgroundId ?? ""]?.lookup
+          : undefined;
+
       dispatch(
         entitiesActions.paintCollision({
           brush: selectedBrush,
@@ -77,11 +69,24 @@ export const useEraserCursorMode = ({
         }),
       );
     },
-    [dispatch, sceneId, selectedBrush, tileLookup],
+    [dispatch, selectedBrush, store],
   );
 
   const eraseCollisionLine = useCallback(
-    (startX: number, startY: number, endX: number, endY: number) => {
+    (
+      sceneId: string,
+      startX: number,
+      startY: number,
+      endX: number,
+      endY: number,
+    ) => {
+      const rootState = store.getState();
+      const scene = sceneSelectors.selectById(rootState, sceneId);
+      const tileLookup =
+        selectedBrush === BRUSH_MAGIC
+          ? rootState.assets.backgrounds[scene?.backgroundId ?? ""]?.lookup
+          : undefined;
+
       dispatch(
         entitiesActions.paintCollision({
           brush: selectedBrush,
@@ -97,11 +102,11 @@ export const useEraserCursorMode = ({
         }),
       );
     },
-    [dispatch, sceneId, selectedBrush, tileLookup],
+    [dispatch, selectedBrush, store],
   );
 
   const eraseActorsAndTriggersAt = useCallback(
-    (x: number, y: number) => {
+    (sceneId: string, x: number, y: number) => {
       dispatch(entitiesActions.removeActorAt({ sceneId, x, y }));
       dispatch(entitiesActions.removeTriggerAt({ sceneId, x, y }));
 
@@ -126,12 +131,12 @@ export const useEraserCursorMode = ({
         );
       }
     },
-    [dispatch, sceneId, selectedBrush],
+    [dispatch, selectedBrush],
   );
 
   const onMouseDown = useCallback<SceneCursorMouseDownHandler>(
     (e) => {
-      if (!enabled || !e.isOverScene) {
+      if (!e.isOverScene) {
         return false;
       }
 
@@ -144,6 +149,7 @@ export const useEraserCursorMode = ({
       }
 
       const { x, y } = e;
+      const sceneId = e.sceneId;
       const state = stateRef.current;
 
       state.drawLine = e.raw.shiftKey;
@@ -154,10 +160,15 @@ export const useEraserCursorMode = ({
 
       if (showCollisions) {
         if (selectedBrush === BRUSH_FILL) {
-          eraseCollisionAt(x, y);
+          eraseCollisionAt(sceneId, x, y);
         } else if (selectedBrush === BRUSH_MAGIC) {
+          const rootState = store.getState();
+          const scene = sceneSelectors.selectById(rootState, sceneId);
+          const tileLookup =
+            rootState.assets.backgrounds[scene?.backgroundId ?? ""]?.lookup;
+
           if (tileLookup) {
-            eraseCollisionAt(x, y);
+            eraseCollisionAt(sceneId, x, y);
           } else {
             dispatch(editorActions.selectScene({ sceneId }));
           }
@@ -166,7 +177,7 @@ export const useEraserCursorMode = ({
           const startY = state.startY;
 
           if (state.drawLine && startX !== undefined && startY !== undefined) {
-            eraseCollisionLine(startX, startY, x, y);
+            eraseCollisionLine(sceneId, startX, startY, x, y);
 
             state.startX = x;
             state.startY = y;
@@ -174,7 +185,7 @@ export const useEraserCursorMode = ({
             state.startX = x;
             state.startY = y;
 
-            eraseCollisionAt(x, y);
+            eraseCollisionAt(sceneId, x, y);
           }
 
           state.isPainting = true;
@@ -182,22 +193,20 @@ export const useEraserCursorMode = ({
       }
 
       if (showLayers) {
-        eraseActorsAndTriggersAt(x, y);
+        eraseActorsAndTriggersAt(sceneId, x, y);
       }
 
       return true;
     },
     [
       dispatch,
-      enabled,
       eraseActorsAndTriggersAt,
       eraseCollisionAt,
       eraseCollisionLine,
-      sceneId,
       selectedBrush,
       showCollisions,
       showLayers,
-      tileLookup,
+      store,
       tool,
     ],
   );
@@ -210,7 +219,7 @@ export const useEraserCursorMode = ({
         return;
       }
 
-      if (!enabled || !e.isOverScene || !showCollisions) {
+      if (!e.isOverScene || !showCollisions) {
         return;
       }
 
@@ -235,14 +244,14 @@ export const useEraserCursorMode = ({
       if (state.drawLine) {
         const line = resolveAxisLockedLine(state, startX, startY, x, y);
 
-        eraseCollisionLine(startX, startY, line.endX, line.endY);
+        eraseCollisionLine(e.sceneId, startX, startY, line.endX, line.endY);
 
         state.lockX = line.lockX;
         state.lockY = line.lockY;
         state.startX = line.endX;
         state.startY = line.endY;
       } else {
-        eraseCollisionLine(startX, startY, x, y);
+        eraseCollisionLine(e.sceneId, startX, startY, x, y);
 
         state.startX = x;
         state.startY = y;
@@ -251,7 +260,7 @@ export const useEraserCursorMode = ({
       state.currentX = x;
       state.currentY = y;
     },
-    [enabled, eraseCollisionLine, showCollisions],
+    [eraseCollisionLine, showCollisions],
   );
 
   const resetPaintState = useCallback(() => {

@@ -2,12 +2,6 @@ import type React from "react";
 import { TILE_SIZE } from "consts";
 import type { SceneCursorViewModel } from "../SceneCursorView";
 
-export interface SceneCursorModeContext {
-  enabled: boolean;
-  sceneId: string;
-  getCursorRect: () => DOMRect | undefined;
-}
-
 export type SceneCursorEvent<T> = {
   x: number;
   y: number;

@@ -8,15 +8,12 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import type { SceneCursorViewModel } from "../SceneCursorView";
 import type {
   SceneCursorMode,
-  SceneCursorModeContext,
   SceneCursorMouseDownHandler,
   SceneCursorMouseMoveHandler,
   SceneCursorMouseUpHandler,
 } from "./SceneCursorMode";
 
-export const useTriggerPlacementCursorMode = ({
-  sceneId,
-}: SceneCursorModeContext): SceneCursorMode => {
+export const useTriggerPlacementCursorMode = (): SceneCursorMode => {
   const dispatch = useAppDispatch();
   const tool = useAppSelector((state) => state.editor.tool);
   const pasteMode = useAppSelector((state) => state.editor.pasteMode);
@@ -44,7 +41,7 @@ export const useTriggerPlacementCursorMode = ({
       if (pasteMode) {
         dispatch(
           clipboardActions.pasteTriggerAt({
-            sceneId,
+            sceneId: e.sceneId,
             x,
             y,
           }),
@@ -55,7 +52,7 @@ export const useTriggerPlacementCursorMode = ({
         resizeRef.current.triggerId = undefined;
       } else {
         const action = entitiesActions.addTrigger({
-          sceneId,
+          sceneId: e.sceneId,
           x,
           y,
           width: 1,
@@ -79,7 +76,7 @@ export const useTriggerPlacementCursorMode = ({
 
       return true;
     },
-    [dispatch, editorPrefabId, pasteMode, sceneId],
+    [dispatch, editorPrefabId, pasteMode],
   );
 
   const onMouseMove = useCallback<SceneCursorMouseMoveHandler>(

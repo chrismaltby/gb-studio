@@ -49,7 +49,6 @@ const Wrapper = styled.div<WrapperProps>`
       ? css`
           background-color: rgba(247, 45, 220, 0.5);
           outline: 1px solid rgba(140, 0, 177, 0.8);
-          pointer-events: all;
         `
       : ""}
 
@@ -58,7 +57,6 @@ const Wrapper = styled.div<WrapperProps>`
       ? css`
           background-color: rgba(255, 120, 0, 0.5);
           outline: 1px solid rgba(255, 120, 0, 1);
-          pointer-events: all;
         `
       : ""}
 
@@ -67,7 +65,6 @@ const Wrapper = styled.div<WrapperProps>`
       ? css`
           background-color: rgba(255, 0, 0, 0.8);
           outline: 1px solid rgba(255, 0, 0, 1);
-          pointer-events: all;
         `
       : ""}
 
@@ -76,7 +73,6 @@ const Wrapper = styled.div<WrapperProps>`
       ? css`
           background-color: rgba(250, 40, 40, 0.6);
           outline: 1px solid rgba(250, 40, 40, 0.8);
-          pointer-events: all;
         `
       : ""}
 
@@ -84,7 +80,6 @@ const Wrapper = styled.div<WrapperProps>`
     props.$variant === "colors"
       ? css`
           background-color: transparent;
-          pointer-events: all;
         `
       : ""}
 `;
@@ -117,22 +112,18 @@ interface SceneCursorViewProps {
   x: number;
   y: number;
   view: SceneCursorViewModel;
-  onMouseMove?: React.MouseEventHandler<HTMLDivElement>;
-  onMouseDown?: React.MouseEventHandler<HTMLDivElement>;
 }
 
 export const SceneCursorView = React.forwardRef<
   HTMLDivElement,
   SceneCursorViewProps
->(({ x, y, view, onMouseMove, onMouseDown }, cursorRef) => {
+>(({ x, y, view }, cursorRef) => {
   return (
     <Wrapper
       ref={cursorRef}
       $variant={view.variant}
       $width={view.width}
       $height={view.height}
-      onMouseMove={onMouseMove}
-      onMouseDown={onMouseDown}
       style={{
         pointerEvents: "none",
         transform: `translate3d(${x}px, ${y}px, 0)`,
