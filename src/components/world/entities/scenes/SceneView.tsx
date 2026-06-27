@@ -17,12 +17,9 @@ import {
   useAppDispatch,
   useAppSelector,
   useAppSelectorPick,
-  useAppStore,
 } from "store/hooks";
-import renderSceneContextMenu from "components/world/contextMenus/renderSceneContextMenu";
 import SceneScrollBounds from "./SceneScrollBounds";
 import SceneScreenGrid from "components/world/entities/scenes/SceneScreenGrid";
-import { useContextMenu } from "ui/hooks/use-context-menu";
 import { SceneParallaxOverlay } from "components/world/entities/scenes/SceneParallaxOverlay";
 import { SceneTitle } from "components/world/entities/scenes/SceneTitle";
 import { useWorldEntityDrag } from "components/world/hooks/useWorldEntityDrag";
@@ -31,6 +28,7 @@ import { SceneTileLayers } from "components/world/entities/scenes/SceneTileLayer
 import { SceneEntities } from "components/world/entities/scenes/SceneEntities";
 import { SceneTileSelectionOverlay } from "components/world/entities/scenes/SceneTileSelectionOverlay";
 import { SceneTypeDisabledOverlay } from "components/world/entities/scenes/SceneTypeDisabledOverlay";
+import { useSceneContextMenu } from "components/world/contextMenus/useSceneContextMenu";
 
 const SCENE_LABEL_MARGIN = 50;
 
@@ -171,7 +169,6 @@ const SceneOverlay = styled.div<SceneOverlayProps>`
 
 const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const dispatch = useAppDispatch();
-  const store = useAppStore();
 
   const scene = useAppSelectorPick(
     (state) => sceneSelectors.selectById(state, id),
@@ -229,47 +226,10 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     onSelect,
   });
 
-  //#region Context Menu
-
-  const getContextMenu = useCallback(
-    ({ closeMenu: onClose }: { closeMenu: () => void }) => {
-      const state = store.getState();
-      const scene = sceneSelectors.selectById(state, id);
-
-      if (!scene) {
-        return undefined;
-      }
-
-      const { x: hoverX, y: hoverY } = state.editor.hover;
-
-      return renderSceneContextMenu({
-        dispatch,
-        sceneId: id,
-        additionalSceneIds: state.editor.sceneSelectionIds,
-        startSceneId: state.project.present.settings.startSceneId,
-        startDirection: state.project.present.settings.startDirection,
-        hoverX,
-        hoverY,
-        colorsEnabled: state.project.present.settings.colorMode !== "mono",
-        colorModeOverride: scene.colorModeOverride,
-        runSceneSelectionOnly:
-          state.project.present.settings.runSceneSelectionOnly,
-        onClose,
-      });
-    },
-    [dispatch, id, store],
+  const { onContextMenu, contextMenuElement } = useSceneContextMenu(
+    id,
+    tool === TOOL_SELECT,
   );
-
-  const getContextMenuEnabled = useCallback(() => {
-    return tool === TOOL_SELECT;
-  }, [tool]);
-
-  const { onContextMenu, contextMenuElement } = useContextMenu({
-    getMenu: getContextMenu,
-    getIsEnabled: getContextMenuEnabled,
-  });
-
-  //#endregion Context Menu
 
   const onToggleSelection = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
