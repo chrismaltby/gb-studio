@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import {
   getLocalisedDMGPalette,
@@ -70,7 +70,7 @@ const NoValue = styled.div`
   width: 24px;
 `;
 
-export const PaletteSelectButton: FC<PaletteSelectProps> = ({
+const PaletteSelectButtonComponent = ({
   name,
   value,
   type,
@@ -81,7 +81,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
   optionalDefaultPaletteId,
   canAuto,
   autoPalette,
-}) => {
+}: PaletteSelectProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -214,3 +214,7 @@ export const PaletteSelectButton: FC<PaletteSelectProps> = ({
     </Wrapper>
   );
 };
+
+export const PaletteSelectButton = memo<PaletteSelectProps>(
+  PaletteSelectButtonComponent,
+);

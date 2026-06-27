@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
@@ -141,7 +141,7 @@ const NoValue = styled.div`
   width: 24px;
 `;
 
-export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
+const SpriteSheetSelectButtonComponent = ({
   name,
   value,
   direction,
@@ -152,7 +152,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
   optional,
   optionalLabel,
   optionalValue,
-}) => {
+}: SpriteSheetSelectProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const spriteSheet = useAppSelector((state) =>
@@ -292,3 +292,7 @@ export const SpriteSheetSelectButton: FC<SpriteSheetSelectProps> = ({
     </Wrapper>
   );
 };
+
+export const SpriteSheetSelectButton = memo<SpriteSheetSelectProps>(
+  SpriteSheetSelectButtonComponent,
+);

@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select } from "ui/form/Select";
@@ -15,12 +15,12 @@ interface FadeSpeedOption {
   label: string;
 }
 
-export const FadeSpeedSelect: FC<FadeSpeedSelectProps> = ({
+const FadeSpeedSelectComponent = ({
   name,
   value = 2,
   allowNone,
   onChange,
-}) => {
+}: FadeSpeedSelectProps) => {
   const options: FadeSpeedOption[] = useMemo(
     () => [
       ...(allowNone ? [{ value: 0, label: `${l10n("FIELD_INSTANT")}` }] : []),
@@ -48,3 +48,7 @@ export const FadeSpeedSelect: FC<FadeSpeedSelectProps> = ({
     />
   );
 };
+
+export const FadeSpeedSelect = memo<FadeSpeedSelectProps>(
+  FadeSpeedSelectComponent,
+);

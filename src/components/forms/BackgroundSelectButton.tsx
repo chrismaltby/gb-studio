@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { backgroundSelectors } from "store/features/entities/entitiesSelectors";
@@ -163,7 +163,7 @@ const Pill = styled.span`
   }
 `;
 
-export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
+const BackgroundSelectButtonComponent = ({
   name,
   value,
   onChange,
@@ -172,7 +172,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
   uiPaletteId,
   tilesetId,
   includeInfo,
-}) => {
+}: BackgroundSelectProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const background = useAppSelector((state) =>
@@ -364,3 +364,7 @@ export const BackgroundSelectButton: FC<BackgroundSelectProps> = ({
     </Wrapper>
   );
 };
+
+export const BackgroundSelectButton = memo<BackgroundSelectProps>(
+  BackgroundSelectButtonComponent,
+);

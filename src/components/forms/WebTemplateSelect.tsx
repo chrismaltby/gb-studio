@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { SingleValue } from "react-select";
 import {
   OptGroup,
@@ -29,11 +29,11 @@ const webTemplatePlugin = (template: string) => {
   return template.split(/[\\/]/).slice(0, -1).join("/");
 };
 
-export const WebTemplateSelect: FC<WebTemplateSelectProps> = ({
+const WebTemplateSelectComponent = ({
   value = "",
   onChange,
   ...selectProps
-}) => {
+}: WebTemplateSelectProps) => {
   const webTemplates = useAppSelector((state) => state.webTemplates.templates);
   const defaultWebTemplateLabel = l10n("FIELD_DEFAULT_WEB_TEMPLATE_BINJGB");
 
@@ -107,3 +107,7 @@ export const WebTemplateSelect: FC<WebTemplateSelectProps> = ({
     />
   );
 };
+
+export const WebTemplateSelect = memo<WebTemplateSelectProps>(
+  WebTemplateSelectComponent,
+);

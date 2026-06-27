@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { OptionLabelWithInfo, Select } from "ui/form/Select";
@@ -14,11 +14,11 @@ interface CompilerPresetOption {
   label: string;
 }
 
-export const CompilerPresetSelect: FC<CompilerPresetSelectProps> = ({
+const CompilerPresetSelectComponent = ({
   name,
   value = 3000,
   onChange,
-}) => {
+}: CompilerPresetSelectProps) => {
   const options: CompilerPresetOption[] = useMemo(
     () => [
       { value: 1000, label: l10n("FIELD_FASTER") },
@@ -50,3 +50,7 @@ export const CompilerPresetSelect: FC<CompilerPresetSelectProps> = ({
     />
   );
 };
+
+export const CompilerPresetSelect = memo<CompilerPresetSelectProps>(
+  CompilerPresetSelectComponent,
+);
