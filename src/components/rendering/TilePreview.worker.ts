@@ -26,12 +26,14 @@ interface CacheRecord {
 export interface TilePreviewResult {
   id: number;
   canvasImage: ImageBitmap;
+  requestId: number;
 }
 
 const cache: Record<string, CacheRecord> = {};
 
 workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
+  const requestId = evt.data.requestId;
   const src = evt.data.src;
   const tileIndex = evt.data.tileIndex ?? 0;
   const tileSize = evt.data.tileSize === "16px" ? TILE_SIZE * 2 : TILE_SIZE;
@@ -110,7 +112,7 @@ workerCtx.onmessage = async (evt) => {
   ctx.putImageData(imageData, 0, 0);
 
   const canvasImage = canvas.transferToImageBitmap();
-  workerCtx.postMessage({ id, canvasImage }, [canvasImage]);
+  workerCtx.postMessage({ id, canvasImage, requestId }, [canvasImage]);
 };
 
 // -----------------------------------------------------------------
