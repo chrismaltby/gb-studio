@@ -46,15 +46,13 @@ export const useEntityDragCursorMode = (): SceneCursorMode => {
         const unitSize = usePixelCoordinates ? 1 : TILE_SIZE;
         const pointerX = usePixelCoordinates ? event.pX : event.x;
         const pointerY = usePixelCoordinates ? event.pY : event.y;
-        const dragPosition = applyDragOffset(
+        const { x, y } = applyDragOffset(
           pointerX,
           pointerY,
           dragging.offsetX,
           dragging.offsetY,
           unitSize,
         );
-        const x = Math.max(0, dragPosition.x);
-        const y = Math.max(0, dragPosition.y);
         const position = `${dragging.type}:${dragging.actorId}:${event.sceneId}:${x}:${y}`;
 
         if (lastPositionRef.current === position) {
