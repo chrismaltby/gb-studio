@@ -17,7 +17,7 @@ import {
   localVariableCodes,
 } from "shared/lib/entities/entitiesHelpers";
 import { omit } from "shared/types";
-import { Variable } from "shared/lib/resources/types";
+import { CoordinateType, Variable } from "shared/lib/resources/types";
 import {
   actorsAdapter,
   scenesAdapter,
@@ -35,6 +35,17 @@ import {
   duplicateScript,
 } from "store/features/entities/helpers";
 import { first } from "shared/lib/helpers/array";
+
+const ACTOR_BASE_SIZE = 1;
+
+const getActorMaxPositionForSceneAxis = (
+  sceneSizeInTiles: number,
+  coordinateType: CoordinateType,
+) => {
+  return coordinateType === "pixels"
+    ? sceneSizeInTiles * TILE_SIZE - ACTOR_BASE_SIZE * TILE_SIZE
+    : sceneSizeInTiles - ACTOR_BASE_SIZE;
+};
 
 const addActor: CaseReducer<
   EntitiesState,
@@ -83,6 +94,9 @@ const addActor: CaseReducer<
     }
   }
 
+  const maxX = getActorMaxPositionForSceneAxis(scene.width, "tiles");
+  const maxY = getActorMaxPositionForSceneAxis(scene.height, "tiles");
+
   const newActor: ActorNormalized = {
     name,
     frame: 0,
@@ -108,8 +122,8 @@ const addActor: CaseReducer<
     hit3Script: [],
     id: action.payload.actorId,
     coordinateType: "tiles",
-    x: clamp(action.payload.x, 0, scene.width - 2),
-    y: clamp(action.payload.y, 0, scene.height - 1),
+    x: clamp(action.payload.x, 0, maxX),
+    y: clamp(action.payload.y, 0, maxY),
   };
 
   // Add to scene
@@ -301,11 +315,20 @@ const moveActor: CaseReducer<
     return;
   }
 
+  const maxX = getActorMaxPositionForSceneAxis(
+    newScene.width,
+    actor.coordinateType,
+  );
+  const maxY = getActorMaxPositionForSceneAxis(
+    newScene.height,
+    actor.coordinateType,
+  );
+
   actorsAdapter.updateOne(state.actors, {
     id: action.payload.actorId,
     changes: {
-      x: action.payload.x,
-      y: action.payload.y,
+      x: clamp(action.payload.x, 0, maxX),
+      y: clamp(action.payload.y, 0, maxY),
     },
   });
 };
