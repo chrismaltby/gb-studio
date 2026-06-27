@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { components, SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select, SelectCommonProps } from "ui/form/Select";
@@ -15,12 +15,12 @@ interface OperatorOption {
   label: string;
 }
 
-export const OperatorSelect: FC<OperatorSelectProps> = ({
+const OperatorSelectComponent = ({
   name,
   value = "==",
   onChange,
   ...selectProps
-}) => {
+}: OperatorSelectProps) => {
   const options: OperatorOption[] = useMemo(
     () => [
       { value: "==", label: l10n("FIELD_EQ") },
@@ -63,3 +63,7 @@ export const OperatorSelect: FC<OperatorSelectProps> = ({
     />
   );
 };
+
+export const OperatorSelect = memo<OperatorSelectProps>(
+  OperatorSelectComponent,
+);

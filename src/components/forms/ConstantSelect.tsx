@@ -1,4 +1,4 @@
-import React, { useState, FC, useMemo } from "react";
+import React, { memo, useMemo, useState } from "react";
 import {
   Select as DefaultSelect,
   Option,
@@ -126,12 +126,12 @@ const ConstantRenameCompleteButton = styled.button`
   }
 `;
 
-export const ConstantSelect: FC<ConstantSelectProps> = ({
+const ConstantSelectComponent = ({
   value,
   onChange,
   allowRename,
   ...selectProps
-}) => {
+}: ConstantSelectProps) => {
   const [renameVisible, setRenameVisible] = useState(false);
   const [editValue, setEditValue] = useState("");
   const [renameId, setRenameId] = useState("");
@@ -295,3 +295,7 @@ export const ConstantSelect: FC<ConstantSelectProps> = ({
     </ConstantSelectWrapper>
   );
 };
+
+export const ConstantSelect = memo<ConstantSelectProps>(
+  ConstantSelectComponent,
+);

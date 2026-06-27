@@ -1,4 +1,4 @@
-import React, { FC, JSX, useMemo } from "react";
+import React, { JSX, memo, useMemo } from "react";
 import l10n from "shared/lib/lang/l10n";
 import { MovementType, movementTypes } from "shared/lib/entities/entitiesTypes";
 import { DropdownButton } from "ui/buttons/DropdownButton";
@@ -28,10 +28,10 @@ const MenuSpacer = styled.div`
   width: 10px;
 `;
 
-export const MovementTypeSelect: FC<MovementTypeSelectProps> = ({
+const MovementTypeSelectComponent = ({
   value = "horizontal",
   onChange,
-}) => {
+}: MovementTypeSelectProps) => {
   const selectedIcon = value ? (
     movementTypeIconsLookup[value]
   ) : (
@@ -68,3 +68,7 @@ export const MovementTypeSelect: FC<MovementTypeSelectProps> = ({
     </DropdownButton>
   );
 };
+
+export const MovementTypeSelect = memo<MovementTypeSelectProps>(
+  MovementTypeSelectComponent,
+);

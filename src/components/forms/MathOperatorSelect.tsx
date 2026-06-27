@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { components, SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select, SelectCommonProps } from "ui/form/Select";
@@ -15,12 +15,12 @@ interface MathOperatorOption {
   label: string;
 }
 
-export const MathOperatorSelect: FC<MathOperatorSelectProps> = ({
+const MathOperatorSelectComponent = ({
   name,
   value = "+=",
   onChange,
   ...selectProps
-}) => {
+}: MathOperatorSelectProps) => {
   const options: MathOperatorOption[] = useMemo(
     () => [
       { value: "+=", label: l10n("FIELD_ADD_VALUE") },
@@ -61,3 +61,7 @@ export const MathOperatorSelect: FC<MathOperatorSelectProps> = ({
     />
   );
 };
+
+export const MathOperatorSelect = memo<MathOperatorSelectProps>(
+  MathOperatorSelectComponent,
+);

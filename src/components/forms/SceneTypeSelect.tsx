@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { Select } from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { useAppSelector } from "store/hooks";
@@ -15,11 +15,11 @@ interface SceneTypeOption {
   label: string;
 }
 
-export const SceneTypeSelect: FC<SceneTypeSelectProps> = ({
+const SceneTypeSelectComponent = ({
   name,
   value = "0",
   onChange,
-}) => {
+}: SceneTypeSelectProps) => {
   const sceneTypes = useAppSelector((state) => state.engine.sceneTypes);
   const disabledSceneTypeIds = useAppSelector(
     (state) => state.project.present.settings.disabledSceneTypeIds,
@@ -54,3 +54,7 @@ export const SceneTypeSelect: FC<SceneTypeSelectProps> = ({
     />
   );
 };
+
+export const SceneTypeSelect = memo<SceneTypeSelectProps>(
+  SceneTypeSelectComponent,
+);

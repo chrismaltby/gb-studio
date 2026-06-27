@@ -41,7 +41,7 @@ const spriteStyles = css`
 
 const Color = styled.div``;
 
-const PaletteBlock: React.FC<PaletteBlockProps> = ({
+const PaletteBlock = ({
   colors,
   size = 24,
   type = "tile",
@@ -74,4 +74,4 @@ const PaletteBlock: React.FC<PaletteBlockProps> = ({
   </Wrapper>
 );
 
-export default PaletteBlock;
+export default React.memo<PaletteBlockProps>(PaletteBlock);

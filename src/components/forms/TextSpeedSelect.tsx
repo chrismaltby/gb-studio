@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select, SelectCommonProps } from "ui/form/Select";
@@ -14,12 +14,12 @@ interface TextSpeedOption {
   label: string;
 }
 
-export const TextSpeedSelect: FC<TextSpeedSelectProps> = ({
+const TextSpeedSelectComponent = ({
   name,
   value = 3,
   onChange,
   ...selectProps
-}) => {
+}: TextSpeedSelectProps) => {
   const options: TextSpeedOption[] = useMemo(
     () => [
       { value: 0, label: `${l10n("FIELD_INSTANT")}` },
@@ -47,3 +47,7 @@ export const TextSpeedSelect: FC<TextSpeedSelectProps> = ({
     />
   );
 };
+
+export const TextSpeedSelect = memo<TextSpeedSelectProps>(
+  TextSpeedSelectComponent,
+);

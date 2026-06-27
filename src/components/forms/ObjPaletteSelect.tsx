@@ -1,5 +1,5 @@
 import PaletteBlock from "components/forms/PaletteBlock";
-import React, { FC, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import {
   OptionLabelWithPreview,
   Select,
@@ -23,12 +23,12 @@ interface ObjPaletteOption {
   colors: string[];
 }
 
-export const ObjPaletteSelect: FC<ObjPaletteSelectProps> = ({
+const ObjPaletteSelectComponent = ({
   name,
   value = "OBP0",
   monoPalettes,
   onChange,
-}) => {
+}: ObjPaletteSelectProps) => {
   const options: ObjPaletteOption[] = useMemo(() => {
     return [
       {
@@ -94,3 +94,7 @@ export const ObjPaletteSelect: FC<ObjPaletteSelectProps> = ({
     />
   );
 };
+
+export const ObjPaletteSelect = memo<ObjPaletteSelectProps>(
+  ObjPaletteSelectComponent,
+);

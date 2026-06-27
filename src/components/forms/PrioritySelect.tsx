@@ -1,4 +1,4 @@
-import React, { FC, JSX, useMemo } from "react";
+import React, { JSX, memo, useMemo } from "react";
 import l10n from "shared/lib/lang/l10n";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import {
@@ -30,10 +30,10 @@ const MenuSpacer = styled.div`
   width: 10px;
 `;
 
-export const PrioritySelect: FC<PrioritySelectProps> = ({
+const PrioritySelectComponent = ({
   value = "low",
   onChange,
-}) => {
+}: PrioritySelectProps) => {
   const selectedIcon = value ? priorityIconsLookup[value] : <PriorityLowIcon />;
   const priorityNamesLookup: Record<Priority, string> = useMemo(
     () => ({
@@ -66,3 +66,7 @@ export const PrioritySelect: FC<PrioritySelectProps> = ({
     </DropdownButton>
   );
 };
+
+export const PrioritySelect = memo<PrioritySelectProps>(
+  PrioritySelectComponent,
+);

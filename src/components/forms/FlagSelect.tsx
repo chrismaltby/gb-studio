@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { memo } from "react";
 import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { variableSelectors } from "store/features/entities/entitiesSelectors";
@@ -13,13 +13,13 @@ interface FlagSelectProps extends SelectCommonProps {
   onChange?: (newFlag: number) => void;
 }
 
-export const FlagSelect: FC<FlagSelectProps> = ({
+const FlagSelectComponent = ({
   value,
   variableId,
   entityId,
   onChange,
   ...selectProps
-}) => {
+}: FlagSelectProps) => {
   const variableIsLocal = variableId && variableId.startsWith("L");
 
   const namedVariable = useAppSelector((state) => {
@@ -62,3 +62,5 @@ export const FlagSelect: FC<FlagSelectProps> = ({
     />
   );
 };
+
+export const FlagSelect = memo<FlagSelectProps>(FlagSelectComponent);
