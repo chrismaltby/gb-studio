@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import { actorName } from "shared/lib/entities/entitiesHelpers";
 import { actorPrefabSelectors } from "store/features/entities/entitiesSelectors";
@@ -18,7 +18,7 @@ interface ActorPrefabSelectProps extends SelectCommonProps {
   onChange?: (newId: string) => void;
 }
 
-export const ActorPrefabSelect = ({
+const ActorPrefabSelectComponent = ({
   value,
   onChange,
   ...selectProps
@@ -26,11 +26,9 @@ export const ActorPrefabSelect = ({
   const actorPrefabs = useAppSelector((state) =>
     actorPrefabSelectors.selectAll(state),
   );
-  const [options, setOptions] = useState<Option[]>([]);
-  const [currentValue, setCurrentValue] = useState<Option>();
 
-  useEffect(() => {
-    setOptions(
+  const options = useMemo<Option[]>(
+    () =>
       [
         {
           label: l10n("FIELD_NONE"),
@@ -44,16 +42,13 @@ export const ActorPrefabSelect = ({
           }))
           .sort(sortByLabel),
       ),
-    );
-  }, [actorPrefabs]);
+    [actorPrefabs],
+  );
 
-  useEffect(() => {
-    setCurrentValue(
-      options.find((option) => {
-        return option.value === value;
-      }),
-    );
-  }, [options, value]);
+  const currentValue = useMemo(
+    () => options.find((option) => option.value === value),
+    [options, value],
+  );
 
   const onSelectChange = useCallback(
     (newValue: SingleValue<Option>) => {
@@ -64,15 +59,19 @@ export const ActorPrefabSelect = ({
     [onChange],
   );
 
+  const formatOptionLabel = useCallback((option: Option) => {
+    return <FormatFolderLabel label={option.label} />;
+  }, []);
+
   return (
     <Select
       value={currentValue}
       options={options}
       onChange={onSelectChange}
-      formatOptionLabel={(option: Option) => {
-        return <FormatFolderLabel label={option.label} />;
-      }}
+      formatOptionLabel={formatOptionLabel}
       {...selectProps}
     />
   );
 };
+
+export const ActorPrefabSelect = memo(ActorPrefabSelectComponent);
