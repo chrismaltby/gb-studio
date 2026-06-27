@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import {
   backgroundSelectors,
   sceneSelectors,
@@ -73,137 +73,139 @@ const sceneToSceneOption = (
   scene,
 });
 
-export const SceneSelect = ({
-  value,
-  onChange,
-  optional,
-  optionalLabel,
-  ...selectProps
-}: SceneSelectProps) => {
-  const dispatch = useAppDispatch();
+export const SceneSelect = memo(
+  ({
+    value,
+    onChange,
+    optional,
+    optionalLabel,
+    ...selectProps
+  }: SceneSelectProps) => {
+    const dispatch = useAppDispatch();
 
-  const scenes = useAppSelectorPickArray(sceneSelectors.selectAll, [
-    "id",
-    "name",
-    "backgroundId",
-  ] as const);
+    const scenes = useAppSelectorPickArray(sceneSelectors.selectAll, [
+      "id",
+      "name",
+      "backgroundId",
+    ] as const);
 
-  const selectedScene = useAppSelectorPick(
-    (state) => sceneSelectors.selectById(state, value || ""),
-    ["id", "name", "backgroundId"] as const,
-  );
+    const selectedScene = useAppSelectorPick(
+      (state) => sceneSelectors.selectById(state, value || ""),
+      ["id", "name", "backgroundId"] as const,
+    );
 
-  const backgrounds = useAppSelectorPickArray(backgroundSelectors.selectAll, [
-    "id",
-    "filename",
-    "plugin",
-    "_v",
-  ] as const);
+    const backgrounds = useAppSelectorPickArray(backgroundSelectors.selectAll, [
+      "id",
+      "filename",
+      "plugin",
+      "_v",
+    ] as const);
 
-  const backgroundsLookup = useMemo<Record<string, SceneSelectBackground>>(
-    () =>
-      Object.fromEntries(
-        backgrounds.map((background) => [background.id, background]),
-      ),
-    [backgrounds],
-  );
+    const backgroundsLookup = useMemo<Record<string, SceneSelectBackground>>(
+      () =>
+        Object.fromEntries(
+          backgrounds.map((background) => [background.id, background]),
+        ),
+      [backgrounds],
+    );
 
-  const selectedBackground = useAppSelectorPick(
-    (state) =>
-      selectedScene?.backgroundId
-        ? backgroundSelectors.selectById(state, selectedScene.backgroundId)
-        : undefined,
-    ["filename", "plugin", "_v"] as const,
-  );
+    const selectedBackground = useAppSelectorPick(
+      (state) =>
+        selectedScene?.backgroundId
+          ? backgroundSelectors.selectById(state, selectedScene.backgroundId)
+          : undefined,
+      ["filename", "plugin", "_v"] as const,
+    );
 
-  const options = useMemo(
-    () =>
-      ([] as SceneOption[]).concat(
-        optional
-          ? [
-              {
-                value: "",
-                label: optionalLabel || "None",
-              },
-            ]
-          : [],
-        scenes.map(sceneToSceneOption).sort(sortByLabel),
-      ),
-    [scenes, optional, optionalLabel],
-  );
+    const options = useMemo(
+      () =>
+        ([] as SceneOption[]).concat(
+          optional
+            ? [
+                {
+                  value: "",
+                  label: optionalLabel || "None",
+                },
+              ]
+            : [],
+          scenes.map(sceneToSceneOption).sort(sortByLabel),
+        ),
+      [scenes, optional, optionalLabel],
+    );
 
-  const currentValue = useMemo(() => {
-    const sceneIndex = scenes.findIndex((scene) => scene.id === value);
-    const scene = sceneIndex >= 0 ? scenes[sceneIndex] : undefined;
+    const currentValue = useMemo(() => {
+      const sceneIndex = scenes.findIndex((scene) => scene.id === value);
+      const scene = sceneIndex >= 0 ? scenes[sceneIndex] : undefined;
 
-    return scene ? sceneToSceneOption(scene, sceneIndex) : undefined;
-  }, [scenes, value]);
+      return scene ? sceneToSceneOption(scene, sceneIndex) : undefined;
+    }, [scenes, value]);
 
-  const onSelectChange = useCallback(
-    (newValue: SingleValue<Option>) => {
-      if (newValue) {
-        onChange?.(newValue.value);
-      }
-    },
-    [onChange],
-  );
+    const onSelectChange = useCallback(
+      (newValue: SingleValue<Option>) => {
+        if (newValue) {
+          onChange?.(newValue.value);
+        }
+      },
+      [onChange],
+    );
 
-  const onJumpToScene = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (e.altKey && value) {
-        dispatch(editorActions.selectScene({ sceneId: value }));
-        dispatch(editorActions.setFocusSceneId(value));
-      }
-    },
-    [dispatch, value],
-  );
+    const onJumpToScene = useCallback(
+      (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (e.altKey && value) {
+          dispatch(editorActions.selectScene({ sceneId: value }));
+          dispatch(editorActions.setFocusSceneId(value));
+        }
+      },
+      [dispatch, value],
+    );
 
-  return (
-    <div onClick={onJumpToScene}>
-      <Select
-        value={currentValue}
-        options={options}
-        onChange={onSelectChange}
-        formatOptionLabel={(option: SceneOption) => {
-          const background = option.scene
-            ? backgroundsLookup[option.scene.backgroundId]
-            : undefined;
+    return (
+      <div onClick={onJumpToScene}>
+        <Select
+          value={currentValue}
+          options={options}
+          onChange={onSelectChange}
+          formatOptionLabel={(option: SceneOption) => {
+            const background = option.scene
+              ? backgroundsLookup[option.scene.backgroundId]
+              : undefined;
 
-          return (
-            <OptionLabelWithPreview
-              preview={
-                <Thumbnail
-                  style={{
-                    backgroundImage:
-                      background &&
-                      assetURLStyleProp("backgrounds", background),
-                  }}
-                />
-              }
-            >
-              <FormatFolderLabel label={option.label} />
-            </OptionLabelWithPreview>
-          );
-        }}
-        components={{
-          SingleValue: () => (
-            <SingleValueWithPreview
-              preview={
-                <Thumbnail
-                  style={{
-                    backgroundImage:
-                      selectedBackground &&
-                      assetURLStyleProp("backgrounds", selectedBackground),
-                  }}
-                />
-              }
-            >
-              <FormatFolderLabel label={currentValue?.label} />
-            </SingleValueWithPreview>
-          ),
-        }}
-        {...selectProps}
-      />
-    </div>
-  );
-};
+            return (
+              <OptionLabelWithPreview
+                preview={
+                  <Thumbnail
+                    style={{
+                      backgroundImage:
+                        background &&
+                        assetURLStyleProp("backgrounds", background),
+                    }}
+                  />
+                }
+              >
+                <FormatFolderLabel label={option.label} />
+              </OptionLabelWithPreview>
+            );
+          }}
+          components={{
+            SingleValue: () => (
+              <SingleValueWithPreview
+                preview={
+                  <Thumbnail
+                    style={{
+                      backgroundImage:
+                        selectedBackground &&
+                        assetURLStyleProp("backgrounds", selectedBackground),
+                    }}
+                  />
+                }
+              >
+                <FormatFolderLabel label={currentValue?.label} />
+              </SingleValueWithPreview>
+            ),
+          }}
+          {...selectProps}
+        />
+      </div>
+    );
+  },
+);
