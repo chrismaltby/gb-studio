@@ -7,14 +7,11 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import type {
   SceneCursorMode,
-  SceneCursorModeContext,
   SceneCursorMouseDownHandler,
 } from "./SceneCursorMode";
 import type { SceneCursorViewModel } from "../SceneCursorView";
 
-export const useActorPlacementCursorMode = ({
-  sceneId,
-}: SceneCursorModeContext): SceneCursorMode => {
+export const useActorPlacementCursorMode = (): SceneCursorMode => {
   const dispatch = useAppDispatch();
   const tool = useAppSelector((state) => state.editor.tool);
   const pasteMode = useAppSelector((state) => state.editor.pasteMode);
@@ -25,7 +22,7 @@ export const useActorPlacementCursorMode = ({
       if (pasteMode) {
         dispatch(
           clipboardActions.pasteActorAt({
-            sceneId,
+            sceneId: e.sceneId,
             x: e.x,
             y: e.y,
           }),
@@ -33,7 +30,7 @@ export const useActorPlacementCursorMode = ({
       } else {
         dispatch(
           entitiesActions.addActor({
-            sceneId,
+            sceneId: e.sceneId,
             x: e.x,
             y: e.y,
             defaults: editorPrefabId
@@ -49,7 +46,7 @@ export const useActorPlacementCursorMode = ({
 
       return true;
     },
-    [dispatch, editorPrefabId, pasteMode, sceneId],
+    [dispatch, editorPrefabId, pasteMode],
   );
 
   const view = useMemo<SceneCursorViewModel>(

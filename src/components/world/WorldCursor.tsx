@@ -112,26 +112,13 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
     [],
   );
 
-  const cursorModeContext = useMemo(
-    () => ({
-      enabled,
-      sceneId: hoverSceneId,
-      getCursorRect,
-    }),
-    [enabled, getCursorRect, hoverSceneId],
-  );
-
-  const sceneSelectCursorMode = useSceneSelectCursorMode(cursorModeContext);
-  const actorPlacementCursorMode =
-    useActorPlacementCursorMode(cursorModeContext);
-  const triggerPlacementCursorMode =
-    useTriggerPlacementCursorMode(cursorModeContext);
-  const collisionPaintCursorMode =
-    useCollisionPaintCursorMode(cursorModeContext);
-  const colorPaintCursorMode = useColorPaintCursorMode(cursorModeContext);
-  const eraserCursorMode = useEraserCursorMode(cursorModeContext);
-  const sceneGridSelectionCursorMode =
-    useSceneGridSelectionCursorMode(cursorModeContext);
+  const sceneSelectCursorMode = useSceneSelectCursorMode();
+  const actorPlacementCursorMode = useActorPlacementCursorMode();
+  const triggerPlacementCursorMode = useTriggerPlacementCursorMode();
+  const collisionPaintCursorMode = useCollisionPaintCursorMode(getCursorRect);
+  const colorPaintCursorMode = useColorPaintCursorMode();
+  const eraserCursorMode = useEraserCursorMode();
+  const sceneGridSelectionCursorMode = useSceneGridSelectionCursorMode();
   const entityDragCursorMode = useEntityDragCursorMode();
   const defaultCursorMode = useDefaultCursorMode();
 

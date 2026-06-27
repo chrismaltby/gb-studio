@@ -463,6 +463,9 @@ const WorldView = () => {
 
   const selectedIds = useAppSelector((state) => state.editor.sceneSelectionIds);
   const tool = useAppSelector((state) => state.editor.tool);
+  const scenePaintSelection = useAppSelector(
+    (state) => state.editor.scenePaintSelection,
+  );
 
   const [scrollRef, scrollContainerSize] = useResizeObserver<HTMLDivElement>();
 
@@ -586,10 +589,31 @@ const WorldView = () => {
         e.preventDefault();
       }
       if (focus && (e.key === "Backspace" || e.key === "Delete")) {
+        if (scenePaintSelection) {
+          e.preventDefault();
+
+          if (scenePaintSelection.mode === "colors") {
+            dispatch(
+              entitiesActions.clearSceneColorSelection({
+                sceneId: scenePaintSelection.sceneId,
+                selection: scenePaintSelection.selection,
+              }),
+            );
+          } else {
+            dispatch(
+              entitiesActions.clearSceneCollisionSelection({
+                sceneId: scenePaintSelection.sceneId,
+                selection: scenePaintSelection.selection,
+              }),
+            );
+          }
+          return;
+        }
+
         dispatch(entitiesActions.removeSelectedEntity());
       }
     },
-    [dispatch, focus, onSelectAllWorldEntities],
+    [dispatch, focus, onSelectAllWorldEntities, scenePaintSelection],
   );
 
   const onKeyUp = useCallback(
