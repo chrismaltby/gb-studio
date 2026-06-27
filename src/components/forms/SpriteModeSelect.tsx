@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { memo, useMemo } from "react";
 import { SpriteModeSetting } from "store/features/settings/settingsState";
 import { Select, SelectCommonProps } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
@@ -16,15 +16,11 @@ interface SpriteModeOption {
   label: string;
 }
 
-export const SpriteModeSelect: FC<SpriteModeSelectProps> = ({
+const SpriteModeSelectComponent = ({
   value,
   allowDefault,
   onChange,
-}) => {
-  const [currentValue, setCurrentValue] = useState<
-    SpriteModeOption | undefined
-  >();
-
+}: SpriteModeSelectProps) => {
   const spriteModeOptions: SpriteModeOption[] = useMemo(() => {
     const options = allowDefault
       ? [
@@ -47,10 +43,10 @@ export const SpriteModeSelect: FC<SpriteModeSelectProps> = ({
     ]);
   }, [allowDefault]);
 
-  useEffect(() => {
-    const currentSpriteMode = spriteModeOptions.find((e) => e.value === value);
-    setCurrentValue(currentSpriteMode);
-  }, [spriteModeOptions, value]);
+  const currentValue = useMemo(
+    () => spriteModeOptions.find((option) => option.value === value),
+    [spriteModeOptions, value],
+  );
 
   return (
     <Select
@@ -64,3 +60,7 @@ export const SpriteModeSelect: FC<SpriteModeSelectProps> = ({
     />
   );
 };
+
+export const SpriteModeSelect = memo<SpriteModeSelectProps>(
+  SpriteModeSelectComponent,
+);

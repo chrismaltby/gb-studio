@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Input } from "ui/form/Input";
@@ -17,16 +17,13 @@ interface MovementSpeedOption {
   label: string;
 }
 
-export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
+const MovementSpeedSelectComponent = ({
   name,
   value = 1,
   allowNone,
   noneLabel,
   onChange,
-}) => {
-  const [currentValue, setCurrentValue] = useState<
-    MovementSpeedOption | undefined
-  >();
+}: MovementSpeedSelectProps) => {
   const [{ isCustom, autoFocus }, setIsCustom] = useState({
     isCustom: false,
     autoFocus: false,
@@ -53,15 +50,19 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
     [noneLabel, options],
   );
 
+  const currentValue = useMemo(
+    () =>
+      (allowNone ? optionsWithNone : options).find(
+        (option) => option.value === value,
+      ),
+    [allowNone, options, optionsWithNone, value],
+  );
+
   useEffect(() => {
-    const current = (allowNone ? optionsWithNone : options).find(
-      (o) => o.value === value,
-    );
-    setCurrentValue(current);
-    if (value === undefined || !current) {
+    if (value === undefined || !currentValue) {
       setIsCustom({ isCustom: true, autoFocus: false });
     }
-  }, [allowNone, options, optionsWithNone, value]);
+  }, [currentValue, value]);
 
   if (isCustom) {
     return (
@@ -126,3 +127,7 @@ export const MovementSpeedSelect: FC<MovementSpeedSelectProps> = ({
     />
   );
 };
+
+export const MovementSpeedSelect = memo<MovementSpeedSelectProps>(
+  MovementSpeedSelectComponent,
+);

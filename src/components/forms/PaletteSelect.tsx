@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { memo, useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import {
@@ -44,7 +44,7 @@ const PaletteSelectPrefix = styled.div`
   font-weight: bold;
 `;
 
-export const PaletteSelect: FC<PaletteSelectProps> = ({
+const PaletteSelectComponent = ({
   name,
   value,
   prefix,
@@ -59,15 +59,12 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
   autoPalette,
   keepLabel,
   ...selectProps
-}) => {
+}: PaletteSelectProps) => {
   const palettes = useAppSelector((state) => getLocalisedPalettes(state));
-  const [options, setOptions] = useState<PaletteOption[]>([]);
-  const [currentPalette, setCurrentPalette] = useState<Palette>();
-  const [currentValue, setCurrentValue] = useState<PaletteOption>();
   const dmgPalette = useMemo(getLocalisedDMGPalette, []);
 
-  useEffect(() => {
-    setOptions(
+  const options = useMemo(
+    () =>
       ([] as PaletteOption[]).concat(
         canKeep
           ? ([
@@ -116,68 +113,66 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
           palette,
         })),
       ),
-    );
-  }, [
-    palettes,
-    canKeep,
-    canRestore,
-    keepLabel,
-    optional,
-    optionalDefaultPaletteId,
-    optionalLabel,
-    dmgPalette,
-    canAuto,
-    autoPalette,
-  ]);
+    [
+      palettes,
+      canKeep,
+      canRestore,
+      keepLabel,
+      optional,
+      optionalDefaultPaletteId,
+      optionalLabel,
+      dmgPalette,
+      canAuto,
+      autoPalette,
+    ],
+  );
 
-  useEffect(() => {
-    if (value === dmgPalette.id) {
-      setCurrentPalette(dmgPalette);
-    } else {
-      setCurrentPalette(palettes.find((v) => v.id === value));
-    }
-  }, [dmgPalette, palettes, value]);
-
-  useEffect(() => {
+  const currentValue = useMemo<PaletteOption>(() => {
+    const currentPalette =
+      value === dmgPalette.id
+        ? dmgPalette
+        : palettes.find((palette) => palette.id === value);
     if (canKeep && value === "keep") {
-      setCurrentValue({
+      return {
         value: "keep",
         label: keepLabel || "Keep",
-      });
-    } else if (canRestore && value === "restore") {
-      setCurrentValue({
+      };
+    }
+    if (canRestore && value === "restore") {
+      return {
         value: "restore",
         label: l10n("FIELD_RESTORE_DEFAULT"),
-      });
-    } else if (canAuto && value === "auto") {
-      setCurrentValue({
+      };
+    }
+    if (canAuto && value === "auto") {
+      return {
         value: "auto",
         label: l10n("FIELD_AUTOMATIC"),
         palette: autoPalette,
-      });
-    } else if (currentPalette) {
-      setCurrentValue({
+      };
+    }
+    if (currentPalette) {
+      return {
         value: currentPalette.id,
         label: `${currentPalette.name}`,
         palette: currentPalette,
-      });
-    } else if (optional) {
+      };
+    }
+    if (optional) {
       const optionalPalette =
         palettes.find((p) => p.id === optionalDefaultPaletteId) || dmgPalette;
-      setCurrentValue({
+      return {
         value: "",
         label: optionalLabel || "None",
         palette: optionalPalette as Palette,
-      });
-    } else {
-      setCurrentValue({
-        value: "",
-        label: dmgPalette.name,
-        palette: dmgPalette,
-      });
+      };
     }
+    return {
+      value: "",
+      label: dmgPalette.name,
+      palette: dmgPalette,
+    };
   }, [
-    currentPalette,
     optionalDefaultPaletteId,
     optional,
     optionalLabel,
@@ -238,3 +233,5 @@ export const PaletteSelect: FC<PaletteSelectProps> = ({
     />
   );
 };
+
+export const PaletteSelect = memo<PaletteSelectProps>(PaletteSelectComponent);

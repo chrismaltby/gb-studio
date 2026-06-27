@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { Select, SelectCommonProps } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import { SingleValue } from "react-select";
@@ -20,13 +20,11 @@ interface AutoTileFlipOption {
   label: string;
 }
 
-export const AutoTileFlipSelect: FC<AutoTileFlipSelectProps> = ({
+const AutoTileFlipSelectComponent = ({
   value,
   allowDefault,
   onChange,
-}) => {
-  const [currentValue, setCurrentValue] = useState<AutoTileFlipOption>();
-
+}: AutoTileFlipSelectProps) => {
   const autoTileFlipOptions: AutoTileFlipOption[] = useMemo(() => {
     const options = allowDefault
       ? [
@@ -49,14 +47,10 @@ export const AutoTileFlipSelect: FC<AutoTileFlipSelectProps> = ({
     ]);
   }, [allowDefault]);
 
-  useEffect(() => {
-    const currentAutoTileFlip = autoTileFlipOptions.find(
-      (e) => e.value === value,
-    );
-    if (currentAutoTileFlip) {
-      setCurrentValue(currentAutoTileFlip);
-    }
-  }, [autoTileFlipOptions, value]);
+  const currentValue = useMemo(
+    () => autoTileFlipOptions.find((option) => option.value === value),
+    [autoTileFlipOptions, value],
+  );
 
   const onSelectChange = useCallback(
     (newValue: SingleValue<AutoTileFlipOption>) => {
@@ -79,3 +73,7 @@ export const AutoTileFlipSelect: FC<AutoTileFlipSelectProps> = ({
     />
   );
 };
+
+export const AutoTileFlipSelect = memo<AutoTileFlipSelectProps>(
+  AutoTileFlipSelectComponent,
+);

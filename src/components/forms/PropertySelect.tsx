@@ -1,4 +1,11 @@
-import React, { ReactElement, useContext, useEffect, useState } from "react";
+import React, {
+  memo,
+  ReactElement,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAppSelector } from "store/hooks";
 import { ActorNormalized, UnitType } from "shared/lib/entities/entitiesTypes";
 import {
@@ -69,7 +76,7 @@ const IconWrapper = styled.div`
   }
 `;
 
-export const PropertySelect = ({
+const PropertySelectComponent = ({
   name,
   value,
   onChange,
@@ -79,7 +86,6 @@ export const PropertySelect = ({
 }: PropertySelectProps) => {
   const context = useContext(ScriptEditorContext);
   const [options, setOptions] = useState<PropertyOptGroup[]>([]);
-  const [currentValue, setCurrentValue] = useState<PropertyOption>();
 
   const sceneType = useAppSelector(
     (state) => sceneSelectors.selectById(state, context.sceneId)?.type,
@@ -317,18 +323,13 @@ export const PropertySelect = ({
     selfPrefabIndex,
   ]);
 
-  useEffect(() => {
-    let option: Option | null = null;
-    options.find((optGroup) => {
-      const foundOption = optGroup.options.find((opt) => opt.value === value);
-      if (foundOption) {
-        option = foundOption;
-        return true;
-      }
-      return false;
-    });
-    setCurrentValue(option || options[0]?.options[0]);
-  }, [options, value]);
+  const currentValue = useMemo(
+    () =>
+      options
+        .flatMap((group) => group.options)
+        .find((option) => option.value === value) || options[0]?.options[0],
+    [options, value],
+  );
 
   return (
     <PropertySelectWrapper>
@@ -397,3 +398,7 @@ export const PropertySelect = ({
     </PropertySelectWrapper>
   );
 };
+
+export const PropertySelect = memo<PropertySelectProps>(
+  PropertySelectComponent,
+);

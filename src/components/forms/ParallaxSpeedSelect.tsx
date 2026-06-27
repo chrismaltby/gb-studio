@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { memo, useMemo } from "react";
 import { SingleValue } from "react-select";
 import l10n from "shared/lib/lang/l10n";
 import { Select } from "ui/form/Select";
@@ -15,12 +15,12 @@ interface ParallaxSpeedOption {
   label: string;
 }
 
-export const ParallaxSpeedSelect: FC<ParallaxSpeedSelectProps> = ({
+const ParallaxSpeedSelectComponent = ({
   name,
   value = 1,
   disabled,
   onChange,
-}) => {
+}: ParallaxSpeedSelectProps) => {
   const options: ParallaxSpeedOption[] = useMemo(
     () => [
       { value: 128, label: `${l10n("FIELD_FIXED_POSITION")}` },
@@ -37,14 +37,10 @@ export const ParallaxSpeedSelect: FC<ParallaxSpeedSelectProps> = ({
     [],
   );
 
-  const [currentValue, setCurrentValue] = useState<
-    ParallaxSpeedOption | undefined
-  >();
-
-  useEffect(() => {
-    const current = options.find((o) => o.value === value);
-    setCurrentValue(current);
-  }, [options, value]);
+  const currentValue = useMemo(
+    () => options.find((option) => option.value === value),
+    [options, value],
+  );
 
   return (
     <Select
@@ -60,3 +56,7 @@ export const ParallaxSpeedSelect: FC<ParallaxSpeedSelectProps> = ({
     />
   );
 };
+
+export const ParallaxSpeedSelect = memo<ParallaxSpeedSelectProps>(
+  ParallaxSpeedSelectComponent,
+);

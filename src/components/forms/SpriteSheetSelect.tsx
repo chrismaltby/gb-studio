@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
 import { spriteSheetSelectors } from "store/features/entities/entitiesSelectors";
@@ -52,7 +52,7 @@ const buildOptions = (
   });
 };
 
-export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
+const SpriteSheetSelectComponent = ({
   value,
   direction,
   frame,
@@ -61,7 +61,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
   optional,
   optionalLabel,
   ...selectProps
-}) => {
+}: SpriteSheetSelectProps) => {
   const spriteSheets = useAppSelector((state) =>
     spriteSheetSelectors.selectAll(state),
   );
@@ -69,9 +69,6 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
     (state) => state.project.present.settings.spriteMode,
   );
   const [options, setOptions] = useState<OptGroup[]>([]);
-  const [currentSpriteSheet, setCurrentSpriteSheet] =
-    useState<SpriteSheetNormalized>();
-  const [currentValue, setCurrentValue] = useState<Option>();
 
   useEffect(() => {
     const filteredSpriteSheets = spriteSheets.filter(filter || (() => true));
@@ -102,23 +99,13 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
     setOptions(options);
   }, [spriteSheets, optional, filter, optionalLabel]);
 
-  useEffect(() => {
-    setCurrentSpriteSheet(spriteSheets.find((v) => v.id === value));
-  }, [spriteSheets, value]);
-
-  useEffect(() => {
+  const currentValue = useMemo(() => {
+    const currentSpriteSheet = spriteSheets.find((item) => item.id === value);
     if (currentSpriteSheet) {
-      setCurrentValue({
-        value: currentSpriteSheet.id,
-        label: `${currentSpriteSheet.name}`,
-      });
-    } else if (optional) {
-      setCurrentValue({
-        value: "",
-        label: optionalLabel || "None",
-      });
+      return { value: currentSpriteSheet.id, label: currentSpriteSheet.name };
     }
-  }, [currentSpriteSheet, optional, optionalLabel]);
+    return optional ? { value: "", label: optionalLabel || "None" } : undefined;
+  }, [spriteSheets, value, optional, optionalLabel]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {
@@ -178,3 +165,7 @@ export const SpriteSheetSelect: FC<SpriteSheetSelectProps> = ({
     />
   );
 };
+
+export const SpriteSheetSelect = memo<SpriteSheetSelectProps>(
+  SpriteSheetSelectComponent,
+);
