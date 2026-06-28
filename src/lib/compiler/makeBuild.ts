@@ -163,13 +163,19 @@ const makeBuild = async ({
   const linkFilePath = `${buildRoot}/obj/linkfile.lk`;
   await fs.writeFile(linkFilePath, linkFile);
 
+  // Don't allow spaces in filename passed to linker to prevent build fail on Windows
+  // if needed they are added back after linking is complete
+  const romLinkerFilename = romFilename.includes(" ")
+    ? `game${Path.extname(romFilename)}`
+    : romFilename;
+
   const linkCommand =
     process.platform === "win32"
       ? `..\\_gbstools\\gbdk\\bin\\lcc.exe`
       : `../_gbstools/gbdk/bin/lcc`;
   const linkArgs = buildLinkFlags(
     linkFilePath,
-    romFilename,
+    romLinkerFilename,
     data.metadata.name || "GBStudio",
     settings.cartType,
     colorEnabled,
@@ -204,6 +210,28 @@ const makeBuild = async ({
   const gameGlobalsExportPath = `${buildRoot}/build/rom/globals.i`;
   await fs.copyFile(gameGlobalsPath, gameGlobalsExportPath);
 
+  // If linker used a temporary filename, rename outputs back to the requested filename
+  if (romFilename !== romLinkerFilename) {
+    const romOutputDir = Path.join(buildRoot, "build", "rom");
+    const tmpFilename = stripExtension(romLinkerFilename);
+    const outFilename = stripExtension(romFilename);
+    const outputFiles = await fs.readdir(romOutputDir);
+
+    for (const tmpBasename of outputFiles) {
+      if (!tmpBasename.startsWith(`${tmpFilename}.`)) {
+        continue;
+      }
+
+      const outBasename = `${outFilename}${tmpBasename.slice(tmpFilename.length)}`;
+
+      await fs.move(
+        Path.join(romOutputDir, tmpBasename),
+        Path.join(romOutputDir, outBasename),
+        { overwrite: true },
+      );
+    }
+  }
+
   // Store /obj in cache
   await cacheObjData(buildRoot, tmpPath, env);
 };
@@ -227,5 +255,7 @@ export const cancelBuildCommandsInProgress = async () => {
     } catch (e) {}
   }
 };
+
+const stripExtension = (filename: string): string => Path.parse(filename).name;
 
 export default makeBuild;
