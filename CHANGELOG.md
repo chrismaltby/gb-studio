@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add selection tool to collision and color painting modes, allowing a selection of tiles to be dragged or deleted
+
+### Changed
+
+- Improve actor and trigger dragging so entities keep their grabbed offset instead of snapping position to the cursor
+
 ### Fixed
 
 - Fix issue where deprecated events could still be used if they had previously been favourited in an older version of the application
