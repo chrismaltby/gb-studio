@@ -267,6 +267,46 @@ export const TriggerPrefabResource = Type.Composite([
 
 export type TriggerPrefabResource = Static<typeof TriggerPrefabResource>;
 
+export const CompressedSceneTilemapLayer = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  visible: Type.Boolean(),
+  tiles: Type.String(),
+  autotiles: Type.Optional(Type.String()),
+});
+
+export type CompressedSceneTilemapLayer = Static<
+  typeof CompressedSceneTilemapLayer
+>;
+
+export const CompressedSceneTilemapData = Type.Object({
+  tilesetIds: Type.Array(Type.String()),
+  tileColors: Type.Optional(Type.String()),
+  layers: Type.Array(CompressedSceneTilemapLayer),
+});
+
+export type CompressedSceneTilemapData = Static<
+  typeof CompressedSceneTilemapData
+>;
+
+export const SceneTilemapLayer = Type.Composite([
+  Type.Omit(CompressedSceneTilemapLayer, ["tiles", "autotiles"]),
+  Type.Object({
+    tiles: Type.Array(Type.Number()),
+    autotiles: Type.Optional(Type.Array(Type.Number())),
+  }),
+]);
+
+export type SceneTilemapLayer = Static<typeof SceneTilemapLayer>;
+
+export const SceneTilemapData = Type.Object({
+  tilesetIds: Type.Array(Type.String()),
+  tileColors: Type.Optional(Type.Array(Type.Number())),
+  layers: Type.Array(SceneTilemapLayer),
+});
+
+export type SceneTilemapData = Static<typeof SceneTilemapData>;
+
 export const CompressedSceneResource = Type.Object({
   _resourceType: Type.Literal("scene"),
   _index: Type.Number(),
