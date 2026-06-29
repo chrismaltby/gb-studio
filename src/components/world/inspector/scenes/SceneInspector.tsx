@@ -3,7 +3,7 @@ import ScriptEditor from "components/script/ScriptEditor";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { WorldInspector } from "components/world/inspector/WorldInspector";
 import ScriptEditorDropdownButton from "components/script/menus/ScriptEditorDropdownButton";
-import BackgroundWarnings from "components/world/BackgroundWarnings";
+import BackgroundWarnings from "components/world/inspector/backgrounds/BackgroundWarnings";
 import {
   backgroundSelectors,
   sceneSelectors,
