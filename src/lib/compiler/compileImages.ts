@@ -38,6 +38,10 @@ import { divisibleBy8 } from "shared/lib/helpers/8bit";
 import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { autoFlipTiles } from "shared/lib/tiles/autoFlip";
 import { padArrayEnd } from "shared/lib/helpers/array";
+import {
+  imageTileAllocationColorOnly,
+  imageTileAllocationDefault,
+} from "lib/compiler/tileAllocation";
 
 const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;
@@ -56,56 +60,6 @@ type PrecompiledBackgroundData = Background & {
 
 type CompileImageOptions = {
   warnings: (msg: string) => void;
-};
-
-type ImageTileAllocationStrategy = (
-  tileIndex: number,
-  numTiles: number,
-  image: Background,
-) => { tileIndex: number; inVRAM2: boolean };
-
-/**
- * Allocates an image tile for to default DMG location.
- *
- * @param {number} tileIndex - The index of the tile to allocate.
- * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
- */
-export const imageTileAllocationDefault: ImageTileAllocationStrategy = (
-  tileIndex,
-) => {
-  return {
-    tileIndex,
-    inVRAM2: false,
-  };
-};
-
-/**
- * Allocates an image tile for color-only mode and adjusts the tile index based on VRAM bank allocation.
- *
- * @param {number} tileIndex - The index of the tile to allocate.
- * @returns {{ tileIndex: number, inVRAM2: boolean }} Updated tile index and flag which is set if tile has been reallocated to VRAM bank2.
- */
-export const imageTileAllocationColorOnly: ImageTileAllocationStrategy = (
-  tileIndex: number,
-): { tileIndex: number; inVRAM2: boolean } => {
-  // First 128 tiles go into vram bank 1
-  if (tileIndex < 128) {
-    return {
-      tileIndex,
-      inVRAM2: false,
-    };
-    // Next 128 tiles go into vram bank 2
-  } else if (tileIndex < 256) {
-    return {
-      tileIndex: tileIndex - 128,
-      inVRAM2: true,
-    };
-  }
-  // After that split evenly between bank 1 and 2
-  return {
-    tileIndex: 128 + Math.floor((tileIndex - 256) / 2),
-    inVRAM2: tileIndex % 2 !== 0,
-  };
 };
 
 const readCommonTileset = async (
@@ -342,7 +296,7 @@ export const compileImage = async (
 
   // Split tiles into VRAM banks based on allocation strategy
   uniqueTiles.forEach((tile, i, tiles) => {
-    const { inVRAM2 } = tileAllocationStrategy(i, tiles.length, img);
+    const { inVRAM2 } = tileAllocationStrategy(i, tiles.length);
     vramData[inVRAM2 ? 1 : 0].push(...tile);
   });
 
@@ -353,7 +307,6 @@ export const compileImage = async (
       const { inVRAM2, tileIndex } = tileAllocationStrategy(
         tile,
         uniqueTiles.length,
-        img,
       );
       // Reallocate tilemap based on strategy
       if (tileIndex < TILE_FIRST_CHUNK_SIZE) {
