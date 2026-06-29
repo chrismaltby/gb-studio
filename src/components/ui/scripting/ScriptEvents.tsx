@@ -24,7 +24,7 @@ import {
   StyledScriptEventWarning,
   StyledScriptEventWrapper,
 } from "ui/scripting/style";
-import { FixedSpacer, FlexGrow } from "ui/spacing/Spacing";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 export const ScriptEventPlaceholder = () => <StyledScriptEventPlaceholder />;
 
