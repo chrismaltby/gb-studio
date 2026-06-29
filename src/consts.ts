@@ -71,6 +71,10 @@ export const SCREEN_HEIGHT_PX = SCREEN_HEIGHT * TILE_SIZE;
 
 export const SCENE_MAX_SIZE_PX = 2040;
 
+// Background tile allocation
+export const TILE_FIRST_CHUNK_SIZE = 128;
+export const TILE_BANK_SIZE = 192;
+
 // Scripts
 export const MAX_NESTED_SCRIPT_DEPTH = 5;
 

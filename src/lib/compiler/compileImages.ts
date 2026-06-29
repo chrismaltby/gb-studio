@@ -11,7 +11,13 @@ import {
   indexedImageToTilesDataArray,
 } from "lib/tiles/readFileToTiles";
 import promiseLimit from "lib/helpers/promiseLimit";
-import { FLAG_VRAM_BANK_1 } from "consts";
+import {
+  FLAG_VRAM_BANK_1,
+  TILE_BANK_SIZE,
+  TILE_FIRST_CHUNK_SIZE,
+  MAX_BACKGROUND_TILES,
+  MAX_BACKGROUND_TILES_CGB,
+} from "consts";
 import { fileExists } from "lib/helpers/fs/fileExists";
 import {
   readFileToPalettes,
@@ -29,12 +35,9 @@ import {
 import { ReferencedBackground } from "./precompile/determineUsedAssets";
 import { HexPalette } from "shared/lib/tiles/autoColor";
 import { divisibleBy8 } from "shared/lib/helpers/8bit";
-import { MAX_BACKGROUND_TILES, MAX_BACKGROUND_TILES_CGB } from "consts";
 import { IndexedImage } from "shared/lib/tiles/indexedImage";
 import { autoFlipTiles } from "shared/lib/tiles/autoFlip";
-
-const TILE_FIRST_CHUNK_SIZE = 128;
-const TILE_BANK_SIZE = 192;
+import { padArrayEnd } from "shared/lib/helpers/array";
 
 const MAX_IMAGE_WIDTH = 2040;
 const MAX_IMAGE_HEIGHT = 2040;
@@ -103,13 +106,6 @@ export const imageTileAllocationColorOnly: ImageTileAllocationStrategy = (
     tileIndex: 128 + Math.floor((tileIndex - 256) / 2),
     inVRAM2: tileIndex % 2 !== 0,
   };
-};
-
-const padArrayEnd = <T>(arr: T[], len: number, padding: T) => {
-  if (arr.length > len) {
-    return arr.slice(0, len);
-  }
-  return arr.concat(Array(len - arr.length).fill(padding));
 };
 
 const readCommonTileset = async (
