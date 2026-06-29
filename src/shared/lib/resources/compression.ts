@@ -73,6 +73,72 @@ export const decompress8bitNumberString = (str: string): number[] => {
   return arr;
 };
 
+export const compressNumberArray = (arr: number[] | undefined): string => {
+  if (!arr?.length) {
+    return "";
+  }
+  let lastValue = 0;
+  let hasLastValue = false;
+  let output = "";
+  let count = 0;
+
+  for (const value of arr) {
+    if (!hasLastValue || value !== lastValue) {
+      if (hasLastValue) {
+        if (output) {
+          output += ";";
+        }
+        output += lastValue.toString(36);
+        if (count > 1) {
+          output += `:${count.toString(36)}`;
+        }
+      }
+      lastValue = value;
+      hasLastValue = true;
+      count = 0;
+    }
+    count++;
+  }
+
+  if (hasLastValue) {
+    if (output) {
+      output += ";";
+    }
+    output += lastValue.toString(36);
+    if (count > 1) {
+      output += `:${count.toString(36)}`;
+    }
+  }
+
+  return output;
+};
+
+export const decompressNumberString = (str: string): number[] => {
+  if (!str) {
+    return [];
+  }
+  const arr: number[] = [];
+  for (const part of str.split(";")) {
+    const pieces = part.split(":");
+    if (pieces.length > 2 || pieces[0] === "") {
+      return [];
+    }
+    const value = Number.parseInt(pieces[0], 36);
+    const count = pieces.length === 1 ? 1 : Number.parseInt(pieces[1], 36);
+    if (
+      !Number.isSafeInteger(value) ||
+      !Number.isSafeInteger(count) ||
+      count < 1
+    ) {
+      return [];
+    }
+    for (let j = 0; j < count; j++) {
+      arr.push(value);
+    }
+  }
+  return arr;
+};
+
 const decompressSceneResource = (
   scene: CompressedSceneResourceWithChildren,
 ): SceneResource => {
