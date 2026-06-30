@@ -23,26 +23,21 @@ export interface SceneTilesetLookup {
   entryByAbsoluteIndex: Array<SceneTilesetIndexEntry | undefined>;
 }
 
-export const getSceneTilesetOffset = (
+export const buildSceneTilesetLookup = (
   tilemap: Pick<SceneTilemapData, "tilesets">,
-  tilesetId: string,
-): number | undefined =>
-  buildSceneTilesetIndex(tilemap).find((entry) => entry.tilesetId === tilesetId)
-    ?.offset;
-
-export const buildSceneTilesetIndex = (
-  tilemap: Pick<SceneTilemapData, "tilesets">,
-): SceneTilesetIndexEntry[] => {
+): SceneTilesetLookup => {
   let offset = 0;
+  const entries: SceneTilesetIndexEntry[] = [];
+  const entryByTilesetId = new Map<string, SceneTilesetIndexEntry>();
+  const entryByAbsoluteIndex: Array<SceneTilesetIndexEntry | undefined> = [];
 
-  return tilemap.tilesets.map((tileset, tilesetIndex) => {
-    const tilesetId = tileset.id;
-    const width = Math.max(0, Math.floor(tileset?.width ?? 0));
-    const height = Math.max(0, Math.floor(tileset?.height ?? 0));
+  for (const [tilesetIndex, tileset] of tilemap.tilesets.entries()) {
+    const width = Math.max(0, Math.floor(tileset.width));
+    const height = Math.max(0, Math.floor(tileset.height));
     const count = width * height;
 
     const entry = {
-      tilesetId,
+      tilesetId: tileset.id,
       tilesetIndex,
       width,
       height,
@@ -50,26 +45,17 @@ export const buildSceneTilesetIndex = (
       count,
     };
 
-    offset += count;
-    return entry;
-  });
-};
+    entries.push(entry);
 
-export const buildSceneTilesetLookup = (
-  tilemap: Pick<SceneTilemapData, "tilesets">,
-): SceneTilesetLookup => {
-  const entries = buildSceneTilesetIndex(tilemap);
-  const entryByTilesetId = new Map<string, SceneTilesetIndexEntry>();
-  const entryByAbsoluteIndex: Array<SceneTilesetIndexEntry | undefined> = [];
-
-  for (const entry of entries) {
     if (!entryByTilesetId.has(entry.tilesetId)) {
       entryByTilesetId.set(entry.tilesetId, entry);
     }
 
-    for (let i = 0; i < entry.count; i++) {
-      entryByAbsoluteIndex[entry.offset + i] = entry;
+    for (let i = 0; i < count; i++) {
+      entryByAbsoluteIndex[offset + i] = entry;
     }
+
+    offset += count;
   }
 
   return {
@@ -77,17 +63,6 @@ export const buildSceneTilesetLookup = (
     entryByTilesetId,
     entryByAbsoluteIndex,
   };
-};
-
-export const findSceneTilesetByAbsoluteIndex = (
-  indexEntries: SceneTilesetIndexEntry[],
-  absoluteIndex: number,
-): SceneTilesetIndexEntry | undefined => {
-  return indexEntries.find(
-    (entry) =>
-      absoluteIndex >= entry.offset &&
-      absoluteIndex < entry.offset + entry.count,
-  );
 };
 
 export const encodeSceneTileRef = (
@@ -98,30 +73,6 @@ export const encodeSceneTileRef = (
 };
 
 export const decodeSceneTileRef = (
-  value: number,
-  indexEntries: SceneTilesetIndexEntry[],
-): DecodedSceneTileRef | undefined => {
-  if (!value) {
-    return undefined;
-  }
-
-  const absoluteIndex = value - 1;
-  const entry = findSceneTilesetByAbsoluteIndex(indexEntries, absoluteIndex);
-
-  if (!entry) {
-    return undefined;
-  }
-
-  return {
-    absoluteIndex,
-    tilesetIndex: entry.tilesetIndex,
-    tileIndex: absoluteIndex - entry.offset,
-    tilesetId: entry.tilesetId,
-    tilesetOffset: entry.offset,
-  };
-};
-
-export const decodeSceneTileRefFromLookup = (
   value: number,
   lookup: SceneTilesetLookup,
 ): DecodedSceneTileRef | undefined => {
@@ -187,14 +138,14 @@ export const pruneTilemapLayersTilesets = (
   // Find tilesets that are still being referenced
   for (const layer of tilemap.layers) {
     for (const value of layer.tiles) {
-      const ref = decodeSceneTileRefFromLookup(value, tilesetLookup);
+      const ref = decodeSceneTileRef(value, tilesetLookup);
       if (ref?.tilesetId) {
         usedTilesetIds.add(ref.tilesetId);
       }
     }
 
     for (const value of layer.autotiles ?? []) {
-      const ref = decodeSceneTileRefFromLookup(value, tilesetLookup);
+      const ref = decodeSceneTileRef(value, tilesetLookup);
       if (ref?.tilesetId) {
         usedTilesetIds.add(ref.tilesetId);
       }
@@ -220,7 +171,7 @@ export const pruneTilemapLayersTilesets = (
   const nextLookup = buildSceneTilesetLookup(nextTilemap);
 
   const remapRef = (value: number) => {
-    const ref = decodeSceneTileRefFromLookup(value, tilesetLookup);
+    const ref = decodeSceneTileRef(value, tilesetLookup);
     if (!ref?.tilesetId) {
       return 0;
     }

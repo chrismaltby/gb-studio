@@ -1,8 +1,6 @@
 import {
-  buildSceneTilesetIndex,
   buildSceneTilesetLookup,
   decodeSceneTileRef,
-  decodeSceneTileRefFromLookup,
   encodeSceneTileRef,
   flattenTilemapLayers,
   pruneTilemapLayersTilesets,
@@ -25,16 +23,16 @@ test("encodes and decodes scene tile references", () => {
       tilesetsLookup.props,
     ],
   };
-  const tilesetIndex = buildSceneTilesetIndex(tilemap);
+  const tilesetLookup = buildSceneTilesetLookup(tilemap);
 
-  expect(tilesetIndex[2]).toMatchObject({
+  expect(tilesetLookup.entries[2]).toMatchObject({
     tilesetId: "props",
     offset: PROPS_TILESET_OFFSET,
   });
   expect(
     decodeSceneTileRef(
       encodeSceneTileRef(PROPS_TILESET_OFFSET, 14),
-      tilesetIndex,
+      tilesetLookup,
     ),
   ).toEqual({
     absoluteIndex: PROPS_TILESET_OFFSET + 14,
@@ -43,7 +41,7 @@ test("encodes and decodes scene tile references", () => {
     tilesetId: "props",
     tilesetOffset: PROPS_TILESET_OFFSET,
   });
-  expect(decodeSceneTileRef(0, tilesetIndex)).toBeUndefined();
+  expect(decodeSceneTileRef(0, tilesetLookup)).toBeUndefined();
 });
 
 test("flattens visible layers while keeping scene tile colors independent", () => {
@@ -65,9 +63,9 @@ test("flattens visible layers while keeping scene tile colors independent", () =
 
 describe("pruneTilemapLayersTilesets", () => {
   test("keeps tilesets referenced only by autotiles", () => {
-    const propsOffset = buildSceneTilesetIndex({
+    const propsOffset = buildSceneTilesetLookup({
       tilesets: [tilesetsLookup.grass, tilesetsLookup.props],
-    })[1]?.offset;
+    }).entries[1]?.offset;
 
     const result = pruneTilemapLayersTilesets({
       tilesets: [tilesetsLookup.grass, tilesetsLookup.props],
@@ -89,9 +87,9 @@ describe("pruneTilemapLayersTilesets", () => {
 
   test("remaps autotile refs after pruning earlier unused tilesets", () => {
     const propsTileIndex = 7;
-    const propsOffset = buildSceneTilesetIndex({
+    const propsOffset = buildSceneTilesetLookup({
       tilesets: [tilesetsLookup.unused, tilesetsLookup.props],
-    })[1]?.offset;
+    }).entries[1]?.offset;
 
     const result = pruneTilemapLayersTilesets({
       tilesets: [tilesetsLookup.unused, tilesetsLookup.props],
@@ -106,10 +104,10 @@ describe("pruneTilemapLayersTilesets", () => {
       ],
     });
 
-    const tilesetIndex = buildSceneTilesetIndex(result);
+    const tilesetLookup = buildSceneTilesetLookup(result);
     const ref = decodeSceneTileRef(
       result.layers[0]?.autotiles?.[0] ?? 0,
-      tilesetIndex,
+      tilesetLookup,
     );
 
     expect(result.tilesets).toEqual([tilesetsLookup.props]);
@@ -121,37 +119,74 @@ describe("pruneTilemapLayersTilesets", () => {
       tilesetOffset: 0,
     });
   });
-});
 
-test("encodes and decodes scene tile references", () => {
-  const tilemap = {
-    tilesets: [
+  test("prunes unused tilesets and rewrites references across every layer", () => {
+    const result = pruneTilemapLayersTilesets({
+      tilesets: [
+        tilesetsLookup.grass,
+        tilesetsLookup.unused,
+        tilesetsLookup.props,
+        tilesetsLookup.props,
+      ],
+      layers: [
+        {
+          id: "visible",
+          name: "Visible",
+          visible: true,
+          tiles: [encodeSceneTileRef(0, 4), encodeSceneTileRef(10, 7)],
+        },
+        {
+          id: "hidden",
+          name: "Hidden",
+          visible: false,
+          tiles: [encodeSceneTileRef(110, 9)],
+          autotiles: [encodeSceneTileRef(110, 9)],
+        },
+      ],
+    });
+    const tilesetLookup = buildSceneTilesetLookup(result);
+
+    expect(result.tilesets).toEqual([
       tilesetsLookup.grass,
-      tilesetsLookup.unused,
       tilesetsLookup.props,
-    ],
-  };
-  const tilesetIndex = buildSceneTilesetIndex(tilemap);
-  const tilesetLookup = buildSceneTilesetLookup(tilemap);
-  const encodedRef = encodeSceneTileRef(PROPS_TILESET_OFFSET, 14);
-
-  const expectedRef = {
-    absoluteIndex: PROPS_TILESET_OFFSET + 14,
-    tilesetIndex: 2,
-    tileIndex: 14,
-    tilesetId: "props",
-    tilesetOffset: PROPS_TILESET_OFFSET,
-  };
-
-  expect(tilesetIndex[2]).toMatchObject({
-    tilesetId: "props",
-    offset: PROPS_TILESET_OFFSET,
+    ]);
+    expect(
+      result.layers[0]?.tiles.map((value) =>
+        decodeSceneTileRef(value, tilesetLookup),
+      ),
+    ).toEqual([
+      {
+        absoluteIndex: 4,
+        tilesetIndex: 0,
+        tileIndex: 4,
+        tilesetId: "grass",
+        tilesetOffset: 0,
+      },
+      {
+        absoluteIndex: 12,
+        tilesetIndex: 1,
+        tileIndex: 7,
+        tilesetId: "props",
+        tilesetOffset: 5,
+      },
+    ]);
+    expect(
+      decodeSceneTileRef(result.layers[1]?.tiles[0] ?? 0, tilesetLookup),
+    ).toEqual({
+      absoluteIndex: 14,
+      tilesetIndex: 1,
+      tileIndex: 9,
+      tilesetId: "props",
+      tilesetOffset: 5,
+    });
+    expect(
+      decodeSceneTileRef(result.layers[1]?.autotiles?.[0] ?? 0, tilesetLookup),
+    ).toEqual({
+      absoluteIndex: 14,
+      tilesetIndex: 1,
+      tileIndex: 9,
+      tilesetId: "props",
+      tilesetOffset: 5,
+    });
   });
-
-  expect(decodeSceneTileRef(encodedRef, tilesetIndex)).toEqual(expectedRef);
-  expect(decodeSceneTileRefFromLookup(encodedRef, tilesetLookup)).toEqual(
-    expectedRef,
-  );
-  expect(decodeSceneTileRef(0, tilesetIndex)).toBeUndefined();
-  expect(decodeSceneTileRefFromLookup(0, tilesetLookup)).toBeUndefined();
 });

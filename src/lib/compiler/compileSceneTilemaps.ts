@@ -29,7 +29,7 @@ import {
 } from "shared/lib/tiles/tileData";
 import {
   flattenTilemapLayers,
-  buildSceneTilesetIndex,
+  buildSceneTilesetLookup,
   decodeSceneTileRef,
 } from "shared/lib/tiles/sceneTilemapData";
 
@@ -124,10 +124,10 @@ export const compileTilemapLayers = async (
   const refs = flattenTilemapLayers(sceneTilemap, scene.width, scene.height);
   const sceneAttrs = sceneTilemap.tileColors ?? [];
 
-  const tilesetIndex = buildSceneTilesetIndex(sceneTilemap);
+  const tilesetLookup = buildSceneTilesetLookup(sceneTilemap);
 
   let cellTiles = refs.map((value) => {
-    const ref = decodeSceneTileRef(value, tilesetIndex);
+    const ref = decodeSceneTileRef(value, tilesetLookup);
     if (!ref) {
       return BLANK_TILE;
     }
@@ -178,20 +178,20 @@ export const compileTilemapLayers = async (
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([, tile]) => tile);
   const tilesetData = [...commonTileData, ...uniqueTiles];
-  const tilesetLookup = toTileLookup(tilesetData);
-  const tilemap = tilesAndLookupToTilemap(cellTiles, tilesetLookup);
+  const tilesetDataLookup = toTileLookup(tilesetData);
+  const tilemap = tilesAndLookupToTilemap(cellTiles, tilesetDataLookup);
   const allocation = cgbOnly
     ? imageTileAllocationColorOnly
     : imageTileAllocationDefault;
   const vramData: [number[], number[]] = [[], []];
-  Object.values(tilesetLookup).forEach((tile, index, tiles) => {
+  Object.values(tilesetDataLookup).forEach((tile, index, tiles) => {
     const { inVRAM2 } = allocation(index, tiles.length);
     vramData[inVRAM2 ? 1 : 0].push(...tile);
   });
   const attr = padArrayEnd(attrs, tilemap.length, 0).map((value, index) => {
     const { inVRAM2, tileIndex } = allocation(
       tilemap[index] ?? 0,
-      Object.keys(tilesetLookup).length,
+      Object.keys(tilesetDataLookup).length,
     );
     if (tileIndex < TILE_FIRST_CHUNK_SIZE) {
       tilemap[index] = tileIndex;
@@ -201,7 +201,7 @@ export const compileTilemapLayers = async (
     }
     return inVRAM2 ? value | FLAG_VRAM_BANK_1 : value;
   });
-  const tilesetLength = Object.keys(tilesetLookup).length;
+  const tilesetLength = Object.keys(tilesetDataLookup).length;
   const maxTiles = cgbOnly ? MAX_BACKGROUND_TILES_CGB : MAX_BACKGROUND_TILES;
   if (tilesetLength > maxTiles) {
     warnings(
