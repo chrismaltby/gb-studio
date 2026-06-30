@@ -20,10 +20,10 @@ import {
   dummyScriptResource,
   dummySoundResource,
   dummySpriteResource,
-  dummyTilesetResource,
   dummyTriggerResource,
   dummyVariablesResource,
   dummyNoteResource,
+  dummyCompressedTilesetResource,
 } from "../dummydata";
 
 describe("save.ts", () => {
@@ -146,7 +146,7 @@ describe("save.ts", () => {
       ],
       tilesets: [
         {
-          ...dummyTilesetResource,
+          ...dummyCompressedTilesetResource,
           id: "tileset1",
           name: "Tileset 1",
         },

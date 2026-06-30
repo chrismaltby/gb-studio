@@ -16,7 +16,7 @@ import {
   SettingsResource,
   SoundResource,
   SpriteResource,
-  TilesetResource,
+  CompressedTilesetResource,
   TriggerPrefabResource,
   TriggerResource,
   VariablesResource,
@@ -265,7 +265,7 @@ export const buildResourceExportBuffer = (
   for (const tileset of projectResources.tilesets) {
     const assetFilename = assetPath("tilesets", tileset);
     const resFilename = assetFilename + ".gbsres";
-    writeResource<TilesetResource>(resFilename, "tileset", tileset);
+    writeResource<CompressedTilesetResource>(resFilename, "tileset", tileset);
   }
 
   for (const font of projectResources.fonts) {

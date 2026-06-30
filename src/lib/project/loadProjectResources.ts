@@ -19,7 +19,7 @@ import {
   SettingsResource,
   SoundResource,
   SpriteResource,
-  TilesetResource,
+  CompressedTilesetResource,
   TriggerPrefabResource,
   TriggerResource,
   VariablesResource,
@@ -76,7 +76,7 @@ interface ResourceLookup {
   music: ResourceWithPath<MusicResource>[];
   emotes: ResourceWithPath<EmoteResource>[];
   avatars: ResourceWithPath<AvatarResource>[];
-  tilesets: ResourceWithPath<TilesetResource>[];
+  tilesets: ResourceWithPath<CompressedTilesetResource>[];
   fonts: ResourceWithPath<FontResource>[];
   sounds: ResourceWithPath<SoundResource>[];
   variables: ResourceWithPath<VariablesResource>[];
@@ -188,7 +188,7 @@ export const loadProjectResources = async (
     cast(MusicResource, resourcesLookup.music),
     cast(EmoteResource, resourcesLookup.emotes),
     cast(AvatarResource, resourcesLookup.avatars),
-    cast(TilesetResource, resourcesLookup.tilesets),
+    cast(CompressedTilesetResource, resourcesLookup.tilesets),
     cast(FontResource, resourcesLookup.fonts),
     cast(SoundResource, resourcesLookup.sounds),
     cast(VariablesResource, resourcesLookup.variables),

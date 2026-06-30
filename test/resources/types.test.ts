@@ -310,6 +310,8 @@ describe("TypeBox Schemas", () => {
       height: 100,
       imageWidth: 100,
       imageHeight: 100,
+      tileColors: [],
+      tileCollisions: [],
     };
     const invalidTileset = {
       _resourceType: "tileset",

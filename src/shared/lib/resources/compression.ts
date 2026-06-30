@@ -5,6 +5,8 @@ import {
   CompressedSceneResourceWithChildren,
   ProjectResources,
   SceneResource,
+  TilesetResource,
+  CompressedTilesetResource,
 } from "shared/lib/resources/types";
 import { pruneTilemapLayersTilesets } from "shared/lib/tiles/sceneTilemapData";
 
@@ -173,6 +175,18 @@ const decompressBackgroundResource = (
   };
 };
 
+const decompressTilesetResource = (
+  tileset: CompressedTilesetResource,
+): TilesetResource => ({
+  ...tileset,
+  tileColors: tileset.tileColors
+    ? decompressNumberString(tileset.tileColors)
+    : [],
+  tileCollisions: tileset.tileCollisions
+    ? decompressNumberString(tileset.tileCollisions)
+    : [],
+});
+
 export const decompressProjectResources = (
   compressedResources: CompressedProjectResources,
 ): ProjectResources => {
@@ -182,6 +196,7 @@ export const decompressProjectResources = (
     backgrounds: compressedResources.backgrounds.map(
       decompressBackgroundResource,
     ),
+    tilesets: compressedResources.tilesets.map(decompressTilesetResource),
   };
 };
 
@@ -221,6 +236,14 @@ export const compressBackgroundResource = (
   };
 };
 
+export const compressTilesetResource = (
+  tileset: TilesetResource,
+): CompressedTilesetResource => ({
+  ...tileset,
+  tileColors: compressNumberArray(tileset.tileColors),
+  tileCollisions: compressNumberArray(tileset.tileCollisions),
+});
+
 export const compressProjectResources = (
   resources: ProjectResources,
 ): CompressedProjectResources => {
@@ -228,5 +251,6 @@ export const compressProjectResources = (
     ...resources,
     scenes: resources.scenes.map(compressSceneResource),
     backgrounds: resources.backgrounds.map(compressBackgroundResource),
+    tilesets: resources.tilesets.map(compressTilesetResource),
   };
 };

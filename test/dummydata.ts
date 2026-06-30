@@ -47,6 +47,7 @@ import {
   BackgroundAsset,
   CompressedBackgroundResource,
   CompressedSceneResourceWithChildren,
+  CompressedTilesetResource,
   EmoteResource,
   EngineFieldValuesResource,
   FontResource,
@@ -573,6 +574,14 @@ export const dummyTilesetResource: TilesetResource = {
   height: 256,
   imageWidth: 256,
   imageHeight: 256,
+  tileColors: [],
+  tileCollisions: [],
+};
+
+export const dummyCompressedTilesetResource: CompressedTilesetResource = {
+  ...dummyTilesetResource,
+  tileCollisions: "",
+  tileColors: "",
 };
 
 export const dummyFontResource: FontResource = {

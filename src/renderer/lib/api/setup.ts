@@ -37,6 +37,7 @@ import {
   ColorCorrectionSetting,
   ColorModeSetting,
   CompressedBackgroundResourceAsset,
+  CompressedTilesetResourceAsset,
   Constant,
   EmoteResourceAsset,
   FontResourceAsset,
@@ -48,7 +49,6 @@ import {
   SpriteModeSetting,
   SpriteResourceAsset,
   TilesetAsset,
-  TilesetResourceAsset,
   WriteResourcesPatch,
 } from "shared/lib/resources/types";
 import type {
@@ -575,7 +575,10 @@ const APISetup = {
       font: createWatchSubscribeAPI<FontResourceAsset>("watch:font"),
       avatar: createWatchSubscribeAPI<AvatarResourceAsset>("watch:avatar"),
       emote: createWatchSubscribeAPI<EmoteResourceAsset>("watch:emote"),
-      tileset: createWatchSubscribeAPI<TilesetResourceAsset>("watch:tileset"),
+      tileset:
+        createWatchSubscribeAPI<CompressedTilesetResourceAsset>(
+          "watch:tileset",
+        ),
       ui: createWatchSubscribeAPI<never>("watch:ui"),
       webTemplates: {
         changed: createSubscribeAPI<

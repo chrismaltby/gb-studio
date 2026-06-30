@@ -6,14 +6,17 @@ import {
   decompressNumberString,
   decompressProjectResources,
 } from "shared/lib/resources/compression";
+import { TILE_DEFAULT_UNSET } from "consts";
 import { encodeSceneTileRef } from "shared/lib/tiles/sceneTilemapData";
 import { ProjectResources } from "shared/lib/resources/types";
 import {
   dummyBackgroundResource,
   dummyCompressedBackgroundResource,
+  dummyCompressedProjectResources,
   dummyCompressedSceneResource,
   dummyProjectResources,
   dummySceneResource,
+  dummyTilesetResource,
 } from "../dummydata";
 
 describe("compression.ts", () => {
@@ -249,6 +252,7 @@ describe("compression.ts", () => {
     it("should decompress project resources correctly", () => {
       const compressedResources = {
         ...dummyProjectResources,
+        tilesets: [],
         scenes: [
           { ...dummyCompressedSceneResource, collisions: "002+2a3+104+" },
         ],
@@ -267,6 +271,28 @@ describe("compression.ts", () => {
       expect(decompressed.backgrounds[0]?.tileColors).toEqual([
         0, 0, 42, 42, 42, 16, 16, 16, 16,
       ]);
+    });
+
+    it("decompresses legacy tilesets without tile defaults", () => {
+      const decompressed = decompressProjectResources({
+        ...dummyCompressedProjectResources,
+        tilesets: [
+          {
+            _resourceType: "tileset",
+            id: "tileset1",
+            name: "Tileset 1",
+            symbol: "tileset_tileset1",
+            filename: "tileset.png",
+            width: 16,
+            height: 16,
+            imageWidth: 128,
+            imageHeight: 128,
+          },
+        ],
+      });
+
+      expect(decompressed.tilesets[0]?.tileColors).toEqual([]);
+      expect(decompressed.tilesets[0]?.tileCollisions).toEqual([]);
     });
   });
 
@@ -292,6 +318,48 @@ describe("compression.ts", () => {
       const compressed = compressProjectResources(resources);
       expect(compressed.scenes[0]?.collisions).toEqual("002+2a3+104+");
       expect(compressed.backgrounds[0]?.tileColors).toEqual("002+2a3+104+");
+    });
+
+    it("compresses empty tileset defaults to empty strings", () => {
+      const compressed = compressProjectResources({
+        ...dummyProjectResources,
+        tilesets: [
+          {
+            ...dummyTilesetResource,
+            tileColors: [],
+            tileCollisions: [],
+          },
+        ],
+      });
+
+      expect(compressed.tilesets[0]?.tileColors).toBe("");
+      expect(compressed.tilesets[0]?.tileCollisions).toBe("");
+    });
+
+    it("round trips tileset tile defaults", () => {
+      const resources: ProjectResources = {
+        ...dummyProjectResources,
+        tilesets: [
+          {
+            ...dummyProjectResources.tilesets[0],
+            tileColors: [TILE_DEFAULT_UNSET, 0xff, 3, 0x80],
+            tileCollisions: [TILE_DEFAULT_UNSET, 0, 0x0f, 0x80],
+            autotileGroups: [4, 32],
+          },
+        ],
+      };
+
+      const decompressed = decompressProjectResources(
+        compressProjectResources(resources),
+      );
+
+      expect(decompressed.tilesets[0]?.tileColors).toEqual(
+        resources.tilesets[0]?.tileColors,
+      );
+      expect(decompressed.tilesets[0]?.tileCollisions).toEqual(
+        resources.tilesets[0]?.tileCollisions,
+      );
+      expect(decompressed.tilesets[0]?.autotileGroups).toEqual([4, 32]);
     });
   });
 });

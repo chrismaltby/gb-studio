@@ -25,7 +25,7 @@ import {
   SettingsResource,
   SoundResource,
   SpriteResource,
-  TilesetResource,
+  CompressedTilesetResource,
   TriggerResource,
   VariablesResource,
 } from "shared/lib/resources/types";
@@ -128,7 +128,10 @@ export const migrateLegacyProject = (
     avatars: map(migratedProject.avatars, encodeResource(AvatarResource)),
     tilesets: map(
       migratedProject.tilesets,
-      chain(fixMissingSymbols("tileset"), encodeResource(TilesetResource)),
+      chain(
+        fixMissingSymbols("tileset"),
+        encodeResource(CompressedTilesetResource),
+      ),
     ),
     fonts: map(
       migratedProject.fonts,

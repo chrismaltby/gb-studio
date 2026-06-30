@@ -7,8 +7,8 @@ import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
 import { TILE_SIZE } from "consts";
 import {
-  TilesetResource,
-  TilesetResourceAsset,
+  CompressedTilesetResourceAsset,
+  CompressedTilesetResource,
 } from "shared/lib/resources/types";
 import { getAssetResource } from "./assets";
 
@@ -18,10 +18,13 @@ const statAsync = promisify(stat);
 
 const loadTilesetData =
   (projectRoot: string) =>
-  async (filename: string): Promise<TilesetResourceAsset | null> => {
+  async (filename: string): Promise<CompressedTilesetResourceAsset | null> => {
     const { file, plugin } = parseAssetPath(filename, projectRoot, "tilesets");
 
-    const resource = await getAssetResource(TilesetResource, filename);
+    const resource = await getAssetResource(
+      CompressedTilesetResource,
+      filename,
+    );
 
     try {
       const size = await sizeOfAsync(filename);
@@ -38,11 +41,13 @@ const loadTilesetData =
         symbol: toValidSymbol(`tileset_${name}`),
         width: Math.min(Math.floor(width / TILE_SIZE), 255),
         height: Math.min(Math.floor(height / TILE_SIZE), 255),
-        imageWidth: width,
-        imageHeight: height,
+        tileColors: "",
+        tileCollisions: "",
         _v: Date.now(),
         ...resource,
         filename: file,
+        imageWidth: width,
+        imageHeight: height,
         inode,
       };
     } catch (e) {
@@ -60,12 +65,12 @@ const loadAllTilesetData = async (projectRoot: string) => {
   );
   const imageData = (
     await Promise.all(
-      ([] as Array<Promise<TilesetResourceAsset | null>>).concat(
+      ([] as Array<Promise<CompressedTilesetResourceAsset | null>>).concat(
         imagePaths.map(loadTilesetData(projectRoot)),
         pluginPaths.map(loadTilesetData(projectRoot)),
       ),
     )
-  ).filter((i) => i) as TilesetResourceAsset[];
+  ).filter((i) => i) as CompressedTilesetResourceAsset[];
   return imageData;
 };
 

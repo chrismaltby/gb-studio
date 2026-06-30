@@ -9,7 +9,7 @@ import {
   upsertAssetEntity,
   updateEntitySymbol,
 } from "shared/lib/entities/entitiesHelpers";
-import { TilesetResourceAsset } from "shared/lib/resources/types";
+import { CompressedTilesetResourceAsset } from "shared/lib/resources/types";
 import { tilesetsAdapter } from "store/features/entities/adapters";
 
 const setTilesetSymbol: CaseReducer<
@@ -28,13 +28,20 @@ const setTilesetSymbol: CaseReducer<
 const loadTileset: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    data: TilesetResourceAsset;
+    data: CompressedTilesetResourceAsset;
   }>
 > = (state, action) => {
-  upsertAssetEntity(state.tilesets, tilesetsAdapter, action.payload.data, [
-    "id",
-    "symbol",
-  ]);
+  upsertAssetEntity(
+    state.tilesets,
+    tilesetsAdapter,
+    {
+      ...action.payload.data,
+      tileCollisions: [],
+      tileColors: [],
+      autotileGroups: [],
+    },
+    ["id", "symbol", "tileCollisions", "tileColors", "autotileGroups"],
+  );
   ensureSymbolsUnique(state);
 };
 

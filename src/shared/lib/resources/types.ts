@@ -485,7 +485,7 @@ export type BackgroundResourceAsset = BackgroundResource & AssetMetadata;
 
 export type BackgroundAsset = ExtractResource<BackgroundResourceAsset>;
 
-export const TilesetResource = Type.Object({
+export const CompressedTilesetResource = Type.Object({
   _resourceType: Type.Literal("tileset"),
   id: Type.String(),
   name: Type.String(),
@@ -495,8 +495,26 @@ export const TilesetResource = Type.Object({
   height: Type.Number(),
   imageWidth: Type.Number(),
   imageHeight: Type.Number(),
+  tileColors: Type.Optional(Type.String()),
+  tileCollisions: Type.Optional(Type.String()),
+  autotileGroups: Type.Optional(Type.Array(Type.Number())),
   plugin: Type.Optional(Type.String()),
 });
+
+export type CompressedTilesetResource = Static<
+  typeof CompressedTilesetResource
+>;
+
+export type CompressedTilesetResourceAsset = CompressedTilesetResource &
+  AssetMetadata;
+
+export const TilesetResource = Type.Composite([
+  Type.Omit(CompressedTilesetResource, ["tileColors", "tileCollisions"]),
+  Type.Object({
+    tileColors: Type.Array(Type.Number()),
+    tileCollisions: Type.Array(Type.Number()),
+  }),
+]);
 
 export type TilesetResource = Static<typeof TilesetResource>;
 
@@ -1022,7 +1040,7 @@ export type CompressedResource =
   | EmoteResource
   | AvatarResource
   | FontResource
-  | TilesetResource
+  | CompressedTilesetResource
   | SoundResource
   | MusicResource
   | PaletteResource
@@ -1055,7 +1073,7 @@ export type CompressedProjectResources = {
   emotes: EmoteResource[];
   avatars: AvatarResource[];
   fonts: FontResource[];
-  tilesets: TilesetResource[];
+  tilesets: CompressedTilesetResource[];
   sounds: SoundResource[];
   music: MusicResource[];
   palettes: PaletteResource[];
@@ -1068,10 +1086,11 @@ export type CompressedProjectResources = {
 
 export type ProjectResources = Omit<
   CompressedProjectResources,
-  "scenes" | "backgrounds"
+  "scenes" | "backgrounds" | "tilesets"
 > & {
   scenes: SceneResource[];
   backgrounds: BackgroundResource[];
+  tilesets: TilesetResource[];
 };
 
 export type ProjectEntityResources = Omit<
