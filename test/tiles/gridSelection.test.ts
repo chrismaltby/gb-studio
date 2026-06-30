@@ -1,6 +1,7 @@
 import {
   clearGridSelection,
   moveGridSelection,
+  moveGridSelectionMasked,
 } from "shared/lib/tiles/gridSelection";
 
 describe("clearGridSelection", () => {
@@ -354,5 +355,52 @@ describe("moveGridSelection", () => {
     );
 
     expect(result).toEqual([]);
+  });
+});
+
+describe("moveGridSelectionMasked", () => {
+  test("moves masked grid selections using source and target predicates", () => {
+    const result = moveGridSelectionMasked(
+      [1, 2, 3, 4, 5, 6],
+      3,
+      2,
+      { x: 0, y: 0, width: 2, height: 1 },
+      { x: 1, y: 1 },
+      0,
+      (sourceIndex) => sourceIndex === 0 || sourceIndex === 1,
+      (targetIndex) => targetIndex !== 4,
+    );
+
+    expect(result).toEqual([0, 0, 3, 4, 5, 2]);
+  });
+
+  test("does not clear or move cells rejected by the source predicate", () => {
+    const result = moveGridSelectionMasked(
+      [1, 2, 3, 4],
+      2,
+      2,
+      { x: 0, y: 0, width: 2, height: 1 },
+      { x: 0, y: 1 },
+      0,
+      (sourceIndex) => sourceIndex === 1,
+      () => true,
+    );
+
+    expect(result).toEqual([1, 0, 3, 2]);
+  });
+
+  test("clears moving masked source cells even when their target is outside the grid", () => {
+    const result = moveGridSelectionMasked(
+      [1, 2, 3, 4],
+      2,
+      2,
+      { x: 0, y: 0, width: 2, height: 1 },
+      { x: 0, y: -1 },
+      0,
+      () => true,
+      () => true,
+    );
+
+    expect(result).toEqual([0, 0, 3, 4]);
   });
 });

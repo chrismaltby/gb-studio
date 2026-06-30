@@ -98,3 +98,56 @@ export const moveGridSelection = <T>(
 
   return result;
 };
+
+export const moveGridSelectionMasked = <T>(
+  values: readonly T[],
+  width: number,
+  height: number,
+  selection: GridSelection,
+  offset: GridOffset,
+  emptyValue: T,
+  shouldMoveSource: (sourceIndex: number) => boolean,
+  shouldWriteTarget: (targetIndex: number, sourceIndex: number) => boolean,
+): T[] => {
+  const source = createGrid(values, width, height, emptyValue);
+  const result = [...source];
+  const movingSource = new Array<boolean>(width * height).fill(false);
+
+  const bounds = getSelectionBounds(selection, width, height);
+
+  for (let y = bounds.yStart; y < bounds.yEnd; y++) {
+    for (let x = bounds.xStart; x < bounds.xEnd; x++) {
+      const sourceIndex = getGridIndex(x, y, width);
+
+      if (!shouldMoveSource(sourceIndex)) {
+        continue;
+      }
+
+      movingSource[sourceIndex] = true;
+      result[sourceIndex] = emptyValue;
+    }
+  }
+
+  for (let y = bounds.yStart; y < bounds.yEnd; y++) {
+    for (let x = bounds.xStart; x < bounds.xEnd; x++) {
+      const targetX = x + offset.x;
+      const targetY = y + offset.y;
+
+      if (!isInsideGrid(targetX, targetY, width, height)) {
+        continue;
+      }
+
+      const sourceIndex = getGridIndex(x, y, width);
+      const targetIndex = getGridIndex(targetX, targetY, width);
+
+      if (
+        movingSource[sourceIndex] &&
+        shouldWriteTarget(targetIndex, sourceIndex)
+      ) {
+        result[targetIndex] = source[sourceIndex];
+      }
+    }
+  }
+
+  return result;
+};
