@@ -41,7 +41,7 @@ const makeScene = ({
   width?: number;
   height?: number;
   tilemap: {
-    tilesetIds: string[];
+    tilesets: Array<{ id: string; width: number; height: number }>;
     tileColors?: number[];
     layers: Array<{
       id: string;
@@ -91,7 +91,7 @@ test("should compile scene tilemap layer", async () => {
   const tileset = makeTileset("tiles", "tile_img3.png");
   const scene = makeScene({
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors: [],
       layers: [
         {
@@ -117,7 +117,7 @@ test("should include all tiles from common tileset", async () => {
   const tileset = makeTileset("tiles", "tile_img3.png");
   const scene = makeScene({
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors: [],
       layers: [
         {
@@ -147,7 +147,7 @@ test("should include all tiles from common tileset", async () => {
 test("should create empty tile data/map for blank tilemap", async () => {
   const scene = makeScene({
     tilemap: {
-      tilesetIds: [],
+      tilesets: [],
       tileColors: [],
       layers: [],
     },
@@ -169,7 +169,7 @@ test("should compile scene tilemaps using only visible topmost tiles", async () 
   const tileset = makeTileset("tiles", "tile_img1.png");
   const scene = makeScene({
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors: [0x83],
       layers: [
         {
@@ -207,7 +207,7 @@ test("should compile logo scenes using tilemaps as 360 unique tiles", async () =
     symbol: "scene_tilemap_logo",
     type: "LOGO",
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors: [3],
       layers: [
         {
@@ -244,7 +244,7 @@ test("should generate deterministic tileset data regardless of tile placement or
       name: id,
       symbol: id,
       tilemap: {
-        tilesetIds: [tileset.id],
+        tilesets: [tileset],
         tileColors: [],
         layers: [{ id: "layer", name: "Layer", visible: true, tiles }],
       },
@@ -281,7 +281,7 @@ test("should auto flip scene tilemap tiles in Color Only mode", async () => {
     name: "Tilemap Scene Autoflip",
     symbol: "tilemap_autoflip",
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors: [],
       layers: [
         {
@@ -316,7 +316,7 @@ test("should truncate overlong scene tile color data without expanding emitted t
   const tileset = makeTileset();
   const scene = makeScene({
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors: new Array(DEFAULT_SCENE_SIZE + 12).fill(0x83),
       layers: [
         {
@@ -340,7 +340,7 @@ test("should pad short scene tile color data to emitted tilemap length", async (
   const tileset = makeTileset();
   const scene = makeScene({
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors: [0x81, 0x82],
       layers: [
         {
@@ -366,7 +366,7 @@ test("should ignore layers with visible explicitly set to false", async () => {
   const tileset = makeTileset();
   const scene = makeScene({
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors: [],
       layers: [
         {
@@ -402,7 +402,7 @@ test("should use the referenced tileset when compiling refs after the first tile
     id: "first_tileset_scene",
     symbol: "first_tileset_scene",
     tilemap: {
-      tilesetIds: [firstTileset.id, secondTileset.id],
+      tilesets: [firstTileset, secondTileset],
       tileColors: [],
       layers: [
         {
@@ -419,7 +419,7 @@ test("should use the referenced tileset when compiling refs after the first tile
     id: "second_tileset_scene",
     symbol: "second_tileset_scene",
     tilemap: {
-      tilesetIds: [firstTileset.id, secondTileset.id],
+      tilesets: [firstTileset, secondTileset],
       tileColors: [],
       layers: [
         {
@@ -481,7 +481,7 @@ test.each([
       width,
       height,
       tilemap: {
-        tilesetIds: [tileset.id],
+        tilesets: [tileset],
         tileColors: new Array(width * height).fill(3),
         layers: [
           {
@@ -520,7 +520,7 @@ test("should preserve valid scene dimensions larger than the screen", async () =
     width: 21,
     height: 19,
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors: [],
       layers: [
         {
@@ -552,7 +552,7 @@ test("should not mutate input tilemap layers or tile colors during compilation",
 
   const scene = makeScene({
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors,
       layers: [
         {
@@ -585,7 +585,7 @@ test("should keep logo scenes fixed to 20x18 and truncate overlong attrs", async
     width: 40,
     height: 30,
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors: new Array(logoTileCount + 50).fill(3),
       layers: [
         {
@@ -611,7 +611,7 @@ test("should keep logo scenes fixed to 20x18 and truncate overlong attrs", async
 test("should render missing tileset references as blank tiles", async () => {
   const scene = makeScene({
     tilemap: {
-      tilesetIds: ["missing-tileset"],
+      tilesets: [{ id: "missing-tileset", width: 4, height: 1 }],
       tileColors: [],
       layers: [
         {
@@ -637,7 +637,7 @@ test("should render out-of-range tile references as blank tiles", async () => {
   const tileset = makeTileset("tiles", "tile_img1.png", 4, 1);
   const scene = makeScene({
     tilemap: {
-      tilesetIds: [tileset.id],
+      tilesets: [tileset],
       tileColors: [],
       layers: [
         {
@@ -664,7 +664,7 @@ test("should render refs to a missing tileset as blank even when later tilesets 
 
   const scene = makeScene({
     tilemap: {
-      tilesetIds: ["missing", validTileset.id],
+      tilesets: [{ id: "missing", width: 4, height: 1 }, validTileset],
       tileColors: [],
       layers: [
         {
@@ -685,5 +685,37 @@ test("should render refs to a missing tileset as blank even when later tilesets 
   expect(result.attr).toEqual(new Array(DEFAULT_SCENE_SIZE).fill(0));
   expect(result.tilesetLength).toBe(1);
   expect(result.vramData[0]).toEqual(new Array(BYTES_PER_TILE).fill(0));
+  expect(result.vramData[1]).toEqual([]);
+});
+
+test("should still render later tilesets when an earlier tileset snapshot is missing", async () => {
+  const missingTileset = { id: "missing", width: 4, height: 1 };
+  const validTileset = makeTileset("valid", "tile_img3.png", 4, 1);
+  const validTilesetOffset = missingTileset.width * missingTileset.height;
+
+  const scene = makeScene({
+    tilemap: {
+      tilesets: [missingTileset, validTileset],
+      tileColors: [],
+      layers: [
+        {
+          id: "layer",
+          name: "Layer",
+          visible: true,
+          tiles: new Array(DEFAULT_SCENE_SIZE).fill(
+            encodeSceneTileRef(validTilesetOffset, 1),
+          ),
+        },
+      ],
+    },
+  });
+
+  const result = await compileScene(scene, {
+    [validTileset.id]: validTileset,
+  });
+
+  expect(result.tilemap).toEqual(new Array(DEFAULT_SCENE_SIZE).fill(0));
+  expect(result.tilesetLength).toBe(1);
+  expect(result.vramData[0]).not.toEqual(new Array(BYTES_PER_TILE).fill(0));
   expect(result.vramData[1]).toEqual([]);
 });

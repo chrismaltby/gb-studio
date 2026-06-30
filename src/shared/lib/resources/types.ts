@@ -279,8 +279,16 @@ export type CompressedSceneTilemapLayer = Static<
   typeof CompressedSceneTilemapLayer
 >;
 
+export const TilesetSnapshot = Type.Object({
+  id: Type.String(),
+  width: Type.Integer({ minimum: 0 }),
+  height: Type.Integer({ minimum: 0 }),
+});
+
+export type TilesetSnapshot = Static<typeof TilesetSnapshot>;
+
 export const CompressedSceneTilemapData = Type.Object({
-  tilesetIds: Type.Array(Type.String()),
+  tilesets: Type.Array(TilesetSnapshot),
   tileColors: Type.Optional(Type.String()),
   layers: Type.Array(CompressedSceneTilemapLayer),
 });
@@ -300,7 +308,7 @@ export const SceneTilemapLayer = Type.Composite([
 export type SceneTilemapLayer = Static<typeof SceneTilemapLayer>;
 
 export const SceneTilemapData = Type.Object({
-  tilesetIds: Type.Array(Type.String()),
+  tilesets: Type.Array(TilesetSnapshot),
   tileColors: Type.Optional(Type.Array(Type.Number())),
   layers: Type.Array(SceneTilemapLayer),
 });

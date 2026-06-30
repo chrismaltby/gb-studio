@@ -15,8 +15,14 @@ const tilesetsLookup = {
 const PROPS_TILESET_OFFSET = 10;
 
 test("encodes and decodes scene tile references", () => {
-  const tilemap = { tilesetIds: ["grass", "unused", "props"] };
-  const tilesetIndex = buildSceneTilesetIndex(tilemap, tilesetsLookup);
+  const tilemap = {
+    tilesets: [
+      tilesetsLookup.grass,
+      tilesetsLookup.unused,
+      tilesetsLookup.props,
+    ],
+  };
+  const tilesetIndex = buildSceneTilesetIndex(tilemap);
 
   expect(tilesetIndex[2]).toMatchObject({
     tilesetId: "props",
@@ -40,7 +46,7 @@ test("encodes and decodes scene tile references", () => {
 test("flattens visible layers while keeping scene tile colors independent", () => {
   const result = flattenTilemapLayers(
     {
-      tilesetIds: ["tiles"],
+      tilesets: [tilesetsLookup.tiles],
       tileColors: [3, 7],
       layers: [
         { id: "a", name: "A", visible: true, tiles: [1, 2] },

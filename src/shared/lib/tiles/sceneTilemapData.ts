@@ -1,13 +1,5 @@
 import { SceneTilemapData } from "shared/lib/resources/types";
 
-export interface SceneTilesetLike {
-  id: string;
-  width: number;
-  height: number;
-}
-
-export type SceneTilesetLookup = Record<string, SceneTilesetLike | undefined>;
-
 export interface SceneTilesetIndexEntry {
   tilesetId: string;
   tilesetIndex: number;
@@ -30,22 +22,19 @@ export interface DecodedSceneAutotileRef extends DecodedSceneTileRef {
 }
 
 export const getSceneTilesetOffset = (
-  tilemap: Pick<SceneTilemapData, "tilesetIds">,
-  tilesets: SceneTilesetLookup,
+  tilemap: Pick<SceneTilemapData, "tilesets">,
   tilesetId: string,
 ): number | undefined =>
-  buildSceneTilesetIndex(tilemap, tilesets).find(
-    (entry) => entry.tilesetId === tilesetId,
-  )?.offset;
+  buildSceneTilesetIndex(tilemap).find((entry) => entry.tilesetId === tilesetId)
+    ?.offset;
 
 export const buildSceneTilesetIndex = (
-  tilemap: Pick<SceneTilemapData, "tilesetIds">,
-  tilesets: SceneTilesetLookup,
+  tilemap: Pick<SceneTilemapData, "tilesets">,
 ): SceneTilesetIndexEntry[] => {
   let offset = 0;
 
-  return tilemap.tilesetIds.map((tilesetId, tilesetIndex) => {
-    const tileset = tilesets[tilesetId];
+  return tilemap.tilesets.map((tileset, tilesetIndex) => {
+    const tilesetId = tileset.id;
     const width = Math.max(0, Math.floor(tileset?.width ?? 0));
     const height = Math.max(0, Math.floor(tileset?.height ?? 0));
     const count = width * height;

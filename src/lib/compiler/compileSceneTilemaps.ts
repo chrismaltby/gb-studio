@@ -103,7 +103,7 @@ export const compileTilemapLayers = async (
 
   const sourceTiles = new Map<string, Uint8Array[]>();
 
-  for (const tilesetId of sceneTilemap.tilesetIds) {
+  for (const { id: tilesetId } of sceneTilemap.tilesets) {
     const tileset = tilesetsLookup[tilesetId];
     if (tileset) {
       sourceTiles.set(
@@ -124,7 +124,7 @@ export const compileTilemapLayers = async (
   const refs = flattenTilemapLayers(sceneTilemap, scene.width, scene.height);
   const sceneAttrs = sceneTilemap.tileColors ?? [];
 
-  const tilesetIndex = buildSceneTilesetIndex(sceneTilemap, tilesetsLookup);
+  const tilesetIndex = buildSceneTilesetIndex(sceneTilemap);
 
   let cellTiles = refs.map((value) => {
     const ref = decodeSceneTileRef(value, tilesetIndex);
