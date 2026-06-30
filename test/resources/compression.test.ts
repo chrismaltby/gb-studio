@@ -8,9 +8,11 @@ import {
 } from "shared/lib/resources/compression";
 import { ProjectResources } from "shared/lib/resources/types";
 import {
+  dummyBackgroundResource,
   dummyCompressedBackgroundResource,
   dummyCompressedSceneResource,
   dummyProjectResources,
+  dummySceneResource,
 } from "../dummydata";
 
 describe("compression.ts", () => {
@@ -190,13 +192,13 @@ describe("compression.ts", () => {
         ...dummyProjectResources,
         scenes: [
           {
-            ...dummyCompressedSceneResource,
+            ...dummySceneResource,
             collisions: [0, 0, 42, 42, 42, 16, 16, 16, 16],
           },
         ],
         backgrounds: [
           {
-            ...dummyCompressedBackgroundResource,
+            ...dummyBackgroundResource,
             tileColors: [0, 0, 42, 42, 42, 16, 16, 16, 16],
           },
         ],

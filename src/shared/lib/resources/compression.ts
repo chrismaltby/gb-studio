@@ -6,6 +6,7 @@ import {
   ProjectResources,
   SceneResource,
 } from "shared/lib/resources/types";
+import { pruneTilemapLayersTilesets } from "shared/lib/tiles/sceneTilemapData";
 
 export const compress8bitNumberArray = (arr: number[] | undefined): string => {
   if (!arr) {
@@ -145,6 +146,21 @@ const decompressSceneResource = (
   return {
     ...scene,
     collisions: decompress8bitNumberString(scene.collisions),
+    tilemap: scene.tilemap
+      ? {
+          ...scene.tilemap,
+          tileColors: scene.tilemap.tileColors
+            ? decompress8bitNumberString(scene.tilemap.tileColors)
+            : undefined,
+          layers: scene.tilemap.layers.map((layer) => ({
+            ...layer,
+            tiles: decompressNumberString(layer.tiles),
+            autotiles: layer.autotiles
+              ? decompressNumberString(layer.autotiles)
+              : undefined,
+          })),
+        }
+      : undefined,
   };
 };
 
@@ -172,9 +188,27 @@ export const decompressProjectResources = (
 export const compressSceneResource = (
   scene: SceneResource,
 ): CompressedSceneResourceWithChildren => {
+  const tilemap = scene.tilemap
+    ? pruneTilemapLayersTilesets(scene.tilemap)
+    : undefined;
   return {
     ...scene,
     collisions: compress8bitNumberArray(scene.collisions),
+    tilemap: tilemap
+      ? {
+          ...tilemap,
+          tileColors: tilemap.tileColors
+            ? compress8bitNumberArray(tilemap.tileColors)
+            : undefined,
+          layers: tilemap.layers.map((layer) => ({
+            ...layer,
+            tiles: compressNumberArray(layer.tiles),
+            autotiles: layer.autotiles
+              ? compressNumberArray(layer.autotiles)
+              : undefined,
+          })),
+        }
+      : undefined,
   };
 };
 

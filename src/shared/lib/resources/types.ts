@@ -329,6 +329,7 @@ export const CompressedSceneResource = Type.Object({
   width: Type.Number(),
   height: Type.Number(),
   backgroundId: Type.String(),
+  tilemap: Type.Optional(CompressedSceneTilemapData),
   tilesetId: Type.String(),
   colorModeOverride: ColorModeOverrideSetting,
   paletteIds: Type.Array(Type.String()),
@@ -398,9 +399,10 @@ export type CompressedSceneResourceWithChildren = Static<
 >;
 
 export const SceneResource = Type.Composite([
-  Type.Omit(CompressedSceneResourceWithChildren, ["collisions"]),
+  Type.Omit(CompressedSceneResourceWithChildren, ["collisions", "tilemap"]),
   Type.Object({
     collisions: Type.Array(Type.Number()),
+    tilemap: Type.Optional(SceneTilemapData),
   }),
 ]);
 

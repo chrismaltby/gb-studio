@@ -17,8 +17,10 @@ export interface DecodedSceneTileRef {
   tilesetOffset: number;
 }
 
-export interface DecodedSceneAutotileRef extends DecodedSceneTileRef {
-  tilesetWidth: number;
+export interface SceneTilesetLookup {
+  entries: SceneTilesetIndexEntry[];
+  entryByTilesetId: Map<string, SceneTilesetIndexEntry>;
+  entryByAbsoluteIndex: Array<SceneTilesetIndexEntry | undefined>;
 }
 
 export const getSceneTilesetOffset = (
@@ -51,6 +53,30 @@ export const buildSceneTilesetIndex = (
     offset += count;
     return entry;
   });
+};
+
+export const buildSceneTilesetLookup = (
+  tilemap: Pick<SceneTilemapData, "tilesets">,
+): SceneTilesetLookup => {
+  const entries = buildSceneTilesetIndex(tilemap);
+  const entryByTilesetId = new Map<string, SceneTilesetIndexEntry>();
+  const entryByAbsoluteIndex: Array<SceneTilesetIndexEntry | undefined> = [];
+
+  for (const entry of entries) {
+    if (!entryByTilesetId.has(entry.tilesetId)) {
+      entryByTilesetId.set(entry.tilesetId, entry);
+    }
+
+    for (let i = 0; i < entry.count; i++) {
+      entryByAbsoluteIndex[entry.offset + i] = entry;
+    }
+  }
+
+  return {
+    entries,
+    entryByTilesetId,
+    entryByAbsoluteIndex,
+  };
 };
 
 export const findSceneTilesetByAbsoluteIndex = (
@@ -95,23 +121,27 @@ export const decodeSceneTileRef = (
   };
 };
 
-export const encodeSceneAutotileRef = encodeSceneTileRef;
-
-export const decodeSceneAutotileRef = (
+export const decodeSceneTileRefFromLookup = (
   value: number,
-  indexEntries: SceneTilesetIndexEntry[],
-): DecodedSceneAutotileRef | undefined => {
-  const ref = decodeSceneTileRef(value, indexEntries);
-
-  if (!ref) {
+  lookup: SceneTilesetLookup,
+): DecodedSceneTileRef | undefined => {
+  if (!value) {
     return undefined;
   }
 
-  const entry = indexEntries[ref.tilesetIndex];
+  const absoluteIndex = value - 1;
+  const entry = lookup.entryByAbsoluteIndex[absoluteIndex];
+
+  if (!entry) {
+    return undefined;
+  }
 
   return {
-    ...ref,
-    tilesetWidth: Math.max(1, Math.floor(entry?.width ?? 4)),
+    absoluteIndex,
+    tilesetIndex: entry.tilesetIndex,
+    tileIndex: absoluteIndex - entry.offset,
+    tilesetId: entry.tilesetId,
+    tilesetOffset: entry.offset,
   };
 };
 
@@ -146,4 +176,65 @@ export const flattenTilemapLayers = (
     }
   }
   return tiles;
+};
+
+export const pruneTilemapLayersTilesets = (
+  tilemap: SceneTilemapData,
+): SceneTilemapData => {
+  const usedTilesetIds = new Set<string>();
+  const tilesetLookup = buildSceneTilesetLookup(tilemap);
+
+  // Find tilesets that are still being referenced
+  for (const layer of tilemap.layers) {
+    for (const value of layer.tiles) {
+      const ref = decodeSceneTileRefFromLookup(value, tilesetLookup);
+      if (ref?.tilesetId) {
+        usedTilesetIds.add(ref.tilesetId);
+      }
+    }
+
+    for (const value of layer.autotiles ?? []) {
+      const ref = decodeSceneTileRefFromLookup(value, tilesetLookup);
+      if (ref?.tilesetId) {
+        usedTilesetIds.add(ref.tilesetId);
+      }
+    }
+  }
+
+  // Keep only tilesets that are still referenced
+  const seenTilesetIds = new Set<string>();
+  const tilesets = tilemap.tilesets.filter((tileset) => {
+    if (!usedTilesetIds.has(tileset.id) || seenTilesetIds.has(tileset.id)) {
+      return false;
+    }
+    seenTilesetIds.add(tileset.id);
+    return true;
+  });
+
+  const nextTilemap = {
+    ...tilemap,
+    tilesets,
+  };
+
+  // Remap layers to use the compacted tilesets
+  const nextLookup = buildSceneTilesetLookup(nextTilemap);
+
+  const remapRef = (value: number) => {
+    const ref = decodeSceneTileRefFromLookup(value, tilesetLookup);
+    if (!ref?.tilesetId) {
+      return 0;
+    }
+
+    const newEntry = nextLookup.entryByTilesetId.get(ref.tilesetId);
+    return newEntry ? encodeSceneTileRef(newEntry.offset, ref.tileIndex) : 0;
+  };
+
+  return {
+    ...nextTilemap,
+    layers: tilemap.layers.map((layer) => ({
+      ...layer,
+      tiles: layer.tiles.map(remapRef),
+      autotiles: layer.autotiles?.map(remapRef),
+    })),
+  };
 };
