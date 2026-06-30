@@ -658,3 +658,32 @@ test("should render out-of-range tile references as blank tiles", async () => {
   expect(result.vramData[0]).toEqual(new Array(BYTES_PER_TILE).fill(0));
   expect(result.vramData[1]).toEqual([]);
 });
+
+test("should render refs to a missing tileset as blank even when later tilesets exist", async () => {
+  const validTileset = makeTileset("valid", "tile_img1.png", 4, 1);
+
+  const scene = makeScene({
+    tilemap: {
+      tilesetIds: ["missing", validTileset.id],
+      tileColors: [],
+      layers: [
+        {
+          id: "layer",
+          name: "Layer",
+          visible: true,
+          tiles: new Array(DEFAULT_SCENE_SIZE).fill(encodeSceneTileRef(0, 1)),
+        },
+      ],
+    },
+  });
+
+  const result = await compileScene(scene, {
+    [validTileset.id]: validTileset,
+  });
+
+  expect(result.tilemap).toEqual(new Array(DEFAULT_SCENE_SIZE).fill(0));
+  expect(result.attr).toEqual(new Array(DEFAULT_SCENE_SIZE).fill(0));
+  expect(result.tilesetLength).toBe(1);
+  expect(result.vramData[0]).toEqual(new Array(BYTES_PER_TILE).fill(0));
+  expect(result.vramData[1]).toEqual([]);
+});
