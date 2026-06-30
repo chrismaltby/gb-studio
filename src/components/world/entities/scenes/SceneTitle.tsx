@@ -13,11 +13,7 @@ interface SceneTitleProps {
 }
 
 const SceneName = styled.div`
-  white-space: nowrap;
   font-size: 11px;
-  background-color: ${(props) => props.theme.colors.background};
-  border-radius: 32px;
-  transition: background 0.3s ease-in-out;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
