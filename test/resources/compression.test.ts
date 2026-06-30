@@ -6,6 +6,7 @@ import {
   decompressNumberString,
   decompressProjectResources,
 } from "shared/lib/resources/compression";
+import { encodeSceneTileRef } from "shared/lib/tiles/sceneTilemapData";
 import { ProjectResources } from "shared/lib/resources/types";
 import {
   dummyBackgroundResource,
@@ -16,6 +17,89 @@ import {
 } from "../dummydata";
 
 describe("compression.ts", () => {
+  describe("scene tile reference compression", () => {
+    it("round trips values larger than one byte", () => {
+      const autotile = encodeSceneTileRef(2, 100);
+      const values = [0, 0, 65537, 65537, 196700, autotile, autotile, 0];
+      expect(decompressNumberString(compressNumberArray(values))).toEqual(
+        values,
+      );
+    });
+
+    it("compresses and decompresses painted scene layers", () => {
+      const resources: ProjectResources = {
+        ...dummyProjectResources,
+        scenes: [
+          {
+            ...dummyCompressedSceneResource,
+            collisions: [],
+            tilemap: {
+              tilesets: [{ id: "tiles", width: 3, height: 1 }],
+              tileColors: [0, 2, 2],
+              layers: [
+                {
+                  id: "layer",
+                  name: "Layer",
+                  visible: true,
+                  tiles: [0, 1, 1],
+                  autotiles: [0, 1, 1],
+                },
+              ],
+            },
+          },
+        ],
+      };
+      const decompressed = decompressProjectResources(
+        compressProjectResources(resources),
+      );
+      expect(decompressed.scenes[0]?.tilemap).toEqual(
+        resources.scenes[0]?.tilemap,
+      );
+    });
+
+    it("prunes scene tilemaps without an external tileset lookup", () => {
+      const resources: ProjectResources = {
+        ...dummyProjectResources,
+        scenes: [
+          {
+            ...dummyCompressedSceneResource,
+            collisions: [],
+            tilemap: {
+              tilesets: [
+                { id: "unused", width: 256, height: 256 },
+                { id: "used", width: 4, height: 1 },
+                { id: "also-unused", width: 4, height: 1 },
+              ],
+              tileColors: [0, 2],
+              layers: [
+                {
+                  id: "layer",
+                  name: "Layer",
+                  visible: true,
+                  tiles: [65537, 65539],
+                },
+              ],
+            },
+          },
+        ],
+      };
+      const decompressed = decompressProjectResources(
+        compressProjectResources(resources),
+      );
+      expect(decompressed.scenes[0]?.tilemap).toEqual({
+        tilesets: [{ id: "used", width: 4, height: 1 }],
+        tileColors: [0, 2],
+        layers: [
+          {
+            id: "layer",
+            name: "Layer",
+            visible: true,
+            tiles: [1, 3],
+          },
+        ],
+      });
+    });
+  });
   describe("compress8bitNumberArray", () => {
     it("should compress an array of numbers correctly", () => {
       const arr = [0, 0, 42, 42, 42, 16, 16, 16, 16];
@@ -194,6 +278,7 @@ describe("compression.ts", () => {
           {
             ...dummySceneResource,
             collisions: [0, 0, 42, 42, 42, 16, 16, 16, 16],
+            tilemap: undefined,
           },
         ],
         backgrounds: [
