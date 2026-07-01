@@ -1042,7 +1042,7 @@ describe("moveSceneCollisionSelection", () => {
 });
 
 describe("deleteSceneCollisionSelection", () => {
-  test("Should be able to clear a collision selection", () => {
+  test("Should be able to delete a collision selection", () => {
     const state: EntitiesState = {
       ...initialState,
       scenes: {
@@ -1116,7 +1116,7 @@ describe("deleteSceneCollisionSelection", () => {
 });
 
 describe("moveSceneColorSelection", () => {
-  test("Should be able to move a color selection", () => {
+  test("Should be able to move a color selection on an image scene", () => {
     const state: EntitiesState = {
       ...initialState,
       scenes: {
@@ -1241,7 +1241,7 @@ describe("moveSceneColorSelection", () => {
 });
 
 describe("deleteSceneColorSelection", () => {
-  test("Should be able to clear a color selection", () => {
+  test("Should be able to delete a color selection on an image scene", () => {
     const state: EntitiesState = {
       ...initialState,
       scenes: {
@@ -1284,7 +1284,7 @@ describe("deleteSceneColorSelection", () => {
     ]);
   });
 
-  test("Should not change scene collisions when clearing a color selection", () => {
+  test("Should not change scene collisions when deleting a color selection", () => {
     const collisions = [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
 
     const state: EntitiesState = {
@@ -1380,6 +1380,189 @@ const tilemapPaintState = (
     },
     ids: ["tiles1"],
   },
+});
+
+test("Should move and delete a scene tile selection", () => {
+  const tile = encodeSceneTileRef(0, 5);
+  const state = tilemapPaintState({
+    tilemap: {
+      tilesets: [tilesetSnapshot("tiles1")],
+      tileColors: new Array(16).fill(0),
+      layers: [
+        {
+          id: "layer1",
+          name: "Layer 1",
+          visible: true,
+          tiles: [tile, 0, 0, 0, ...new Array(12).fill(0)],
+        },
+      ],
+    },
+  });
+
+  const moved = reducer(
+    state,
+    actions.moveSceneTileSelection({
+      sceneId: "scene1",
+      layerId: "layer1",
+      selection: { x: 0, y: 0, width: 1, height: 1 },
+      offset: { x: 1, y: 1 },
+    }),
+  );
+  expect(moved.scenes.entities.scene1?.tilemap?.layers[0]?.tiles[5]).toBe(tile);
+  expect(moved.scenes.entities.scene1?.tilemap?.layers[0]?.tiles[0]).toBe(0);
+
+  const deleted = reducer(
+    moved,
+    actions.deleteSceneTileSelection({
+      sceneId: "scene1",
+      layerId: "layer1",
+      selection: { x: 1, y: 1, width: 1, height: 1 },
+    }),
+  );
+  expect(deleted.scenes.entities.scene1?.tilemap?.layers[0]?.tiles[5]).toBe(0);
+});
+
+test("Should move linked colors and collisions when moving topmost scene tiles", () => {
+  const tile = encodeSceneTileRef(0, 0);
+  const collisions = [1, 2, 3];
+  const tileColors = [4, 5, 6];
+  const state = tilemapPaintState({
+    width: 3,
+    height: 1,
+    collisions,
+    tilemap: {
+      tilesets: [tilesetSnapshot("tiles1")],
+      tileColors,
+      layers: [
+        { id: "layer1", name: "Layer 1", visible: true, tiles: [tile, 0, 0] },
+      ],
+    },
+  });
+
+  const moved = reducer(
+    state,
+    actions.moveSceneTileSelection({
+      sceneId: "scene1",
+      layerId: "layer1",
+      selection: { x: 0, y: 0, width: 1, height: 1 },
+      offset: { x: 2, y: 0 },
+    }),
+  );
+
+  expect(moved.scenes.entities.scene1?.tilemap?.layers[0]?.tiles).toEqual([
+    0,
+    0,
+    tile,
+  ]);
+  expect(moved.scenes.entities.scene1?.collisions).toEqual([0, 2, 1]);
+  expect(moved.scenes.entities.scene1?.tilemap?.tileColors).toEqual([0, 5, 4]);
+  expect(collisions).toEqual([1, 2, 3]);
+  expect(tileColors).toEqual([4, 5, 6]);
+});
+
+test("Should not move linked colors and collisions when selected scene tile is hidden by a higher layer", () => {
+  const lowerTile = encodeSceneTileRef(0, 0);
+  const upperTile = encodeSceneTileRef(0, 1);
+  const state = tilemapPaintState({
+    width: 3,
+    height: 1,
+    collisions: [1, 2, 3],
+    tilemap: {
+      tilesets: [tilesetSnapshot("tiles1")],
+      tileColors: [4, 5, 6],
+      layers: [
+        { id: "lower", name: "Lower", visible: true, tiles: [lowerTile, 0, 0] },
+        { id: "upper", name: "Upper", visible: true, tiles: [upperTile, 0, 0] },
+      ],
+    },
+  });
+
+  const moved = reducer(
+    state,
+    actions.moveSceneTileSelection({
+      sceneId: "scene1",
+      layerId: "lower",
+      selection: { x: 0, y: 0, width: 1, height: 1 },
+      offset: { x: 1, y: 0 },
+    }),
+  );
+
+  expect(moved.scenes.entities.scene1?.collisions).toEqual([1, 2, 3]);
+  expect(moved.scenes.entities.scene1?.tilemap?.tileColors).toEqual([4, 5, 6]);
+});
+
+test("Should not replace linked colors and collisions when moved scene tile is hidden at destination", () => {
+  const lowerTile = encodeSceneTileRef(0, 0);
+  const upperTile = encodeSceneTileRef(0, 1);
+  const state = tilemapPaintState({
+    width: 3,
+    height: 1,
+    collisions: [1, 2, 3],
+    tilemap: {
+      tilesets: [tilesetSnapshot("tiles1")],
+      tileColors: [4, 5, 6],
+      layers: [
+        { id: "lower", name: "Lower", visible: true, tiles: [lowerTile, 0, 0] },
+        { id: "upper", name: "Upper", visible: true, tiles: [0, upperTile, 0] },
+      ],
+    },
+  });
+
+  const moved = reducer(
+    state,
+    actions.moveSceneTileSelection({
+      sceneId: "scene1",
+      layerId: "lower",
+      selection: { x: 0, y: 0, width: 1, height: 1 },
+      offset: { x: 1, y: 0 },
+    }),
+  );
+
+  expect(moved.scenes.entities.scene1?.collisions).toEqual([0, 2, 3]);
+  expect(moved.scenes.entities.scene1?.tilemap?.tileColors).toEqual([0, 5, 6]);
+});
+
+test("Should be able to move and delete a color selection on a tilemap scene", () => {
+  const collisions = new Array(16).fill(9);
+  const state = tilemapPaintState({
+    collisions,
+    tilemap: {
+      tilesets: [],
+      tileColors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      layers: [
+        {
+          id: "layer1",
+          name: "Layer 1",
+          visible: true,
+          tiles: new Array(16).fill(0),
+        },
+      ],
+    },
+  });
+
+  const moved = reducer(
+    state,
+    actions.moveSceneColorSelection({
+      sceneId: "scene1",
+      selection: { x: 0, y: 0, width: 2, height: 2 },
+      offset: { x: 1, y: 1 },
+    }),
+  );
+  expect(moved.scenes.entities.scene1?.tilemap?.tileColors).toEqual([
+    0, 0, 3, 4, 0, 1, 2, 8, 9, 5, 6, 12, 13, 14, 15, 16,
+  ]);
+
+  const deleted = reducer(
+    state,
+    actions.deleteSceneColorSelection({
+      sceneId: "scene1",
+      selection: { x: 1, y: 1, width: 2, height: 2 },
+    }),
+  );
+  expect(deleted.scenes.entities.scene1?.tilemap?.tileColors).toEqual([
+    1, 2, 3, 4, 5, 0, 0, 8, 9, 0, 0, 12, 13, 14, 15, 16,
+  ]);
+  expect(deleted.scenes.entities.scene1?.collisions).toEqual(collisions);
 });
 
 test("Should paint scene tiles and snapshot tilesets", () => {

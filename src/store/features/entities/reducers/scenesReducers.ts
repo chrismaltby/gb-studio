@@ -1,9 +1,12 @@
 import clamp from "shared/lib/helpers/clamp";
 import {
   buildSceneTilesetLookup,
+  clearTilemapLayerSelection,
   decodeSceneTileRef,
   encodeSceneTileRef,
   getTilemapLayersTileColors,
+  isTilemapLayerCellTopmost,
+  moveTilemapLayerSelection,
   normalizeTilemapLayersSize,
   resolveSceneAutotiles,
   sceneStampLinePositions,
@@ -75,6 +78,7 @@ import {
 import {
   clearGridSelection,
   moveGridSelection,
+  moveGridSelectionMasked,
   resizeGridWithOffset,
 } from "shared/lib/tiles/grid";
 import type { GridOffset, GridSelection } from "shared/lib/tiles/grid";
@@ -524,6 +528,92 @@ const moveTilemapLayer: CaseReducer<
   });
 };
 
+const moveSceneTileSelection: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    layerId: string;
+    selection: GridSelection;
+    offset: GridOffset;
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene?.tilemap) {
+    return;
+  }
+
+  const tilemap = scene.tilemap;
+  const layerIndex = tilemap.layers.findIndex(
+    (layer) => layer.id === action.payload.layerId,
+  );
+
+  const layer = tilemap.layers[layerIndex];
+  if (!layer) {
+    return;
+  }
+
+  const movedLayer = moveTilemapLayerSelection(
+    layer,
+    scene.width,
+    scene.height,
+    action.payload.selection,
+    action.payload.offset,
+  );
+
+  if (movedLayer.autotiles) {
+    const resolvedTiles = resolveSceneAutotiles(
+      movedLayer.autotiles,
+      scene.width,
+      scene.height,
+      tilemap,
+    );
+    movedLayer.tiles = movedLayer.tiles.map(
+      (tile, index) => resolvedTiles[index] || tile,
+    );
+  }
+
+  const layers = [...tilemap.layers];
+  layers[layerIndex] = movedLayer;
+
+  const movedTilemap = { ...tilemap, layers };
+
+  const shouldMoveLinkedSource = (sourceIndex: number) =>
+    isTilemapLayerCellTopmost(tilemap, layerIndex, sourceIndex);
+
+  const shouldWriteLinkedTarget = (targetIndex: number) =>
+    isTilemapLayerCellTopmost(movedTilemap, layerIndex, targetIndex);
+
+  const tileColors = moveGridSelectionMasked(
+    getTilemapLayersTileColors(tilemap, scene.width, scene.height),
+    scene.width,
+    scene.height,
+    action.payload.selection,
+    action.payload.offset,
+    0,
+    shouldMoveLinkedSource,
+    shouldWriteLinkedTarget,
+  );
+
+  const collisions = moveGridSelectionMasked(
+    scene.collisions,
+    scene.width,
+    scene.height,
+    action.payload.selection,
+    action.payload.offset,
+    0,
+    shouldMoveLinkedSource,
+    shouldWriteLinkedTarget,
+  );
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      collisions,
+      tilemap: { ...tilemap, tileColors, layers },
+    },
+  });
+};
+
 const moveSceneCollisionSelection: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -564,9 +654,13 @@ const moveSceneColorSelection: CaseReducer<
   const background = scene?.backgroundId
     ? localBackgroundSelectById(state, scene.backgroundId)
     : undefined;
+
   const width = scene?.tilemap ? scene.width : background?.width;
   const height = scene?.tilemap ? scene.height : background?.height;
-  if (!width || !height) return;
+
+  if (!width || !height) {
+    return;
+  }
 
   if (scene?.tilemap) {
     scenesAdapter.updateOne(state.scenes, {
@@ -600,6 +694,54 @@ const moveSceneColorSelection: CaseReducer<
       },
     });
   }
+};
+
+const deleteSceneTileSelection: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    layerId: string;
+    selection: GridSelection;
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene?.tilemap) {
+    return;
+  }
+
+  const layerIndex = scene.tilemap.layers.findIndex(
+    (layer) => layer.id === action.payload.layerId,
+  );
+
+  const layer = scene.tilemap.layers[layerIndex];
+  if (!layer) {
+    return;
+  }
+
+  const layers = [...scene.tilemap.layers];
+  layers[layerIndex] = clearTilemapLayerSelection(
+    layer,
+    scene.width,
+    scene.height,
+    action.payload.selection,
+  );
+
+  if (layers[layerIndex]?.autotiles) {
+    const resolvedTiles = resolveSceneAutotiles(
+      layers[layerIndex].autotiles ?? [],
+      scene.width,
+      scene.height,
+      scene.tilemap,
+    );
+    layers[layerIndex].tiles = layers[layerIndex].tiles.map(
+      (tile, index) => resolvedTiles[index] || tile,
+    );
+  }
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: { tilemap: { ...scene.tilemap, layers } },
+  });
 };
 
 const deleteSceneCollisionSelection: CaseReducer<
@@ -1576,8 +1718,10 @@ const scenesReducers = {
   editTilemapLayer,
   removeTilemapLayer,
   moveTilemapLayer,
+  moveSceneTileSelection,
   moveSceneCollisionSelection,
   moveSceneColorSelection,
+  deleteSceneTileSelection,
   deleteSceneCollisionSelection,
   deleteSceneColorSelection,
   editScenes,
