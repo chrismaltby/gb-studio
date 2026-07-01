@@ -1,4 +1,5 @@
 import { getTilemapLayersTileColors } from "shared/lib/tiles/sceneTilemapData";
+import { moveArrayElement } from "shared/lib/helpers/array";
 import {
   PayloadAction,
   CaseReducer,
@@ -31,6 +32,7 @@ import {
   localTriggerSelectEntities,
   localSceneSelectById,
   localBackgroundSelectById,
+  localTilesetSelectById,
 } from "store/features/entities/helpers";
 import { Brush, SlopeIncline } from "store/features/editor/editorState";
 import {
@@ -70,6 +72,7 @@ const addScene: CaseReducer<
     y: number;
     defaults?: Partial<SceneNormalized>;
     variables?: Variable[];
+    tilemap?: boolean;
   }>
 > = (state, action) => {
   const scenesTotal = localSceneSelectTotal(state);
@@ -101,6 +104,21 @@ const addScene: CaseReducer<
     playerHit2Script: [],
     playerHit3Script: [],
   };
+
+  if (action.payload.tilemap) {
+    newScene.tilemap = {
+      tilesets: [],
+      tileColors: new Array(newScene.width * newScene.height).fill(0),
+      layers: [
+        {
+          id: uuid(),
+          name: "Layer 1",
+          visible: true,
+          tiles: new Array(newScene.width * newScene.height).fill(0),
+        },
+      ],
+    };
+  }
 
   scenesAdapter.addOne(state.scenes, newScene);
 };
@@ -189,6 +207,161 @@ const editScene: CaseReducer<
   scenesAdapter.updateOne(state.scenes, {
     id: action.payload.sceneId,
     changes: patch,
+  });
+};
+
+const setTilemapLayersEnabled: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ sceneId: string; enabled: boolean; tilesetId?: string }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene) {
+    return;
+  }
+  const width = scene.type === "LOGO" ? 20 : scene.width;
+  const height = scene.type === "LOGO" ? 18 : scene.height;
+  const initialTileset = action.payload.tilesetId
+    ? localTilesetSelectById(state, action.payload.tilesetId)
+    : undefined;
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      width,
+      height,
+      tilemap: action.payload.enabled
+        ? (scene.tilemap ?? {
+            tilesets: initialTileset
+              ? [
+                  {
+                    id: initialTileset.id,
+                    width: initialTileset.width,
+                    height: initialTileset.height,
+                  },
+                ]
+              : [],
+            tileColors: new Array(width * height).fill(0),
+            layers: [
+              {
+                id: uuid(),
+                name: "Layer 1",
+                visible: true,
+                tiles: new Array(width * height).fill(0),
+              },
+            ],
+          })
+        : undefined,
+    },
+  });
+};
+
+const addTilemapLayer: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ sceneId: string; layerId: string }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene?.tilemap) {
+    return;
+  }
+  const layerNumber = scene.tilemap.layers.length + 1;
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      tilemap: {
+        ...scene.tilemap,
+        layers: [
+          ...scene.tilemap.layers,
+          {
+            id: action.payload.layerId,
+            name: `Layer ${layerNumber}`,
+            visible: true,
+            tiles: new Array(scene.width * scene.height).fill(0),
+          },
+        ],
+      },
+    },
+  });
+};
+
+const editTilemapLayer: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    layerId: string;
+    changes: { name?: string; visible?: boolean };
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene?.tilemap) {
+    return;
+  }
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      tilemap: {
+        ...scene.tilemap,
+        layers: scene.tilemap.layers.map((layer) =>
+          layer.id === action.payload.layerId
+            ? { ...layer, ...action.payload.changes }
+            : layer,
+        ),
+      },
+    },
+  });
+};
+
+const removeTilemapLayer: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ sceneId: string; layerId: string }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene?.tilemap || scene.tilemap.layers.length <= 1) {
+    return;
+  }
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      tilemap: {
+        ...scene.tilemap,
+        layers: scene.tilemap.layers.filter(
+          (layer) => layer.id !== action.payload.layerId,
+        ),
+      },
+    },
+  });
+};
+
+const moveTilemapLayer: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    layerId: string;
+    direction: -1 | 1 | "top" | "bottom";
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene?.tilemap) {
+    return;
+  }
+  const index = scene.tilemap.layers.findIndex(
+    (layer) => layer.id === action.payload.layerId,
+  );
+  const newIndex =
+    action.payload.direction === "top"
+      ? scene.tilemap.layers.length - 1
+      : action.payload.direction === "bottom"
+        ? 0
+        : index + action.payload.direction;
+  if (index < 0 || newIndex < 0 || newIndex >= scene.tilemap.layers.length) {
+    return;
+  }
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      tilemap: {
+        ...scene.tilemap,
+        layers: moveArrayElement(index, newIndex, scene.tilemap.layers),
+      },
+    },
   });
 };
 
@@ -824,6 +997,7 @@ const scenesReducers = {
       y: number;
       defaults?: Partial<SceneNormalized>;
       variables?: Variable[];
+      tilemap?: boolean;
     }) => {
       return {
         payload: {
@@ -835,6 +1009,16 @@ const scenesReducers = {
   },
 
   editScene,
+  setTilemapLayersEnabled,
+  addTilemapLayer: {
+    reducer: addTilemapLayer,
+    prepare: (payload: { sceneId: string }) => ({
+      payload: { ...payload, layerId: uuid() },
+    }),
+  },
+  editTilemapLayer,
+  removeTilemapLayer,
+  moveTilemapLayer,
   moveSceneCollisionSelection,
   moveSceneColorSelection,
   deleteSceneCollisionSelection,

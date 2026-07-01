@@ -2,7 +2,24 @@
 import reducer, { initialState } from "store/features/entities/entitiesState";
 import { EntitiesState } from "shared/lib/entities/entitiesTypes";
 import actions from "store/features/entities/entitiesActions";
-import { dummySceneNormalized, dummyBackground } from "../../../../dummydata";
+import uuid from "uuid";
+import {
+  dummySceneNormalized,
+  dummyBackground,
+  dummyTilesetResource,
+} from "../../../../dummydata";
+
+jest.mock("uuid");
+const mockUuid = uuid as jest.MockedFunction<typeof uuid>;
+
+beforeEach(() => {
+  let id = 0;
+  mockUuid.mockImplementation(() => `uuid-${++id}`);
+});
+
+afterEach(() => {
+  mockUuid.mockReset();
+});
 
 test("Should be able to add a scene", () => {
   const state: EntitiesState = {
@@ -19,6 +36,224 @@ test("Should be able to add a scene", () => {
   expect(newState.scenes.ids.length).toBe(1);
   expect(newState.scenes.entities[newState.scenes.ids[0] ?? ""]?.x).toBe(110);
   expect(newState.scenes.entities[newState.scenes.ids[0] ?? ""]?.y).toBe(220);
+});
+
+test("Should be able to add a tilemap scene", () => {
+  const state: EntitiesState = { ...initialState };
+  const newState = reducer(
+    state,
+    actions.addScene({ x: 110, y: 220, tilemap: true }),
+  );
+  const scene = newState.scenes.entities[newState.scenes.ids[0] ?? ""];
+
+  expect(scene?.tilemap?.tilesets).toEqual([]);
+  expect(scene?.tilemap?.tileColors).toHaveLength(
+    (scene?.width ?? 0) * (scene?.height ?? 0),
+  );
+  expect(scene?.tilemap?.layers).toEqual([
+    {
+      id: "uuid-2",
+      name: "Layer 1",
+      visible: true,
+      tiles: new Array((scene?.width ?? 0) * (scene?.height ?? 0)).fill(0),
+    },
+  ]);
+});
+
+const tilemapSceneState = (): EntitiesState => ({
+  ...initialState,
+  scenes: {
+    entities: {
+      scene1: {
+        ...dummySceneNormalized,
+        id: "scene1",
+        width: 20,
+        height: 18,
+        actors: [],
+        triggers: [],
+        collisions: [],
+      },
+    },
+    ids: ["scene1"],
+  },
+});
+
+test("Should enable tilemap layers", () => {
+  const newState = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const scene = newState.scenes.entities.scene1;
+
+  expect(scene?.tilemap?.tilesets).toEqual([]);
+  expect(scene?.tilemap?.tileColors).toHaveLength(20 * 18);
+  expect(scene?.tilemap?.layers).toEqual([
+    {
+      id: "uuid-1",
+      name: "Layer 1",
+      visible: true,
+      tiles: new Array(20 * 18).fill(0),
+    },
+  ]);
+});
+
+test("Should snapshot supplied tileset dimensions when enabling tilemap layers", () => {
+  const state: EntitiesState = {
+    ...tilemapSceneState(),
+    tilesets: {
+      entities: {
+        tiles1: {
+          ...dummyTilesetResource,
+          id: "tiles1",
+          width: 16,
+          height: 12,
+          inode: "tiles1",
+          _v: 0,
+        },
+      },
+      ids: ["tiles1"],
+    },
+  };
+  const newState = reducer(
+    state,
+    actions.setTilemapLayersEnabled({
+      sceneId: "scene1",
+      enabled: true,
+      tilesetId: "tiles1",
+    }),
+  );
+
+  expect(newState.scenes.entities.scene1?.tilemap?.tilesets).toEqual([
+    { id: "tiles1", width: 16, height: 12 },
+  ]);
+});
+
+test("Should disable tilemap layers without changing unrelated scene fields", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const sceneBefore = enabled.scenes.entities.scene1;
+  const disabled = reducer(
+    enabled,
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: false }),
+  );
+
+  expect(disabled.scenes.entities.scene1).toEqual({
+    ...sceneBefore,
+    tilemap: undefined,
+  });
+});
+
+test("Should add a tilemap layer", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const newState = reducer(
+    enabled,
+    actions.addTilemapLayer({ sceneId: "scene1" }),
+  );
+
+  expect(newState.scenes.entities.scene1?.tilemap?.layers[1]).toEqual({
+    id: "uuid-2",
+    name: "Layer 2",
+    visible: true,
+    tiles: new Array(20 * 18).fill(0),
+  });
+});
+
+test("Should edit a tilemap layer name and visibility", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const newState = reducer(
+    enabled,
+    actions.editTilemapLayer({
+      sceneId: "scene1",
+      layerId: "uuid-1",
+      changes: { name: "Roof", visible: false },
+    }),
+  );
+
+  expect(newState.scenes.entities.scene1?.tilemap?.layers[0]).toMatchObject({
+    name: "Roof",
+    visible: false,
+  });
+});
+
+test("Should move a tilemap layer to the bottom and top", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const withLayer = reducer(
+    enabled,
+    actions.addTilemapLayer({ sceneId: "scene1" }),
+  );
+  const movedToBottom = reducer(
+    withLayer,
+    actions.moveTilemapLayer({
+      sceneId: "scene1",
+      layerId: "uuid-2",
+      direction: "bottom",
+    }),
+  );
+  expect(
+    movedToBottom.scenes.entities.scene1?.tilemap?.layers.map(({ id }) => id),
+  ).toEqual(["uuid-2", "uuid-1"]);
+
+  const movedToTop = reducer(
+    movedToBottom,
+    actions.moveTilemapLayer({
+      sceneId: "scene1",
+      layerId: "uuid-2",
+      direction: "top",
+    }),
+  );
+  expect(
+    movedToTop.scenes.entities.scene1?.tilemap?.layers.map(({ id }) => id),
+  ).toEqual(["uuid-1", "uuid-2"]);
+});
+
+test("Should remove a tilemap layer while preserving at least one layer", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const withLayer = reducer(
+    enabled,
+    actions.addTilemapLayer({ sceneId: "scene1" }),
+  );
+  const removed = reducer(
+    withLayer,
+    actions.removeTilemapLayer({ sceneId: "scene1", layerId: "uuid-2" }),
+  );
+  expect(removed.scenes.entities.scene1?.tilemap?.layers).toHaveLength(1);
+
+  const unchanged = reducer(
+    removed,
+    actions.removeTilemapLayer({ sceneId: "scene1", layerId: "uuid-1" }),
+  );
+  expect(unchanged).toBe(removed);
+});
+
+test("Should not move a missing tilemap layer", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const unchanged = reducer(
+    enabled,
+    actions.moveTilemapLayer({
+      sceneId: "scene1",
+      layerId: "missing",
+      direction: "top",
+    }),
+  );
+
+  expect(unchanged).toBe(enabled);
 });
 
 test("Should update scene dimensions to match new background", () => {
