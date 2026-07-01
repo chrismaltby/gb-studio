@@ -23,6 +23,39 @@ const createGrid = <T>(
   );
 };
 
+export const normalizeGridSize = <T>(
+  values: readonly T[],
+  size: number,
+  emptyValue: T,
+): T[] => {
+  const newValues = new Array<T>(size).fill(emptyValue);
+  const copyLength = Math.min(values.length, size);
+  for (let index = 0; index < copyLength; index++) {
+    newValues[index] = values[index] ?? emptyValue;
+  }
+  return newValues;
+};
+
+export const resizeGrid = <T>(
+  values: readonly T[],
+  oldWidth: number,
+  oldHeight: number,
+  newWidth: number,
+  newHeight: number,
+  emptyValue: T,
+): T[] => {
+  const result = new Array<T>(newWidth * newHeight).fill(emptyValue);
+
+  for (let y = 0; y < Math.min(oldHeight, newHeight); y++) {
+    for (let x = 0; x < Math.min(oldWidth, newWidth); x++) {
+      result[getGridIndex(x, y, newWidth)] =
+        values[getGridIndex(x, y, oldWidth)] ?? emptyValue;
+    }
+  }
+
+  return result;
+};
+
 const getGridIndex = (x: number, y: number, width: number): number =>
   y * width + x;
 

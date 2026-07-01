@@ -2,6 +2,7 @@ import {
   clearGridSelection,
   moveGridSelection,
   moveGridSelectionMasked,
+  resizeGrid,
 } from "shared/lib/tiles/grid";
 
 describe("clearGridSelection", () => {
@@ -402,5 +403,23 @@ describe("moveGridSelectionMasked", () => {
     );
 
     expect(result).toEqual([0, 0, 3, 4]);
+  });
+});
+
+describe("resizeGrid", () => {
+  test("It resizes a grid to increase width", () => {
+    expect(resizeGrid([1, 2, 3, 4], 2, 2, 3, 2, 0)).toEqual([1, 2, 0, 3, 4, 0]);
+  });
+
+  test("It resizes a grid to decrease width", () => {
+    expect(resizeGrid([1, 2, 3, 4, 5, 6], 3, 2, 2, 2, 0)).toEqual([1, 2, 4, 5]);
+  });
+
+  test("It resizes a grid to increase height", () => {
+    expect(resizeGrid([1, 2, 3, 4], 2, 2, 2, 3, 0)).toEqual([1, 2, 3, 4, 0, 0]);
+  });
+
+  test("It resizes a grid to decrease height", () => {
+    expect(resizeGrid([1, 2, 3, 4, 5, 6], 2, 3, 2, 2, 0)).toEqual([1, 2, 3, 4]);
   });
 });

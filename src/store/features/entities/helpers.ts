@@ -68,6 +68,9 @@ export const localSpriteSheetSelectAll = (state: EntitiesState) =>
 export const localBackgroundSelectById = (state: EntitiesState, id: string) =>
   state.backgrounds.entities[id];
 
+export const localTilesetSelectById = (state: EntitiesState, id: string) =>
+  state.tilesets.entities[id];
+
 export const localBackgroundSelectAll = (state: EntitiesState) =>
   state.backgrounds.ids.map((id) => state.backgrounds.entities[id]);
 
