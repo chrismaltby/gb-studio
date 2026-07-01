@@ -1236,7 +1236,7 @@ describe("scenePaintSelection", () => {
       },
     };
 
-    const action = entitiesActions.clearSceneCollisionSelection({
+    const action = entitiesActions.deleteSceneCollisionSelection({
       sceneId: "scene1",
       selection: { x: 1, y: 1, width: 2, height: 2 },
     });
@@ -1257,7 +1257,7 @@ describe("scenePaintSelection", () => {
       },
     };
 
-    const action = entitiesActions.clearSceneColorSelection({
+    const action = entitiesActions.deleteSceneColorSelection({
       sceneId: "scene1",
       selection: { x: 1, y: 1, width: 2, height: 2 },
     });
@@ -1280,7 +1280,7 @@ describe("scenePaintSelection", () => {
       scenePaintSelection,
     };
 
-    const action = entitiesActions.clearSceneCollisionSelection({
+    const action = entitiesActions.deleteSceneCollisionSelection({
       sceneId: "scene2",
       selection: { x: 1, y: 1, width: 2, height: 2 },
     });
@@ -1303,7 +1303,7 @@ describe("scenePaintSelection", () => {
       scenePaintSelection,
     };
 
-    const action = entitiesActions.clearSceneColorSelection({
+    const action = entitiesActions.deleteSceneColorSelection({
       sceneId: "scene2",
       selection: { x: 1, y: 1, width: 2, height: 2 },
     });

@@ -1,3 +1,4 @@
+import { getTilemapLayersTileColors } from "shared/lib/tiles/sceneTilemapData";
 import {
   PayloadAction,
   CaseReducer,
@@ -188,6 +189,164 @@ const editScene: CaseReducer<
   scenesAdapter.updateOne(state.scenes, {
     id: action.payload.sceneId,
     changes: patch,
+  });
+};
+
+const moveSceneCollisionSelection: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    selection: GridSelection;
+    offset: GridOffset;
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene) {
+    return;
+  }
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      collisions: moveGridSelection(
+        scene.collisions,
+        scene.width,
+        scene.height,
+        action.payload.selection,
+        action.payload.offset,
+        0,
+      ),
+    },
+  });
+};
+
+const moveSceneColorSelection: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    selection: GridSelection;
+    offset: GridOffset;
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  const background = scene?.backgroundId
+    ? localBackgroundSelectById(state, scene.backgroundId)
+    : undefined;
+  const width = scene?.tilemap ? scene.width : background?.width;
+  const height = scene?.tilemap ? scene.height : background?.height;
+  if (!width || !height) return;
+
+  if (scene?.tilemap) {
+    scenesAdapter.updateOne(state.scenes, {
+      id: scene.id,
+      changes: {
+        tilemap: {
+          ...scene.tilemap,
+          tileColors: moveGridSelection(
+            getTilemapLayersTileColors(scene.tilemap, width, height),
+            width,
+            height,
+            action.payload.selection,
+            action.payload.offset,
+            0,
+          ),
+        },
+      },
+    });
+  } else if (background) {
+    backgroundsAdapter.updateOne(state.backgrounds, {
+      id: background.id,
+      changes: {
+        tileColors: moveGridSelection(
+          background.tileColors,
+          width,
+          height,
+          action.payload.selection,
+          action.payload.offset,
+          0,
+        ),
+      },
+    });
+  }
+};
+
+const deleteSceneCollisionSelection: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    selection: GridSelection;
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene) {
+    return;
+  }
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      collisions: clearGridSelection(
+        scene.collisions,
+        scene.width,
+        scene.height,
+        action.payload.selection,
+        0,
+      ),
+    },
+  });
+};
+
+const deleteSceneColorSelection: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    selection: GridSelection;
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene) {
+    return;
+  }
+
+  if (scene.tilemap) {
+    scenesAdapter.updateOne(state.scenes, {
+      id: scene.id,
+      changes: {
+        tilemap: {
+          ...scene.tilemap,
+          tileColors: clearGridSelection(
+            getTilemapLayersTileColors(
+              scene.tilemap,
+              scene.width,
+              scene.height,
+            ),
+            scene.width,
+            scene.height,
+            action.payload.selection,
+            0,
+          ),
+        },
+      },
+    });
+    return;
+  }
+
+  const background = localBackgroundSelectById(state, scene.backgroundId);
+  if (!background) {
+    return;
+  }
+
+  backgroundsAdapter.updateOne(state.backgrounds, {
+    id: background.id,
+    changes: {
+      tileColors: clearGridSelection(
+        background.tileColors,
+        background.width,
+        background.height,
+        action.payload.selection,
+        0,
+      ),
+    },
   });
 };
 
@@ -657,126 +816,6 @@ const setSceneExtractedPalettes: CaseReducer<
   });
 };
 
-const moveSceneCollisionSelection: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    sceneId: string;
-    selection: GridSelection;
-    offset: GridOffset;
-  }>
-> = (state, action) => {
-  const scene = localSceneSelectById(state, action.payload.sceneId);
-
-  if (!scene) {
-    return;
-  }
-
-  scenesAdapter.updateOne(state.scenes, {
-    id: scene.id,
-    changes: {
-      collisions: moveGridSelection(
-        scene.collisions,
-        scene.width,
-        scene.height,
-        action.payload.selection,
-        action.payload.offset,
-        0,
-      ),
-    },
-  });
-};
-
-const moveSceneColorSelection: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    sceneId: string;
-    selection: GridSelection;
-    offset: GridOffset;
-  }>
-> = (state, action) => {
-  const scene = localSceneSelectById(state, action.payload.sceneId);
-  const backgroundId = scene?.backgroundId;
-  const background = backgroundId
-    ? localBackgroundSelectById(state, backgroundId)
-    : undefined;
-
-  if (!scene || !background) {
-    return;
-  }
-
-  backgroundsAdapter.updateOne(state.backgrounds, {
-    id: background.id,
-    changes: {
-      tileColors: moveGridSelection(
-        background.tileColors,
-        scene.width,
-        scene.height,
-        action.payload.selection,
-        action.payload.offset,
-        0,
-      ),
-    },
-  });
-};
-
-const clearSceneCollisionSelection: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    sceneId: string;
-    selection: GridSelection;
-  }>
-> = (state, action) => {
-  const scene = localSceneSelectById(state, action.payload.sceneId);
-
-  if (!scene) {
-    return;
-  }
-
-  scenesAdapter.updateOne(state.scenes, {
-    id: scene.id,
-    changes: {
-      collisions: clearGridSelection(
-        scene.collisions,
-        scene.width,
-        scene.height,
-        action.payload.selection,
-        0,
-      ),
-    },
-  });
-};
-
-const clearSceneColorSelection: CaseReducer<
-  EntitiesState,
-  PayloadAction<{
-    sceneId: string;
-    selection: GridSelection;
-  }>
-> = (state, action) => {
-  const scene = localSceneSelectById(state, action.payload.sceneId);
-  const backgroundId = scene?.backgroundId;
-  const background = backgroundId
-    ? localBackgroundSelectById(state, backgroundId)
-    : undefined;
-
-  if (!scene || !background) {
-    return;
-  }
-
-  backgroundsAdapter.updateOne(state.backgrounds, {
-    id: background.id,
-    changes: {
-      tileColors: clearGridSelection(
-        background.tileColors,
-        scene.width,
-        scene.height,
-        action.payload.selection,
-        0,
-      ),
-    },
-  });
-};
-
 const scenesReducers = {
   addScene: {
     reducer: addScene,
@@ -796,6 +835,10 @@ const scenesReducers = {
   },
 
   editScene,
+  moveSceneCollisionSelection,
+  moveSceneColorSelection,
+  deleteSceneCollisionSelection,
+  deleteSceneColorSelection,
   editScenes,
   setSceneSymbol,
   removeScene,
@@ -805,10 +848,6 @@ const scenesReducers = {
   paintColor,
   setSceneExtractedPalettes,
   reparentScene,
-  moveSceneCollisionSelection,
-  moveSceneColorSelection,
-  clearSceneCollisionSelection,
-  clearSceneColorSelection,
 } satisfies SliceCaseReducers<EntitiesState>;
 
 export default scenesReducers;

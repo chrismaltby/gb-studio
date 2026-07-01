@@ -594,14 +594,14 @@ const WorldView = () => {
 
           if (scenePaintSelection.mode === "colors") {
             dispatch(
-              entitiesActions.clearSceneColorSelection({
+              entitiesActions.deleteSceneColorSelection({
                 sceneId: scenePaintSelection.sceneId,
                 selection: scenePaintSelection.selection,
               }),
             );
           } else {
             dispatch(
-              entitiesActions.clearSceneCollisionSelection({
+              entitiesActions.deleteSceneCollisionSelection({
                 sceneId: scenePaintSelection.sceneId,
                 selection: scenePaintSelection.selection,
               }),

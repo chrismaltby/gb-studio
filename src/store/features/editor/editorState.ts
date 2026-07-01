@@ -1308,8 +1308,8 @@ const editorSlice = createSlice({
       // On clear selection tiles from scene also remove selection
       .addMatcher(
         (action): action is PayloadAction<{ sceneId: string }> =>
-          entitiesActions.clearSceneCollisionSelection.match(action) ||
-          entitiesActions.clearSceneColorSelection.match(action),
+          entitiesActions.deleteSceneCollisionSelection.match(action) ||
+          entitiesActions.deleteSceneColorSelection.match(action),
         (state, action) => {
           if (state.scenePaintSelection?.sceneId === action.payload.sceneId) {
             state.scenePaintSelection = undefined;

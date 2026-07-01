@@ -400,7 +400,7 @@ describe("moveSceneCollisionSelection", () => {
   });
 });
 
-describe("clearSceneCollisionSelection", () => {
+describe("deleteSceneCollisionSelection", () => {
   test("Should be able to clear a collision selection", () => {
     const state: EntitiesState = {
       ...initialState,
@@ -425,7 +425,7 @@ describe("clearSceneCollisionSelection", () => {
       },
     };
 
-    const action = actions.clearSceneCollisionSelection({
+    const action = actions.deleteSceneCollisionSelection({
       sceneId: "scene1",
       selection: { x: 1, y: 1, width: 2, height: 2 },
     });
@@ -461,7 +461,7 @@ describe("clearSceneCollisionSelection", () => {
       },
     };
 
-    const action = actions.clearSceneCollisionSelection({
+    const action = actions.deleteSceneCollisionSelection({
       sceneId: "scene1",
       selection: { x: 2, y: 1, width: 4, height: 4 },
     });
@@ -599,7 +599,7 @@ describe("moveSceneColorSelection", () => {
   });
 });
 
-describe("clearSceneColorSelection", () => {
+describe("deleteSceneColorSelection", () => {
   test("Should be able to clear a color selection", () => {
     const state: EntitiesState = {
       ...initialState,
@@ -631,7 +631,7 @@ describe("clearSceneColorSelection", () => {
       },
     };
 
-    const action = actions.clearSceneColorSelection({
+    const action = actions.deleteSceneColorSelection({
       sceneId: "scene1",
       selection: { x: 1, y: 1, width: 2, height: 2 },
     });
@@ -677,7 +677,7 @@ describe("clearSceneColorSelection", () => {
       },
     };
 
-    const action = actions.clearSceneColorSelection({
+    const action = actions.deleteSceneColorSelection({
       sceneId: "scene1",
       selection: { x: 1, y: 1, width: 2, height: 2 },
     });
