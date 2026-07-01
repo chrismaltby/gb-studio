@@ -7,7 +7,7 @@ import actions from "../../../../src/store/features/editor/editorActions";
 import entitiesActions from "../../../../src/store/features/entities/entitiesActions";
 import { RootState } from "store/storeTypes";
 import { create } from "../../../redux-utils";
-import { BRUSH_8PX, BRUSH_SLOPE, DRAG_ACTOR } from "consts";
+import { BRUSH_8PX, BRUSH_SELECTION, BRUSH_SLOPE, DRAG_ACTOR } from "consts";
 import { MIN_SIDEBAR_WIDTH } from "renderer/lib/window/sidebar";
 import { Variable } from "shared/lib/resources/types";
 
@@ -71,6 +71,18 @@ test("Should be able to set selected palette", () => {
   expect(newState.selectedPalette).toBe(2);
 });
 
+test("Should leave selection mode when selecting a palette", () => {
+  const state: EditorState = {
+    ...initialState,
+    selectedBrush: BRUSH_SELECTION,
+  };
+  const newState = reducer(
+    state,
+    actions.setSelectedPalette({ paletteIndex: 2 }),
+  );
+  expect(newState.selectedBrush).toBe(BRUSH_8PX);
+});
+
 test("Should be able to set selected tile type", () => {
   const state: EditorState = {
     ...initialState,
@@ -79,6 +91,123 @@ test("Should be able to set selected tile type", () => {
   const action = actions.setSelectedTileType({ tileType: 5, tileMask: 0xff });
   const newState = reducer(state, action);
   expect(newState.selectedTileType).toBe(5);
+});
+
+test("Should store a rectangular scene tile selection", () => {
+  const newState = reducer(
+    initialState,
+    actions.setSelectedSceneTile({
+      tilesetId: "tiles",
+      tileIndex: 12,
+      width: 3,
+      height: 2,
+      tilesetWidth: 16,
+    }),
+  );
+  expect(newState.selectedSceneTile?.tileIndex).toBe(12);
+  expect(newState.selectedSceneTile?.tilesetId).toBe("tiles");
+  expect(newState.selectedSceneTile?.width).toBe(3);
+  expect(newState.selectedSceneTile?.height).toBe(2);
+  expect(newState.selectedSceneTile?.tilesetWidth).toBe(16);
+});
+
+test("Should default omitted scene tile dimensions", () => {
+  const newState = reducer(
+    initialState,
+    actions.setSelectedSceneTile({ tilesetId: "tiles", tileIndex: 12 }),
+  );
+  expect(newState.selectedSceneTile?.width).toBe(1);
+  expect(newState.selectedSceneTile?.height).toBe(1);
+  expect(newState.selectedSceneTile?.tilesetWidth).toBe(0);
+  expect(newState.selectedSceneTile?.autotile).toBe(false);
+});
+
+test("Should leave selection mode when selecting a scene tile", () => {
+  const state: EditorState = {
+    ...initialState,
+    selectedBrush: BRUSH_SELECTION,
+  };
+  const newState = reducer(
+    state,
+    actions.setSelectedSceneTile({ tilesetId: "tiles", tileIndex: 1 }),
+  );
+  expect(newState.selectedBrush).toBe(BRUSH_8PX);
+});
+
+test("Should select a scene tile for painting as one semantic intent", () => {
+  const { store } = create({} as RootState);
+  const thunk = actions.selectSceneTileForPainting({
+    tilesetId: "tiles",
+    tileIndex: 4,
+    tilesetWidth: 8,
+    autotile: true,
+    persistTileset: true,
+  });
+  thunk(store.dispatch, store.getState, undefined);
+  expect(store.dispatch.mock.calls.map(([action]) => action.type)).toEqual([
+    "editor/setSelectedSceneTile",
+    "settings/editSettings",
+    "editor/setSelectedSceneTileAutotile",
+    "editor/setTool",
+  ]);
+  expect(store.dispatch).toHaveBeenCalledWith(
+    expect.objectContaining({
+      type: "settings/editSettings",
+      payload: { selectedSceneTilesetId: "tiles" },
+    }),
+  );
+});
+
+test("Should not activate the tile tool when requested", () => {
+  const { store } = create({} as RootState);
+  actions.selectSceneTileForPainting({
+    tilesetId: "tiles",
+    tileIndex: 4,
+    activateTool: false,
+  })(store.dispatch, store.getState, undefined);
+  expect(store.dispatch).not.toHaveBeenCalledWith(
+    expect.objectContaining({ type: "editor/setTool" }),
+  );
+});
+
+test("Should not persist the tileset unless requested", () => {
+  const { store } = create({} as RootState);
+  actions.selectSceneTileForPainting({
+    tilesetId: "tiles",
+    tileIndex: 4,
+    persistTileset: false,
+  })(store.dispatch, store.getState, undefined);
+  expect(store.dispatch).not.toHaveBeenCalledWith(
+    expect.objectContaining({ type: "settings/editSettings" }),
+  );
+});
+
+test("Should restore the selected scene tileset when loading a project", () => {
+  const state: EditorState = {
+    ...initialState,
+    selectedSceneTile: {
+      tilesetId: "oldTileset",
+      tileIndex: 5,
+      width: 2,
+      height: 2,
+      tilesetWidth: 8,
+      autotile: true,
+    },
+  };
+  const newState = reducer(state, {
+    type: "project/loadProject/fulfilled",
+    payload: {
+      resources: { settings: { selectedSceneTilesetId: "savedTileset" } },
+    },
+  });
+  expect(newState.selectedSceneTile).toEqual({
+    tilesetId: "savedTileset",
+    tileIndex: 0,
+    width: 1,
+    height: 1,
+    tilesetWidth: 0,
+    autotile: false,
+  });
 });
 
 test("Should be able to toggle show layers option", () => {
@@ -639,6 +768,34 @@ describe("editor reducer", () => {
       const newState = reducer(state, action);
       expect(newState.selectedBrush).toBe(BRUSH_SLOPE);
     });
+
+    test("should keep the selection brush for paint tools", () => {
+      state.selectedBrush = BRUSH_SELECTION;
+      const tileState = reducer(state, actions.setTool({ tool: "tiles" }));
+      expect(tileState.selectedBrush).toBe(BRUSH_SELECTION);
+      const collisionState = reducer(
+        tileState,
+        actions.setTool({ tool: "collisions" }),
+      );
+      expect(collisionState.selectedBrush).toBe(BRUSH_SELECTION);
+      const colorState = reducer(
+        collisionState,
+        actions.setTool({ tool: "colors" }),
+      );
+      expect(colorState.selectedBrush).toBe(BRUSH_SELECTION);
+    });
+
+    test("should clear paint selection when changing paint modes", () => {
+      state.scenePaintSelection = {
+        sceneId: "scene1",
+        layerId: "layer1",
+        mode: "tiles",
+        selection: { x: 0, y: 0, width: 1, height: 1 },
+        offset: { x: 0, y: 0 },
+      };
+      const newState = reducer(state, actions.setTool({ tool: "collisions" }));
+      expect(newState.scenePaintSelection).toBeUndefined();
+    });
   });
 
   describe("setPasteMode", () => {
@@ -649,11 +806,74 @@ describe("editor reducer", () => {
     });
   });
 
+  describe("setSceneAddType", () => {
+    test("should set the scene type used by the add tool", () => {
+      const newState = reducer(state, actions.setSceneAddType("tilemap"));
+      expect(newState.sceneAddType).toBe("tilemap");
+    });
+  });
+
   describe("setBrush", () => {
     test("should set selectedBrush", () => {
       const action = actions.setBrush({ brush: BRUSH_SLOPE });
       const newState = reducer(state, action);
       expect(newState.selectedBrush).toBe(BRUSH_SLOPE);
+    });
+
+    test("should disable autotile when choosing the selection brush", () => {
+      state.selectedSceneTile = {
+        tilesetId: "tiles",
+        tileIndex: 0,
+        width: 1,
+        height: 1,
+        tilesetWidth: 8,
+        autotile: true,
+      };
+      const newState = reducer(
+        state,
+        actions.setBrush({ brush: BRUSH_SELECTION }),
+      );
+      expect(newState.selectedSceneTile?.autotile).toBe(false);
+    });
+
+    test("should clear paint selection when leaving selection brush", () => {
+      state.scenePaintSelection = {
+        sceneId: "scene1",
+        layerId: "layer1",
+        mode: "tiles",
+        selection: { x: 0, y: 0, width: 1, height: 1 },
+        offset: { x: 0, y: 0 },
+      };
+      const newState = reducer(state, actions.setBrush({ brush: BRUSH_8PX }));
+      expect(newState.scenePaintSelection).toBeUndefined();
+    });
+
+    test.each([BRUSH_SELECTION, BRUSH_SLOPE] as const)(
+      "should clear paint eraser when choosing %s",
+      (brush) => {
+        state.scenePaintEraser = true;
+        const newState = reducer(state, actions.setBrush({ brush }));
+        expect(newState.scenePaintEraser).toBe(false);
+      },
+    );
+
+    test("should leave slope mode when enabling the eraser", () => {
+      state.selectedBrush = BRUSH_SLOPE;
+      const newState = reducer(state, actions.setScenePaintEraser(true));
+      expect(newState.selectedBrush).toBe(BRUSH_8PX);
+      expect(newState.scenePaintEraser).toBe(true);
+    });
+
+    test("should clear paint selection on undo", () => {
+      state.scenePaintSelection = {
+        sceneId: "scene1",
+        layerId: "layer1",
+        mode: "tiles",
+        selection: { x: 0, y: 0, width: 1, height: 1 },
+        offset: { x: 0, y: 0 },
+      };
+      const newState = reducer(state, { type: "@@redux-undo/UNDO" });
+      expect(newState.scenePaintSelection).toBeUndefined();
     });
   });
 
@@ -1225,7 +1445,38 @@ describe("editor reducer", () => {
 });
 
 describe("scenePaintSelection", () => {
-  test("Should clear scene paint selection when clearing collision selection for the same scene", () => {
+  test("Should focus the painted scene when painting a scene tile", () => {
+    const newState = reducer(initialState, {
+      type: "entities/paintSceneTile",
+      payload: { sceneId: "scene1" },
+    });
+
+    expect(newState.type).toBe("scene");
+    expect(newState.scene).toBe("scene1");
+    expect(newState.worldFocus).toBe(true);
+  });
+
+  test("Should clear scene paint selection when deleting a tile selection", () => {
+    const state: EditorState = {
+      ...initialState,
+      scenePaintSelection: {
+        sceneId: "scene1",
+        layerId: "layer1",
+        mode: "tiles",
+        selection: { x: 1, y: 1, width: 2, height: 2 },
+        offset: { x: 0, y: 0 },
+      },
+    };
+
+    const newState = reducer(state, {
+      type: "entities/deleteSceneTileSelection",
+      payload: { sceneId: "scene1" },
+    });
+
+    expect(newState.scenePaintSelection).toBeUndefined();
+  });
+
+  test("Should clear scene paint selection when deleting collision selection for the same scene", () => {
     const state: EditorState = {
       ...initialState,
       scenePaintSelection: {
@@ -1246,7 +1497,7 @@ describe("scenePaintSelection", () => {
     expect(newState.scenePaintSelection).toBeUndefined();
   });
 
-  test("Should clear scene paint selection when clearing color selection for the same scene", () => {
+  test("Should clear scene paint selection when deleting color selection for the same scene", () => {
     const state: EditorState = {
       ...initialState,
       scenePaintSelection: {
@@ -1267,7 +1518,7 @@ describe("scenePaintSelection", () => {
     expect(newState.scenePaintSelection).toBeUndefined();
   });
 
-  test("Should not clear scene paint selection when clearing collision selection for another scene", () => {
+  test("Should not clear scene paint selection when deleting collision selection for another scene", () => {
     const scenePaintSelection = {
       sceneId: "scene1",
       mode: "collisions" as const,
@@ -1290,7 +1541,7 @@ describe("scenePaintSelection", () => {
     expect(newState.scenePaintSelection).toEqual(scenePaintSelection);
   });
 
-  test("Should not clear scene paint selection when clearing color selection for another scene", () => {
+  test("Should not clear scene paint selection when deleting color selection for another scene", () => {
     const scenePaintSelection = {
       sceneId: "scene1",
       mode: "colors" as const,
