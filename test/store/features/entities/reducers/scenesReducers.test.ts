@@ -11,11 +11,19 @@ import {
   dummyTriggerNormalized,
   dummyScriptEventNormalized,
 } from "../../../../dummydata";
-import { EVENT_SWITCH_SCENE, MAX_SCENE_TILE_COUNT, TILE_SIZE } from "consts";
 import {
+  EVENT_SWITCH_SCENE,
+  MAX_SCENE_TILE_COUNT,
+  TILE_DEFAULT_UNSET,
+  TILE_SIZE,
+} from "consts";
+import {
+  buildSceneTilesetLookup,
+  decodeSceneTileRef,
   encodeSceneTileRef,
   resolveSceneAutotiles,
 } from "shared/lib/tiles/sceneTilemapData";
+import { SceneTilemapData } from "shared/lib/resources/types";
 
 jest.mock("uuid");
 const mockUuid = uuid as jest.MockedFunction<typeof uuid>;
@@ -28,6 +36,24 @@ beforeEach(() => {
 afterEach(() => {
   mockUuid.mockReset();
 });
+
+const tilesetSnapshot = (id: string, width = 256, height = 256) => ({
+  id,
+  width,
+  height,
+});
+
+const decodeSceneRef = (
+  tilemap: SceneTilemapData | undefined,
+  value: number,
+) => {
+  if (!tilemap) {
+    return undefined;
+  }
+  const tilesetLookup = buildSceneTilesetLookup(tilemap);
+
+  return decodeSceneTileRef(value, tilesetLookup);
+};
 
 test("Should be able to add a scene", () => {
   const state: EntitiesState = {
@@ -1301,4 +1327,760 @@ describe("deleteSceneColorSelection", () => {
 
     expect(newState.scenes.entities["scene1"]?.collisions).toEqual(collisions);
   });
+});
+
+const tilemapPaintState = (
+  overrides: Partial<EntitiesState["scenes"]["entities"]["scene1"]> = {},
+  tilesetOverrides: Partial<typeof dummyTilesetResource> = {},
+): EntitiesState => ({
+  ...initialState,
+  scenes: {
+    entities: {
+      scene1: {
+        ...dummySceneNormalized,
+        id: "scene1",
+        backgroundId: "",
+        width: 4,
+        height: 4,
+        actors: [],
+        triggers: [],
+        collisions: [],
+        tilemap: {
+          tilesets: [tilesetSnapshot("tiles1")],
+          tileColors: new Array(16).fill(0),
+          layers: [
+            {
+              id: "layer1",
+              name: "Layer 1",
+              visible: true,
+              tiles: new Array(16).fill(0),
+            },
+          ],
+        },
+        ...overrides,
+      },
+    },
+    ids: ["scene1"],
+  },
+  tilesets: {
+    entities: {
+      tiles1: {
+        ...dummyTilesetResource,
+        id: "tiles1",
+        width: 4,
+        height: 4,
+        imageWidth: 32,
+        imageHeight: 32,
+        tileColors: [],
+        tileCollisions: [],
+        inode: "tiles1",
+        _v: 0,
+        ...tilesetOverrides,
+      },
+    },
+    ids: ["tiles1"],
+  },
+});
+
+test("Should paint scene tiles and snapshot tilesets", () => {
+  const state = tilemapPaintState({
+    tilemap: {
+      tilesets: [],
+      tileColors: new Array(16).fill(0),
+      layers: [
+        {
+          id: "layer1",
+          name: "Layer 1",
+          visible: true,
+          tiles: new Array(16).fill(0),
+        },
+      ],
+    },
+  });
+
+  const painted = reducer(
+    state,
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "layer1",
+      tilesetId: "tiles1",
+      tileIndex: 5,
+      x: 1,
+      y: 2,
+    }),
+  );
+
+  const scene = painted.scenes.entities.scene1;
+  expect(scene?.tilemap?.tilesets).toEqual([tilesetSnapshot("tiles1", 4, 4)]);
+  expect(
+    decodeSceneRef(
+      scene?.tilemap,
+      scene?.tilemap?.layers[0]?.tiles[2 * 4 + 1] ?? 0,
+    )?.tileIndex,
+  ).toBe(5);
+});
+
+test("Should preserve unchanged tile default arrays while painting", () => {
+  const collisions = [0, 0, 0, 0];
+  const tileColors = [0, 0, 0, 0];
+  const state = tilemapPaintState(
+    {
+      width: 2,
+      height: 2,
+      collisions,
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1")],
+        tileColors,
+        layers: [
+          {
+            id: "layer1",
+            name: "Layer 1",
+            visible: true,
+            tiles: [0, 0, 0, 0],
+          },
+        ],
+      },
+    },
+    {
+      width: 1,
+      height: 1,
+      imageWidth: 8,
+      imageHeight: 8,
+      tileColors: [TILE_DEFAULT_UNSET],
+      tileCollisions: [TILE_DEFAULT_UNSET],
+    },
+  );
+
+  const painted = reducer(
+    state,
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "layer1",
+      tilesetId: "tiles1",
+      tileIndex: 0,
+      x: 0,
+      y: 0,
+    }),
+  );
+
+  expect(painted.scenes.entities.scene1?.collisions).toBe(collisions);
+  expect(painted.scenes.entities.scene1?.tilemap?.tileColors).toBe(tileColors);
+});
+
+test("Should distinguish unset tile defaults from explicit zero defaults", () => {
+  const createState = (defaultValue: number) =>
+    tilemapPaintState(
+      {
+        width: 1,
+        height: 1,
+        collisions: [0x0f],
+        tilemap: {
+          tilesets: [tilesetSnapshot("tiles1")],
+          tileColors: [3],
+          layers: [
+            {
+              id: "layer1",
+              name: "Layer 1",
+              visible: true,
+              tiles: [0],
+            },
+          ],
+        },
+      },
+      {
+        width: 1,
+        height: 1,
+        imageWidth: 8,
+        imageHeight: 8,
+        tileColors: [defaultValue],
+        tileCollisions: [defaultValue],
+      },
+    );
+  const paint = (state: EntitiesState) =>
+    reducer(
+      state,
+      actions.paintSceneTile({
+        sceneId: "scene1",
+        layerId: "layer1",
+        tilesetId: "tiles1",
+        tileIndex: 0,
+        x: 0,
+        y: 0,
+      }),
+    ).scenes.entities.scene1;
+
+  const unset = paint(createState(TILE_DEFAULT_UNSET));
+  expect(unset?.tilemap?.tileColors).toEqual([3]);
+  expect(unset?.collisions).toEqual([0x0f]);
+
+  const explicitZero = paint(createState(0));
+  expect(explicitZero?.tilemap?.tileColors).toEqual([0]);
+  expect(explicitZero?.collisions).toEqual([0]);
+});
+
+test("Should copy tile default arrays only when defaults change", () => {
+  const collisions = [0x0f, 0, 0, 0];
+  const tileColors = [0, 0, 0, 0];
+  const state = tilemapPaintState(
+    {
+      width: 2,
+      height: 2,
+      collisions,
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1")],
+        tileColors,
+        layers: [
+          {
+            id: "layer1",
+            name: "Layer 1",
+            visible: true,
+            tiles: [0, 0, 0, 0],
+          },
+        ],
+      },
+    },
+    {
+      width: 1,
+      height: 1,
+      imageWidth: 8,
+      imageHeight: 8,
+      tileColors: [3],
+      tileCollisions: [0],
+    },
+  );
+
+  const painted = reducer(
+    state,
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "layer1",
+      tilesetId: "tiles1",
+      tileIndex: 0,
+      x: 0,
+      y: 0,
+    }),
+  );
+
+  expect(painted.scenes.entities.scene1?.collisions).not.toBe(collisions);
+  expect(painted.scenes.entities.scene1?.collisions[0]).toBe(0);
+  expect(painted.scenes.entities.scene1?.tilemap?.tileColors).not.toBe(
+    tileColors,
+  );
+  expect(painted.scenes.entities.scene1?.tilemap?.tileColors?.[0]).toBe(3);
+});
+
+test("Should update neighbouring RPG-style autotiles when painting and erasing", () => {
+  let painted = tilemapPaintState(
+    {
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1", 4, 8)],
+        tileColors: new Array(16).fill(0),
+        layers: [
+          {
+            id: "layer1",
+            name: "Layer 1",
+            visible: true,
+            tiles: new Array(16).fill(0),
+          },
+        ],
+      },
+    },
+    { width: 4, height: 8 },
+  );
+  const paintTile = (x: number, y: number, tileIndex = 10) => {
+    painted = reducer(
+      painted,
+      actions.paintSceneTile({
+        sceneId: "scene1",
+        layerId: "layer1",
+        tilesetId: "tiles1",
+        tileIndex,
+        autotile: true,
+        x,
+        y,
+      }),
+    );
+  };
+
+  paintTile(1, 1);
+  paintTile(2, 1);
+  paintTile(1, 2);
+  paintTile(2, 2);
+
+  const layer = painted.scenes.entities.scene1?.tilemap?.layers[0];
+  expect(
+    decodeSceneRef(
+      painted.scenes.entities.scene1?.tilemap,
+      layer?.tiles[1 * 4 + 1] ?? 0,
+    )?.tileIndex,
+  ).toBe(23);
+
+  paintTile(2, 1, -1);
+  const erasedLayer = painted.scenes.entities.scene1?.tilemap?.layers[0];
+  expect(
+    decodeSceneRef(
+      painted.scenes.entities.scene1?.tilemap,
+      erasedLayer?.tiles[1 * 4 + 1] ?? 0,
+    )?.tileIndex,
+  ).toBe(22);
+  expect(erasedLayer?.tiles[1 * 4 + 2]).toBe(0);
+});
+
+test.each([false, true])(
+  "Should paint every tile in a fast dragged line (autotile: %s)",
+  (autotile) => {
+    const painted = reducer(
+      tilemapPaintState({}, { width: 4, height: 8 }),
+      actions.paintSceneTile({
+        sceneId: "scene1",
+        layerId: "layer1",
+        tilesetId: "tiles1",
+        tileIndex: 10,
+        autotile,
+        x: 0,
+        y: 1,
+        endX: 3,
+        endY: 1,
+        drawLine: true,
+      }),
+    );
+    const layer = painted.scenes.entities.scene1?.tilemap?.layers[0];
+    for (let x = 0; x <= 3; x++) {
+      expect(layer?.tiles[1 * 4 + x]).not.toBe(0);
+      expect(Boolean(layer?.autotiles?.[1 * 4 + x])).toBe(autotile);
+    }
+  },
+);
+
+test("Should paint tilemaps with a 16px brush", () => {
+  const painted = reducer(
+    tilemapPaintState(),
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "layer1",
+      tilesetId: "tiles1",
+      tileIndex: 10,
+      brush: "16px",
+      x: 1,
+      y: 1,
+    }),
+  );
+  const tiles = painted.scenes.entities.scene1?.tilemap?.layers[0]?.tiles ?? [];
+  expect([tiles[5], tiles[6], tiles[9], tiles[10]]).toEqual([11, 11, 11, 11]);
+});
+
+test("Should paint a rectangular tile selection as a stamp", () => {
+  const painted = reducer(
+    tilemapPaintState(
+      {},
+      {
+        tileColors: [0xff, 0xff, 0xff, 0xff, 0xff, 3, 0x80, 0xff, 0xff, 5, 6],
+        tileCollisions: [0, 0, 0, 0, 0, 0x0f, 0x01, 0, 0, 0x02, 0x04],
+      },
+    ),
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "layer1",
+      tilesetId: "tiles1",
+      tileIndex: 5,
+      stamp: { width: 2, height: 2, tilesetWidth: 4 },
+      x: 1,
+      y: 1,
+    }),
+  );
+  const tiles = painted.scenes.entities.scene1?.tilemap?.layers[0]?.tiles ?? [];
+  const tileAt = (x: number, y: number) =>
+    decodeSceneRef(
+      painted.scenes.entities.scene1?.tilemap,
+      tiles[y * 4 + x] ?? 0,
+    )?.tileIndex;
+
+  expect([tileAt(1, 1), tileAt(2, 1), tileAt(1, 2), tileAt(2, 2)]).toEqual([
+    5, 6, 9, 10,
+  ]);
+  expect(painted.scenes.entities.scene1?.tilemap?.tileColors).toEqual([
+    0, 0, 0, 0, 0, 3, 0x80, 0, 0, 5, 6, 0, 0, 0, 0, 0,
+  ]);
+  expect(painted.scenes.entities.scene1?.collisions).toEqual([
+    0, 0, 0, 0, 0, 0x0f, 0x01, 0, 0, 0x02, 0x04, 0, 0, 0, 0, 0,
+  ]);
+});
+
+test("Should repeat a stamp when filling from the clicked position", () => {
+  const target = encodeSceneTileRef(0, 0);
+  const barrier = encodeSceneTileRef(0, 1);
+  const sourceTiles = new Array(4 * 4).fill(target);
+  sourceTiles[0] = barrier;
+  const painted = reducer(
+    tilemapPaintState({
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1")],
+        tileColors: [],
+        layers: [
+          {
+            id: "layer1",
+            name: "Layer 1",
+            visible: true,
+            tiles: sourceTiles,
+          },
+        ],
+      },
+    }),
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "layer1",
+      tilesetId: "tiles1",
+      tileIndex: 5,
+      stamp: { width: 2, height: 2, tilesetWidth: 4 },
+      brush: "fill",
+      x: 1,
+      y: 1,
+    }),
+  );
+  const tiles = painted.scenes.entities.scene1?.tilemap?.layers[0]?.tiles ?? [];
+  const tileAt = (x: number, y: number) =>
+    decodeSceneRef(
+      painted.scenes.entities.scene1?.tilemap,
+      tiles[y * 4 + x] ?? 0,
+    )?.tileIndex;
+
+  expect(tileAt(0, 0)).toBe(1);
+  expect(tileAt(1, 1)).toBe(5);
+  expect(tileAt(2, 1)).toBe(6);
+  expect(tileAt(1, 2)).toBe(9);
+  expect(tileAt(2, 2)).toBe(10);
+});
+
+test("Should paint palette and priority attributes on painted scene tiles", () => {
+  const colored = reducer(
+    tilemapPaintState({
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1")],
+        tileColors: new Array(16).fill(0),
+        layers: [
+          {
+            id: "layer1",
+            name: "Layer 1",
+            visible: true,
+            tiles: [1, ...new Array(15).fill(0)],
+          },
+        ],
+      },
+    }),
+    actions.paintColor({
+      sceneId: "scene1",
+      backgroundId: "",
+      x: 0,
+      y: 0,
+      paletteIndex: 3,
+      brush: "8px",
+      isTileProp: false,
+    }),
+  );
+  const prioritized = reducer(
+    colored,
+    actions.paintColor({
+      sceneId: "scene1",
+      backgroundId: "",
+      x: 0,
+      y: 0,
+      paletteIndex: 0x80,
+      brush: "8px",
+      isTileProp: true,
+    }),
+  );
+
+  expect(prioritized.scenes.entities.scene1?.tilemap?.tileColors?.[0]).toBe(
+    0x83,
+  );
+});
+
+test("Should contextually erase painted tiles, collisions, and color attributes", () => {
+  const state = tilemapPaintState({
+    collisions: [0xff],
+    tilemap: {
+      tilesets: [tilesetSnapshot("tiles1")],
+      tileColors: [0x83],
+      layers: [
+        {
+          id: "layer1",
+          name: "Layer 1",
+          visible: true,
+          tiles: [encodeSceneTileRef(0, 4)],
+        },
+      ],
+    },
+  });
+  const withoutTile = reducer(
+    state,
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "layer1",
+      tilesetId: "tiles1",
+      tileIndex: 10,
+      brush: "16px",
+      erase: true,
+      x: 0,
+      y: 0,
+    }),
+  );
+  const withoutCollision = reducer(
+    withoutTile,
+    actions.paintCollision({
+      sceneId: "scene1",
+      x: 0,
+      y: 0,
+      value: 0,
+      mask: 0xff,
+      brush: "16px",
+    }),
+  );
+  const erased = reducer(
+    withoutCollision,
+    actions.paintColor({
+      sceneId: "scene1",
+      backgroundId: "",
+      x: 0,
+      y: 0,
+      paletteIndex: 0,
+      isTileProp: false,
+      brush: "16px",
+      erase: true,
+    }),
+  );
+
+  expect(erased.scenes.entities.scene1?.tilemap?.layers[0]?.tiles[0]).toBe(0);
+  expect(erased.scenes.entities.scene1?.collisions[0]).toBe(0);
+  expect(erased.scenes.entities.scene1?.tilemap?.tileColors?.[0]).toBe(0);
+});
+
+test("Should magic paint matching tiles on painted scene collision and color maps", () => {
+  const tileLookup = [1, 2, 1, 3];
+  const collisionPainted = reducer(
+    tilemapPaintState({
+      width: 2,
+      height: 2,
+      collisions: [0, 0, 0, 0],
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1")],
+        tileColors: [0, 0, 0, 0],
+        layers: [
+          {
+            id: "layer1",
+            name: "Layer 1",
+            visible: true,
+            tiles: tileLookup,
+          },
+        ],
+      },
+    }),
+    actions.paintCollision({
+      sceneId: "scene1",
+      tileLookup,
+      x: 0,
+      y: 0,
+      value: 0x0f,
+      brush: "magic",
+      mask: 0xff,
+    }),
+  );
+  expect(collisionPainted.scenes.entities.scene1?.collisions).toEqual([
+    0x0f, 0, 0x0f, 0,
+  ]);
+
+  const colorPainted = reducer(
+    collisionPainted,
+    actions.paintColor({
+      sceneId: "scene1",
+      backgroundId: "",
+      tileLookup,
+      x: 0,
+      y: 0,
+      paletteIndex: 3,
+      brush: "magic",
+      isTileProp: false,
+    }),
+  );
+  expect(colorPainted.scenes.entities.scene1?.tilemap?.tileColors).toEqual([
+    3, 0, 3, 0,
+  ]);
+});
+
+test("Should magic paint matching tiles on image scene collision and color maps", () => {
+  const tileLookup = [1, 2, 1, 3];
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummySceneNormalized,
+          id: "scene1",
+          backgroundId: "bg1",
+          width: 2,
+          height: 2,
+          actors: [],
+          triggers: [],
+          collisions: [0, 0, 0, 0],
+        },
+      },
+      ids: ["scene1"],
+    },
+    backgrounds: {
+      entities: {
+        bg1: {
+          ...dummyBackground,
+          id: "bg1",
+          width: 2,
+          height: 2,
+          tileColors: [0, 0, 0, 0],
+        },
+      },
+      ids: ["bg1"],
+    },
+  };
+
+  const collisionPainted = reducer(
+    state,
+    actions.paintCollision({
+      sceneId: "scene1",
+      tileLookup,
+      x: 0,
+      y: 0,
+      value: 0x0f,
+      brush: "magic",
+      mask: 0xff,
+    }),
+  );
+  expect(collisionPainted.scenes.entities.scene1?.collisions).toEqual([
+    0x0f, 0, 0x0f, 0,
+  ]);
+
+  const colorPainted = reducer(
+    collisionPainted,
+    actions.paintColor({
+      sceneId: "scene1",
+      backgroundId: "bg1",
+      tileLookup,
+      x: 0,
+      y: 0,
+      paletteIndex: 3,
+      brush: "magic",
+      isTileProp: false,
+    }),
+  );
+  expect(colorPainted.backgrounds.entities.bg1?.tileColors).toEqual([
+    3, 0, 3, 0,
+  ]);
+});
+
+test("Should not apply tile defaults when painting behind a visible higher layer", () => {
+  const collisions = [0x0f];
+  const tileColors = [2];
+  const painted = reducer(
+    tilemapPaintState(
+      {
+        width: 1,
+        height: 1,
+        collisions,
+        tilemap: {
+          tilesets: [tilesetSnapshot("tiles1")],
+          tileColors,
+          layers: [
+            {
+              id: "lower",
+              name: "Lower",
+              visible: true,
+              tiles: [0],
+            },
+            {
+              id: "upper",
+              name: "Upper",
+              visible: true,
+              tiles: [encodeSceneTileRef(0, 1)],
+            },
+          ],
+        },
+      },
+      {
+        width: 2,
+        height: 1,
+        imageWidth: 16,
+        imageHeight: 8,
+        tileColors: [3, 4],
+        tileCollisions: [0x01, 0x02],
+      },
+    ),
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "lower",
+      tilesetId: "tiles1",
+      tileIndex: 0,
+      x: 0,
+      y: 0,
+    }),
+  );
+
+  expect(painted.scenes.entities.scene1?.tilemap?.layers[0]?.tiles[0]).toBe(
+    encodeSceneTileRef(0, 0),
+  );
+  expect(painted.scenes.entities.scene1?.tilemap?.tileColors).toBe(tileColors);
+  expect(painted.scenes.entities.scene1?.collisions).toBe(collisions);
+});
+
+test("Should apply tile defaults when painting the top visible layer", () => {
+  const collisions = [0x0f];
+  const tileColors = [2];
+  const painted = reducer(
+    tilemapPaintState(
+      {
+        width: 1,
+        height: 1,
+        collisions,
+        tilemap: {
+          tilesets: [tilesetSnapshot("tiles1")],
+          tileColors,
+          layers: [
+            {
+              id: "lower",
+              name: "Lower",
+              visible: true,
+              tiles: [encodeSceneTileRef(0, 1)],
+            },
+            {
+              id: "upper",
+              name: "Upper",
+              visible: true,
+              tiles: [0],
+            },
+          ],
+        },
+      },
+      {
+        width: 2,
+        height: 1,
+        imageWidth: 16,
+        imageHeight: 8,
+        tileColors: [3, 4],
+        tileCollisions: [0x01, 0x02],
+      },
+    ),
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "upper",
+      tilesetId: "tiles1",
+      tileIndex: 0,
+      x: 0,
+      y: 0,
+    }),
+  );
+
+  expect(painted.scenes.entities.scene1?.tilemap?.layers[1]?.tiles[0]).toBe(
+    encodeSceneTileRef(0, 0),
+  );
+  expect(painted.scenes.entities.scene1?.tilemap?.tileColors).toEqual([3]);
+  expect(painted.scenes.entities.scene1?.collisions).toEqual([0x01]);
+  expect(painted.scenes.entities.scene1?.tilemap?.tileColors).not.toBe(
+    tileColors,
+  );
+  expect(painted.scenes.entities.scene1?.collisions).not.toBe(collisions);
 });

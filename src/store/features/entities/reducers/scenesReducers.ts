@@ -1,8 +1,12 @@
 import clamp from "shared/lib/helpers/clamp";
 import {
+  buildSceneTilesetLookup,
+  decodeSceneTileRef,
+  encodeSceneTileRef,
   getTilemapLayersTileColors,
   normalizeTilemapLayersSize,
   resolveSceneAutotiles,
+  sceneStampLinePositions,
 } from "shared/lib/tiles/sceneTilemapData";
 import { moveArrayElement } from "shared/lib/helpers/array";
 import { ResizeTilemapLayersPayload } from "store/features/entities/entitiesActionMatchers";
@@ -60,6 +64,7 @@ import {
   MIN_WORLD_ENTITY_Y,
   TILE_SIZE,
   EVENT_SWITCH_SCENE,
+  TILE_DEFAULT_UNSET,
 } from "consts";
 import {
   paintMagic,
@@ -677,6 +682,375 @@ const deleteSceneColorSelection: CaseReducer<
   });
 };
 
+const paintSceneTile: CaseReducer<
+  EntitiesState,
+  PayloadAction<
+    {
+      sceneId: string;
+      layerId?: string;
+      tilesetId: string;
+      tileIndex: number;
+      autotile?: boolean;
+      erase?: boolean;
+      stamp?: { width: number; height: number; tilesetWidth: number };
+      brush?: Brush;
+      x: number;
+      y: number;
+    } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
+  >
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (
+    !scene?.tilemap ||
+    action.payload.x < 0 ||
+    action.payload.y < 0 ||
+    action.payload.x >= scene.width ||
+    action.payload.y >= scene.height
+  ) {
+    return;
+  }
+
+  const layerIndex = Math.max(
+    0,
+    scene.tilemap.layers.findIndex(
+      (layer) => layer.id === action.payload.layerId,
+    ),
+  );
+  const layer = scene.tilemap.layers[layerIndex];
+  if (!layer) {
+    return;
+  }
+
+  const sceneSize = scene.width * scene.height;
+  const tilesets = [...scene.tilemap.tilesets];
+  let tileColors: number[] | undefined;
+  let collisions: number[] | undefined;
+  const brush = action.payload.brush ?? "8px";
+  const isErasing = action.payload.erase;
+  const hasTileset = tilesets.some(
+    (tileset) => tileset.id === action.payload.tilesetId,
+  );
+
+  if (!isErasing && action.payload.tileIndex >= 0 && !hasTileset) {
+    const tileset = localTilesetSelectById(state, action.payload.tilesetId);
+    if (!tileset) {
+      return;
+    }
+    tilesets.push({
+      id: tileset.id,
+      width: tileset.width,
+      height: tileset.height,
+    });
+  }
+
+  const tiles = [...layer.tiles];
+  const autotiles = layer.autotiles
+    ? [...layer.autotiles]
+    : new Array(scene.width * scene.height).fill(0);
+
+  const tilemapWithTileset = { ...scene.tilemap, tilesets };
+  const tilesetLookup = buildSceneTilesetLookup(tilemapWithTileset);
+  const tilesetOffset =
+    tilesetLookup.entryByTilesetId.get(action.payload.tilesetId)?.offset ?? 0;
+
+  const tileRef =
+    isErasing || action.payload.tileIndex < 0
+      ? 0
+      : encodeSceneTileRef(tilesetOffset, action.payload.tileIndex);
+  const autotileRef = tileRef;
+  const drawSize = brush === "16px" ? 2 : 1;
+  const changedCells: Array<{ x: number; y: number }> = [];
+  const isInBounds = (x: number, y: number) =>
+    x >= 0 && y >= 0 && x < scene.width && y < scene.height;
+
+  const getTileColor = (cellIndex: number) => {
+    if (tileColors) {
+      return tileColors[cellIndex] ?? 0;
+    }
+    if (scene.tilemap?.tileColors) {
+      return scene.tilemap.tileColors[cellIndex] ?? 0;
+    }
+    return 0;
+  };
+
+  const ensureTileColors = () => {
+    if (!tileColors) {
+      tileColors = new Array<number>(sceneSize).fill(0);
+      for (let index = 0; index < sceneSize; index++) {
+        tileColors[index] = scene.tilemap?.tileColors
+          ? (scene.tilemap.tileColors[index] ?? 0)
+          : 0;
+      }
+    }
+    return tileColors;
+  };
+
+  const getCollision = (cellIndex: number) =>
+    collisions?.[cellIndex] ?? scene.collisions[cellIndex] ?? 0;
+
+  const ensureCollisions = () => {
+    if (!collisions) {
+      const nextCollisions = new Array<number>(sceneSize).fill(0);
+      scene.collisions.slice(0, sceneSize).forEach((value, index) => {
+        nextCollisions[index] = value;
+      });
+      collisions = nextCollisions;
+    }
+    return collisions;
+  };
+
+  const hasVisibleTileAbove = (cellIndex: number) => {
+    if (!scene.tilemap) {
+      return false;
+    }
+    for (
+      let index = layerIndex + 1;
+      index < scene.tilemap.layers.length;
+      index++
+    ) {
+      const tileLayer = scene.tilemap.layers[index];
+
+      if (tileLayer?.visible && tileLayer.tiles[cellIndex]) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  const shouldApplyTileDefaults = (cellIndex: number) =>
+    layer.visible && !hasVisibleTileAbove(cellIndex);
+
+  const applyTileDefaults = (cellIndex: number, value: number) => {
+    if (!shouldApplyTileDefaults(cellIndex)) {
+      return;
+    }
+
+    const ref = decodeSceneTileRef(value, tilesetLookup);
+    const sourceTilesetId = ref?.tilesetId;
+    const sourceTileset = sourceTilesetId
+      ? localTilesetSelectById(state, sourceTilesetId)
+      : undefined;
+
+    const defaultColor = ref && sourceTileset?.tileColors[ref.tileIndex];
+
+    if (
+      defaultColor !== undefined &&
+      defaultColor !== TILE_DEFAULT_UNSET &&
+      defaultColor !== getTileColor(cellIndex)
+    ) {
+      ensureTileColors()[cellIndex] = defaultColor;
+    }
+
+    const defaultCollision =
+      ref && sourceTileset?.tileCollisions[ref.tileIndex];
+
+    if (
+      defaultCollision !== undefined &&
+      defaultCollision !== TILE_DEFAULT_UNSET &&
+      defaultCollision !== getCollision(cellIndex)
+    ) {
+      ensureCollisions()[cellIndex] = defaultCollision;
+    }
+  };
+
+  const setValue = (x: number, y: number, value: number) => {
+    const cellIndex = y * scene.width + x;
+    autotiles[cellIndex] =
+      !isErasing && action.payload.autotile ? autotileRef : 0;
+    tiles[cellIndex] = value;
+    applyTileDefaults(cellIndex, value);
+    changedCells.push({ x, y });
+  };
+
+  const getValue = (x: number, y: number) => tiles[y * scene.width + x] ?? 0;
+  const equal = (a: number, b: number) => a === b;
+  const stamp = action.payload.stamp;
+  const isStamp = Boolean(
+    !isErasing &&
+      brush !== "magic" &&
+      stamp &&
+      stamp.tilesetWidth > 0 &&
+      (stamp.width > 1 || stamp.height > 1),
+  );
+
+  const paintStamp = (originX: number, originY: number) => {
+    if (!stamp) {
+      return;
+    }
+    for (let stampY = 0; stampY < stamp.height; stampY++) {
+      for (let stampX = 0; stampX < stamp.width; stampX++) {
+        const x = originX + stampX;
+        const y = originY + stampY;
+        if (!isInBounds(x, y)) continue;
+        const value = isErasing
+          ? 0
+          : encodeSceneTileRef(
+              tilesetOffset,
+              action.payload.tileIndex + stampY * stamp.tilesetWidth + stampX,
+            );
+        const cellIndex = y * scene.width + x;
+        autotiles[cellIndex] = 0;
+        tiles[cellIndex] = value;
+        applyTileDefaults(cellIndex, value);
+        changedCells.push({ x, y });
+      }
+    }
+  };
+
+  const paintStampCell = (
+    x: number,
+    y: number,
+    originX: number,
+    originY: number,
+  ) => {
+    if (!stamp) {
+      return;
+    }
+    const stampX = (((x - originX) % stamp.width) + stamp.width) % stamp.width;
+    const stampY =
+      (((y - originY) % stamp.height) + stamp.height) % stamp.height;
+    const value = encodeSceneTileRef(
+      tilesetOffset,
+      action.payload.tileIndex + stampY * stamp.tilesetWidth + stampX,
+    );
+    const cellIndex = y * scene.width + x;
+    autotiles[cellIndex] = 0;
+    tiles[cellIndex] = value;
+    applyTileDefaults(cellIndex, value);
+    changedCells.push({ x, y });
+  };
+
+  if (isStamp && brush === "fill") {
+    const fillLookup = [...tiles];
+    const getFillValue = (x: number, y: number) =>
+      fillLookup[y * scene.width + x] ?? 0;
+    const setFillValue = (x: number, y: number) => {
+      fillLookup[y * scene.width + x] = -1;
+      paintStampCell(x, y, action.payload.x, action.payload.y);
+    };
+    floodFill(
+      action.payload.x,
+      action.payload.y,
+      -1,
+      getFillValue,
+      setFillValue,
+      isInBounds,
+      equal,
+    );
+  } else if (isStamp && action.payload.drawLine) {
+    sceneStampLinePositions(
+      action.payload.x,
+      action.payload.y,
+      action.payload.endX,
+      action.payload.endY,
+      stamp?.width ?? 1,
+      stamp?.height ?? 1,
+    ).forEach(({ x, y }) => paintStamp(x, y));
+  } else if (isStamp) {
+    paintStamp(action.payload.x, action.payload.y);
+  } else if (brush === "magic") {
+    paintMagic(
+      scene.width,
+      layer.tiles,
+      action.payload.x,
+      action.payload.y,
+      tileRef,
+      setValue,
+      isInBounds,
+    );
+  } else if (brush === "fill") {
+    const targetIndex = action.payload.y * scene.width + action.payload.x;
+    const targetIsAutotile = Boolean(autotiles[targetIndex]);
+    const replacementIsAutotile = Boolean(action.payload.autotile && tileRef);
+    if (
+      getValue(action.payload.x, action.payload.y) !== tileRef ||
+      targetIsAutotile !== replacementIsAutotile
+    ) {
+      const fillLookup = [...tiles];
+      const getFillValue = (x: number, y: number) =>
+        fillLookup[y * scene.width + x] ?? 0;
+      const setFillValue = (x: number, y: number) => {
+        fillLookup[y * scene.width + x] = -1;
+        setValue(x, y, tileRef);
+      };
+      floodFill(
+        action.payload.x,
+        action.payload.y,
+        -1,
+        getFillValue,
+        setFillValue,
+        isInBounds,
+        equal,
+      );
+    }
+  } else if (action.payload.drawLine) {
+    paintLine(
+      action.payload.x,
+      action.payload.y,
+      action.payload.endX,
+      action.payload.endY,
+      drawSize,
+      tileRef,
+      setValue,
+      isInBounds,
+    );
+  } else {
+    paint(
+      action.payload.x,
+      action.payload.y,
+      drawSize,
+      tileRef,
+      setValue,
+      isInBounds,
+    );
+  }
+
+  const cellsToResolve = new Set<number>();
+  for (const changedCell of changedCells) {
+    for (let y = changedCell.y - 1; y <= changedCell.y + 1; y++) {
+      for (let x = changedCell.x - 1; x <= changedCell.x + 1; x++) {
+        if (isInBounds(x, y)) cellsToResolve.add(y * scene.width + x);
+      }
+    }
+  }
+
+  const resolvedLayerTiles = [...tiles];
+
+  if (autotiles.some(Boolean)) {
+    const resolvedAutotiles = resolveSceneAutotiles(
+      autotiles,
+      scene.width,
+      scene.height,
+      tilemapWithTileset,
+    );
+
+    for (const index of cellsToResolve) {
+      if (autotiles[index]) {
+        const value = resolvedAutotiles[index] ?? 0;
+        resolvedLayerTiles[index] = value;
+        applyTileDefaults(index, value);
+      }
+    }
+  }
+
+  const layers = [...scene.tilemap.layers];
+  layers[layerIndex] = { ...layer, tiles: resolvedLayerTiles, autotiles };
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      ...(collisions ? { collisions } : {}),
+      tilemap: {
+        ...scene.tilemap,
+        tilesets,
+        ...(tileColors ? { tileColors } : {}),
+        layers,
+      },
+    },
+  });
+};
+
 const editScenes: CaseReducer<
   EntitiesState,
   PayloadAction<Array<{ id: string; changes: Partial<SceneNormalized> }>>
@@ -748,14 +1122,20 @@ const paintCollision: CaseReducer<
     return;
   }
   const background = localBackgroundSelectById(state, scene.backgroundId);
-  if (!background) {
+  if (!background && !scene.tilemap) {
     return;
   }
 
   const brush = action.payload.brush;
   const mask = action.payload.mask;
   const drawSize = brush === "16px" ? 2 : 1;
-  const collisionsSize = Math.ceil(background.width * background.height);
+  const width = scene.tilemap
+    ? scene.width
+    : (background?.width ?? scene.width);
+  const height = scene.tilemap
+    ? scene.height
+    : (background?.height ?? scene.height);
+  const collisionsSize = Math.ceil(width * height);
   const collisions = scene.collisions.slice(0, collisionsSize);
 
   // Fill collisions array if too small for image
@@ -766,26 +1146,26 @@ const paintCollision: CaseReducer<
   }
 
   const getValue = (x: number, y: number) => {
-    const tileIndex = background.width * y + x;
+    const tileIndex = width * y + x;
     return collisions[tileIndex];
   };
 
   const setValue = (x: number, y: number, value: number) => {
-    const tileIndex = background.width * y + x;
+    const tileIndex = width * y + x;
     const originalValue = collisions[tileIndex] ?? 0;
     const newValue = (originalValue & ~mask) | (value & mask);
     collisions[tileIndex] = newValue;
   };
 
   const isInBounds = (x: number, y: number) => {
-    return x >= 0 && x < background.width && y >= 0 && y < background.height;
+    return x >= 0 && x < width && y >= 0 && y < height;
   };
 
   const equal = (a: number, b: number) => a === b;
 
   if (brush === "magic" && action.payload.tileLookup) {
     paintMagic(
-      background.width,
+      width,
       action.payload.tileLookup,
       action.payload.x,
       action.payload.y,
@@ -851,9 +1231,15 @@ const paintSlopeCollision: CaseReducer<
     return;
   }
   const background = localBackgroundSelectById(state, scene.backgroundId);
-  if (!background) {
+  if (!background && !scene.tilemap) {
     return;
   }
+  const width = scene.tilemap
+    ? scene.width
+    : (background?.width ?? scene.width);
+  const height = scene.tilemap
+    ? scene.height
+    : (background?.height ?? scene.height);
 
   const { slopeIncline, slopeDirection, offset } = action.payload;
 
@@ -878,7 +1264,7 @@ const paintSlopeCollision: CaseReducer<
   const roundEndX = endX > startX ? Math.floor(endX) : Math.ceil(endX);
   const roundEndY = endY > startY ? Math.floor(endY) : Math.ceil(endY);
 
-  const collisionsSize = Math.ceil(background.width * background.height);
+  const collisionsSize = Math.ceil(width * height);
   const collisions = scene.collisions.slice(0, collisionsSize);
 
   // Fill collisions array if too small for image
@@ -899,7 +1285,7 @@ const paintSlopeCollision: CaseReducer<
       return;
     }
 
-    const tileIndex = background.width * y + x;
+    const tileIndex = width * y + x;
     let newValue = value;
 
     if (
@@ -949,7 +1335,7 @@ const paintSlopeCollision: CaseReducer<
   };
 
   const isInBounds = (x: number, y: number) => {
-    return x >= 0 && x < background.width && y >= 0 && y < background.height;
+    return x >= 0 && x < width && y >= 0 && y < height;
   };
 
   paintLine(
@@ -983,22 +1369,30 @@ const paintColor: CaseReducer<
       paletteIndex: number;
       brush: Brush;
       isTileProp: boolean;
+      erase?: boolean;
     } & ({ drawLine?: false } | { drawLine: true; endX: number; endY: number })
   >
 > = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
   const background = localBackgroundSelectById(
     state,
     action.payload.backgroundId,
   );
-  if (!background) {
+  if (!background && !scene?.tilemap) {
     return;
   }
 
   const isTileProp = action.payload.isTileProp;
   const brush = action.payload.brush;
   const drawSize = brush === "16px" ? 2 : 1;
-  const tileColorsSize = Math.ceil(background.width * background.height);
-  const tileColors = (background.tileColors || []).slice(0, tileColorsSize);
+  const width = scene?.tilemap ? scene.width : (background?.width ?? 0);
+  const height = scene?.tilemap ? scene.height : (background?.height ?? 0);
+  const tileColorsSize = Math.ceil(width * height);
+  const tileColors = (
+    scene?.tilemap
+      ? getTilemapLayersTileColors(scene.tilemap, width, height)
+      : (background?.tileColors ?? [])
+  ).slice(0, tileColorsSize);
 
   if (tileColors.length < tileColorsSize) {
     for (let i = tileColors.length; i < tileColorsSize; i++) {
@@ -1007,7 +1401,7 @@ const paintColor: CaseReducer<
   }
 
   const getValue = (x: number, y: number) => {
-    const tileColorIndex = background.width * y + x;
+    const tileColorIndex = width * y + x;
     if (isTileProp) {
       return tileColors[tileColorIndex] & TILE_COLOR_PROPS;
     }
@@ -1015,9 +1409,11 @@ const paintColor: CaseReducer<
   };
 
   const setValue = (x: number, y: number, value: number) => {
-    const tileColorIndex = background.width * y + x;
+    const tileColorIndex = width * y + x;
     let newValue = value;
-    if (isTileProp) {
+    if (action.payload.erase) {
+      newValue = 0;
+    } else if (isTileProp) {
       // If is prop keep previous color value
       newValue =
         (tileColors[tileColorIndex] & TILE_COLOR_PALETTE) +
@@ -1032,14 +1428,14 @@ const paintColor: CaseReducer<
   };
 
   const isInBounds = (x: number, y: number) => {
-    return x >= 0 && x < background.width && y >= 0 && y < background.height;
+    return x >= 0 && x < width && y >= 0 && y < height;
   };
 
   const equal = (a: number, b: number) => a === b;
 
   if (brush === "magic" && action.payload.tileLookup) {
     paintMagic(
-      background.width,
+      width,
       action.payload.tileLookup,
       action.payload.x,
       action.payload.y,
@@ -1079,12 +1475,17 @@ const paintColor: CaseReducer<
     );
   }
 
-  backgroundsAdapter.updateOne(state.backgrounds, {
-    id: action.payload.backgroundId,
-    changes: {
-      tileColors,
-    },
-  });
+  if (scene?.tilemap) {
+    scenesAdapter.updateOne(state.scenes, {
+      id: scene.id,
+      changes: { tilemap: { ...scene.tilemap, tileColors } },
+    });
+  } else if (background) {
+    backgroundsAdapter.updateOne(state.backgrounds, {
+      id: action.payload.backgroundId,
+      changes: { tileColors },
+    });
+  }
 };
 
 const setSceneExtractedPalettes: CaseReducer<
@@ -1165,6 +1566,7 @@ const scenesReducers = {
   editScene,
   setTilemapLayersEnabled,
   resizeTilemapLayers,
+  paintSceneTile,
   addTilemapLayer: {
     reducer: addTilemapLayer,
     prepare: (payload: { sceneId: string }) => ({
