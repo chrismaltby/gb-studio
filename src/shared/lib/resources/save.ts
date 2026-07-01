@@ -61,6 +61,7 @@ const userSettingKeys: (keyof SettingsResource)[] = [
   "debuggerBreakpoints",
   "debuggerWatchedVariables",
   "openBuildLogOnWarnings",
+  "selectedSceneTilesetId",
 ];
 
 export const encodeResource = <T extends Record<string, unknown>>(

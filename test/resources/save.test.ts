@@ -213,6 +213,23 @@ describe("save.ts", () => {
         expect(sceneResource.checksum).toBe(SparkMD5.hash(sceneResource.data));
         expect(JSON.parse(sceneResource.data)._resourceType).toBe("scene");
       }
+
+      const userSettingsResource = buffer.find((file) =>
+        file.path.endsWith("user_settings.gbsres"),
+      );
+      expect(userSettingsResource).toBeDefined();
+      expect(JSON.parse(userSettingsResource?.data ?? "{}")).toMatchObject({
+        _resourceType: "settings",
+        selectedSceneTilesetId: "",
+      });
+
+      const projectSettingsResource = buffer.find((file) =>
+        file.path.endsWith("/settings.gbsres"),
+      );
+      expect(
+        JSON.parse(projectSettingsResource?.data ?? "{}")
+          .selectedSceneTilesetId,
+      ).toBeUndefined();
     });
   });
 });

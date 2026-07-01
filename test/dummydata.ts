@@ -387,6 +387,7 @@ export const dummyProjectData: ProjectData = {
     disabledSceneTypeIds: [],
     autoTileFlipEnabled: true,
     webTemplate: "",
+    selectedSceneTilesetId: "",
   },
 };
 
@@ -697,6 +698,7 @@ export const dummySettingsResource: SettingsResource = {
   disabledSceneTypeIds: [],
   autoTileFlipEnabled: true,
   webTemplate: "",
+  selectedSceneTilesetId: "",
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -842,6 +844,7 @@ export const dummyProjectResources: ProjectResources = {
     disabledSceneTypeIds: [],
     autoTileFlipEnabled: true,
     webTemplate: "",
+    selectedSceneTilesetId: "",
   },
 };
 

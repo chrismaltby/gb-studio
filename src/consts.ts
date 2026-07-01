@@ -346,6 +346,7 @@ export const defaultProjectSettings: Settings = {
   disabledSceneTypeIds: [],
   autoTileFlipEnabled: true,
   webTemplate: "",
+  selectedSceneTilesetId: "",
 };
 
 export const defaultPalettes: Palette[] = [

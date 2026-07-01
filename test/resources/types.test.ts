@@ -654,6 +654,7 @@ describe("TypeBox Schemas", () => {
       disabledSceneTypeIds: [],
       autoTileFlipEnabled: true,
       webTemplate: "",
+      selectedSceneTilesetId: "",
     };
     const invalidSettings = {
       _resourceType: "settings",

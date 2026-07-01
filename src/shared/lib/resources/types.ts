@@ -982,6 +982,7 @@ export const SettingsResource = Type.Object({
   disabledSceneTypeIds: Type.Array(Type.String()),
   autoTileFlipEnabled: Type.Boolean(),
   webTemplate: Type.String(),
+  selectedSceneTilesetId: Type.String(),
 });
 
 export type SettingsResource = Static<typeof SettingsResource>;
