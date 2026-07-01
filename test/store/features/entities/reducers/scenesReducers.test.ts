@@ -7,7 +7,15 @@ import {
   dummySceneNormalized,
   dummyBackground,
   dummyTilesetResource,
+  dummyActorNormalized,
+  dummyTriggerNormalized,
+  dummyScriptEventNormalized,
 } from "../../../../dummydata";
+import { EVENT_SWITCH_SCENE, MAX_SCENE_TILE_COUNT, TILE_SIZE } from "consts";
+import {
+  encodeSceneTileRef,
+  resolveSceneAutotiles,
+} from "shared/lib/tiles/sceneTilemapData";
 
 jest.mock("uuid");
 const mockUuid = uuid as jest.MockedFunction<typeof uuid>;
@@ -254,6 +262,378 @@ test("Should not move a missing tilemap layer", () => {
   );
 
   expect(unchanged).toBe(enabled);
+});
+
+test("Should resize and shift painted scene layers", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const scene = enabled.scenes.entities.scene1;
+  if (!scene?.tilemap) throw new Error("Expected tilemap scene");
+  const tiles = new Array(20 * 18).fill(0);
+  const tileColors = new Array(20 * 18).fill(0);
+  const collisions = new Array(20 * 18).fill(0);
+  tiles[2 * 20 + 2] = 7;
+  tileColors[2 * 20 + 2] = 3;
+  collisions[2 * 20 + 2] = 4;
+  const painted: EntitiesState = {
+    ...enabled,
+    scenes: {
+      ...enabled.scenes,
+      entities: {
+        ...enabled.scenes.entities,
+        scene1: {
+          ...scene,
+          collisions,
+          tilemap: {
+            ...scene.tilemap,
+            tileColors,
+            layers: [{ ...scene.tilemap.layers[0], tiles }],
+          },
+        },
+      },
+    },
+  };
+
+  const expanded = reducer(
+    painted,
+    actions.resizeTilemapLayers({
+      sceneId: "scene1",
+      width: 21,
+      height: 18,
+      resizeAxis: "width",
+    }),
+  );
+  expect(
+    expanded.scenes.entities.scene1?.tilemap?.layers[0]?.tiles,
+  ).toHaveLength(21 * 18);
+  expect(
+    expanded.scenes.entities.scene1?.tilemap?.layers[0]?.tiles[2 * 21 + 2],
+  ).toBe(7);
+  expect(
+    expanded.scenes.entities.scene1?.tilemap?.tileColors?.[2 * 21 + 2],
+  ).toBe(3);
+  expect(expanded.scenes.entities.scene1?.collisions[2 * 21 + 2]).toBe(4);
+
+  const cropped = reducer(
+    expanded,
+    actions.resizeTilemapLayers({
+      sceneId: "scene1",
+      width: 20,
+      height: 18,
+      shiftX: -1,
+      resizeAxis: "width",
+    }),
+  );
+  expect(
+    cropped.scenes.entities.scene1?.tilemap?.layers[0]?.tiles[2 * 20 + 1],
+  ).toBe(7);
+  expect(
+    cropped.scenes.entities.scene1?.tilemap?.tileColors?.[2 * 20 + 1],
+  ).toBe(3);
+  expect(cropped.scenes.entities.scene1?.collisions[2 * 20 + 1]).toBe(4);
+  expect(cropped.scenes.entities.scene1?.x).toBe((scene.x ?? 0) + TILE_SIZE);
+  expect(cropped.scenes.entities.scene1?.y).toBe(scene.y);
+});
+
+test("Should resize and shift painted scene layers vertically", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const scene = enabled.scenes.entities.scene1;
+  if (!scene?.tilemap) throw new Error("Expected tilemap scene");
+  const tiles = new Array(20 * 18).fill(0);
+  const tileColors = new Array(20 * 18).fill(0);
+  const collisions = new Array(20 * 18).fill(0);
+  tiles[2 * 20 + 2] = 7;
+  tileColors[2 * 20 + 2] = 3;
+  collisions[2 * 20 + 2] = 4;
+  const painted: EntitiesState = {
+    ...enabled,
+    scenes: {
+      ...enabled.scenes,
+      entities: {
+        ...enabled.scenes.entities,
+        scene1: {
+          ...scene,
+          collisions,
+          tilemap: {
+            ...scene.tilemap,
+            tileColors,
+            layers: [{ ...scene.tilemap.layers[0], tiles }],
+          },
+        },
+      },
+    },
+  };
+
+  const expanded = reducer(
+    painted,
+    actions.resizeTilemapLayers({
+      sceneId: "scene1",
+      width: 20,
+      height: 19,
+      resizeAxis: "height",
+    }),
+  );
+  expect(
+    expanded.scenes.entities.scene1?.tilemap?.layers[0]?.tiles,
+  ).toHaveLength(20 * 19);
+  expect(
+    expanded.scenes.entities.scene1?.tilemap?.layers[0]?.tiles[2 * 20 + 2],
+  ).toBe(7);
+
+  const cropped = reducer(
+    expanded,
+    actions.resizeTilemapLayers({
+      sceneId: "scene1",
+      width: 20,
+      height: 18,
+      shiftY: -1,
+      resizeAxis: "height",
+    }),
+  );
+  expect(
+    cropped.scenes.entities.scene1?.tilemap?.layers[0]?.tiles[1 * 20 + 2],
+  ).toBe(7);
+  expect(
+    cropped.scenes.entities.scene1?.tilemap?.tileColors?.[1 * 20 + 2],
+  ).toBe(3);
+  expect(cropped.scenes.entities.scene1?.collisions[1 * 20 + 2]).toBe(4);
+  expect(cropped.scenes.entities.scene1?.x).toBe(scene.x);
+  expect(cropped.scenes.entities.scene1?.y).toBe((scene.y ?? 0) + TILE_SIZE);
+});
+
+test("Should limit tilemap scene width to the maximum tile count", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const resized = reducer(
+    enabled,
+    actions.resizeTilemapLayers({
+      sceneId: "scene1",
+      width: 208,
+      height: 100,
+      resizeAxis: "width",
+    }),
+  );
+  const scene = resized.scenes.entities.scene1;
+
+  expect(scene?.width).toBe(163);
+  expect(scene?.height).toBe(100);
+  expect((scene?.width ?? 0) * (scene?.height ?? 0)).toBeLessThanOrEqual(
+    MAX_SCENE_TILE_COUNT,
+  );
+});
+
+test("Should limit tilemap scene height to the maximum tile count", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const resized = reducer(
+    enabled,
+    actions.resizeTilemapLayers({
+      sceneId: "scene1",
+      width: 208,
+      height: 100,
+      resizeAxis: "height",
+    }),
+  );
+  const scene = resized.scenes.entities.scene1;
+
+  expect(scene?.width).toBe(208);
+  expect(scene?.height).toBe(78);
+  expect((scene?.width ?? 0) * (scene?.height ?? 0)).toBeLessThanOrEqual(
+    MAX_SCENE_TILE_COUNT,
+  );
+});
+
+test("Should preserve and re-resolve autotiles when resizing", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const scene = enabled.scenes.entities.scene1;
+  if (!scene?.tilemap) throw new Error("Expected tilemap scene");
+  const base = encodeSceneTileRef(0, 0);
+  const autotiles = new Array(20 * 18).fill(0);
+  autotiles[1] = base;
+  autotiles[2] = base;
+  const withAutotiles: EntitiesState = {
+    ...enabled,
+    scenes: {
+      ...enabled.scenes,
+      entities: {
+        ...enabled.scenes.entities,
+        scene1: {
+          ...scene,
+          tilemap: {
+            ...scene.tilemap,
+            tilesets: [{ id: "tiles", width: 8, height: 20 }],
+            layers: [{ ...scene.tilemap.layers[0], autotiles }],
+          },
+        },
+      },
+    },
+  };
+
+  const resized = reducer(
+    withAutotiles,
+    actions.resizeTilemapLayers({
+      sceneId: "scene1",
+      width: 20,
+      height: 18,
+      shiftX: -1,
+      resizeAxis: "width",
+    }),
+  );
+  const resizedScene = resized.scenes.entities.scene1;
+  const layer = resizedScene?.tilemap?.layers[0];
+  expect(layer?.autotiles?.[0]).toBe(base);
+  expect(layer?.autotiles?.[1]).toBe(base);
+  expect(layer?.tiles).toEqual(
+    resolveSceneAutotiles(
+      layer?.autotiles ?? [],
+      20,
+      18,
+      resizedScene?.tilemap ?? { tilesets: [] },
+    ),
+  );
+});
+
+test("Should shift and clamp actors, triggers, and switch-scene coordinates", () => {
+  const state = tilemapSceneState();
+  const scene = state.scenes.entities.scene1;
+  if (!scene) throw new Error("Expected scene");
+  scene.actors = ["actor1"];
+  scene.triggers = ["trigger1"];
+  state.actors = {
+    ids: ["actor1"],
+    entities: {
+      actor1: { ...dummyActorNormalized, id: "actor1", x: 19, y: 17 },
+    },
+  };
+  state.triggers = {
+    ids: ["trigger1"],
+    entities: {
+      trigger1: {
+        ...dummyTriggerNormalized,
+        id: "trigger1",
+        x: 18,
+        y: 16,
+        width: 4,
+        height: 4,
+      },
+    },
+  };
+  state.scriptEvents = {
+    ids: ["event1", "event2"],
+    entities: {
+      event1: {
+        ...dummyScriptEventNormalized,
+        id: "event1",
+        command: EVENT_SWITCH_SCENE,
+        args: {
+          sceneId: "scene1",
+          x: { type: "number", value: 1 },
+          y: { type: "variable", value: "0" },
+        },
+      },
+      event2: {
+        ...dummyScriptEventNormalized,
+        id: "event2",
+        command: EVENT_SWITCH_SCENE,
+        args: {
+          sceneId: "otherScene",
+          x: { type: "number", value: 7 },
+          y: { type: "number", value: 8 },
+        },
+      },
+    },
+  };
+  const enabled = reducer(
+    state,
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const resized = reducer(
+    enabled,
+    actions.resizeTilemapLayers({
+      sceneId: "scene1",
+      width: 20,
+      height: 18,
+      shiftX: -5,
+      shiftY: 3,
+      resizeAxis: "width",
+    }),
+  );
+
+  expect(resized.actors.entities.actor1).toMatchObject({ x: 14, y: 17 });
+  expect(resized.triggers.entities.trigger1).toMatchObject({
+    x: 13,
+    y: 17,
+    width: 4,
+    height: 1,
+  });
+  expect(resized.scriptEvents.entities.event1?.args).toMatchObject({
+    x: { type: "number", value: 0 },
+    y: { type: "variable", value: "0" },
+  });
+  expect(resized.scriptEvents.entities.event2?.args).toMatchObject({
+    x: { type: "number", value: 7 },
+    y: { type: "number", value: 8 },
+  });
+});
+
+test("Should not shift actors or triggers when resizing from right or bottom", () => {
+  const state = tilemapSceneState();
+  const scene = state.scenes.entities.scene1;
+  if (!scene) throw new Error("Expected scene");
+  scene.actors = ["actor1"];
+  scene.triggers = ["trigger1"];
+  state.actors = {
+    ids: ["actor1"],
+    entities: {
+      actor1: { ...dummyActorNormalized, id: "actor1", x: 5, y: 6 },
+    },
+  };
+  state.triggers = {
+    ids: ["trigger1"],
+    entities: {
+      trigger1: {
+        ...dummyTriggerNormalized,
+        id: "trigger1",
+        x: 7,
+        y: 8,
+        width: 2,
+        height: 3,
+      },
+    },
+  };
+  const enabled = reducer(
+    state,
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const resized = reducer(
+    enabled,
+    actions.resizeTilemapLayers({
+      sceneId: "scene1",
+      width: 21,
+      height: 19,
+      resizeAxis: "width",
+    }),
+  );
+
+  expect(resized.actors.entities.actor1).toMatchObject({ x: 5, y: 6 });
+  expect(resized.triggers.entities.trigger1).toMatchObject({
+    x: 7,
+    y: 8,
+    width: 2,
+    height: 3,
+  });
 });
 
 test("Should update scene dimensions to match new background", () => {

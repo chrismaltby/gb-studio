@@ -141,3 +141,45 @@ test("Should keep scene widths if backgrounds have NOT changed dimensions since 
   expect(newState.scenes.entities["scene1"]?.width).toBe(20);
   expect(newState.scenes.entities["scene1"]?.height).toBe(18);
 });
+
+test("Should preserve painted scene dimensions without a background", () => {
+  const state: EntitiesState = { ...initialState };
+  const loadData: CompressedProjectResources = {
+    ...dummyCompressedProjectResources,
+    scenes: [
+      {
+        ...dummyCompressedSceneResource,
+        id: "scene1",
+        backgroundId: "",
+        width: 40,
+        height: 30,
+        tilemap: {
+          tilesets: [],
+          layers: [
+            {
+              id: "layer",
+              name: "Layer",
+              visible: true,
+              tiles: "",
+            },
+          ],
+        },
+      },
+    ],
+  };
+  const action = projectActions.loadProject.fulfilled(
+    {
+      resources: loadData,
+      path: "project.gbsproj",
+      scriptEventDefs: {},
+      engineSchema: { fields: [], sceneTypes: [], consts: {} },
+      modifiedSpriteIds: [],
+      isMigrated: false,
+    },
+    "randomid",
+    "project.gbsproj",
+  );
+  const newState = reducer(state, action);
+  expect(newState.scenes.entities.scene1?.width).toBe(40);
+  expect(newState.scenes.entities.scene1?.height).toBe(30);
+});

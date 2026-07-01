@@ -56,6 +56,33 @@ export const resizeGrid = <T>(
   return result;
 };
 
+export const resizeGridWithOffset = <T>(
+  values: readonly T[],
+  oldWidth: number,
+  oldHeight: number,
+  newWidth: number,
+  newHeight: number,
+  offsetX: number,
+  offsetY: number,
+  emptyValue: T,
+): T[] => {
+  const result = new Array<T>(newWidth * newHeight).fill(emptyValue);
+
+  for (let oldY = 0; oldY < oldHeight; oldY++) {
+    for (let oldX = 0; oldX < oldWidth; oldX++) {
+      const newX = oldX + offsetX;
+      const newY = oldY + offsetY;
+
+      if (newX >= 0 && newX < newWidth && newY >= 0 && newY < newHeight) {
+        result[getGridIndex(newX, newY, newWidth)] =
+          values[getGridIndex(oldX, oldY, oldWidth)] ?? emptyValue;
+      }
+    }
+  }
+
+  return result;
+};
+
 const getGridIndex = (x: number, y: number, width: number): number =>
   y * width + x;
 

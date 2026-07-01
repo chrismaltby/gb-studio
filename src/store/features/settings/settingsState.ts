@@ -5,6 +5,8 @@ import projectActions from "store/features/project/projectActions";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { ScriptEventArgs } from "shared/lib/resources/types";
 import uuid from "uuid";
+import { isResizeTilemapLayersAction } from "store/features/entities/entitiesActionMatchers";
+import { normalizeTilemapLayersSize } from "shared/lib/tiles/sceneTilemapData";
 
 export type ColorModeSetting = "mono" | "mixed" | "color";
 export type MusicDriverSetting = "huge" | "gbt";
@@ -199,12 +201,27 @@ const settingsSlice = createSlice({
     },
   },
   extraReducers: (builder) =>
-    builder.addCase(projectActions.loadProject.fulfilled, (state, action) => {
-      return {
-        ...state,
-        ...action.payload.resources.settings,
-      };
-    }),
+    builder
+      .addCase(projectActions.loadProject.fulfilled, (state, action) => {
+        return {
+          ...state,
+          ...action.payload.resources.settings,
+        };
+      })
+      .addMatcher(isResizeTilemapLayersAction, (state, action) => {
+        if (state.startSceneId !== action.payload.sceneId) {
+          return;
+        }
+        const { width, height } = normalizeTilemapLayersSize(action.payload);
+        state.startX = Math.min(
+          width - 2,
+          Math.max(0, state.startX + (action.payload.shiftX ?? 0)),
+        );
+        state.startY = Math.min(
+          height - 1,
+          Math.max(0, state.startY + (action.payload.shiftY ?? 0)),
+        );
+      }),
 });
 
 export const getSettings = (state: RootState) => state.project.present.settings;

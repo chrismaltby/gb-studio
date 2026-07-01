@@ -8,6 +8,7 @@ import {
   type GridOffset,
   type GridSelection,
 } from "./grid";
+import { MAX_SCENE_TILE_COUNT } from "consts";
 
 export const moveTilemapLayerSelection = (
   layer: SceneTilemapLayer,
@@ -417,4 +418,25 @@ export const isTilemapLayerCellTopmost = (
   }
 
   return true;
+};
+
+export const normalizeTilemapLayersSize = ({
+  width: requestedWidth,
+  height: requestedHeight,
+  resizeAxis,
+}: {
+  width: number;
+  height: number;
+  resizeAxis: "width" | "height";
+}) => {
+  let width = Math.min(255, Math.max(20, Math.floor(requestedWidth)));
+  let height = Math.min(255, Math.max(18, Math.floor(requestedHeight)));
+  if (width * height > MAX_SCENE_TILE_COUNT) {
+    if (resizeAxis === "width") {
+      width = Math.max(20, Math.floor(MAX_SCENE_TILE_COUNT / height));
+    } else {
+      height = Math.max(18, Math.floor(MAX_SCENE_TILE_COUNT / width));
+    }
+  }
+  return { width, height };
 };

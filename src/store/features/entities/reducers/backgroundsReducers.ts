@@ -126,6 +126,9 @@ const editBackgroundAutoTileFlipOverride: CaseReducer<
 export const fixAllScenesWithModifiedBackgrounds = (state: EntitiesState) => {
   const scenes = localSceneSelectAll(state);
   for (const scene of scenes) {
+    if (scene.tilemap) {
+      continue;
+    }
     const background = localBackgroundSelectById(state, scene.backgroundId);
     if (
       !background ||

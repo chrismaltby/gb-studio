@@ -1,5 +1,11 @@
-import { getTilemapLayersTileColors } from "shared/lib/tiles/sceneTilemapData";
+import clamp from "shared/lib/helpers/clamp";
+import {
+  getTilemapLayersTileColors,
+  normalizeTilemapLayersSize,
+  resolveSceneAutotiles,
+} from "shared/lib/tiles/sceneTilemapData";
 import { moveArrayElement } from "shared/lib/helpers/array";
+import { ResizeTilemapLayersPayload } from "store/features/entities/entitiesActionMatchers";
 import {
   PayloadAction,
   CaseReducer,
@@ -33,6 +39,7 @@ import {
   localSceneSelectById,
   localBackgroundSelectById,
   localTilesetSelectById,
+  localScriptEventSelectAll,
 } from "store/features/entities/helpers";
 import { Brush, SlopeIncline } from "store/features/editor/editorState";
 import {
@@ -51,6 +58,8 @@ import {
   TILE_COLOR_PALETTE,
   MIN_WORLD_ENTITY_X,
   MIN_WORLD_ENTITY_Y,
+  TILE_SIZE,
+  EVENT_SWITCH_SCENE,
 } from "consts";
 import {
   paintMagic,
@@ -58,8 +67,13 @@ import {
   paint,
   floodFill,
 } from "shared/lib/helpers/paint";
-import { clearGridSelection, moveGridSelection } from "shared/lib/tiles/grid";
+import {
+  clearGridSelection,
+  moveGridSelection,
+  resizeGridWithOffset,
+} from "shared/lib/tiles/grid";
 import type { GridOffset, GridSelection } from "shared/lib/tiles/grid";
+import { isScriptValue } from "shared/lib/scriptValue/types";
 
 const MIN_SCENE_WIDTH = 20;
 const MIN_SCENE_HEIGHT = 18;
@@ -218,8 +232,8 @@ const setTilemapLayersEnabled: CaseReducer<
   if (!scene) {
     return;
   }
-  const width = scene.type === "LOGO" ? 20 : scene.width;
-  const height = scene.type === "LOGO" ? 18 : scene.height;
+  const width = scene.width;
+  const height = scene.height;
   const initialTileset = action.payload.tilesetId
     ? localTilesetSelectById(state, action.payload.tilesetId)
     : undefined;
@@ -250,6 +264,146 @@ const setTilemapLayersEnabled: CaseReducer<
             ],
           })
         : undefined,
+    },
+  });
+};
+
+const resizeTilemapLayers: CaseReducer<
+  EntitiesState,
+  PayloadAction<ResizeTilemapLayersPayload>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene?.tilemap) {
+    return;
+  }
+
+  const resizeAxis = action.payload.resizeAxis;
+
+  const { width, height } = normalizeTilemapLayersSize({
+    width: action.payload.width,
+    height: action.payload.height,
+    resizeAxis,
+  });
+
+  const shiftX = action.payload.shiftX ?? 0;
+  const shiftY = action.payload.shiftY ?? 0;
+  const x = scene.x - shiftX * TILE_SIZE;
+  const y = scene.y - shiftY * TILE_SIZE;
+
+  const resizeAndShift = (values: readonly number[]) =>
+    resizeGridWithOffset(
+      values,
+      scene.width,
+      scene.height,
+      width,
+      height,
+      shiftX,
+      shiftY,
+      0,
+    );
+
+  const actors = localActorSelectEntities(state);
+  const triggers = localTriggerSelectEntities(state);
+  const scriptEvents = localScriptEventSelectAll(state);
+
+  // Shift scene actors
+  scene.actors.forEach((actorId) => {
+    const actor = actors[actorId];
+    if (actor) {
+      actorsAdapter.updateOne(state.actors, {
+        id: actorId,
+        changes: {
+          x: clamp(actor.x + shiftX, 0, width - 2),
+          y: clamp(actor.y + shiftY, 0, height - 1),
+        },
+      });
+    }
+  });
+
+  // Shift scene triggers
+  scene.triggers.forEach((triggerId) => {
+    const trigger = triggers[triggerId];
+    if (trigger) {
+      const triggerX = clamp(trigger.x + shiftX, 0, width - 1);
+      const triggerY = clamp(trigger.y + shiftY, 0, height - 1);
+      triggersAdapter.updateOne(state.triggers, {
+        id: triggerId,
+        changes: {
+          x: triggerX,
+          y: triggerY,
+          width: Math.min(trigger.width, width - triggerX),
+          height: Math.min(trigger.height, height - triggerY),
+        },
+      });
+    }
+  });
+
+  // Shift scene switch events referencing the scene
+  scriptEvents.forEach((scriptEvent) => {
+    if (
+      scriptEvent.command !== EVENT_SWITCH_SCENE ||
+      !scriptEvent.args ||
+      scriptEvent.args.sceneId !== scene.id
+    ) {
+      return;
+    }
+
+    if (
+      scriptEvent.args.x &&
+      isScriptValue(scriptEvent.args.x) &&
+      scriptEvent.args.x.type === "number"
+    ) {
+      scriptEvent.args.x.value = clamp(
+        scriptEvent.args.x.value + shiftX,
+        0,
+        width - 1,
+      );
+    }
+
+    if (
+      scriptEvent.args.y &&
+      isScriptValue(scriptEvent.args.y) &&
+      scriptEvent.args.y.type === "number"
+    ) {
+      scriptEvent.args.y.value = clamp(
+        scriptEvent.args.y.value + shiftY,
+        0,
+        height - 1,
+      );
+    }
+  });
+
+  const sceneTilemap = scene.tilemap;
+  const resizedTilemap = {
+    ...sceneTilemap,
+    tileColors: resizeAndShift(sceneTilemap.tileColors ?? []),
+    layers: sceneTilemap.layers.map((layer) => {
+      const autotiles = layer.autotiles
+        ? resizeAndShift(layer.autotiles)
+        : undefined;
+      const tiles = resizeAndShift(layer.tiles);
+      const resolvedAutotiles = autotiles
+        ? resolveSceneAutotiles(autotiles, width, height, sceneTilemap)
+        : undefined;
+      return {
+        ...layer,
+        tiles: resolvedAutotiles
+          ? tiles.map((tile, index) => resolvedAutotiles[index] || tile)
+          : tiles,
+        autotiles,
+      };
+    }),
+  };
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      width,
+      height,
+      x,
+      y,
+      collisions: resizeAndShift(scene.collisions),
+      tilemap: resizedTilemap,
     },
   });
 };
@@ -1010,6 +1164,7 @@ const scenesReducers = {
 
   editScene,
   setTilemapLayersEnabled,
+  resizeTilemapLayers,
   addTilemapLayer: {
     reducer: addTilemapLayer,
     prepare: (payload: { sceneId: string }) => ({

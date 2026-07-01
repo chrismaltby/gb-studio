@@ -11,6 +11,7 @@ import {
 } from "../../../dummydata";
 import { RootState } from "store/storeTypes";
 import { CompressedProjectResources } from "shared/lib/resources/types";
+import entitiesActions from "store/features/entities/entitiesActions";
 
 test("Should be able to change settings", () => {
   const state: SettingsState = {
@@ -35,6 +36,105 @@ test("Should be able to set player starting position", () => {
   expect(newState.startSceneId).toBe("scene1");
   expect(newState.startX).toBe(5);
   expect(newState.startY).toBe(6);
+});
+
+test("Should keep player start anchored when resizing its painted scene", () => {
+  const state: SettingsState = {
+    ...initialState,
+    startSceneId: "scene1",
+    startX: 5,
+    startY: 6,
+  };
+  const shifted = reducer(state, {
+    type: "entities/resizeTilemapLayers",
+    payload: {
+      sceneId: "scene1",
+      width: 20,
+      height: 18,
+      resizeAxis: "width",
+      shiftX: -2,
+      shiftY: 3,
+    },
+  });
+  expect(shifted.startX).toBe(3);
+  expect(shifted.startY).toBe(9);
+
+  const clamped = reducer(
+    { ...shifted, startX: 30, startY: 30 },
+    {
+      type: "entities/resizeTilemapLayers",
+      payload: {
+        sceneId: "scene1",
+        width: 20,
+        height: 18,
+        resizeAxis: "width",
+      },
+    },
+  );
+  expect(clamped.startX).toBe(18);
+  expect(clamped.startY).toBe(17);
+});
+
+test("Should not move player start when resizing a different scene", () => {
+  const state: SettingsState = {
+    ...initialState,
+    startSceneId: "scene1",
+    startX: 5,
+    startY: 6,
+  };
+  const newState = reducer(state, {
+    type: "entities/resizeTilemapLayers",
+    payload: {
+      sceneId: "scene2",
+      width: 20,
+      height: 18,
+      resizeAxis: "width",
+      shiftX: -2,
+      shiftY: -2,
+    },
+  });
+  expect(newState.startX).toBe(5);
+  expect(newState.startY).toBe(6);
+});
+
+test("Should not shift player start when resizing from right or bottom", () => {
+  const state: SettingsState = {
+    ...initialState,
+    startSceneId: "scene1",
+    startX: 5,
+    startY: 6,
+  };
+  const newState = reducer(
+    state,
+    entitiesActions.resizeTilemapLayers({
+      sceneId: "scene1",
+      width: 21,
+      height: 19,
+      resizeAxis: "width",
+    }),
+  );
+  expect(newState.startX).toBe(5);
+  expect(newState.startY).toBe(6);
+});
+
+test("Should use normalized painted scene dimensions when clamping player start", () => {
+  const state: SettingsState = {
+    ...initialState,
+    startSceneId: "scene1",
+    startX: 250,
+    startY: 90,
+  };
+  const resized = reducer(
+    state,
+    entitiesActions.resizeTilemapLayers({
+      sceneId: "scene1",
+      width: 255,
+      height: 100,
+      resizeAxis: "width",
+    }),
+  );
+  expect(resized.startX).toBe(161);
+  expect(resized.startY).toBe(90);
 });
 
 test("Should fetch settings from loaded project", () => {
