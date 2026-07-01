@@ -96,13 +96,10 @@ export const AUTOTILE_VARIANT_MASKS: readonly number[] = [
   8, 6, 13, 12, 5, 14, 15, 11, 2, 3, 7, 9, 0, 4, 10, 1,
 ];
 
-const AUTOTILE_MASK_TO_VARIANT = AUTOTILE_VARIANT_MASKS.reduce(
-  (memo, mask, variant) => {
-    memo[mask] = variant;
-    return memo;
-  },
-  new Array<number>(16).fill(-1),
-);
+// Inverse lookup: connectivity mask to tile offset within the variant block.
+const AUTOTILE_MASK_TO_VARIANT: readonly number[] = [
+  12, 15, 8, 9, 13, 4, 1, 10, 0, 11, 14, 7, 3, 2, 5, 6,
+];
 
 type ResolvedAutotileSource = {
   absoluteIndex: number;

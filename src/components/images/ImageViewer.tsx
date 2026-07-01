@@ -8,7 +8,7 @@ import {
   tilesetSelectors,
 } from "store/features/entities/entitiesSelectors";
 import ColorizedImage from "components/rendering/ColorizedImage";
-import { DMG_PALETTE, TILE_SIZE } from "consts";
+import { DMG_PALETTE, TILE_DEFAULT_UNSET, TILE_SIZE } from "consts";
 import { assetURL } from "shared/lib/helpers/assets";
 import AutoColorizedImage from "components/rendering/AutoColorizedImage";
 import { Palette } from "shared/lib/resources/types";
@@ -178,7 +178,9 @@ const ImageViewer = ({ backgroundId }: ImageViewerProps) => {
                 width={tileset.width * TILE_SIZE}
                 height={tileset.height * TILE_SIZE}
                 src={assetURL("tilesets", tileset)}
-                tiles={[]}
+                tiles={tileset.tileColors.map((value) =>
+                  value === TILE_DEFAULT_UNSET ? 0 : value,
+                )}
                 palettes={palettes}
               />
             </ImageScale>

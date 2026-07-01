@@ -20,6 +20,8 @@ import ScenePriorityMap from "./ScenePriorityMap";
 import SceneCollisions from "./SceneCollisions";
 import SceneSlopePreview from "./SceneSlopePreview";
 import { resolveScenePalettes } from "components/world/entities/scenes/helpers/scenePalettes";
+import TilemapLayersCanvas from "components/rendering/TilemapLayersCanvas";
+import { flattenTilemapLayers } from "shared/lib/tiles/sceneTilemapData";
 import {
   getCollisionSelectionPreview,
   getColorSelectionPreview,
@@ -112,6 +114,14 @@ export const SceneTileLayers = ({ sceneId }: SceneTileLayersProps) => {
     [background?.tileColors, scene?.tilemap?.tileColors],
   );
 
+  const resolvedTileData = useMemo(
+    () =>
+      scene?.tilemap
+        ? flattenTilemapLayers(scene.tilemap, scene.width, scene.height)
+        : [],
+    [scene.height, scene.tilemap, scene.width],
+  );
+
   const selectionOffset = scenePaintSelection?.offset ?? ZERO_SELECTION_OFFSET;
 
   const tileSelectionPreview = useMemo(
@@ -196,7 +206,19 @@ export const SceneTileLayers = ({ sceneId }: SceneTileLayersProps) => {
 
   return (
     <>
-      {background &&
+      {scene.tilemap ? (
+        <TilemapLayersCanvas
+          width={scene.width}
+          height={scene.height}
+          tilemap={tileSelectionPreview?.tilemap ?? scene.tilemap}
+          tiles={tileSelectionPreview?.resolved ?? resolvedTileData}
+          tileColors={displayTileColors}
+          palettes={palettes}
+          previewAsMono={previewAsMono}
+          monoBGP={monoBGP}
+        />
+      ) : (
+        background &&
         (gbcEnabled && background.autoColor ? (
           <AutoColorizedImage
             width={width}
@@ -225,7 +247,8 @@ export const SceneTileLayers = ({ sceneId }: SceneTileLayersProps) => {
             previewAsMono={previewAsMono}
             monoBGP={monoBGP}
           />
-        ))}
+        ))
+      )}
 
       {showPriorityMap && (
         <SceneOverlay>
