@@ -5,11 +5,11 @@ import {
   TILE_SIZE,
   TOOL_COLLISIONS,
   TOOL_COLORS,
+  TOOL_TILES,
 } from "consts";
 import AutoColorizedImage from "components/rendering/AutoColorizedImage";
 import ColorizedImage from "components/rendering/ColorizedImage";
 import { assetURL } from "shared/lib/helpers/assets";
-import { moveGridSelection } from "shared/lib/tiles/grid";
 import {
   backgroundSelectors,
   paletteSelectors,
@@ -20,6 +20,12 @@ import ScenePriorityMap from "./ScenePriorityMap";
 import SceneCollisions from "./SceneCollisions";
 import SceneSlopePreview from "./SceneSlopePreview";
 import { resolveScenePalettes } from "components/world/entities/scenes/helpers/scenePalettes";
+import {
+  getCollisionSelectionPreview,
+  getColorSelectionPreview,
+  getLinkedTileSelectionPreviewMasks,
+  getTileSelectionPreview,
+} from "components/world/entities/scenes/helpers/sceneSelectionPreview";
 
 const SceneOverlay = styled.div`
   position: absolute;
@@ -29,6 +35,8 @@ const SceneOverlay = styled.div`
   height: 100%;
   overflow: hidden;
 `;
+
+const ZERO_SELECTION_OFFSET = { x: 0, y: 0 };
 
 interface SceneTileLayersProps {
   sceneId: string;
@@ -80,9 +88,10 @@ export const SceneTileLayers = ({ sceneId }: SceneTileLayersProps) => {
 
   const showCollisions = useAppSelector(
     (state) =>
-      (tool !== TOOL_COLORS || showLayers) &&
+      ((tool !== TOOL_COLORS && tool !== TOOL_TILES) || showLayers) &&
       (state.project.present.settings.showCollisions ||
-        tool === TOOL_COLLISIONS),
+        tool === TOOL_COLLISIONS ||
+        (tool === TOOL_TILES && state.editor.selectedBrush === "selection")),
   );
 
   const showPriorityMap = useAppSelector(
@@ -98,55 +107,66 @@ export const SceneTileLayers = ({ sceneId }: SceneTileLayersProps) => {
     return selection?.sceneId === sceneId ? selection : undefined;
   });
 
-  const selectionOffsetActive =
-    !!scenePaintSelection &&
-    (scenePaintSelection.offset.x !== 0 || scenePaintSelection.offset.y !== 0);
-
   const tileColors = useMemo(
-    () => background?.tileColors ?? [],
-    [background?.tileColors],
+    () => scene?.tilemap?.tileColors ?? background?.tileColors ?? [],
+    [background?.tileColors, scene?.tilemap?.tileColors],
   );
 
-  const displayTileColors = useMemo(() => {
-    if (
-      !scene ||
-      !scenePaintSelection ||
-      scenePaintSelection.mode !== "colors" ||
-      tool !== TOOL_COLORS ||
-      !selectionOffsetActive
-    ) {
-      return tileColors;
-    }
+  const selectionOffset = scenePaintSelection?.offset ?? ZERO_SELECTION_OFFSET;
 
-    return moveGridSelection(
+  const tileSelectionPreview = useMemo(
+    () =>
+      getTileSelectionPreview({
+        scene,
+        selection: scenePaintSelection,
+        offset: selectionOffset,
+      }),
+    [scene, scenePaintSelection, selectionOffset],
+  );
+
+  const linkedTileSelectionPreviewMasks = useMemo(
+    () =>
+      getLinkedTileSelectionPreviewMasks({
+        scene,
+        selection: scenePaintSelection,
+        tileSelectionPreview,
+      }),
+    [scene, scenePaintSelection, tileSelectionPreview],
+  );
+
+  const collisionSelectionPreview = useMemo(
+    () =>
+      getCollisionSelectionPreview({
+        scene,
+        selection: scenePaintSelection,
+        offset: selectionOffset,
+        linkedMasks: linkedTileSelectionPreviewMasks,
+      }),
+    [
+      linkedTileSelectionPreviewMasks,
+      scene,
+      scenePaintSelection,
+      selectionOffset,
+    ],
+  );
+
+  const colorSelectionPreview = useMemo(
+    () =>
+      getColorSelectionPreview({
+        scene,
+        selection: scenePaintSelection,
+        offset: selectionOffset,
+        linkedMasks: linkedTileSelectionPreviewMasks,
+        tileColors,
+      }),
+    [
+      linkedTileSelectionPreviewMasks,
+      scene,
+      scenePaintSelection,
+      selectionOffset,
       tileColors,
-      scene.width,
-      scene.height,
-      scenePaintSelection.selection,
-      scenePaintSelection.offset,
-      0,
-    );
-  }, [scene, scenePaintSelection, selectionOffsetActive, tileColors, tool]);
-
-  const collisionSelectionPreview = useMemo(() => {
-    if (
-      !scene ||
-      !scenePaintSelection ||
-      scenePaintSelection.mode !== "collisions" ||
-      !selectionOffsetActive
-    ) {
-      return undefined;
-    }
-
-    return moveGridSelection(
-      scene.collisions,
-      scene.width,
-      scene.height,
-      scenePaintSelection.selection,
-      scenePaintSelection.offset,
-      0,
-    );
-  }, [scene, scenePaintSelection, selectionOffsetActive]);
+    ],
+  );
 
   const palettes = useMemo(
     () =>
@@ -172,6 +192,7 @@ export const SceneTileLayers = ({ sceneId }: SceneTileLayersProps) => {
   const height = scene.height * TILE_SIZE;
   const monoBGP = scene.monoBGP || defaultMonoBGP;
   const displayCollisions = collisionSelectionPreview ?? scene.collisions;
+  const displayTileColors = colorSelectionPreview ?? tileColors;
 
   return (
     <>
