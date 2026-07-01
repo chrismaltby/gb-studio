@@ -4,6 +4,7 @@ import {
   TILE_SIZE,
   TOOL_COLLISIONS,
   TOOL_COLORS,
+  TOOL_TILES,
 } from "consts";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
@@ -26,6 +27,7 @@ type SceneGridSelectionInteraction =
       originX: number;
       originY: number;
       sceneId: string;
+      layerId?: string;
       mode: SceneGridSelectionMode;
     }
   | {
@@ -35,6 +37,7 @@ type SceneGridSelectionInteraction =
       selection: GridSelection;
       offset: GridOffset;
       sceneId: string;
+      layerId?: string;
       mode: SceneGridSelectionMode;
     };
 
@@ -45,6 +48,10 @@ interface SceneGridSelectionState {
 const ZERO_SELECTION_OFFSET: GridOffset = { x: 0, y: 0 };
 
 const getSelectionMode = (tool: string): SceneGridSelectionMode | undefined => {
+  if (tool === TOOL_TILES) {
+    return "tiles";
+  }
+
   if (tool === TOOL_COLLISIONS) {
     return "collisions";
   }
@@ -77,7 +84,9 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
   const dispatch = useAppDispatch();
   const store = useAppStore();
 
-  const { tool, selectedBrush } = useAppSelector((state) => state.editor);
+  const { tool, selectedBrush, selectedTilemapLayerId } = useAppSelector(
+    (state) => state.editor,
+  );
 
   const scenePaintSelection = useAppSelector(
     (state) => state.editor.scenePaintSelection,
@@ -100,6 +109,7 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
             mode: SceneGridSelectionMode;
             selection: GridSelection;
             offset?: GridOffset;
+            layerId?: string;
           }
         | undefined,
     ) => {
@@ -108,6 +118,7 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
           next
             ? {
                 sceneId,
+                layerId: next.layerId,
                 mode: next.mode,
                 selection: next.selection,
                 offset: next.offset ?? ZERO_SELECTION_OFFSET,
@@ -128,6 +139,7 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
         mode: interaction.mode,
         selection: interaction.selection,
         offset: ZERO_SELECTION_OFFSET,
+        layerId: interaction.mode === "tiles" ? interaction.layerId : undefined,
       });
       return;
     }
@@ -137,6 +149,7 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
         mode: activeScenePaintSelection.mode,
         selection: activeScenePaintSelection.selection,
         offset: ZERO_SELECTION_OFFSET,
+        layerId: activeScenePaintSelection.layerId,
       });
     }
   }, [activeScenePaintSelection, setScenePaintSelection]);
@@ -187,15 +200,28 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
       dispatch(editorActions.selectScene({ sceneId: e.sceneId }));
 
       const sceneSelection =
-        activeScenePaintSelection?.sceneId === e.sceneId
+        activeScenePaintSelection?.sceneId === e.sceneId &&
+        (selectionMode !== "tiles" ||
+          activeScenePaintSelection.layerId === selectedTilemapLayerId)
           ? activeScenePaintSelection.selection
           : undefined;
+
+      const layerId =
+        selectionMode === "tiles" ? selectedTilemapLayerId : undefined;
+
+      if (
+        selectionMode === "tiles" &&
+        (!layerId || !scene.tilemap?.layers.some((layer) => layer.id === layerId))
+      ) {
+        return false;
+      }
 
       if (sceneSelection && isPointInSelection(x, y, sceneSelection)) {
         setScenePaintSelection(e.sceneId, {
           mode: selectionMode,
           selection: sceneSelection,
           offset: ZERO_SELECTION_OFFSET,
+          layerId,
         });
 
         stateRef.current.interaction = {
@@ -205,6 +231,7 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
           selection: sceneSelection,
           offset: ZERO_SELECTION_OFFSET,
           sceneId: e.sceneId,
+          layerId,
           mode: selectionMode,
         };
 
@@ -223,6 +250,7 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
         originX: x,
         originY: y,
         sceneId: e.sceneId,
+        layerId,
         mode: selectionMode,
       };
 
@@ -230,6 +258,7 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
         mode: selectionMode,
         selection: nextSelection,
         offset: ZERO_SELECTION_OFFSET,
+        layerId,
       });
 
       return true;
@@ -239,6 +268,7 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
       activeScenePaintSelection,
       selectedBrush,
       selectionMode,
+      selectedTilemapLayerId,
       setScenePaintSelection,
       store,
     ],
@@ -274,6 +304,8 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
             height: Math.abs(y - interaction.originY) + 1,
           },
           offset: ZERO_SELECTION_OFFSET,
+          layerId:
+            interaction.mode === "tiles" ? interaction.layerId : undefined,
         });
 
         return;
@@ -304,12 +336,14 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
       stateRef.current.interaction = {
         ...interaction,
         offset,
+        layerId: interaction.mode === "tiles" ? interaction.layerId : undefined,
       };
 
       setScenePaintSelection(interaction.sceneId, {
         mode: interaction.mode,
         selection,
         offset,
+        layerId: interaction.mode === "tiles" ? interaction.layerId : undefined,
       });
     },
     [setScenePaintSelection, store],
@@ -331,7 +365,19 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
     const { offset, selection } = interaction;
 
     if (offset.x !== 0 || offset.y !== 0) {
-      if (interaction.mode === "colors") {
+      if (interaction.mode === "tiles") {
+        if (!interaction.layerId) {
+          return;
+        }
+        dispatch(
+          entitiesActions.moveSceneTileSelection({
+            sceneId: interaction.sceneId,
+            layerId: interaction.layerId,
+            selection,
+            offset,
+          }),
+        );
+      } else if (interaction.mode === "colors") {
         dispatch(
           entitiesActions.moveSceneColorSelection({
             sceneId: interaction.sceneId,
@@ -358,14 +404,25 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
         y: selection.y + offset.y,
       },
       offset: ZERO_SELECTION_OFFSET,
+      layerId: interaction.mode === "tiles" ? interaction.layerId : undefined,
     });
   }, [dispatch, setScenePaintSelection]);
 
   const onCancel = resetInteraction;
 
+  useEffect(() => {
+    if (
+      scenePaintSelection?.mode === "tiles" &&
+      scenePaintSelection.layerId !== selectedTilemapLayerId
+    ) {
+      stateRef.current.interaction = undefined;
+      setScenePaintSelection(scenePaintSelection.sceneId, undefined);
+    }
+  }, [scenePaintSelection, selectedTilemapLayerId, setScenePaintSelection]);
+
   const view = useMemo<SceneCursorViewModel>(() => {
     return {
-      variant: "colors",
+      variant: "selection",
       width: TILE_SIZE,
       height: TILE_SIZE,
       bubble: <SelectionIcon />,
@@ -377,7 +434,9 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
       id: "sceneGridSelection",
       enabled:
         selectedBrush === BRUSH_SELECTION &&
-        (tool === TOOL_COLLISIONS || tool === TOOL_COLORS),
+        (tool === TOOL_COLLISIONS ||
+          tool === TOOL_COLORS ||
+          tool === TOOL_TILES),
       viewPriority: 20,
       eventPriority: 30,
       view,

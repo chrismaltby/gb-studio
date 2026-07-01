@@ -592,7 +592,18 @@ const WorldView = () => {
         if (scenePaintSelection) {
           e.preventDefault();
 
-          if (scenePaintSelection.mode === "colors") {
+          if (scenePaintSelection.mode === "tiles") {
+            if (!scenePaintSelection.layerId) {
+              return;
+            }
+            dispatch(
+              entitiesActions.deleteSceneTileSelection({
+                sceneId: scenePaintSelection.sceneId,
+                layerId: scenePaintSelection.layerId,
+                selection: scenePaintSelection.selection,
+              }),
+            );
+          } else if (scenePaintSelection.mode === "colors") {
             dispatch(
               entitiesActions.deleteSceneColorSelection({
                 sceneId: scenePaintSelection.sceneId,

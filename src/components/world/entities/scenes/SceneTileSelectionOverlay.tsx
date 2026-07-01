@@ -4,6 +4,7 @@ import { useAppSelector } from "store/hooks";
 import {
   TOOL_COLLISIONS,
   TOOL_COLORS,
+  TOOL_TILES,
   BRUSH_SELECTION,
   TILE_SIZE,
 } from "consts";
@@ -33,11 +34,13 @@ export const SceneTileSelectionOverlay = ({
   });
 
   const scenePaintSelectionMode =
-    tool === TOOL_COLLISIONS
-      ? "collisions"
-      : tool === TOOL_COLORS
-        ? "colors"
-        : undefined;
+    tool === TOOL_TILES
+      ? "tiles"
+      : tool === TOOL_COLLISIONS
+        ? "collisions"
+        : tool === TOOL_COLORS
+          ? "colors"
+          : undefined;
 
   const activeScenePaintSelection =
     scenePaintSelection?.mode === scenePaintSelectionMode
