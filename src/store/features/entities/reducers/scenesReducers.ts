@@ -55,11 +55,8 @@ import {
   paint,
   floodFill,
 } from "shared/lib/helpers/paint";
-import {
-  clearGridSelection,
-  moveGridSelection,
-} from "shared/lib/tiles/gridSelection";
-import type { GridOffset, GridSelection } from "shared/lib/tiles/gridSelection";
+import { clearGridSelection, moveGridSelection } from "shared/lib/tiles/grid";
+import type { GridOffset, GridSelection } from "shared/lib/tiles/grid";
 
 const MIN_SCENE_WIDTH = 20;
 const MIN_SCENE_HEIGHT = 18;

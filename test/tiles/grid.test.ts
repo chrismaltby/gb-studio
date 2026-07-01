@@ -2,7 +2,7 @@ import {
   clearGridSelection,
   moveGridSelection,
   moveGridSelectionMasked,
-} from "shared/lib/tiles/gridSelection";
+} from "shared/lib/tiles/grid";
 
 describe("clearGridSelection", () => {
   test("It clears a rectangular selection", () => {

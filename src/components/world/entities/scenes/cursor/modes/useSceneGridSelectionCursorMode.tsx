@@ -16,7 +16,7 @@ import type {
   SceneCursorMouseUpHandler,
 } from "./SceneCursorMode";
 import type { SceneGridSelectionMode } from "store/features/editor/editorState";
-import type { GridOffset, GridSelection } from "shared/lib/tiles/gridSelection";
+import type { GridOffset, GridSelection } from "shared/lib/tiles/grid";
 import { SelectionIcon } from "ui/icons/Icons";
 import { SceneCursorViewModel } from "components/world/entities/scenes/cursor/SceneCursorView";
 

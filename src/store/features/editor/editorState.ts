@@ -30,7 +30,7 @@ import type { RootState } from "store/storeTypes";
 import { selectScriptIds } from "store/features/entities/entitiesState";
 import { Variable } from "shared/lib/resources/types";
 import { ActionTypes } from "redux-undo";
-import type { GridOffset, GridSelection } from "shared/lib/tiles/gridSelection";
+import type { GridOffset, GridSelection } from "shared/lib/tiles/grid";
 
 export type Tool =
   | "triggers"

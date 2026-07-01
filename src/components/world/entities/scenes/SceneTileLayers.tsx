@@ -9,7 +9,7 @@ import {
 import AutoColorizedImage from "components/rendering/AutoColorizedImage";
 import ColorizedImage from "components/rendering/ColorizedImage";
 import { assetURL } from "shared/lib/helpers/assets";
-import { moveGridSelection } from "shared/lib/tiles/gridSelection";
+import { moveGridSelection } from "shared/lib/tiles/grid";
 import {
   backgroundSelectors,
   paletteSelectors,

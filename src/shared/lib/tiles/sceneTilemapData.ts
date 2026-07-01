@@ -7,7 +7,7 @@ import {
   moveGridSelection,
   type GridOffset,
   type GridSelection,
-} from "./gridSelection";
+} from "./grid";
 
 export const moveTilemapLayerSelection = (
   layer: SceneTilemapLayer,
