@@ -21,6 +21,7 @@ import {
   BlankIcon,
   TileValueIcon,
   SelectionIcon,
+  EraserIcon,
 } from "ui/icons/Icons";
 import {
   TOOL_COLORS,
@@ -34,6 +35,7 @@ import {
   DMG_PALETTE,
   TILE_COLOR_PROP_PRIORITY,
   BRUSH_SLOPE,
+  TOOL_TILES,
   defaultCollisionTileDefs,
   defaultProjectSettings,
 } from "consts";
@@ -43,6 +45,7 @@ import {
   backgroundSelectors,
   paletteSelectors,
   sceneSelectors,
+  tilesetSelectors,
 } from "store/features/entities/entitiesSelectors";
 import settingsActions from "store/features/settings/settingsActions";
 import navigationActions from "store/features/navigation/navigationActions";
@@ -74,7 +77,7 @@ interface BrushToolbarProps {
 }
 
 const paletteIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
-const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER];
+const validTools = [TOOL_COLORS, TOOL_COLLISIONS, TOOL_ERASER, TOOL_TILES];
 
 const useHighlightPalette = () => {
   return useAppSelector((state) => {
@@ -198,6 +201,10 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
 
   const selectedBrush = useAppSelector((state) => state.editor.selectedBrush);
 
+  const scenePaintEraser = useAppSelector(
+    (state) => state.editor.scenePaintEraser,
+  );
+
   const showLayers = useAppSelector((state) => state.editor.showLayers);
 
   const scene = useAppSelectorPick(
@@ -213,10 +220,18 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     ["autoColor"] as const,
   );
 
+  const sceneTilemapEnabled = useAppSelector((state) =>
+    Boolean(sceneSelectors.selectById(state, sceneId)?.tilemap),
+  );
+  const effectiveAutoColor = !sceneTilemapEnabled && background?.autoColor;
+
   const selectedTool = useAppSelector((state) => state.editor.tool);
   const visible = validTools.includes(selectedTool);
   const showPalettes = selectedTool === TOOL_COLORS;
   const showTileTypes = selectedTool === TOOL_COLLISIONS;
+  const showScenePaintEraser =
+    selectedTool === TOOL_TILES || selectedTool === TOOL_COLLISIONS;
+
   const showCollisionSlopeTiles = useAppSelector(
     (state) => state.project.present.settings.showCollisionSlopeTiles,
   );
@@ -229,6 +244,32 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   const collisionLayerOpacity = useAppSelector(
     (state) => state.project.present.settings.collisionLayerOpacity,
   );
+  const selectedAutotile = useAppSelector(
+    (state) => state.editor.selectedSceneTile?.autotile ?? false,
+  );
+
+  const canAutotile = useAppSelector((state) => {
+    const selectedSceneTile = state.editor.selectedSceneTile;
+    if (!selectedSceneTile) {
+      return false;
+    }
+
+    const tileset = tilesetSelectors.selectById(
+      state,
+      selectedSceneTile.tilesetId,
+    );
+    if (!tileset || tileset.width <= 0) {
+      return false;
+    }
+
+    return (
+      selectedSceneTile.width === 1 &&
+      selectedSceneTile.height === 1 &&
+      selectedSceneTile.tileIndex >= 0 &&
+      Boolean(tileset.autotileGroups?.includes(selectedSceneTile.tileIndex))
+    );
+  });
+
   const collisionTileDefs = useAppSelector((state) => {
     if (!scene || !scene.type || !state.engine.sceneTypes)
       return defaultCollisionTileDefs;
@@ -237,6 +278,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     if (sceneType && sceneType.collisionTiles) return sceneType.collisionTiles;
     return defaultCollisionTileDefs;
   });
+
   const namedCollisionTileDefs = useMemo(
     () =>
       collisionTileDefs.map((tile, index) => {
@@ -292,7 +334,10 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
         if (showPalettes) {
           dispatch(editorActions.setSelectedPalette({ paletteIndex: index }));
         }
-        if (showTileTypes && namedCollisionTileDefs[index]) {
+        if (showTileTypes) {
+          if (selectedBrush === BRUSH_SELECTION) {
+            setBrush(BRUSH_8PX);
+          }
           const selectedTile = namedCollisionTileDefs[index];
           if (!selectedTile) {
             return;
@@ -333,7 +378,9 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     [
       dispatch,
       namedCollisionTileDefs,
+      selectedBrush,
       selectedTileType,
+      setBrush,
       showPalettes,
       showTileTypes,
     ],
@@ -368,20 +415,24 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   );
 
   const [modalColorIndex, setModalColorIndex] = useState<number>(-1);
+
   const openReplacePalette = useCallback(
     (paletteIndex: number) => () => {
       setModalColorIndex(paletteIndex);
     },
     [],
   );
+
   const closePaletteModal = useCallback(() => {
     setModalColorIndex(-1);
   }, []);
+
   useEffect(() => {
     if (selectedTool !== TOOL_COLORS) {
       setModalColorIndex(-1);
     }
   }, [selectedTool]);
+
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const startReplacePalette = useCallback(
     (paletteIndex: number) => () => {
@@ -392,6 +443,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
     },
     [openReplacePalette],
   );
+
   const onChangePalette = useCallback(
     (newPalette: string) => {
       if (scene) {
@@ -538,10 +590,19 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
   }, [onKeyDown, onMouseUp]);
 
   useEffect(() => {
-    if (!slopesAvailable && selectedBrush === BRUSH_SLOPE) {
+    if (
+      selectedBrush === BRUSH_SLOPE &&
+      (selectedTool !== TOOL_COLLISIONS || !slopesAvailable)
+    ) {
       setBrush(BRUSH_8PX);
     }
-  }, [selectedBrush, setBrush, slopesAvailable]);
+  }, [selectedBrush, selectedTool, setBrush, slopesAvailable]);
+
+  useEffect(() => {
+    if (selectedAutotile && !canAutotile) {
+      dispatch(editorActions.setSelectedSceneTileAutotile(false));
+    }
+  }, [canAutotile, dispatch, selectedAutotile]);
 
   return (
     <>
@@ -580,6 +641,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
             <WandIcon />
           </Button>
           {(selectedTool === TOOL_COLLISIONS ||
+            selectedTool === TOOL_TILES ||
             selectedTool === TOOL_COLORS) && (
             <Button
               variant="transparent"
@@ -600,22 +662,38 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
               <SlopeIcon />
             </Button>
           )}
+          {(selectedTool === TOOL_TILES || showScenePaintEraser) && (
+            <FloatingPanelDivider />
+          )}
+          {showScenePaintEraser && (
+            <Button
+              variant="transparent"
+              onClick={() => {
+                if (selectedBrush === BRUSH_SELECTION) {
+                  setBrush(BRUSH_8PX);
+                }
+                dispatch(editorActions.setScenePaintEraser(!scenePaintEraser));
+                dispatch(editorActions.setSelectedSceneTileAutotile(false));
+              }}
+              active={scenePaintEraser}
+              title={l10n("TOOL_ERASER_LABEL")}
+            >
+              <EraserIcon />
+            </Button>
+          )}
           {(showPalettes ||
             (showTileTypes &&
               slopesAvailable &&
               selectedBrush !== BRUSH_SLOPE)) && <FloatingPanelDivider />}
           {showPalettes &&
-            !background?.autoColor &&
+            !effectiveAutoColor &&
             paletteIndexes.map((paletteIndex) => (
               <Button
                 variant="transparent"
                 key={paletteIndex}
                 onClick={setSelectedPalette(paletteIndex)}
                 onMouseDown={startReplacePalette(paletteIndex)}
-                active={
-                  paletteIndex === selectedPalette &&
-                  selectedBrush !== BRUSH_SELECTION
-                }
+                active={paletteIndex === selectedPalette}
                 title={`${l10n("TOOL_PALETTE_N", {
                   number: paletteIndex + 1,
                 })} (${paletteIndex + 1}) - ${paletteName(
@@ -629,7 +707,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                 />
               </Button>
             ))}
-          {showPalettes && background && (
+          {showPalettes && background && !sceneTilemapEnabled && (
             <Button
               variant="transparent"
               onClick={onToggleAutoColor}
@@ -648,10 +726,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                   ? setSelectedPalette(TILE_COLOR_PROP_PRIORITY)
                   : setSelectedPalette(0)
               }
-              active={
-                TILE_COLOR_PROP_PRIORITY === selectedPalette &&
-                selectedBrush !== BRUSH_SELECTION
-              }
+              active={TILE_COLOR_PROP_PRIORITY === selectedPalette}
               title={l10n("TOOL_TILE_PRIORITY")}
             >
               <PriorityTileIcon />
@@ -687,7 +762,7 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
                         variant="transparent"
                         key={tileDef.key}
                         onClick={setSelectedPalette(tileTypeIndex)}
-                        active={selected && selectedBrush !== BRUSH_SELECTION}
+                        active={selected && !scenePaintEraser}
                         title={
                           tileTypeIndex < 6
                             ? `${tileDef.name} (${tileTypeIndex + 1})`
