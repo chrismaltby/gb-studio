@@ -50,8 +50,13 @@ export const useCollisionPaintCursorMode = (
   const dispatch = useAppDispatch();
   const store = useAppStore();
 
-  const { tool, selectedBrush, selectedTileType, selectedTileMask } =
-    useAppSelector((state) => state.editor);
+  const {
+    tool,
+    selectedBrush,
+    selectedTileType,
+    selectedTileMask,
+    scenePaintEraser,
+  } = useAppSelector((state) => state.editor);
 
   const stateRef = useRef<CollisionPaintState>({
     drawLine: false,
@@ -246,24 +251,23 @@ export const useCollisionPaintCursorMode = (
 
       if (selectedBrush !== BRUSH_SLOPE) {
         const brushSize = selectedBrush === BRUSH_16PX ? 2 : 1;
-        const mask = selectedTileMask ?? 0xff;
+        const mask = scenePaintEraser ? 0xff : (selectedTileMask ?? 0xff);
 
         state.mask = mask;
-
-        // If any tile under brush is currently not filled then
-        // paint collisions rather than remove them.
-        state.drawTile = shouldPaintCollisionBrush(
-          scene.collisions,
-          scene.width,
-          scene.height,
-          x,
-          y,
-          brushSize,
-          selectedTileType,
-          mask,
-        )
-          ? selectedTileType
-          : 0;
+        state.drawTile =
+          !scenePaintEraser &&
+          shouldPaintCollisionBrush(
+            scene.collisions,
+            scene.width,
+            scene.height,
+            x,
+            y,
+            brushSize,
+            selectedTileType,
+            mask,
+          )
+            ? selectedTileType
+            : 0;
       }
 
       if (selectedBrush === BRUSH_FILL) {
@@ -325,6 +329,7 @@ export const useCollisionPaintCursorMode = (
       getCollisionAt,
       paintCollisionAt,
       paintCollisionLine,
+      scenePaintEraser,
       selectedBrush,
       selectedTileMask,
       selectedTileType,
