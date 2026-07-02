@@ -37,7 +37,7 @@ import { NoteField } from "ui/form/NoteField";
 import { SceneTypeSelect } from "components/forms/SceneTypeSelect";
 import { BackgroundSelectButton } from "components/forms/BackgroundSelectButton";
 import { PaletteSelectButton } from "components/forms/PaletteSelectButton";
-import { LabelButton, LabelColor } from "ui/buttons/LabelButton";
+import { LabelColor } from "ui/buttons/LabelButton";
 import { CoordinateInput } from "ui/form/CoordinateInput";
 import DirectionPicker from "components/forms/DirectionPicker";
 import { SettingsState } from "store/features/settings/settingsState";
@@ -59,10 +59,6 @@ import ParallaxSelect, {
 } from "components/forms/ParallaxSelect";
 import { SpriteSheetSelectButton } from "components/forms/SpriteSheetSelectButton";
 import styled from "styled-components";
-import {
-  ClipboardTypePaletteIds,
-  ClipboardTypeScenes,
-} from "store/features/clipboard/clipboardTypes";
 import {
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
@@ -90,7 +86,6 @@ import { ColorModeOverrideSelect } from "components/forms/ColorModeOverrideSelec
 import {
   ActorDirection,
   ColorModeOverrideSetting,
-  labelColorValues,
   MonoBGPPalette,
   MonoOBJPalette,
   SceneBoundsRect,
@@ -108,6 +103,7 @@ import { AutoTileFlipSelect } from "components/forms/AutoTileFlipSelect";
 import { DMGPaletteSelectButton } from "components/forms/DMGPaletteSelectButton";
 import SceneTilePalette from "components/world/inspector/scenes/tilemap/SceneTilePalette";
 import { SceneBackgroundTypeDropdown } from "components/forms/SceneBackgroundTypeDropdown";
+import renderSceneInspectorMenu from "components/world/contextMenus/renderSceneInspectorMenu";
 
 interface SceneInspectorProps {
   id: string;
@@ -836,86 +832,63 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
     />
   );
 
+  const renderSceneHeader = (compact: boolean) => (
+    <FormContainer>
+      <FormHeader>
+        <FlexGrow style={{ minWidth: 0 }}>
+          <EditableText
+            name="name"
+            placeholder={sceneName(scene, sceneIndex)}
+            value={scene.name || ""}
+            onChange={onChangeName}
+          />
+          <EditableTextOverlay>
+            {sceneName(scene, sceneIndex).replace(/.*[/\\]/, "")}
+          </EditableTextOverlay>
+        </FlexGrow>
+        {scene.labelColor && <LabelColor color={scene.labelColor} />}
+        <DropdownButton
+          size="small"
+          variant="transparent"
+          menuDirection="right"
+          onMouseDown={onFetchClipboard}
+        >
+          {renderSceneInspectorMenu({
+            compact,
+            colorsEnabled,
+            clipboardFormat,
+            showNotes: Boolean(showNotes),
+            showSymbols,
+            showColorModeOverride,
+            canAutoTileFlip,
+            showAutoTileFlipOverride,
+            showSpriteModeOverride: Boolean(showSpriteModeOverride),
+            onChangeLabelColor: (color) =>
+              onChangeSceneProp("labelColor", color),
+            onAddNotes,
+            onShowSymbols: () => setShowSymbols(true),
+            onOverrideColorMode,
+            onOverrideAutoTileFlip,
+            onOverrideSpriteMode,
+            onCopy,
+            onPaste,
+            onCopyBackgroundPaletteIds,
+            onCopySpritePaletteIds,
+            onPasteBackgroundPaletteIds,
+            onPasteSpritePaletteIds,
+            onRemove,
+          })}
+        </DropdownButton>
+      </FormHeader>
+    </FormContainer>
+  );
+
   const scrollKey = `${scene.id}_${scriptKey}`;
 
   if (tool === TOOL_TILES) {
     return (
       <Sidebar onClick={selectSidebar}>
-        <FormContainer>
-          <FormHeader>
-            <FlexGrow style={{ minWidth: 0 }}>
-              <EditableText
-                name="name"
-                placeholder={sceneName(scene, sceneIndex)}
-                value={scene.name || ""}
-                onChange={onChangeName}
-              />
-              <EditableTextOverlay>
-                {sceneName(scene, sceneIndex).replace(/.*[/\\]/, "")}
-              </EditableTextOverlay>
-            </FlexGrow>
-            {scene.labelColor && <LabelColor color={scene.labelColor} />}
-            <DropdownButton
-              size="small"
-              variant="transparent"
-              menuDirection="right"
-              onMouseDown={onFetchClipboard}
-            >
-              <MenuItem style={{ paddingRight: 10, marginBottom: 5 }}>
-                <div style={{ display: "flex" }}>
-                  <div style={{ marginRight: 5 }}>
-                    <LabelButton
-                      onClick={() => onChangeSceneProp("labelColor", undefined)}
-                    />
-                  </div>
-                  {labelColorValues.map((color) => (
-                    <div
-                      key={color}
-                      style={{ marginRight: color === "gray" ? 0 : 5 }}
-                    >
-                      <LabelButton
-                        color={color}
-                        onClick={() => onChangeSceneProp("labelColor", color)}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </MenuItem>
-              <MenuDivider />
-              <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
-              {clipboardFormat === ClipboardTypeScenes && (
-                <MenuItem onClick={onPaste}>
-                  {l10n("MENU_PASTE_SCENE")}
-                </MenuItem>
-              )}
-              <MenuDivider />
-              {colorsEnabled && (
-                <MenuItem onClick={onCopyBackgroundPaletteIds}>
-                  {l10n("FIELD_COPY_BACKGROUND_PALETTES")}
-                </MenuItem>
-              )}
-              {colorsEnabled && (
-                <MenuItem onClick={onCopySpritePaletteIds}>
-                  {l10n("FIELD_COPY_SPRITE_PALETTES")}
-                </MenuItem>
-              )}
-              {colorsEnabled && clipboardFormat === ClipboardTypePaletteIds && (
-                <MenuItem onClick={onPasteBackgroundPaletteIds}>
-                  {l10n("FIELD_PASTE_BACKGROUND_PALETTES")}
-                </MenuItem>
-              )}
-              {colorsEnabled && clipboardFormat === ClipboardTypePaletteIds && (
-                <MenuItem onClick={onPasteSpritePaletteIds}>
-                  {l10n("FIELD_PASTE_SPRITE_PALETTES")}
-                </MenuItem>
-              )}
-              {colorsEnabled && <MenuDivider />}
-              <MenuItem onClick={onRemove}>
-                {l10n("MENU_DELETE_SCENE")}
-              </MenuItem>
-            </DropdownButton>
-          </FormHeader>
-        </FormContainer>
+        {renderSceneHeader(true)}
 
         <FormContainer>
           <FormRow>
@@ -940,113 +913,7 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
   return (
     <Sidebar onClick={selectSidebar}>
       <CachedScroll key={scrollKey} cacheKey={scrollKey}>
-        {!lockScriptEditor && (
-          <FormContainer>
-            <FormHeader>
-              <FlexGrow style={{ minWidth: 0 }}>
-                <EditableText
-                  name="name"
-                  placeholder={sceneName(scene, sceneIndex)}
-                  value={scene.name || ""}
-                  onChange={onChangeName}
-                />
-                <EditableTextOverlay>
-                  {sceneName(scene, sceneIndex).replace(/.*[/\\]/, "")}
-                </EditableTextOverlay>
-              </FlexGrow>
-              {scene.labelColor && <LabelColor color={scene.labelColor} />}
-              <DropdownButton
-                size="small"
-                variant="transparent"
-                menuDirection="right"
-                onMouseDown={onFetchClipboard}
-              >
-                <MenuItem style={{ paddingRight: 10, marginBottom: 5 }}>
-                  <div style={{ display: "flex" }}>
-                    <div style={{ marginRight: 5 }}>
-                      <LabelButton
-                        onClick={() =>
-                          onChangeSceneProp("labelColor", undefined)
-                        }
-                      />
-                    </div>
-                    {labelColorValues.map((color) => (
-                      <div
-                        key={color}
-                        style={{ marginRight: color === "gray" ? 0 : 5 }}
-                      >
-                        <LabelButton
-                          color={color}
-                          onClick={() => onChangeSceneProp("labelColor", color)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </MenuItem>
-                <MenuDivider />
-                {!showNotes && (
-                  <MenuItem onClick={onAddNotes}>
-                    {l10n("FIELD_ADD_NOTES")}
-                  </MenuItem>
-                )}
-                {!showSymbols && (
-                  <MenuItem onClick={() => setShowSymbols(true)}>
-                    {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
-                  </MenuItem>
-                )}
-                {!showColorModeOverride && colorsEnabled && (
-                  <MenuItem onClick={onOverrideColorMode}>
-                    {l10n("FIELD_SET_COLOR_MODE_OVERRIDE")}
-                  </MenuItem>
-                )}
-                {canAutoTileFlip && !showAutoTileFlipOverride && (
-                  <MenuItem onClick={onOverrideAutoTileFlip}>
-                    {l10n("FIELD_SET_AUTO_TILE_FLIP_OVERRIDE")}
-                  </MenuItem>
-                )}
-                {!showSpriteModeOverride && (
-                  <MenuItem onClick={onOverrideSpriteMode}>
-                    {l10n("FIELD_SET_SPRITE_MODE_OVERRIDE")}
-                  </MenuItem>
-                )}
-                <MenuDivider />
-                <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
-                {clipboardFormat === ClipboardTypeScenes && (
-                  <MenuItem onClick={onPaste}>
-                    {l10n("MENU_PASTE_SCENE")}
-                  </MenuItem>
-                )}
-                <MenuDivider />
-                {colorsEnabled && (
-                  <MenuItem onClick={onCopyBackgroundPaletteIds}>
-                    {l10n("FIELD_COPY_BACKGROUND_PALETTES")}
-                  </MenuItem>
-                )}
-                {colorsEnabled && (
-                  <MenuItem onClick={onCopySpritePaletteIds}>
-                    {l10n("FIELD_COPY_SPRITE_PALETTES")}
-                  </MenuItem>
-                )}
-                {colorsEnabled &&
-                  clipboardFormat === ClipboardTypePaletteIds && (
-                    <MenuItem onClick={onPasteBackgroundPaletteIds}>
-                      {l10n("FIELD_PASTE_BACKGROUND_PALETTES")}
-                    </MenuItem>
-                  )}
-                {colorsEnabled &&
-                  clipboardFormat === ClipboardTypePaletteIds && (
-                    <MenuItem onClick={onPasteSpritePaletteIds}>
-                      {l10n("FIELD_PASTE_SPRITE_PALETTES")}
-                    </MenuItem>
-                  )}
-                {colorsEnabled && <MenuDivider />}
-                <MenuItem onClick={onRemove}>
-                  {l10n("MENU_DELETE_SCENE")}
-                </MenuItem>
-              </DropdownButton>
-            </FormHeader>
-          </FormContainer>
-        )}
+        {!lockScriptEditor && renderSceneHeader(false)}
         {!lockScriptEditor && (
           <SidebarColumns>
             {(showSymbols || showNotes) && (
