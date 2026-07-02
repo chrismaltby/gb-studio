@@ -225,6 +225,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   const showEntities =
     (tool !== TOOL_COLORS &&
       tool !== TOOL_COLLISIONS &&
+      tool !== TOOL_TILES &&
       tool !== TOOL_ERASER) ||
     showLayers;
   const showSceneScreenGrid = useAppSelector(
