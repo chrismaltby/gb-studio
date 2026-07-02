@@ -1459,6 +1459,8 @@
   "FIELD_EDIT_TILES": "Edit Tiles",
   "FIELD_IMAGE": "Image",
   "FIELD_TILEMAP": "Tilemap",
+  "FIELD_IMAGE_SCENE": "Image Scene",
+  "FIELD_TILEMAP_SCENE": "Tilemap Scene",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

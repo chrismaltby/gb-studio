@@ -13,6 +13,7 @@ import {
   MIDDLE_MOUSE,
   TOOL_COLORS,
   TOOL_COLLISIONS,
+  TOOL_TILES,
   TOOL_ERASER,
   TILE_SIZE,
   TOOL_SELECT,
@@ -180,6 +181,7 @@ const WorldInteractionOverlay = React.memo(
         const clipboardVariables = state.editor.clipboardVariables;
         const defaultSceneTypeId =
           state.project.present.settings.defaultSceneTypeId;
+        const sceneAddType = state.editor.sceneAddType;
 
         if (pasteMode) {
           dispatch(clipboardActions.pasteSceneAt(point));
@@ -188,6 +190,7 @@ const WorldInteractionOverlay = React.memo(
             entitiesActions.addScene({
               ...point,
               variables: clipboardVariables,
+              tilemap: sceneAddType === "tilemap",
               defaults: {
                 type: defaultSceneTypeId,
               },
@@ -448,6 +451,7 @@ const WorldView = () => {
       state.editor.showLayers ||
       (state.editor.tool !== TOOL_COLORS &&
         state.editor.tool !== TOOL_COLLISIONS &&
+        state.editor.tool !== TOOL_TILES &&
         state.editor.tool !== TOOL_ERASER),
   );
   const focusSceneId = useAppSelector((state) => state.editor.focusSceneId);

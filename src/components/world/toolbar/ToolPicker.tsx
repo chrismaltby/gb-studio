@@ -6,6 +6,7 @@ import {
   PlusIcon,
   PaintIcon,
   ListIcon,
+  JigsawIcon,
 } from "ui/icons/Icons";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
@@ -17,7 +18,13 @@ import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import settingsActions from "store/features/settings/settingsActions";
-import { NAVIGATOR_MIN_WIDTH } from "consts";
+import {
+  NAVIGATOR_MIN_WIDTH,
+  TOOL_COLLISIONS,
+  TOOL_COLORS,
+  TOOL_TILES,
+} from "consts";
+import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 
 interface ToolPickerProps {
   hasFocusForKeyboardShortcuts: () => boolean;
@@ -32,6 +39,10 @@ const Wrapper = styled(FloatingPanel)`
 const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
   const dispatch = useAppDispatch();
   const selected = useAppSelector((state) => state.editor.tool);
+  const tilePaintAvailable = useAppSelector((state) => {
+    const scene = sceneSelectors.selectById(state, state.editor.scene);
+    return Boolean(scene?.tilemap);
+  });
 
   const isAddSelected = useMemo(() => {
     return ["actors", "triggers", "scene"].indexOf(selected) > -1;
@@ -43,10 +54,19 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
 
   const setTool = useCallback(
     (tool: Tool) => {
+      if (tool === TOOL_TILES && !tilePaintAvailable) {
+        return;
+      }
       dispatch(editorActions.setTool({ tool }));
     },
-    [dispatch],
+    [dispatch, tilePaintAvailable],
   );
+
+  useEffect(() => {
+    if (selected === TOOL_TILES && !tilePaintAvailable) {
+      dispatch(editorActions.setTool({ tool: "select" }));
+    }
+  }, [dispatch, selected, tilePaintAvailable]);
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -64,6 +84,8 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
         setTool("collisions");
       } else if (e.code === "KeyZ") {
         setTool("colors");
+      } else if (e.code === "KeyX") {
+        setTool("tiles");
       } else if (e.code === "KeyS") {
         setTool("scene");
       } else if (e.code === "KeyN") {
@@ -100,12 +122,14 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
     },
     [setTool],
   );
-  const setToolScene = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      e.stopPropagation();
-      setTool("scene");
-    },
-    [setTool],
+  const setToolSceneType = useCallback(
+    (sceneType: "image" | "tilemap") =>
+      (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.stopPropagation();
+        dispatch(editorActions.setSceneAddType(sceneType));
+        setTool("scene");
+      },
+    [dispatch, setTool],
   );
   const setToolNote = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -164,8 +188,15 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
           {l10n("TRIGGER")}
         </MenuItem>
         <MenuItem
-          onClick={setToolScene}
           title={`${l10n("TOOL_ADD_SCENE_LABEL")} (s)`}
+          subMenu={[
+            <MenuItem key="image" onClick={setToolSceneType("image")}>
+              {l10n("FIELD_IMAGE_SCENE")}
+            </MenuItem>,
+            <MenuItem key="tilemap" onClick={setToolSceneType("tilemap")}>
+              {l10n("FIELD_TILEMAP_SCENE")}
+            </MenuItem>,
+          ]}
         >
           {l10n("SCENE")}
         </MenuItem>
@@ -201,6 +232,16 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
       >
         <PaintIcon />
       </Button>
+      {tilePaintAvailable && (
+        <Button
+          variant="transparent"
+          onClick={() => setTool(TOOL_TILES)}
+          title={`${l10n("FIELD_TILES")} (x)`}
+          active={selected === TOOL_TILES}
+        >
+          <JigsawIcon />
+        </Button>
+      )}
       {!showNavigator && (
         <>
           <FloatingPanelDivider />

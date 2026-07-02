@@ -74,10 +74,12 @@ export const WorldNavigator = () => {
     direction: "vertical",
   });
 
-  const onAddScene = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    dispatch(editorActions.setTool({ tool: "scene" }));
-  };
+  const onAddScene =
+    (sceneType: "image" | "tilemap") => (e: React.MouseEvent) => {
+      e.stopPropagation();
+      dispatch(editorActions.setSceneAddType(sceneType));
+      dispatch(editorActions.setTool({ tool: "scene" }));
+    };
 
   const onAddNote = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -198,7 +200,12 @@ export const WorldNavigator = () => {
                 label={<PlusIcon />}
                 showArrow={false}
               >
-                <MenuItem onClick={onAddScene}>{l10n("SCENE")}</MenuItem>
+                <MenuItem onClick={onAddScene("image")}>
+                  {l10n("FIELD_IMAGE_SCENE")}
+                </MenuItem>
+                <MenuItem onClick={onAddScene("tilemap")}>
+                  {l10n("FIELD_TILEMAP_SCENE")}
+                </MenuItem>
                 <MenuItem onClick={onAddNote}>{l10n("NOTE")}</MenuItem>
               </DropdownButton>
               <FixedSpacer width={5} />
