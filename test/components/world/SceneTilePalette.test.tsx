@@ -37,6 +37,7 @@ const mockTilesets = [
     height: 5,
     tileColors: new Array(50).fill(-1),
     tileCollisions: new Array(50).fill(-1),
+    autotileGroups: [] as number[],
   },
   {
     id: "tileset2",
@@ -46,6 +47,7 @@ const mockTilesets = [
     height: 4,
     tileColors: new Array(32).fill(-1),
     tileCollisions: new Array(32).fill(-1),
+    autotileGroups: [] as number[],
   },
 ];
 const mockState = {
@@ -183,11 +185,15 @@ jest.mock(
   "components/world/inspector/scenes/tilemap/TilesetUnsetDefaultsOverlay",
   () => () => <div data-testid="unset-defaults-overlay" />,
 );
+jest.mock(
+  "components/world/inspector/scenes/tilemap/SceneAutotileSelection",
+  () => () => <div data-testid="autotile-selection" />,
+);
 jest.mock("ui/tabs/Tabs", () => ({
   TabBar: ({
     onChange,
   }: {
-    onChange: (value: "colors" | "collisions") => void;
+    onChange: (value: "colors" | "collisions" | "autotiles") => void;
   }) => (
     <div>
       <button
@@ -197,6 +203,10 @@ jest.mock("ui/tabs/Tabs", () => ({
       <button
         data-testid="defaults-collisions"
         onClick={() => onChange("collisions")}
+      />
+      <button
+        data-testid="defaults-autotiles"
+        onClick={() => onChange("autotiles")}
       />
     </div>
   ),
@@ -232,6 +242,8 @@ beforeEach(() => {
   mockState.project.present.settings.selectedSceneTilesetId = "tileset1";
   mockTilesets[0].tileColors.fill(-1);
   mockTilesets[0].tileCollisions.fill(-1);
+  mockTilesets[0].autotileGroups.length = 0;
+  mockTilesets[1].autotileGroups.length = 0;
 });
 
 const setPaletteBounds = (width = 80, height = 40) => {
@@ -425,5 +437,56 @@ test("property defaults dispatch the priority flag", () => {
       isTileProp: true,
       clear: false,
     }),
+  );
+});
+
+test("selecting an autotile group enables autotile painting", () => {
+  mockTilesets[0].autotileGroups.push(0);
+  render(<SceneTilePalette sceneId="scene1" />);
+  mockDispatch.mockClear();
+  const surface = setPaletteBounds();
+
+  fireEvent.mouseDown(surface, { clientX: 8, clientY: 8 });
+
+  expect(dispatched("editor/setSelectedSceneTile")[0]?.payload).toEqual(
+    expect.objectContaining({
+      tilesetId: "tileset1",
+      tileIndex: 0,
+      tilesetWidth: 10,
+    }),
+  );
+  expect(dispatched("editor/setSelectedSceneTileAutotile")[0]?.payload).toBe(
+    true,
+  );
+});
+
+test("clicking in autotile defaults mode toggles a tileset group", () => {
+  render(<SceneTilePalette sceneId="scene1" />);
+  const surface = enterDefaultsMode();
+  fireEvent.click(screen.getByTestId("defaults-autotiles"));
+  mockDispatch.mockClear();
+
+  fireEvent.mouseDown(surface, { clientX: 20, clientY: 20 });
+
+  expect(dispatched("entities/toggleTilesetAutotileGroup")[0]?.payload).toEqual(
+    {
+      tilesetId: "tileset1",
+      tileIndex: 22,
+    },
+  );
+});
+
+test("invalid selections disable autotile painting", () => {
+  mockTilesets[0].autotileGroups.push(0);
+  mockState.editor.selectedSceneTile = {
+    ...mockState.editor.selectedSceneTile,
+    width: 2,
+    autotile: true,
+  };
+
+  render(<SceneTilePalette sceneId="scene1" />);
+
+  expect(dispatched("editor/setSelectedSceneTileAutotile")[0]?.payload).toBe(
+    false,
   );
 });

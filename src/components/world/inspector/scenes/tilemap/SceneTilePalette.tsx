@@ -50,6 +50,7 @@ import { ZoomButton } from "ui/buttons/ZoomButton";
 import ColorizedImage from "components/rendering/ColorizedImage";
 import ScenePriorityMap from "components/world/entities/scenes/ScenePriorityMap";
 import SceneCollisions from "components/world/entities/scenes/SceneCollisions";
+import SceneAutotileSelection from "components/world/inspector/scenes/tilemap/SceneAutotileSelection";
 import TilesetUnsetDefaultsOverlay from "components/world/inspector/scenes/tilemap/TilesetUnsetDefaultsOverlay";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { FormContainer, FormField, FormRow } from "ui/form/layout/FormLayout";
@@ -152,6 +153,7 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
   const tilesets = useAppSelectorPickArray(tilesetSelectors.selectAll, [
     "id",
     "width",
+    "autotileGroups",
   ] as const);
 
   const selectedSceneTile = useAppSelector(
@@ -164,6 +166,7 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
   const selectedLayerId = useAppSelector(
     (state) => state.editor.selectedTilemapLayerId,
   );
+  const selectedAutotile = selectedSceneTile?.autotile ?? false;
 
   const preferredTilesetId = useAppSelector(
     (state) => state.project.present.settings.selectedSceneTilesetId,
@@ -174,7 +177,7 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
   const [paletteZoom, setPaletteZoom] = useState(200);
   const [editingDefaults, setEditingDefaults] = useState(false);
   const [defaultEditMode, setDefaultEditMode] = useState<
-    "colors" | "collisions"
+    "colors" | "collisions" | "autotiles"
   >("collisions");
 
   const [renameLayerId, setRenameLayerId] = useState("");
@@ -231,6 +234,13 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
     [selectedTileset?.tileCollisions],
   );
 
+  const canAutotile =
+    Boolean(selectedTileset) &&
+    selectedTileWidth === 1 &&
+    selectedTileHeight === 1 &&
+    selectedTileIndex >= 0 &&
+    Boolean(selectedTileset?.autotileGroups?.includes(selectedTileIndex));
+
   const palettes = useMemo(
     () =>
       Array.from({ length: 8 }, (_, index) =>
@@ -247,9 +257,16 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
     () => ({
       collisions: l10n("TOOL_COLLISIONS_LABEL"),
       colors: l10n("FIELD_COLORS"),
+      autotiles: l10n("FIELD_AUTOTILES"),
     }),
     [],
   );
+
+  useEffect(() => {
+    if (selectedAutotile && !canAutotile) {
+      dispatch(editorActions.setSelectedSceneTileAutotile(false));
+    }
+  }, [canAutotile, dispatch, selectedAutotile]);
 
   useEffect(() => {
     const clearDrag = () => {
@@ -275,7 +292,7 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
           tilesetId: tileset.id,
           tileIndex: 0,
           tilesetWidth: tileset.width,
-          autotile: false,
+          autotile: Boolean(tileset.autotileGroups?.includes(0)),
           persistTileset: tileset.id !== preferredTilesetId,
           activateTool: false,
         }),
@@ -314,7 +331,7 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
           tilesetId,
           tileIndex: 0,
           tilesetWidth: tileset?.width,
-          autotile: false,
+          autotile: Boolean(tileset?.autotileGroups?.includes(0)),
           persistTileset: true,
         }),
       );
@@ -376,12 +393,64 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
   const startTileSelection = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       const position = getTilePosition(e);
-      if (!position) return;
+      if (!selectedTileset || !position) return;
       e.preventDefault();
+
+      const clickedIndex = position.y * selectedTileset.width + position.x;
+      const autotileGroup = selectedTileset.autotileGroups?.find(
+        (tileIndex) => {
+          const groupX = tileIndex % selectedTileset.width;
+          const groupY = Math.floor(tileIndex / selectedTileset.width);
+          return (
+            position.x >= groupX &&
+            position.x < groupX + 4 &&
+            position.y >= groupY &&
+            position.y < groupY + 4
+          );
+        },
+      );
+
+      if (autotileGroup !== undefined) {
+        dragStart.current = undefined;
+        const selectIndividualTile =
+          selectedAutotile && selectedTileIndex === autotileGroup;
+        dispatch(
+          editorActions.selectSceneTileForPainting({
+            tilesetId: selectedTileset.id,
+            tileIndex: selectIndividualTile ? clickedIndex : autotileGroup,
+            tilesetWidth: selectedTileset.width,
+            autotile: !selectIndividualTile,
+          }),
+        );
+        return;
+      }
+
       dragStart.current = position;
       updateTileSelection(e);
     },
-    [getTilePosition, updateTileSelection],
+    [
+      dispatch,
+      getTilePosition,
+      selectedAutotile,
+      selectedTileIndex,
+      selectedTileset,
+      updateTileSelection,
+    ],
+  );
+
+  const toggleAutotileGroup = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const position = getTilePosition(e);
+      if (!selectedTileset || !position) return;
+      e.preventDefault();
+      dispatch(
+        entitiesActions.toggleTilesetAutotileGroup({
+          tilesetId: selectedTileset.id,
+          tileIndex: position.y * selectedTileset.width + position.x,
+        }),
+      );
+    },
+    [dispatch, getTilePosition, selectedTileset],
   );
 
   const startDefaultPaint = useCallback(
@@ -772,10 +841,14 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
                     transformOrigin: "top left",
                   }}
                   onMouseDown={
-                    editingDefaults ? startDefaultPaint : startTileSelection
+                    editingDefaults && defaultEditMode === "autotiles"
+                      ? toggleAutotileGroup
+                      : editingDefaults
+                        ? startDefaultPaint
+                        : startTileSelection
                   }
                   onMouseMove={(e) => {
-                    if (editingDefaults) {
+                    if (editingDefaults && defaultEditMode !== "autotiles") {
                       moveDefaultPaint(e);
                     } else if (dragStart.current && e.buttons === 1) {
                       updateTileSelection(e);
@@ -822,7 +895,22 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
                       />
                     </>
                   )}
-                  {!editingDefaults && (
+                  {editingDefaults &&
+                    defaultEditMode === "autotiles" &&
+                    selectedTileset.autotileGroups?.map((tileIndex) => (
+                      <SceneAutotileSelection
+                        key={tileIndex}
+                        tileIndex={tileIndex}
+                        tilesetWidth={selectedTileset.width}
+                      />
+                    ))}
+                  {!editingDefaults && selectedAutotile && canAutotile && (
+                    <SceneAutotileSelection
+                      tileIndex={selectedTileIndex}
+                      tilesetWidth={selectedTileset.width}
+                    />
+                  )}
+                  {!editingDefaults && (!selectedAutotile || !canAutotile) && (
                     <TileSelection
                       style={{
                         left:
