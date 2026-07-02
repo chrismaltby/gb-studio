@@ -1446,6 +1446,9 @@
   "FIELD_DEFAULT_WEB_TEMPLATE_BINJGB": "Default (Binjgb)",
   "FIELD_WEB_TEMPLATE_PLUGIN": "Web Template Plugin",
   "FIELD_WEB_TEMPLATE_PLUGIN_DESC": "A web template plugin allows you to replace the HTML wrapper used when exporting your game for web.",
+  "FIELD_HIDE_LAYER": "Hide Layer",
+  "FIELD_SHOW_LAYER": "Show Layer",
+  "FIELD_DELETE_LAYER": "Delete Layer",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
