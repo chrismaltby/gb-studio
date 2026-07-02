@@ -1449,6 +1449,8 @@
   "FIELD_HIDE_LAYER": "Hide Layer",
   "FIELD_SHOW_LAYER": "Show Layer",
   "FIELD_DELETE_LAYER": "Delete Layer",
+  "FIELD_TILE_N": "Tile {tile}",
+  "FIELD_ADD_LAYER": "Add Layer",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
