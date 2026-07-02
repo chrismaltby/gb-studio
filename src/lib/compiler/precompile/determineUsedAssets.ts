@@ -230,13 +230,15 @@ export const determineUsedAssets = ({
           ]
     )?.colors as HexPalette;
 
-    addBackgroundById(
-      ensureString(scene.backgroundId, defaultBackgroundId),
-      scene.type === "LOGO",
-      uiPalette,
-      colorMode,
-      !scene.tilesetId,
-    );
+    if (!scene.tilemap) {
+      addBackgroundById(
+        ensureString(scene.backgroundId, defaultBackgroundId),
+        scene.type === "LOGO",
+        uiPalette,
+        colorMode,
+        !scene.tilesetId,
+      );
+    }
 
     addSpriteById(
       ensureString(

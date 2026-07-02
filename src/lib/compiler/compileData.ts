@@ -3,6 +3,7 @@ import uniq from "lodash/uniq";
 import SparkMD5 from "spark-md5";
 import { eventHasArg } from "lib/helpers/eventSystem";
 import compileImages from "./compileImages";
+import compileSceneTilemaps from "./compileSceneTilemaps";
 import compileEntityEvents from "./compileEntityEvents";
 import {
   projectTemplatesRoot,
@@ -117,6 +118,7 @@ import compileTilesets from "lib/compiler/compileTilesets";
 import {
   Avatar,
   ColorCorrectionSetting,
+  ColorModeSetting,
   Font,
   MonoBGPPalette,
   MonoOBJPalette,
@@ -223,8 +225,10 @@ export const precompileBackgrounds = async (
   projectRoot: string,
   {
     warnings,
+    projectColorMode = "mono",
   }: {
     warnings: (_msg: string) => void;
+    projectColorMode?: ColorModeSetting;
   },
 ) => {
   const usedTilemaps: CompiledTilemapData[] = [];
@@ -234,23 +238,24 @@ export const precompileBackgrounds = async (
 
   const commonTilesetsLookup = scenes.reduce(
     (memo, scene) => {
-      if (!scene.backgroundId || !scene.tilesetId) {
+      const backgroundId = scene.tilemap ? scene.id : scene.backgroundId;
+      if (!backgroundId || !scene.tilesetId) {
         return memo;
       }
       const tileset = tilesetLookup[scene.tilesetId];
-      if (memo[scene.backgroundId]) {
-        if (!memo[scene.backgroundId].find((t) => t.id === scene.tilesetId)) {
-          memo[scene.backgroundId].push(tileset);
+      if (memo[backgroundId]) {
+        if (!memo[backgroundId].find((t) => t.id === scene.tilesetId)) {
+          memo[backgroundId].push(tileset);
         }
       } else {
-        memo[scene.backgroundId] = [tileset];
+        memo[backgroundId] = [tileset];
       }
       return memo;
     },
     {} as Record<string, Tileset[]>,
   );
 
-  const backgroundsData = await compileImages(
+  const imageBackgroundsData = await compileImages(
     backgroundReferences,
     commonTilesetsLookup,
     colorCorrection,
@@ -261,8 +266,23 @@ export const precompileBackgrounds = async (
     },
   );
 
+  const sceneTilemapsData = await compileSceneTilemaps(
+    scenes,
+    tilesetLookup,
+    projectColorMode,
+    projectRoot,
+    autoTileFlipEnabled,
+    { warnings },
+  );
+
+  const backgroundsData = [...imageBackgroundsData, ...sceneTilemapsData];
+
   const usedTilesets: CompiledTilesetData[] = [];
   const usedTilesetLookup: Record<string, CompiledTilesetData> = {};
+
+  const sceneTilemapBackgroundIds = new Set(
+    scenes.filter((scene) => scene.tilemap).map((scene) => scene.id),
+  );
 
   const usedBackgroundsWithData: PrecompiledBackground[] = backgroundsData.map(
     (background) => {
@@ -273,7 +293,9 @@ export const precompileBackgrounds = async (
       let tilemapAttrIndex = -1;
 
       // Don't allow reusing tilesets if common tileset isn't set
-      const canReuseTilesets = !!background.commonTilesetId;
+      const canReuseTilesets =
+        !!background.commonTilesetId ||
+        sceneTilemapBackgroundIds.has(background.id);
 
       const genTilesetKey = (data: number[]): string => {
         // If can't reuse tileset don't bother generating an id
@@ -460,7 +482,8 @@ const precompilePalettes = async (
   for (let i = 0; i < scenes.length; i++) {
     const scene = scenes[i];
     const sceneBackgroundPaletteIds = scene.paletteIds || [];
-    const background = backgrounds[scene.backgroundId];
+    const background =
+      backgrounds[scene.tilemap ? scene.id : scene.backgroundId];
     if (background?.autoPalettes?.[0]) {
     }
 
@@ -850,14 +873,15 @@ export const precompileScenes = (
   const scenesData: PrecompiledScene[] = scenes.map((scene, sceneIndex) => {
     const backgroundWithCommonTileset = usedBackgrounds.find(
       (background) =>
-        background.id === scene.backgroundId &&
+        background.id === (scene.tilemap ? scene.id : scene.backgroundId) &&
         (!scene.tilesetId || background.commonTilesetId === scene.tilesetId),
     );
 
     const background =
       backgroundWithCommonTileset ??
       usedBackgrounds.find(
-        (background) => background.id === scene.backgroundId,
+        (background) =>
+          background.id === (scene.tilemap ? scene.id : scene.backgroundId),
       );
 
     if (!background) {
@@ -1181,7 +1205,7 @@ const precompile = async (
     colorCorrection,
     autoTileFlipEnabled,
     projectRoot,
-    { warnings },
+    { warnings, projectColorMode: projectData.settings.colorMode },
   );
 
   progress(`${l10n("COMPILER_PREPARING_TILESETS")}...`);

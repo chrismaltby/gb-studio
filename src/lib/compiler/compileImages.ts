@@ -17,6 +17,8 @@ import {
   TILE_FIRST_CHUNK_SIZE,
   MAX_BACKGROUND_TILES,
   MAX_BACKGROUND_TILES_CGB,
+  MAX_SCENE_TILE_COUNT,
+  TILE_SIZE,
 } from "consts";
 import { fileExists } from "lib/helpers/fs/fileExists";
 import {
@@ -43,9 +45,9 @@ import {
   imageTileAllocationDefault,
 } from "lib/compiler/tileAllocation";
 
-const MAX_IMAGE_WIDTH = 2040;
-const MAX_IMAGE_HEIGHT = 2040;
-const MAX_PIXELS = 16380 * 64;
+const MAX_IMAGE_WIDTH = 255 * TILE_SIZE;
+const MAX_IMAGE_HEIGHT = 255 * TILE_SIZE;
+const MAX_PIXELS = MAX_SCENE_TILE_COUNT * TILE_SIZE * TILE_SIZE;
 
 type PrecompiledBackgroundData = Background & {
   commonTilesetId?: string;

@@ -68,6 +68,34 @@ test("should include first font when default not provided", async () => {
   expect(usedAssets.referencedFonts[0]?.id).toBe("font1");
 });
 
+test("should not include an image background for a tilemap scene", async () => {
+  const projectData = {
+    ...dummyProjectResources,
+    scenes: [
+      {
+        ...dummySceneResource,
+        id: "tilemap_scene",
+        backgroundId: "image_background",
+        tilemap: {
+          tilesets: [],
+          tileColors: [],
+          layers: [],
+        },
+      },
+    ] as SceneResource[],
+  } as ProjectResources;
+  const scriptEventHandlers = await getTestScriptHandlers();
+
+  const usedAssets = determineUsedAssets({
+    projectData,
+    customEventsLookup: {} as Record<string, Script>,
+    scriptEventHandlers,
+    warnings: () => {},
+  });
+
+  expect(usedAssets.referencedBackgrounds).toHaveLength(0);
+});
+
 test("should include fonts referenced in gbvm script blocks", async () => {
   const projectData = {
     ...dummyProjectResources,

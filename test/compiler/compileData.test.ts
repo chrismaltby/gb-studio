@@ -21,6 +21,7 @@ import {
 } from "../dummydata";
 import os from "os";
 import { ReferencedBackground } from "lib/compiler/precompile/determineUsedAssets";
+import { encodeSceneTileRef } from "shared/lib/tiles/sceneTilemapData";
 
 test("should take into account state value when building projectiles", () => {
   const scene = projectileStateTest.scene as unknown as PrecompiledScene;
@@ -459,6 +460,115 @@ test("should precompile image data", async () => {
   expect(usedBackgrounds).toHaveLength(1);
   expect(backgroundLookup["2b"]).toMatchObject(backgrounds[0] ?? "");
   expect(backgroundLookup["3b"]).toBeUndefined();
+});
+
+test("should precompile a scene tilemap as a background keyed by scene id", async () => {
+  const tileset = {
+    id: "tiles",
+    name: "Tiles",
+    symbol: "tiles",
+    filename: "tile_img1.png",
+    width: 4,
+    height: 1,
+  } as Tileset;
+  const scene = {
+    ...dummyScene,
+    id: "painted_scene",
+    name: "Painted Scene",
+    symbol: "painted_scene",
+    backgroundId: "unused_image_background",
+    width: 20,
+    height: 18,
+    colorModeOverride: "none",
+    tilemap: {
+      tilesets: [{ id: tileset.id, width: 4, height: 1 }],
+      tileColors: [0x23],
+      layers: [
+        {
+          id: "visible",
+          name: "Visible",
+          visible: true,
+          tiles: new Array(20 * 18).fill(encodeSceneTileRef(0, 1)),
+        },
+        {
+          id: "hidden",
+          name: "Hidden",
+          visible: false,
+          tiles: new Array(20 * 18).fill(encodeSceneTileRef(0, 2)),
+        },
+      ],
+    },
+  } as Scene;
+
+  const { usedBackgrounds, backgroundLookup } = await precompileBackgrounds(
+    [],
+    [scene],
+    [tileset],
+    "default",
+    false,
+    `${__dirname}/_files`,
+    { warnings: () => {}, projectColorMode: "color" },
+  );
+
+  expect(usedBackgrounds).toHaveLength(1);
+  expect(usedBackgrounds[0]?.id).toBe(scene.id);
+  expect(usedBackgrounds[0]?.symbol).toBe(`${scene.symbol}_tilemap`);
+  expect(usedBackgrounds[0]?.tilemap.data).toHaveLength(20 * 18);
+  expect(usedBackgrounds[0]?.tilemapAttr.data[0]).toBe(0x23);
+  expect(backgroundLookup[scene.id]).toBe(usedBackgrounds[0]);
+
+  expect(() =>
+    precompileScenes([scene], {}, {}, "8x16", usedBackgrounds, [], {
+      warnings: () => {},
+    }),
+  ).not.toThrow();
+});
+
+test("should reuse compiled tilesets between tilemap scenes", async () => {
+  const tileset = {
+    id: "tiles",
+    name: "Tiles",
+    symbol: "tiles",
+    filename: "tile_img1.png",
+    width: 4,
+    height: 1,
+  } as Tileset;
+  const makeScene = (id: string): Scene =>
+    ({
+      ...dummyScene,
+      id,
+      name: id,
+      symbol: id,
+      width: 20,
+      height: 18,
+      colorModeOverride: "none",
+      tilemap: {
+        tilesets: [{ id: tileset.id, width: 4, height: 1 }],
+        tileColors: [],
+        layers: [
+          {
+            id: "layer",
+            name: "Layer",
+            visible: true,
+            tiles: new Array(20 * 18).fill(encodeSceneTileRef(0, 1)),
+          },
+        ],
+      },
+    }) as Scene;
+
+  const { usedBackgrounds, usedTilesets } = await precompileBackgrounds(
+    [],
+    [makeScene("scene_a"), makeScene("scene_b")],
+    [tileset],
+    "default",
+    false,
+    `${__dirname}/_files`,
+    { warnings: () => {} },
+  );
+
+  expect(usedBackgrounds).toHaveLength(2);
+  expect(usedTilesets).toHaveLength(2);
+  expect(usedBackgrounds[1]?.tileset).toBe(usedBackgrounds[0]?.tileset);
 });
 
 test("should precompile scenes", async () => {

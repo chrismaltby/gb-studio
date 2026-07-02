@@ -19,6 +19,7 @@ import {
   Tileset,
   ColorModeSetting,
   SceneTilemapData,
+  Scene,
 } from "shared/lib/resources/types";
 import { autoFlipTileData } from "shared/lib/tiles/autoFlip";
 import {
@@ -32,6 +33,7 @@ import {
   buildSceneTilesetLookup,
   decodeSceneTileRef,
 } from "shared/lib/tiles/sceneTilemapData";
+import promiseLimit from "lib/helpers/promiseLimit";
 
 type PrecompiledSceneTilemapData = {
   id: string;
@@ -52,20 +54,10 @@ type CompileImageOptions = {
   warnings: (msg: string) => void;
 };
 
-type SceneTilemapCompileInput = {
-  id: string;
-  name: string;
-  symbol: string;
-  width: number;
-  height: number;
-  type: string;
-  tilemap: SceneTilemapData;
-};
-
 const BLANK_TILE = new Uint8Array(16);
 
 export const compileTilemapLayers = async (
-  scene: SceneTilemapCompileInput,
+  scene: Scene & { tilemap: SceneTilemapData },
   tilesetsLookup: Record<string, Tileset>,
   commonTileset: Tileset | undefined,
   colorMode: ColorModeSetting,
@@ -227,3 +219,41 @@ export const compileTilemapLayers = async (
     tilesetLength,
   };
 };
+
+const compileSceneTilemaps = (
+  scenes: Scene[],
+  tilesetsLookup: Record<string, Tileset>,
+  projectColorMode: ColorModeSetting,
+  projectPath: string,
+  autoTileFlipEnabled: boolean,
+  { warnings }: CompileImageOptions,
+): Promise<PrecompiledSceneTilemapData[]> => {
+  return promiseLimit(
+    10,
+    scenes
+      .filter((scene): scene is Scene & { tilemap: SceneTilemapData } =>
+        Boolean(scene.tilemap),
+      )
+      .map((scene) => () => {
+        const tilemap = scene.tilemap;
+        const commonTileset = scene.tilesetId
+          ? tilesetsLookup[scene.tilesetId]
+          : undefined;
+        const colorMode =
+          projectColorMode === "mono" || scene.colorModeOverride === "none"
+            ? projectColorMode
+            : scene.colorModeOverride;
+        return compileTilemapLayers(
+          { ...scene, tilemap },
+          tilesetsLookup,
+          commonTileset,
+          colorMode,
+          projectPath,
+          autoTileFlipEnabled,
+          { warnings },
+        );
+      }),
+  );
+};
+
+export default compileSceneTilemaps;
