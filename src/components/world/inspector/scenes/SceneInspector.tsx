@@ -842,16 +842,94 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
     return (
       <Sidebar onClick={selectSidebar}>
         <FormContainer>
-          <FormRow>
-            <FormField name="tilemapSize" label={l10n("FIELD_SIZE")}>
-              <SceneTilemapSizeControls
-                sceneId={scene.id}
-                width={scene.width}
-                height={scene.height}
-                sceneType={scene.type}
-                showEditButton={false}
+          <FormHeader>
+            <FlexGrow style={{ minWidth: 0 }}>
+              <EditableText
+                name="name"
+                placeholder={sceneName(scene, sceneIndex)}
+                value={scene.name || ""}
+                onChange={onChangeName}
               />
-            </FormField>
+              <EditableTextOverlay>
+                {sceneName(scene, sceneIndex).replace(/.*[/\\]/, "")}
+              </EditableTextOverlay>
+            </FlexGrow>
+            {scene.labelColor && <LabelColor color={scene.labelColor} />}
+            <DropdownButton
+              size="small"
+              variant="transparent"
+              menuDirection="right"
+              onMouseDown={onFetchClipboard}
+            >
+              <MenuItem style={{ paddingRight: 10, marginBottom: 5 }}>
+                <div style={{ display: "flex" }}>
+                  <div style={{ marginRight: 5 }}>
+                    <LabelButton
+                      onClick={() => onChangeSceneProp("labelColor", undefined)}
+                    />
+                  </div>
+                  {labelColorValues.map((color) => (
+                    <div
+                      key={color}
+                      style={{ marginRight: color === "gray" ? 0 : 5 }}
+                    >
+                      <LabelButton
+                        color={color}
+                        onClick={() => onChangeSceneProp("labelColor", color)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </MenuItem>
+              <MenuDivider />
+              <MenuItem onClick={onCopy}>{l10n("MENU_COPY_SCENE")}</MenuItem>
+              {clipboardFormat === ClipboardTypeScenes && (
+                <MenuItem onClick={onPaste}>
+                  {l10n("MENU_PASTE_SCENE")}
+                </MenuItem>
+              )}
+              <MenuDivider />
+              {colorsEnabled && (
+                <MenuItem onClick={onCopyBackgroundPaletteIds}>
+                  {l10n("FIELD_COPY_BACKGROUND_PALETTES")}
+                </MenuItem>
+              )}
+              {colorsEnabled && (
+                <MenuItem onClick={onCopySpritePaletteIds}>
+                  {l10n("FIELD_COPY_SPRITE_PALETTES")}
+                </MenuItem>
+              )}
+              {colorsEnabled && clipboardFormat === ClipboardTypePaletteIds && (
+                <MenuItem onClick={onPasteBackgroundPaletteIds}>
+                  {l10n("FIELD_PASTE_BACKGROUND_PALETTES")}
+                </MenuItem>
+              )}
+              {colorsEnabled && clipboardFormat === ClipboardTypePaletteIds && (
+                <MenuItem onClick={onPasteSpritePaletteIds}>
+                  {l10n("FIELD_PASTE_SPRITE_PALETTES")}
+                </MenuItem>
+              )}
+              {colorsEnabled && <MenuDivider />}
+              <MenuItem onClick={onRemove}>
+                {l10n("MENU_DELETE_SCENE")}
+              </MenuItem>
+            </DropdownButton>
+          </FormHeader>
+        </FormContainer>
+
+        <FormContainer>
+          <FormRow>
+            <div style={{ marginTop: 10, width: "100%" }}>
+              <FormField name="type" label={l10n("FIELD_SIZE")}>
+                <SceneTilemapSizeControls
+                  sceneId={scene.id}
+                  width={scene.width}
+                  height={scene.height}
+                  sceneType={scene.type}
+                  showEditButton={false}
+                />
+              </FormField>
+            </div>
           </FormRow>
         </FormContainer>
         <SceneTilePalette sceneId={scene.id} />
