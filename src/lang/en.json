@@ -1451,6 +1451,10 @@
   "FIELD_DELETE_LAYER": "Delete Layer",
   "FIELD_TILE_N": "Tile {tile}",
   "FIELD_ADD_LAYER": "Add Layer",
+  "FIELD_KEEP": "Keep",
+  "FIELD_EDIT_TILE_DEFAULTS": "Edit Tile Defaults",
+  "FIELD_NO_COLLISION": "No Collision",
+  "FIELD_COLORS": "Colors",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
