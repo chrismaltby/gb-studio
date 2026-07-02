@@ -1456,6 +1456,9 @@
   "FIELD_NO_COLLISION": "No Collision",
   "FIELD_COLORS": "Colors",
   "FIELD_AUTOTILES": "Autotiles",
+  "FIELD_EDIT_TILES": "Edit Tiles",
+  "FIELD_IMAGE": "Image",
+  "FIELD_TILEMAP": "Tilemap",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

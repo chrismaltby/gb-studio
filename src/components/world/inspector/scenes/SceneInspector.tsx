@@ -63,7 +63,12 @@ import {
   ClipboardTypePaletteIds,
   ClipboardTypeScenes,
 } from "store/features/clipboard/clipboardTypes";
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
+import {
+  SCREEN_HEIGHT,
+  SCREEN_WIDTH,
+  TOOL_TILES,
+  MAX_SCENE_TILE_COUNT,
+} from "consts";
 import { ScriptEventAutoFadeDisabledWarning } from "components/script/events/ScriptEventAutoFade";
 import { SceneSymbolsEditor } from "components/forms/symbols/SceneSymbolsEditor";
 import { BackgroundSymbolsEditor } from "components/forms/symbols/BackgroundSymbolsEditor";
@@ -101,10 +106,86 @@ import navigationActions from "store/features/navigation/navigationActions";
 import { useEnabledSceneTypeIds } from "store/features/engine/hooks/useEnabledSceneTypeIds";
 import { AutoTileFlipSelect } from "components/forms/AutoTileFlipSelect";
 import { DMGPaletteSelectButton } from "components/forms/DMGPaletteSelectButton";
+import SceneTilePalette from "components/world/inspector/scenes/tilemap/SceneTilePalette";
+import { SceneBackgroundTypeDropdown } from "components/forms/SceneBackgroundTypeDropdown";
 
 interface SceneInspectorProps {
   id: string;
 }
+
+interface SceneTilemapSizeControlsProps {
+  sceneId: string;
+  width: number;
+  height: number;
+  sceneType: string;
+  showEditButton?: boolean;
+}
+
+export const SceneTilemapSizeControls = ({
+  sceneId,
+  width,
+  height,
+  sceneType,
+  showEditButton = true,
+}: SceneTilemapSizeControlsProps) => {
+  const dispatch = useAppDispatch();
+  return (
+    <div
+      style={{
+        display: "flex",
+        gap: 6,
+        flexDirection: "column",
+        width: "100%",
+      }}
+    >
+      <div style={{ display: "flex", gap: 5 }}>
+        <CoordinateInput
+          name="paintedSceneWidth"
+          coordinate="w"
+          min={20}
+          max={Math.min(255, Math.floor(MAX_SCENE_TILE_COUNT / height))}
+          value={width}
+          disabled={sceneType === "LOGO"}
+          onChange={(e) =>
+            dispatch(
+              entitiesActions.resizeTilemapLayers({
+                sceneId,
+                width: Number(e.currentTarget.value),
+                height,
+                resizeAxis: "width",
+              }),
+            )
+          }
+        />
+        <CoordinateInput
+          name="paintedSceneHeight"
+          coordinate="h"
+          min={18}
+          max={Math.min(255, Math.floor(MAX_SCENE_TILE_COUNT / width))}
+          value={height}
+          disabled={sceneType === "LOGO"}
+          onChange={(e) =>
+            dispatch(
+              entitiesActions.resizeTilemapLayers({
+                sceneId,
+                width,
+                height: Number(e.currentTarget.value),
+                resizeAxis: "height",
+              }),
+            )
+          }
+        />
+      </div>
+      {showEditButton && (
+        <Button
+          onClick={() => dispatch(editorActions.setTool({ tool: TOOL_TILES }))}
+        >
+          {l10n("FIELD_EDIT_TILES")}
+        </Button>
+      )}
+    </div>
+  );
+};
 
 interface ScriptHandler {
   value: ScriptEventNormalized[];
@@ -192,6 +273,9 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
       "autoFadeSpeed",
     ] as const,
   );
+  const sceneTilemapEnabled = useAppSelector((state) =>
+    Boolean(sceneSelectors.selectById(state, id)?.tilemap),
+  );
 
   const sceneIndex = useAppSelector((state) =>
     sceneSelectors.selectIds(state).indexOf(id),
@@ -268,6 +352,7 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
     (state) => state.project.present.settings.defaultMonoOBP1,
   );
   const sceneSpriteMode = scene?.spriteMode ?? defaultSpriteMode;
+  const tool = useAppSelector((state) => state.editor.tool);
 
   const enabledSceneTypeIds = useEnabledSceneTypeIds();
   const sceneTypeEnabled = useMemo(() => {
@@ -753,6 +838,27 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
 
   const scrollKey = `${scene.id}_${scriptKey}`;
 
+  if (tool === TOOL_TILES) {
+    return (
+      <Sidebar onClick={selectSidebar}>
+        <FormContainer>
+          <FormRow>
+            <FormField name="tilemapSize" label={l10n("FIELD_SIZE")}>
+              <SceneTilemapSizeControls
+                sceneId={scene.id}
+                width={scene.width}
+                height={scene.height}
+                sceneType={scene.type}
+                showEditButton={false}
+              />
+            </FormField>
+          </FormRow>
+        </FormContainer>
+        <SceneTilePalette sceneId={scene.id} />
+      </Sidebar>
+    );
+  }
+
   return (
     <Sidebar onClick={selectSidebar}>
       <CachedScroll key={scrollKey} cacheKey={scrollKey}>
@@ -946,23 +1052,42 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
                     <FormRow>
                       <FormField
                         name="backgroundId"
-                        label={l10n("FIELD_BACKGROUND")}
+                        label={
+                          <>
+                            {l10n("FIELD_BACKGROUND")}
+                            <InlineDropdownWrapper>
+                              <SceneBackgroundTypeDropdown
+                                sceneId={scene.id}
+                                tilemapEnabled={sceneTilemapEnabled}
+                              />
+                            </InlineDropdownWrapper>
+                          </>
+                        }
                       >
                         <div style={{ display: "flex" }}>
-                          <BackgroundSelectButton
-                            name="backgroundId"
-                            value={scene.backgroundId}
-                            tilesetId={scene.tilesetId}
-                            uiPaletteId={scene.paletteIds?.[7]}
-                            onChange={onChangeBackgroundId}
-                            is360={scene.type === "LOGO"}
-                            colorMode={
-                              scene.colorModeOverride === "none"
-                                ? projectColorMode
-                                : scene.colorModeOverride
-                            }
-                            includeInfo
-                          />
+                          {sceneTilemapEnabled ? (
+                            <SceneTilemapSizeControls
+                              sceneId={scene.id}
+                              width={scene.width}
+                              height={scene.height}
+                              sceneType={scene.type}
+                            />
+                          ) : (
+                            <BackgroundSelectButton
+                              name="backgroundId"
+                              value={scene.backgroundId}
+                              tilesetId={scene.tilesetId}
+                              uiPaletteId={scene.paletteIds?.[7]}
+                              onChange={onChangeBackgroundId}
+                              is360={scene.type === "LOGO"}
+                              colorMode={
+                                scene.colorModeOverride === "none"
+                                  ? projectColorMode
+                                  : scene.colorModeOverride
+                              }
+                              includeInfo
+                            />
+                          )}
                           <div
                             style={{
                               display: "grid",
@@ -1209,54 +1334,56 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
                         label={
                           <>
                             {l10n("FIELD_SCENE_BACKGROUND_PALETTES")}
-                            <InlineDropdownWrapper>
-                              <DropdownButton
-                                size="small"
-                                variant="transparent"
-                                showArrow={false}
-                                label={l10n(
-                                  background?.autoColor
-                                    ? "FIELD_AUTOMATIC"
-                                    : "FIELD_MANUAL",
-                                )}
-                              >
-                                <MenuItem
-                                  onClick={() => onChangeAutoColor(true)}
-                                  icon={
-                                    background?.autoColor ? (
-                                      <CheckIcon />
-                                    ) : (
-                                      <BlankIcon />
-                                    )
-                                  }
+                            {!sceneTilemapEnabled && (
+                              <InlineDropdownWrapper>
+                                <DropdownButton
+                                  size="small"
+                                  variant="transparent"
+                                  showArrow={false}
+                                  label={l10n(
+                                    background?.autoColor
+                                      ? "FIELD_AUTOMATIC"
+                                      : "FIELD_MANUAL",
+                                  )}
                                 >
-                                  {l10n("FIELD_AUTOMATIC")}
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() => onExtractPalettes()}
-                                  icon={<BlankIcon />}
-                                >
-                                  {l10n("FIELD_EXTRACT_PALETTES")}
-                                </MenuItem>
-                                <MenuDivider />
-                                <MenuItem
-                                  onClick={() => onChangeAutoColor(false)}
-                                  icon={
-                                    !background?.autoColor ? (
-                                      <CheckIcon />
-                                    ) : (
-                                      <BlankIcon />
-                                    )
-                                  }
-                                >
-                                  {l10n("FIELD_MANUAL")}
-                                </MenuItem>
-                              </DropdownButton>
-                            </InlineDropdownWrapper>
+                                  <MenuItem
+                                    onClick={() => onChangeAutoColor(true)}
+                                    icon={
+                                      background?.autoColor ? (
+                                        <CheckIcon />
+                                      ) : (
+                                        <BlankIcon />
+                                      )
+                                    }
+                                  >
+                                    {l10n("FIELD_AUTOMATIC")}
+                                  </MenuItem>
+                                  <MenuItem
+                                    onClick={() => onExtractPalettes()}
+                                    icon={<BlankIcon />}
+                                  >
+                                    {l10n("FIELD_EXTRACT_PALETTES")}
+                                  </MenuItem>
+                                  <MenuDivider />
+                                  <MenuItem
+                                    onClick={() => onChangeAutoColor(false)}
+                                    icon={
+                                      !background?.autoColor ? (
+                                        <CheckIcon />
+                                      ) : (
+                                        <BlankIcon />
+                                      )
+                                    }
+                                  >
+                                    {l10n("FIELD_MANUAL")}
+                                  </MenuItem>
+                                </DropdownButton>
+                              </InlineDropdownWrapper>
+                            )}
                           </>
                         }
                       >
-                        {!background?.autoColor ? (
+                        {sceneTilemapEnabled || !background?.autoColor ? (
                           <PaletteButtons>
                             {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
                               <PaletteSelectButton
