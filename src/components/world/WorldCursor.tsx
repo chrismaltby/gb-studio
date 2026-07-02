@@ -30,6 +30,7 @@ import { useEraserCursorMode } from "components/world/entities/scenes/cursor/mod
 import { useEntityDragCursorMode } from "components/world/entities/scenes/cursor/modes/useEntityDragCursorMode";
 import { useSceneGridSelectionCursorMode } from "components/world/entities/scenes/cursor/modes/useSceneGridSelectionCursorMode";
 import { useSceneSelectCursorMode } from "components/world/entities/scenes/cursor/modes/useSceneSelectCursorMode";
+import { useTilePaintCursorMode } from "components/world/entities/scenes/cursor/modes/useTilePaintCursorMode";
 import { useTriggerPlacementCursorMode } from "components/world/entities/scenes/cursor/modes/useTriggerPlacementCursorMode";
 
 interface WorldCursorProps {
@@ -117,6 +118,7 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
   const triggerPlacementCursorMode = useTriggerPlacementCursorMode();
   const collisionPaintCursorMode = useCollisionPaintCursorMode(getCursorRect);
   const colorPaintCursorMode = useColorPaintCursorMode();
+  const tilePaintCursorMode = useTilePaintCursorMode();
   const eraserCursorMode = useEraserCursorMode();
   const sceneGridSelectionCursorMode = useSceneGridSelectionCursorMode();
   const entityDragCursorMode = useEntityDragCursorMode();
@@ -129,6 +131,7 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
       triggerPlacementCursorMode,
       collisionPaintCursorMode,
       colorPaintCursorMode,
+      tilePaintCursorMode,
       eraserCursorMode,
       sceneGridSelectionCursorMode,
       entityDragCursorMode,
@@ -140,6 +143,7 @@ const WorldCursor = ({ editable, scrollRef, zoomRatio }: WorldCursorProps) => {
       triggerPlacementCursorMode,
       collisionPaintCursorMode,
       colorPaintCursorMode,
+      tilePaintCursorMode,
       eraserCursorMode,
       sceneGridSelectionCursorMode,
       entityDragCursorMode,

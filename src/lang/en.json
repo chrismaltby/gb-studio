@@ -2119,6 +2119,7 @@
   "ERROR_DATA_TABLE_CSV_INVALID": "Imported CSV is not valid.",
   "ERROR_DATA_TABLE_CSV_NO_VARIABLES": "Imported CSV contains no variables.",
   "ERROR_DATA_TABLE_CSV_NO_ROW_DATA": "Imported CSV contains no row data.",
+  "ERROR_SCENE_TARGET_LAYER_HIDDEN": "Could not edit as the target layer is hidden.",
 
   "// 13": "Splash -------------------------------------------------------",
 
