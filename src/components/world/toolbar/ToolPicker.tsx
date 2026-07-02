@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import {
   SelectIcon,
   BrickIcon,
-  EraserIcon,
   PlusIcon,
   PaintIcon,
   ListIcon,
@@ -90,8 +89,6 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
         setTool("scene");
       } else if (e.code === "KeyN") {
         setTool("note");
-      } else if (e.code === "KeyE") {
-        setTool("eraser");
       } else if (e.code === "KeyV") {
         setTool("select");
       } else if (e.code === "Escape") {
@@ -146,9 +143,12 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
     },
     [setTool],
   );
-  const setToolEraser = useCallback(() => setTool("eraser"), [setTool]);
-  const setToolCollisions = useCallback(() => setTool("collisions"), [setTool]);
-  const setToolColors = useCallback(() => setTool("colors"), [setTool]);
+  const setToolCollisions = useCallback(
+    () => setTool(TOOL_COLLISIONS),
+    [setTool],
+  );
+  const setToolColors = useCallback(() => setTool(TOOL_COLORS), [setTool]);
+  const setToolTiles = useCallback(() => setTool(TOOL_TILES), [setTool]);
 
   const enableNavigator = useCallback(() => {
     dispatch(editorActions.resizeNavigatorSidebar(NAVIGATOR_MIN_WIDTH));
@@ -208,19 +208,12 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
           {l10n("NOTE")}
         </MenuItem>
       </DropdownButton>
-      <Button
-        variant="transparent"
-        onClick={setToolEraser}
-        title={`${l10n("TOOL_ERASER_LABEL")} (e)`}
-        active={selected === "eraser"}
-      >
-        <EraserIcon />
-      </Button>
+      <FloatingPanelDivider />
       <Button
         variant="transparent"
         onClick={setToolCollisions}
         title={`${l10n("TOOL_COLLISIONS_LABEL")} (c)`}
-        active={selected === "collisions"}
+        active={selected === TOOL_COLLISIONS}
       >
         <BrickIcon />
       </Button>
@@ -228,14 +221,14 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
         variant="transparent"
         onClick={setToolColors}
         title={`${l10n("TOOL_COLORS_LABEL")} (z)`}
-        active={selected === "colors"}
+        active={selected === TOOL_COLORS}
       >
         <PaintIcon />
       </Button>
       {tilePaintAvailable && (
         <Button
           variant="transparent"
-          onClick={() => setTool(TOOL_TILES)}
+          onClick={setToolTiles}
           title={`${l10n("FIELD_TILES")} (x)`}
           active={selected === TOOL_TILES}
         >
