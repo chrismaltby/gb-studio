@@ -8,6 +8,13 @@
       }
     },
     {
+      "id": "111731287",
+      "type": "user",
+      "attributes": {
+        "full_name": "Diante Clark"
+      }
+    },
+    {
       "id": "7443910",
       "type": "user",
       "attributes": {
@@ -101,13 +108,6 @@
       }
     },
     {
-      "id": "71689",
-      "type": "user",
-      "attributes": {
-        "full_name": "Michael Towns (gamebuoygames)"
-      }
-    },
-    {
       "id": "27034715",
       "type": "user",
       "attributes": {
@@ -123,13 +123,6 @@
     }
   ],
   "pastPatrons": [
-    {
-      "id": "111731287",
-      "type": "user",
-      "attributes": {
-        "full_name": "Diante Clark"
-      }
-    },
     {
       "id": "852350",
       "type": "user",
@@ -198,6 +191,13 @@
       "type": "user",
       "attributes": {
         "full_name": "Martin Cremerius-Gauer"
+      }
+    },
+    {
+      "id": "71689",
+      "type": "user",
+      "attributes": {
+        "full_name": "Michael Towns (gamebuoygames)"
       }
     },
     {
