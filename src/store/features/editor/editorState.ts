@@ -1398,7 +1398,7 @@ const editorSlice = createSlice({
         (action): action is PayloadAction<{ sceneId: string }> =>
           entitiesActions.paintCollision.match(action) ||
           entitiesActions.paintColor.match(action) ||
-          action.type === "entities/paintSceneTile",
+          entitiesActions.paintSceneTile.match(action),
         (state, action) => {
           state.type = "scene";
           state.scene = action.payload.sceneId;
@@ -1414,7 +1414,7 @@ const editorSlice = createSlice({
         (action): action is PayloadAction<{ sceneId: string }> =>
           entitiesActions.deleteSceneCollisionSelection.match(action) ||
           entitiesActions.deleteSceneColorSelection.match(action) ||
-          action.type === "entities/deleteSceneTileSelection",
+          entitiesActions.deleteSceneTileSelection.match(action),
         (state, action) => {
           if (state.scenePaintSelection?.sceneId === action.payload.sceneId) {
             state.scenePaintSelection = undefined;
