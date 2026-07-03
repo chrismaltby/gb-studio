@@ -3411,6 +3411,156 @@ test("Should move linked colors and collisions when moving topmost scene tiles",
   expect(tileColors).toEqual([4, 5, 6]);
 });
 
+test("Should apply defaults from a tile revealed below a moved selection", () => {
+  const lowerTile = encodeSceneTileRef(0, 0);
+  const upperTile = encodeSceneTileRef(0, 1);
+  const state = tilemapPaintState(
+    {
+      width: 3,
+      height: 1,
+      collisions: [1, 2, 3],
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1")],
+        tileColors: [4, 5, 6],
+        layers: [
+          {
+            id: "lower",
+            name: "Lower",
+            visible: true,
+            tiles: [lowerTile, 0, 0],
+          },
+          {
+            id: "upper",
+            name: "Upper",
+            visible: true,
+            tiles: [upperTile, 0, 0],
+          },
+        ],
+      },
+    },
+    {
+      tileColors: [0x83, TILE_DEFAULT_UNSET],
+      tileCollisions: [0x0f, TILE_DEFAULT_UNSET],
+    },
+  );
+
+  const moved = reducer(
+    state,
+    actions.moveSceneTileSelection({
+      sceneId: "scene1",
+      layerId: "upper",
+      selection: { x: 0, y: 0, width: 1, height: 1 },
+      offset: { x: 2, y: 0 },
+    }),
+  );
+
+  expect(moved.scenes.entities.scene1?.collisions).toEqual([0x0f, 2, 1]);
+  expect(moved.scenes.entities.scene1?.tilemap?.tileColors).toEqual([
+    0x83, 5, 4,
+  ]);
+});
+
+test("Should preserve cleared linked values for unset revealed tile defaults", () => {
+  const lowerTile = encodeSceneTileRef(0, 0);
+  const upperTile = encodeSceneTileRef(0, 1);
+  const state = tilemapPaintState(
+    {
+      width: 3,
+      height: 1,
+      collisions: [1, 2, 3],
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1")],
+        tileColors: [4, 5, 6],
+        layers: [
+          {
+            id: "lower",
+            name: "Lower",
+            visible: true,
+            tiles: [lowerTile, 0, 0],
+          },
+          {
+            id: "upper",
+            name: "Upper",
+            visible: true,
+            tiles: [upperTile, 0, 0],
+          },
+        ],
+      },
+    },
+    {
+      tileColors: [TILE_DEFAULT_UNSET, TILE_DEFAULT_UNSET],
+      tileCollisions: [6, TILE_DEFAULT_UNSET],
+    },
+  );
+
+  const moved = reducer(
+    state,
+    actions.moveSceneTileSelection({
+      sceneId: "scene1",
+      layerId: "upper",
+      selection: { x: 0, y: 0, width: 1, height: 1 },
+      offset: { x: 2, y: 0 },
+    }),
+  );
+
+  expect(moved.scenes.entities.scene1?.collisions).toEqual([6, 2, 1]);
+  expect(moved.scenes.entities.scene1?.tilemap?.tileColors).toEqual([0, 5, 4]);
+});
+
+test("Should not apply revealed defaults when a higher tile covered the moved selection", () => {
+  const lowerTile = encodeSceneTileRef(0, 0);
+  const movedTile = encodeSceneTileRef(0, 1);
+  const higherTile = encodeSceneTileRef(0, 2);
+  const state = tilemapPaintState(
+    {
+      width: 3,
+      height: 1,
+      collisions: [1, 2, 3],
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1")],
+        tileColors: [4, 5, 6],
+        layers: [
+          {
+            id: "lower",
+            name: "Lower",
+            visible: true,
+            tiles: [lowerTile, 0, 0],
+          },
+          {
+            id: "moved",
+            name: "Moved",
+            visible: true,
+            tiles: [movedTile, 0, 0],
+          },
+          {
+            id: "higher",
+            name: "Higher",
+            visible: true,
+            tiles: [higherTile, 0, 0],
+          },
+        ],
+      },
+    },
+    {
+      tileColors: [0x83, TILE_DEFAULT_UNSET, TILE_DEFAULT_UNSET],
+      tileCollisions: [0x0f, TILE_DEFAULT_UNSET, TILE_DEFAULT_UNSET],
+    },
+  );
+
+  const moved = reducer(
+    state,
+    actions.moveSceneTileSelection({
+      sceneId: "scene1",
+      layerId: "moved",
+      selection: { x: 0, y: 0, width: 1, height: 1 },
+      offset: { x: 2, y: 0 },
+    }),
+  );
+
+  expect(moved.scenes.entities.scene1?.collisions).toEqual([1, 2, 3]);
+  expect(moved.scenes.entities.scene1?.tilemap?.tileColors).toEqual([4, 5, 6]);
+});
+
 test("Should not move linked colors and collisions when selected scene tile is hidden by a higher layer", () => {
   const lowerTile = encodeSceneTileRef(0, 0);
   const upperTile = encodeSceneTileRef(0, 1);

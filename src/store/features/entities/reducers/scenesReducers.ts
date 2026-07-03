@@ -580,8 +580,20 @@ const moveSceneTileSelection: CaseReducer<
 
   const movedTilemap = { ...tilemap, layers };
 
-  const shouldMoveLinkedSource = (sourceIndex: number) =>
-    isTilemapLayerCellTopmost(tilemap, layerIndex, sourceIndex);
+  const linkedSourceCache = new Map<number, boolean>();
+  const shouldMoveLinkedSource = (sourceIndex: number) => {
+    const cached = linkedSourceCache.get(sourceIndex);
+    if (cached !== undefined) {
+      return cached;
+    }
+    const shouldMove = isTilemapLayerCellTopmost(
+      tilemap,
+      layerIndex,
+      sourceIndex,
+    );
+    linkedSourceCache.set(sourceIndex, shouldMove);
+    return shouldMove;
+  };
 
   const shouldWriteLinkedTarget = (targetIndex: number) =>
     isTilemapLayerCellTopmost(movedTilemap, layerIndex, targetIndex);
@@ -607,6 +619,79 @@ const moveSceneTileSelection: CaseReducer<
     shouldMoveLinkedSource,
     shouldWriteLinkedTarget,
   );
+
+  const tilesetLookup = buildSceneTilesetLookup(movedTilemap);
+  const defaultsByTileRef = new Map<
+    number,
+    { color?: number; collision?: number }
+  >();
+  const getTileDefaults = (tileRef: number) => {
+    const cached = defaultsByTileRef.get(tileRef);
+    if (cached) {
+      return cached;
+    }
+    const ref = decodeSceneTileRef(tileRef, tilesetLookup);
+    const tileset = ref
+      ? localTilesetSelectById(state, ref.tilesetId)
+      : undefined;
+    const defaults = {
+      color: ref && tileset ? tileset.tileColors[ref.tileIndex] : undefined,
+      collision:
+        ref && tileset ? tileset.tileCollisions[ref.tileIndex] : undefined,
+    };
+    defaultsByTileRef.set(tileRef, defaults);
+    return defaults;
+  };
+  const selectionXEnd = Math.min(
+    scene.width,
+    action.payload.selection.x + action.payload.selection.width,
+  );
+  const selectionYEnd = Math.min(
+    scene.height,
+    action.payload.selection.y + action.payload.selection.height,
+  );
+
+  for (
+    let y = Math.max(0, action.payload.selection.y);
+    y < selectionYEnd;
+    y++
+  ) {
+    for (
+      let x = Math.max(0, action.payload.selection.x);
+      x < selectionXEnd;
+      x++
+    ) {
+      const cellIndex = y * scene.width + x;
+      if (!shouldMoveLinkedSource(cellIndex) || movedLayer.tiles[cellIndex]) {
+        continue;
+      }
+
+      let revealedTile = 0;
+      for (let index = layerIndex - 1; index >= 0; index--) {
+        const lowerLayer = layers[index];
+        if (lowerLayer?.visible && lowerLayer.tiles[cellIndex]) {
+          revealedTile = lowerLayer.tiles[cellIndex] ?? 0;
+          break;
+        }
+      }
+      if (!revealedTile) {
+        continue;
+      }
+
+      const { color: colorDefault, collision: collisionDefault } =
+        getTileDefaults(revealedTile);
+
+      if (colorDefault !== undefined && colorDefault !== TILE_DEFAULT_UNSET) {
+        tileColors[cellIndex] = colorDefault;
+      }
+      if (
+        collisionDefault !== undefined &&
+        collisionDefault !== TILE_DEFAULT_UNSET
+      ) {
+        collisions[cellIndex] = collisionDefault;
+      }
+    }
+  }
 
   scenesAdapter.updateOne(state.scenes, {
     id: scene.id,
