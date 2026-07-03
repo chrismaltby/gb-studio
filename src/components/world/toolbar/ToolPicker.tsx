@@ -20,12 +20,13 @@ import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
 import { FloatingPanel, FloatingPanelDivider } from "ui/panels/FloatingPanel";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import { useAppDispatch, useAppSelector, useAppStore } from "store/hooks";
 import settingsActions from "store/features/settings/settingsActions";
 import {
   NAVIGATOR_MIN_WIDTH,
   TOOL_COLLISIONS,
   TOOL_COLORS,
+  TOOL_SCENE,
   TOOL_TILES,
 } from "consts";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
@@ -42,6 +43,8 @@ const Wrapper = styled(FloatingPanel)`
 
 const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
   const dispatch = useAppDispatch();
+  const store = useAppStore();
+
   const selected = useAppSelector((state) => state.editor.tool);
   const tilePaintAvailable = useAppSelector((state) => {
     const scene = sceneSelectors.selectById(state, state.editor.scene);
@@ -91,7 +94,16 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
       } else if (e.code === "KeyX") {
         setTool("tiles");
       } else if (e.code === "KeyS") {
-        setTool("scene");
+        const state = store.getState();
+        const currentTool = state.editor.tool;
+        if (currentTool !== TOOL_SCENE) {
+          setTool("scene");
+        } else {
+          // Toggle scene type
+          const newSceneType =
+            state.editor.sceneAddType === "image" ? "tilemap" : "image";
+          dispatch(editorActions.setSceneAddType(newSceneType));
+        }
       } else if (e.code === "KeyN") {
         setTool("note");
       } else if (e.code === "KeyV") {
@@ -100,7 +112,7 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
         setTool("select");
       }
     },
-    [hasFocusForKeyboardShortcuts, setTool],
+    [dispatch, hasFocusForKeyboardShortcuts, setTool, store],
   );
 
   useEffect(() => {
