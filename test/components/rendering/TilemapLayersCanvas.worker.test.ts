@@ -82,7 +82,8 @@ beforeEach(() => {
 const data = (
   overrides: Partial<TilemapLayersCanvasData> = {},
 ): TilemapLayersCanvasData => ({
-  id: 1,
+  canvasId: "1",
+  sequence: 1,
   width: 1,
   height: 1,
   tilemap: {

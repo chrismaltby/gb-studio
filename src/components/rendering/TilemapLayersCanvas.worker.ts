@@ -27,7 +27,8 @@ export interface TilemapLayersWorkerTileset {
 }
 
 export interface TilemapLayersCanvasData {
-  id: number;
+  canvasId: string;
+  sequence: number;
   width: number;
   height: number;
   tilemap: SceneTilemapData;
@@ -40,7 +41,8 @@ export interface TilemapLayersCanvasData {
 }
 
 export interface TilemapLayersCanvasResult {
-  id: number;
+  canvasId: string;
+  sequence: number;
   width: number;
   height: number;
   canvasImage: ImageBitmap;
@@ -75,7 +77,8 @@ export const renderTilemapLayers = async (
   data: TilemapLayersCanvasData,
 ): Promise<TilemapLayersCanvasResult | undefined> => {
   const {
-    id,
+    canvasId,
+    sequence,
     width,
     height,
     tilemap,
@@ -212,7 +215,13 @@ export const renderTilemapLayers = async (
   });
 
   const canvasImage = canvas.transferToImageBitmap();
-  return { id, width: canvas.width, height: canvas.height, canvasImage };
+  return {
+    canvasId,
+    sequence,
+    width: canvas.width,
+    height: canvas.height,
+    canvasImage,
+  };
 };
 
 workerCtx.onmessage = async (evt: MessageEvent<TilemapLayersCanvasData>) => {

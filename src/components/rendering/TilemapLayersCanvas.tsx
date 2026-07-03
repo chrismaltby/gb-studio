@@ -67,7 +67,11 @@ const TilemapLayersCanvas = memo(
     monoBGP,
   }: TilemapLayersCanvasProps) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const requestId = useRef(Math.random());
+
+    const canvasId = useRef(`${Date.now()}-${Math.random()}`);
+    const nextRequestSequence = useRef(0);
+    const lastRenderedSequence = useRef(0);
+
     const worker = useRef(
       workerPool[Math.floor(workerPool.length * Math.random())],
     );
@@ -98,17 +102,29 @@ const TilemapLayersCanvas = memo(
 
     const onWorkerComplete = useCallback(
       (event: MessageEvent<TilemapLayersCanvasResult>) => {
-        if (event.data.id !== requestId.current || !canvasRef.current) return;
+        const { canvasId: resultCanvasId, sequence, canvasImage } = event.data;
 
-        const offscreenCanvas = document.createElement("canvas");
-        const offscreenCtx = offscreenCanvas.getContext("bitmaprenderer");
-        if (!offscreenCtx) return;
+        if (resultCanvasId !== canvasId.current) {
+          return;
+        }
+
+        if (!canvasRef.current || sequence <= lastRenderedSequence.current) {
+          canvasImage.close?.();
+          return;
+        }
+
         const ctx = canvasRef.current.getContext("2d");
-        if (!ctx) return;
-        offscreenCtx.transferFromImageBitmap(event.data.canvasImage);
+        if (!ctx) {
+          canvasImage.close?.();
+          return;
+        }
+
         ctx.clearRect(0, 0, width * TILE_SIZE, height * TILE_SIZE);
         ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(offscreenCanvas, 0, 0);
+        ctx.drawImage(canvasImage, 0, 0);
+
+        canvasImage.close?.();
+        lastRenderedSequence.current = sequence;
       },
       [height, width],
     );
@@ -122,9 +138,11 @@ const TilemapLayersCanvas = memo(
     }, [onWorkerComplete]);
 
     useEffect(() => {
-      requestId.current = Math.random();
+      const sequence = ++nextRequestSequence.current;
+
       worker.current.postMessage({
-        id: requestId.current,
+        canvasId: canvasId.current,
+        sequence,
         width,
         height,
         tilemap,
