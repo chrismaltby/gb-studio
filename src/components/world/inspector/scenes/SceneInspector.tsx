@@ -411,6 +411,7 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
         .find(
           (s) =>
             s.id !== scene?.id &&
+            s.tilemap === undefined &&
             s.backgroundId === scene?.backgroundId &&
             s.type === "LOGO",
         ),
@@ -1130,7 +1131,7 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
 
                     <FormRow>
                       <BackgroundWarnings id={scene.backgroundId} />
-                      {logoSceneForBackground && (
+                      {logoSceneForBackground && !sceneTilemapEnabled && (
                         <Alert variant="warning">
                           <AlertItem>
                             {l10n("WARNING_BACKGROUND_LOGO_REUSED", {
