@@ -273,6 +273,94 @@ test("Should move a tilemap layer to the bottom and top", () => {
   ).toEqual(["uuid-1", "uuid-2"]);
 });
 
+test("Should merge a tilemap layer down with upper tiles taking precedence", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummySceneNormalized,
+          id: "scene1",
+          width: 3,
+          height: 1,
+          tilemap: {
+            tilesets: [],
+            tileColors: [0, 0, 0],
+            layers: [
+              {
+                id: "bottom",
+                name: "Bottom",
+                visible: true,
+                tiles: [1, 1, 1],
+              },
+              {
+                id: "middle",
+                name: "Middle",
+                visible: true,
+                tiles: [2, 2, 0],
+                autotiles: [20, 21, 0],
+              },
+              {
+                id: "top",
+                name: "Top",
+                visible: true,
+                tiles: [3, 0, 3],
+                autotiles: [30, 0, 31],
+              },
+            ],
+          },
+        },
+      },
+      ids: ["scene1"],
+    },
+  };
+
+  const merged = reducer(
+    state,
+    actions.mergeTilemapLayerDown({ sceneId: "scene1", layerId: "top" }),
+  );
+
+  expect(merged.scenes.entities.scene1?.tilemap?.layers).toEqual([
+    state.scenes.entities.scene1?.tilemap?.layers[0],
+    {
+      id: "middle",
+      name: "Middle",
+      visible: true,
+      tiles: [3, 2, 3],
+      autotiles: [30, 21, 31],
+    },
+  ]);
+});
+
+test("Should not merge the bottom tilemap layer down", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummySceneNormalized,
+          id: "scene1",
+          tilemap: {
+            tilesets: [],
+            layers: [
+              { id: "bottom", name: "Bottom", visible: true, tiles: [] },
+              { id: "top", name: "Top", visible: true, tiles: [] },
+            ],
+          },
+        },
+      },
+      ids: ["scene1"],
+    },
+  };
+
+  const unchanged = reducer(
+    state,
+    actions.mergeTilemapLayerDown({ sceneId: "scene1", layerId: "bottom" }),
+  );
+
+  expect(unchanged).toBe(state);
+});
+
 test("Should remove a tilemap layer while preserving at least one layer", () => {
   const enabled = reducer(
     tilemapSceneState(),

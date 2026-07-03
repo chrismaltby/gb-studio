@@ -90,6 +90,28 @@ test("moves a layer up or down one position", () => {
   );
 });
 
+test("merges a layer down", () => {
+  const dispatch = jest.fn();
+  const menu = renderTilemapLayerContextMenu({
+    dispatch,
+    sceneId: "scene1",
+    layerId: "layer2",
+    layerIndex: 1,
+    layerCount: 3,
+    visible: true,
+    onRename: jest.fn(),
+  });
+
+  findMenuItem(menu, "merge-down").props.onClick?.();
+
+  expect(dispatch).toHaveBeenCalledWith(
+    entitiesActions.mergeTilemapLayerDown({
+      sceneId: "scene1",
+      layerId: "layer2",
+    }),
+  );
+});
+
 test("toggles visibility and deletes a layer", () => {
   const dispatch = jest.fn();
   const menu = renderTilemapLayerContextMenu({
@@ -158,5 +180,6 @@ test("disables invalid movement and deletion actions", () => {
   expect(findMenuItem(menu, "move-up").type).toBe(MenuItemDisabled);
   expect(findMenuItem(menu, "move-down").type).toBe(MenuItemDisabled);
   expect(findMenuItem(menu, "move-bottom").type).toBe(MenuItemDisabled);
+  expect(findMenuItem(menu, "merge-down").type).toBe(MenuItemDisabled);
   expect(findMenuItem(menu, "delete").type).toBe(MenuItemDisabled);
 });

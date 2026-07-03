@@ -543,6 +543,55 @@ const moveTilemapLayer: CaseReducer<
   });
 };
 
+const mergeTilemapLayerDown: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ sceneId: string; layerId: string }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene?.tilemap) {
+    return;
+  }
+
+  const layerIndex = scene.tilemap.layers.findIndex(
+    (layer) => layer.id === action.payload.layerId,
+  );
+  const sourceLayer = scene.tilemap.layers[layerIndex];
+  const lowerLayer = scene.tilemap.layers[layerIndex - 1];
+  if (!sourceLayer || !lowerLayer) {
+    return;
+  }
+
+  const size = scene.width * scene.height;
+  const tiles = Array.from({ length: size }, (_, index) => {
+    return sourceLayer.tiles[index] || lowerLayer.tiles[index] || 0;
+  });
+  const hasAutotiles = Boolean(sourceLayer.autotiles || lowerLayer.autotiles);
+  const autotiles = hasAutotiles
+    ? Array.from({ length: size }, (_, index) => {
+        return sourceLayer.tiles[index]
+          ? (sourceLayer.autotiles?.[index] ?? 0)
+          : (lowerLayer.autotiles?.[index] ?? 0);
+      })
+    : undefined;
+  const mergedLayer = {
+    ...lowerLayer,
+    tiles,
+    ...(autotiles ? { autotiles } : {}),
+  };
+  const layers = [...scene.tilemap.layers];
+  layers.splice(layerIndex - 1, 2, mergedLayer);
+
+  scenesAdapter.updateOne(state.scenes, {
+    id: scene.id,
+    changes: {
+      tilemap: {
+        ...scene.tilemap,
+        layers,
+      },
+    },
+  });
+};
+
 const moveSceneTileSelection: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -1927,6 +1976,7 @@ const scenesReducers = {
   editTilemapLayer,
   removeTilemapLayer,
   moveTilemapLayer,
+  mergeTilemapLayerDown,
   moveSceneTileSelection,
   moveSceneCollisionSelection,
   moveSceneColorSelection,

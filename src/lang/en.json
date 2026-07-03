@@ -1461,6 +1461,7 @@
   "FIELD_TILEMAP": "Tilemap",
   "FIELD_IMAGE_SCENE": "Image Scene",
   "FIELD_TILEMAP_SCENE": "Tilemap Scene",
+  "FIELD_MERGE_DOWN": "Merge Down",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

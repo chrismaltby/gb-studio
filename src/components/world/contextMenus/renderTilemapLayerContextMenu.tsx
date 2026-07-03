@@ -84,6 +84,20 @@ const renderTilemapLayerContextMenu = ({
     >
       {visible ? l10n("FIELD_HIDE_LAYER") : l10n("FIELD_SHOW_LAYER")}
     </MenuItem>,
+    canMoveDown ? (
+      <MenuItem
+        key="merge-down"
+        onClick={() =>
+          dispatch(entitiesActions.mergeTilemapLayerDown({ sceneId, layerId }))
+        }
+      >
+        {l10n("FIELD_MERGE_DOWN")}
+      </MenuItem>
+    ) : (
+      <MenuItemDisabled key="merge-down">
+        {l10n("FIELD_MERGE_DOWN")}
+      </MenuItemDisabled>
+    ),
     <MenuDivider key="div-delete" />,
     canDelete ? (
       <MenuItem
