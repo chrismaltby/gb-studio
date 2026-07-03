@@ -642,6 +642,20 @@ const moveSceneTileSelection: CaseReducer<
     defaultsByTileRef.set(tileRef, defaults);
     return defaults;
   };
+  const applyTileDefaults = (cellIndex: number, tileRef: number) => {
+    const { color: colorDefault, collision: collisionDefault } =
+      getTileDefaults(tileRef);
+
+    if (colorDefault !== undefined && colorDefault !== TILE_DEFAULT_UNSET) {
+      tileColors[cellIndex] = colorDefault;
+    }
+    if (
+      collisionDefault !== undefined &&
+      collisionDefault !== TILE_DEFAULT_UNSET
+    ) {
+      collisions[cellIndex] = collisionDefault;
+    }
+  };
   const selectionXEnd = Math.min(
     scene.width,
     action.payload.selection.x + action.payload.selection.width,
@@ -661,34 +675,41 @@ const moveSceneTileSelection: CaseReducer<
       x < selectionXEnd;
       x++
     ) {
-      const cellIndex = y * scene.width + x;
-      if (!shouldMoveLinkedSource(cellIndex) || movedLayer.tiles[cellIndex]) {
-        continue;
-      }
+      const sourceIndex = y * scene.width + x;
+      const sourceWasTopmost = shouldMoveLinkedSource(sourceIndex);
 
-      let revealedTile = 0;
-      for (let index = layerIndex - 1; index >= 0; index--) {
-        const lowerLayer = layers[index];
-        if (lowerLayer?.visible && lowerLayer.tiles[cellIndex]) {
-          revealedTile = lowerLayer.tiles[cellIndex] ?? 0;
-          break;
+      if (sourceWasTopmost && !movedLayer.tiles[sourceIndex]) {
+        let revealedTile = 0;
+        for (let index = layerIndex - 1; index >= 0; index--) {
+          const lowerLayer = layers[index];
+          if (lowerLayer?.visible && lowerLayer.tiles[sourceIndex]) {
+            revealedTile = lowerLayer.tiles[sourceIndex] ?? 0;
+            break;
+          }
+        }
+        if (revealedTile) {
+          applyTileDefaults(sourceIndex, revealedTile);
         }
       }
-      if (!revealedTile) {
+
+      if (sourceWasTopmost || !layer.tiles[sourceIndex]) {
         continue;
       }
 
-      const { color: colorDefault, collision: collisionDefault } =
-        getTileDefaults(revealedTile);
-
-      if (colorDefault !== undefined && colorDefault !== TILE_DEFAULT_UNSET) {
-        tileColors[cellIndex] = colorDefault;
-      }
+      const targetX = x + action.payload.offset.x;
+      const targetY = y + action.payload.offset.y;
       if (
-        collisionDefault !== undefined &&
-        collisionDefault !== TILE_DEFAULT_UNSET
+        targetX < 0 ||
+        targetX >= scene.width ||
+        targetY < 0 ||
+        targetY >= scene.height
       ) {
-        collisions[cellIndex] = collisionDefault;
+        continue;
+      }
+      const targetIndex = targetY * scene.width + targetX;
+      const movedTile = movedLayer.tiles[targetIndex] ?? 0;
+      if (movedTile && shouldWriteLinkedTarget(targetIndex)) {
+        applyTileDefaults(targetIndex, movedTile);
       }
     }
   }
