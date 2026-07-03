@@ -59,77 +59,101 @@ const loadTileset: CaseReducer<
       tileColors: [],
       autotileGroups: [],
     },
-    ["id", "symbol", "tileCollisions", "tileColors", "autotileGroups"],
+    [
+      "id",
+      "symbol",
+      "width",
+      "height",
+      "tileCollisions",
+      "tileColors",
+      "autotileGroups",
+    ],
   );
+  updateTilemapReferencesForTilesets(state, [action.payload.data.id]);
   ensureSymbolsUnique(state);
 };
 
-const applyTilesetResize: CaseReducer<
-  EntitiesState,
-  PayloadAction<{ tilesetId: string }>
-> = (state, action) => {
-  const tileset = localTilesetSelectById(state, action.payload.tilesetId);
-  if (!tileset) {
-    return;
-  }
+interface TilesetResize {
+  width: number;
+  height: number;
+}
 
-  const nextWidth = Math.min(Math.floor(tileset.imageWidth / TILE_SIZE), 255);
-  const nextHeight = Math.min(Math.floor(tileset.imageHeight / TILE_SIZE), 255);
+export const updateTilemapReferencesForTilesets = (
+  state: EntitiesState,
+  tilesetIds: readonly string[],
+) => {
+  const resizes = new Map<string, TilesetResize>();
 
-  if (nextWidth === tileset.width && nextHeight === tileset.height) {
-    return;
-  }
-
-  const oldWidth = tileset.width;
-  const oldHeight = tileset.height;
-
-  const tileColors = resizeGrid(
-    tileset.tileColors,
-    oldWidth,
-    oldHeight,
-    nextWidth,
-    nextHeight,
-    TILE_DEFAULT_UNSET,
-  );
-  const tileCollisions = resizeGrid(
-    tileset.tileCollisions,
-    oldWidth,
-    oldHeight,
-    nextWidth,
-    nextHeight,
-    TILE_DEFAULT_UNSET,
-  );
-  const autotileGroups = (tileset.autotileGroups ?? [])
-    .map((tileIndex) => {
-      const x = tileIndex % oldWidth;
-      const y = Math.floor(tileIndex / oldWidth);
-      return x + 4 <= nextWidth && y + 4 <= nextHeight
-        ? y * nextWidth + x
-        : undefined;
-    })
-    .filter((value): value is number => value !== undefined);
-
-  tilesetsAdapter.updateOne(state.tilesets, {
-    id: tileset.id,
-    changes: {
-      width: nextWidth,
-      height: nextHeight,
-      tileColors,
-      tileCollisions,
-      autotileGroups,
-    },
-  });
-
-  const mapTileIndex = (tileIndex: number) => {
-    const x = tileIndex % oldWidth;
-    const y = Math.floor(tileIndex / oldWidth);
-
-    if (x >= nextWidth || y >= nextHeight) {
-      return undefined;
+  for (const tilesetId of tilesetIds) {
+    const tileset = localTilesetSelectById(state, tilesetId);
+    if (!tileset) {
+      continue;
     }
 
-    return y * nextWidth + x;
-  };
+    const detectedWidth = Math.floor(tileset.imageWidth / TILE_SIZE);
+    const detectedHeight = Math.floor(tileset.imageHeight / TILE_SIZE);
+    if (
+      !Number.isFinite(detectedWidth) ||
+      !Number.isFinite(detectedHeight) ||
+      detectedWidth <= 0 ||
+      detectedHeight <= 0
+    ) {
+      continue;
+    }
+
+    const nextWidth = Math.min(detectedWidth, 255);
+    const nextHeight = Math.min(detectedHeight, 255);
+    if (nextWidth === tileset.width && nextHeight === tileset.height) {
+      continue;
+    }
+
+    const oldWidth = Math.max(0, Math.floor(tileset.width));
+    const oldHeight = Math.max(0, Math.floor(tileset.height));
+    const tileColors = resizeGrid(
+      tileset.tileColors,
+      oldWidth,
+      oldHeight,
+      nextWidth,
+      nextHeight,
+      TILE_DEFAULT_UNSET,
+    );
+    const tileCollisions = resizeGrid(
+      tileset.tileCollisions,
+      oldWidth,
+      oldHeight,
+      nextWidth,
+      nextHeight,
+      TILE_DEFAULT_UNSET,
+    );
+    const autotileGroups =
+      oldWidth > 0
+        ? (tileset.autotileGroups ?? [])
+            .map((tileIndex) => {
+              const x = tileIndex % oldWidth;
+              const y = Math.floor(tileIndex / oldWidth);
+              return x + 4 <= nextWidth && y + 4 <= nextHeight
+                ? y * nextWidth + x
+                : undefined;
+            })
+            .filter((value): value is number => value !== undefined)
+        : [];
+
+    tilesetsAdapter.updateOne(state.tilesets, {
+      id: tileset.id,
+      changes: {
+        width: nextWidth,
+        height: nextHeight,
+        tileColors,
+        tileCollisions,
+        autotileGroups,
+      },
+    });
+    resizes.set(tileset.id, { width: nextWidth, height: nextHeight });
+  }
+
+  if (resizes.size === 0) {
+    return;
+  }
 
   const sceneUpdates = state.scenes.ids.reduce<
     Array<{
@@ -142,16 +166,15 @@ const applyTilesetResize: CaseReducer<
     const scene = localSceneSelectById(state, String(sceneId));
     const sceneTilemap = scene?.tilemap;
 
-    if (!scene || !sceneTilemap?.tilesets.some(({ id }) => id === tileset.id)) {
+    if (!scene || !sceneTilemap?.tilesets.some(({ id }) => resizes.has(id))) {
       return memo;
     }
 
     const oldLookup = buildSceneTilesetLookup(sceneTilemap);
-    const resizedTilesets = sceneTilemap.tilesets.map((snapshot) =>
-      snapshot.id === tileset.id
-        ? { ...snapshot, width: nextWidth, height: nextHeight }
-        : snapshot,
-    );
+    const resizedTilesets = sceneTilemap.tilesets.map((snapshot) => {
+      const resize = resizes.get(snapshot.id);
+      return resize ? { ...snapshot, ...resize } : snapshot;
+    });
     const newLookup = buildSceneTilesetLookup({
       tilesets: resizedTilesets,
     });
@@ -168,14 +191,22 @@ const applyTilesetResize: CaseReducer<
         return 0;
       }
 
-      const nextTileIndex =
-        ref.tilesetId === tileset.id
-          ? mapTileIndex(ref.tileIndex)
-          : ref.tileIndex;
+      const resize = resizes.get(ref.tilesetId);
+      let nextTileIndex = ref.tileIndex;
+      if (resize) {
+        const oldEntry = oldLookup.entries[ref.tilesetIndex];
+        if (!oldEntry || oldEntry.width <= 0) {
+          return 0;
+        }
+        const x = ref.tileIndex % oldEntry.width;
+        const y = Math.floor(ref.tileIndex / oldEntry.width);
+        if (x >= resize.width || y >= resize.height) {
+          return 0;
+        }
+        nextTileIndex = y * resize.width + x;
+      }
 
-      return nextTileIndex === undefined
-        ? 0
-        : encodeSceneTileRef(newEntry.offset, nextTileIndex);
+      return encodeSceneTileRef(newEntry.offset, nextTileIndex);
     };
 
     const layers = sceneTilemap.layers.map((layer) => ({
@@ -201,6 +232,13 @@ const applyTilesetResize: CaseReducer<
   if (sceneUpdates.length > 0) {
     scenesAdapter.updateMany(state.scenes, sceneUpdates);
   }
+};
+
+export const updateAllTilemapReferences = (state: EntitiesState) => {
+  updateTilemapReferencesForTilesets(
+    state,
+    state.tilesets.ids.map((id) => String(id)),
+  );
 };
 
 /**************************************************************************
@@ -357,7 +395,6 @@ const tilesetsReducers = {
   paintTilesetColor,
   paintTilesetCollision,
   toggleTilesetAutotileGroup,
-  applyTilesetResize,
 } satisfies SliceCaseReducers<EntitiesState>;
 
 export default tilesetsReducers;

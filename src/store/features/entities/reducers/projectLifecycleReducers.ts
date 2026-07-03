@@ -40,6 +40,7 @@ import {
   fixAllScenesWithModifiedBackgrounds,
   updateMonoOverrideIds,
 } from "store/features/entities/reducers/backgroundsReducers";
+import { updateAllTilemapReferences } from "store/features/entities/reducers/tilesetsReducers";
 
 export const loadProject: CaseReducer<
   EntitiesState,
@@ -97,6 +98,7 @@ export const loadProject: CaseReducer<
   );
   notesAdapter.setAll(state.notes, data.entities.notes || {});
 
+  updateAllTilemapReferences(state);
   fixAllScenesWithModifiedBackgrounds(state);
   updateMonoOverrideIds(state);
   ensureSymbolsUnique(state);

@@ -6,8 +6,9 @@ import {
   dummySceneNormalized,
   dummyTilesetResource,
 } from "../../../../dummydata";
-import { TILE_DEFAULT_UNSET } from "consts";
+import { TILE_DEFAULT_UNSET, TILE_SIZE } from "consts";
 import { encodeSceneTileRef } from "shared/lib/tiles/sceneTilemapData";
+import { CompressedTilesetResourceAsset } from "shared/lib/resources/types";
 
 test("Should paint palette and priority defaults onto tilesets", () => {
   const state: EntitiesState = {
@@ -176,7 +177,7 @@ test("Should ignore invalid tileset autotile group origins", () => {
   expect(unchanged.tilesets.entities.tiles1?.autotileGroups).toEqual([9]);
 });
 
-test("Should apply tileset resize explicitly and remap scene references", () => {
+test("Should automatically grow a loaded tileset and remap scene references", () => {
   const state: EntitiesState = {
     ...initialState,
     tilesets: {
@@ -247,8 +248,15 @@ test("Should apply tileset resize explicitly and remap scene references", () => 
 
   const resized = reducer(
     state,
-    actions.applyTilesetResize({
-      tilesetId: "tiles1",
+    actions.loadTileset({
+      data: {
+        ...state.tilesets.entities.tiles1,
+        _resourceType: "tileset",
+        width: 3,
+        height: 2,
+        tileColors: "",
+        tileCollisions: "",
+      } as CompressedTilesetResourceAsset,
     }),
   );
 
@@ -284,4 +292,219 @@ test("Should apply tileset resize explicitly and remap scene references", () => 
   expect(resized.scenes.entities.scene1?.tilemap?.layers[0]?.autotiles).toEqual(
     [encodeSceneTileRef(0, 4), 0, 0, 0],
   );
+});
+
+test("Should automatically shrink a loaded tileset and clear cropped references", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    tilesets: {
+      entities: {
+        tiles1: {
+          ...dummyTilesetResource,
+          id: "tiles1",
+          width: 3,
+          height: 2,
+          imageWidth: 16,
+          imageHeight: 16,
+          tileColors: [10, 11, 12, 13, 14, 15],
+          tileCollisions: [20, 21, 22, 23, 24, 25],
+          autotileGroups: [0],
+          inode: "tiles1",
+          _v: 0,
+        },
+        tiles2: {
+          ...dummyTilesetResource,
+          id: "tiles2",
+          width: 2,
+          height: 1,
+          imageWidth: 16,
+          imageHeight: 8,
+          tileColors: [],
+          tileCollisions: [],
+          inode: "tiles2",
+          _v: 0,
+        },
+      },
+      ids: ["tiles1", "tiles2"],
+    },
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummySceneNormalized,
+          id: "scene1",
+          tilemap: {
+            tilesets: [
+              { id: "tiles1", width: 3, height: 2 },
+              { id: "tiles2", width: 2, height: 1 },
+            ],
+            layers: [
+              {
+                id: "layer1",
+                name: "Layer 1",
+                visible: true,
+                tiles: [
+                  encodeSceneTileRef(0, 4),
+                  encodeSceneTileRef(0, 5),
+                  encodeSceneTileRef(6, 1),
+                ],
+                autotiles: [encodeSceneTileRef(0, 5)],
+              },
+            ],
+          },
+        },
+      },
+      ids: ["scene1"],
+    },
+  };
+
+  const resized = reducer(
+    state,
+    actions.loadTileset({
+      data: {
+        ...state.tilesets.entities.tiles1,
+        _resourceType: "tileset",
+        width: 2,
+        height: 2,
+        tileColors: "",
+        tileCollisions: "",
+      } as CompressedTilesetResourceAsset,
+    }),
+  );
+
+  expect(resized.tilesets.entities.tiles1).toMatchObject({
+    width: 2,
+    height: 2,
+    tileColors: [10, 11, 13, 14],
+    tileCollisions: [20, 21, 23, 24],
+    autotileGroups: [],
+  });
+  expect(resized.scenes.entities.scene1?.tilemap?.layers[0]).toMatchObject({
+    tiles: [encodeSceneTileRef(0, 3), 0, encodeSceneTileRef(4, 1)],
+    autotiles: [0],
+  });
+});
+
+test("Should ignore invalid loaded tileset dimensions", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    tilesets: {
+      entities: {
+        tiles1: {
+          ...dummyTilesetResource,
+          id: "tiles1",
+          width: 2,
+          height: 2,
+          imageWidth: 0,
+          imageHeight: 0,
+          tileColors: [1, 2, 3, 4],
+          tileCollisions: [5, 6, 7, 8],
+          inode: "tiles1",
+          _v: 0,
+        },
+      },
+      ids: ["tiles1"],
+    },
+  };
+
+  const loaded = reducer(
+    state,
+    actions.loadTileset({
+      data: {
+        ...state.tilesets.entities.tiles1,
+        _resourceType: "tileset",
+        width: 0,
+        height: 0,
+        tileColors: "",
+        tileCollisions: "",
+      } as CompressedTilesetResourceAsset,
+    }),
+  );
+
+  expect(loaded.tilesets.entities.tiles1).toMatchObject({
+    width: 2,
+    height: 2,
+    tileColors: [1, 2, 3, 4],
+    tileCollisions: [5, 6, 7, 8],
+  });
+});
+
+test("Should not rewrite scene tilemaps when loaded dimensions are unchanged", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    tilesets: {
+      entities: {
+        tiles1: {
+          ...dummyTilesetResource,
+          id: "tiles1",
+          width: 2,
+          height: 2,
+          imageWidth: 16,
+          imageHeight: 16,
+          tileColors: [],
+          tileCollisions: [],
+          inode: "tiles1",
+          _v: 0,
+        },
+      },
+      ids: ["tiles1"],
+    },
+  };
+
+  const loaded = reducer(
+    state,
+    actions.loadTileset({
+      data: {
+        ...state.tilesets.entities.tiles1,
+        _resourceType: "tileset",
+        width: 2,
+        height: 2,
+        tileColors: "",
+        tileCollisions: "",
+      } as CompressedTilesetResourceAsset,
+    }),
+  );
+
+  expect(loaded.scenes).toBe(state.scenes);
+});
+
+test("Should clamp automatically loaded tileset dimensions", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    tilesets: {
+      entities: {
+        tiles1: {
+          ...dummyTilesetResource,
+          id: "tiles1",
+          width: 1,
+          height: 1,
+          imageWidth: 300 * TILE_SIZE,
+          imageHeight: 300 * TILE_SIZE,
+          tileColors: [],
+          tileCollisions: [],
+          inode: "tiles1",
+          _v: 0,
+        },
+      },
+      ids: ["tiles1"],
+    },
+  };
+
+  const loaded = reducer(
+    state,
+    actions.loadTileset({
+      data: {
+        ...state.tilesets.entities.tiles1,
+        _resourceType: "tileset",
+        width: 255,
+        height: 255,
+        tileColors: "",
+        tileCollisions: "",
+      } as CompressedTilesetResourceAsset,
+    }),
+  );
+
+  expect(loaded.tilesets.entities.tiles1).toMatchObject({
+    width: 255,
+    height: 255,
+  });
 });

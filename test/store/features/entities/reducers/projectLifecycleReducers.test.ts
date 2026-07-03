@@ -6,8 +6,11 @@ import {
   dummyCompressedSceneResource,
   dummyCompressedProjectResources,
   dummyCompressedBackgroundResource,
+  dummyCompressedTilesetResource,
 } from "../../../../dummydata";
 import { CompressedProjectResources } from "shared/lib/resources/types";
+import { compressNumberArray } from "shared/lib/resources/compression";
+import { encodeSceneTileRef } from "shared/lib/tiles/sceneTilemapData";
 
 test("Should fix scene widths if backgrounds has been removed since save", () => {
   const state: EntitiesState = {
@@ -182,4 +185,76 @@ test("Should preserve painted scene dimensions without a background", () => {
   const newState = reducer(state, action);
   expect(newState.scenes.entities.scene1?.width).toBe(40);
   expect(newState.scenes.entities.scene1?.height).toBe(30);
+});
+
+test("Should update all tilemap references for resized tilesets on load", () => {
+  const state: EntitiesState = { ...initialState };
+  const loadData: CompressedProjectResources = {
+    ...dummyCompressedProjectResources,
+    tilesets: [
+      {
+        ...dummyCompressedTilesetResource,
+        id: "tiles1",
+        width: 2,
+        height: 2,
+        imageWidth: 24,
+        imageHeight: 16,
+      },
+      {
+        ...dummyCompressedTilesetResource,
+        id: "tiles2",
+        width: 2,
+        height: 1,
+        imageWidth: 24,
+        imageHeight: 8,
+      },
+    ],
+    scenes: [
+      {
+        ...dummyCompressedSceneResource,
+        id: "scene1",
+        tilemap: {
+          tilesets: [
+            { id: "tiles1", width: 2, height: 2 },
+            { id: "tiles2", width: 2, height: 1 },
+          ],
+          layers: [
+            {
+              id: "layer",
+              name: "Layer",
+              visible: true,
+              tiles: compressNumberArray([
+                encodeSceneTileRef(0, 3),
+                encodeSceneTileRef(4, 1),
+              ]),
+              autotiles: compressNumberArray([encodeSceneTileRef(0, 3)]),
+            },
+          ],
+        },
+      },
+    ],
+  };
+
+  const action = projectActions.loadProject.fulfilled(
+    {
+      resources: loadData,
+      path: "project.gbsproj",
+      scriptEventDefs: {},
+      engineSchema: { fields: [], sceneTypes: [], consts: {} },
+      modifiedSpriteIds: [],
+      isMigrated: false,
+    },
+    "randomid",
+    "project.gbsproj",
+  );
+  const newState = reducer(state, action);
+
+  expect(newState.scenes.entities.scene1?.tilemap?.tilesets).toEqual([
+    { id: "tiles1", width: 3, height: 2 },
+    { id: "tiles2", width: 3, height: 1 },
+  ]);
+  expect(newState.scenes.entities.scene1?.tilemap?.layers[0]).toMatchObject({
+    tiles: [encodeSceneTileRef(0, 4), encodeSceneTileRef(6, 1)],
+    autotiles: [encodeSceneTileRef(0, 4)],
+  });
 });
