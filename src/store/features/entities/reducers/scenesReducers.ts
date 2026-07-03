@@ -422,27 +422,39 @@ const resizeTilemapLayers: CaseReducer<
 
 const addTilemapLayer: CaseReducer<
   EntitiesState,
-  PayloadAction<{ sceneId: string; layerId: string }>
+  PayloadAction<{
+    sceneId: string;
+    layerId: string;
+    afterLayerId?: string;
+  }>
 > = (state, action) => {
   const scene = localSceneSelectById(state, action.payload.sceneId);
   if (!scene?.tilemap) {
     return;
   }
   const layerNumber = scene.tilemap.layers.length + 1;
+  const selectedLayerIndex = action.payload.afterLayerId
+    ? scene.tilemap.layers.findIndex(
+        (layer) => layer.id === action.payload.afterLayerId,
+      )
+    : -1;
+  const insertIndex =
+    selectedLayerIndex >= 0
+      ? selectedLayerIndex + 1
+      : scene.tilemap.layers.length;
+  const layers = [...scene.tilemap.layers];
+  layers.splice(insertIndex, 0, {
+    id: action.payload.layerId,
+    name: `Layer ${layerNumber}`,
+    visible: true,
+    tiles: new Array(scene.width * scene.height).fill(0),
+  });
   scenesAdapter.updateOne(state.scenes, {
     id: scene.id,
     changes: {
       tilemap: {
         ...scene.tilemap,
-        layers: [
-          ...scene.tilemap.layers,
-          {
-            id: action.payload.layerId,
-            name: `Layer ${layerNumber}`,
-            visible: true,
-            tiles: new Array(scene.width * scene.height).fill(0),
-          },
-        ],
+        layers,
       },
     },
   });
@@ -1908,7 +1920,7 @@ const scenesReducers = {
   paintSceneTile,
   addTilemapLayer: {
     reducer: addTilemapLayer,
-    prepare: (payload: { sceneId: string }) => ({
+    prepare: (payload: { sceneId: string; afterLayerId?: string }) => ({
       payload: { ...payload, layerId: uuid() },
     }),
   },

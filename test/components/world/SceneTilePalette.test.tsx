@@ -307,6 +307,7 @@ test("add layer selects the new layer", () => {
 
   const addAction = dispatched("entities/addTilemapLayer")[0];
   expect(addAction).toBeDefined();
+  expect(addAction?.payload?.afterLayerId).toBe("layer2");
   const newLayerId = addAction?.payload?.layerId;
   expect(newLayerId).toEqual(expect.any(String));
   expect(mockDispatch).toHaveBeenCalledWith({

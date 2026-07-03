@@ -197,6 +197,28 @@ test("Should add a tilemap layer", () => {
   });
 });
 
+test("Should add a tilemap layer immediately above the requested layer", () => {
+  const enabled = reducer(
+    tilemapSceneState(),
+    actions.setTilemapLayersEnabled({ sceneId: "scene1", enabled: true }),
+  );
+  const withTopLayer = reducer(
+    enabled,
+    actions.addTilemapLayer({ sceneId: "scene1" }),
+  );
+  const inserted = reducer(
+    withTopLayer,
+    actions.addTilemapLayer({
+      sceneId: "scene1",
+      afterLayerId: "uuid-1",
+    }),
+  );
+
+  expect(
+    inserted.scenes.entities.scene1?.tilemap?.layers.map((layer) => layer.id),
+  ).toEqual(["uuid-1", "uuid-3", "uuid-2"]);
+});
+
 test("Should edit a tilemap layer name and visibility", () => {
   const enabled = reducer(
     tilemapSceneState(),

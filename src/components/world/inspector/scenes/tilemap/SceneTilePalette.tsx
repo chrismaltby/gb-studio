@@ -582,7 +582,10 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
               size="small"
               title={l10n("FIELD_ADD_LAYER")}
               onClick={() => {
-                const action = entitiesActions.addTilemapLayer({ sceneId });
+                const action = entitiesActions.addTilemapLayer({
+                  sceneId,
+                  afterLayerId: selectedLayerId,
+                });
                 dispatch(action);
                 selectLayer(action.payload.layerId);
               }}
