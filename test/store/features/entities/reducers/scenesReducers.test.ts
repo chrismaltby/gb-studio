@@ -438,6 +438,18 @@ test("Should move tilemap layers up, top, and bottom", () => {
     movedUp.scenes.entities.scene1?.tilemap?.layers.map((layer) => layer.id),
   ).toEqual(["layer2", "layer1", "layer3"]);
 
+  const movedByTwo = reducer(
+    state,
+    actions.moveTilemapLayer({
+      sceneId: "scene1",
+      layerId: "layer1",
+      direction: 2,
+    }),
+  );
+  expect(
+    movedByTwo.scenes.entities.scene1?.tilemap?.layers.map((layer) => layer.id),
+  ).toEqual(["layer2", "layer3", "layer1"]);
+
   const movedTop = reducer(
     state,
     actions.moveTilemapLayer({

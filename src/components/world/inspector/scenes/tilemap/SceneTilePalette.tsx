@@ -56,9 +56,10 @@ import { FixedSpacer } from "ui/spacing/Spacing";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
 import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
 import { FlatList } from "ui/lists/FlatList";
-import { EntityListItem } from "ui/lists/EntityListItem";
+import { EntityListItemDnD } from "ui/lists/EntityListItemDnD";
 import renderTilemapLayerContextMenu from "components/world/contextMenus/renderTilemapLayerContextMenu";
 import { TabBar } from "ui/tabs/Tabs";
+import ItemTypes from "renderer/lib/dnd/itemTypes";
 
 const Wrapper = styled.div`
   max-width: 100%;
@@ -133,6 +134,7 @@ interface SceneTilePaletteProps {
 }
 
 const paletteZoomLevels = [100, 200, 400, 800, 1600];
+const layerDragTypes = [ItemTypes.TILEMAP_LAYER];
 
 const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
   const dispatch = useAppDispatch();
@@ -610,9 +612,33 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
           }}
         >
           {({ item: layer }) => (
-            <EntityListItem
+            <EntityListItemDnD
               item={layer}
               type="custom"
+              dragType={ItemTypes.TILEMAP_LAYER}
+              acceptTypes={layerDragTypes}
+              onDrop={(draggedLayer, targetLayer) => {
+                const draggedIndex = layers.findIndex(
+                  (candidate) => candidate.id === draggedLayer.id,
+                );
+                const targetIndex = layers.findIndex(
+                  (candidate) => candidate.id === targetLayer.id,
+                );
+                if (
+                  draggedIndex < 0 ||
+                  targetIndex < 0 ||
+                  draggedIndex === targetIndex
+                ) {
+                  return;
+                }
+                dispatch(
+                  entitiesActions.moveTilemapLayer({
+                    sceneId,
+                    layerId: draggedLayer.id,
+                    direction: targetIndex - draggedIndex,
+                  }),
+                );
+              }}
               icon={
                 <Button
                   size="small"

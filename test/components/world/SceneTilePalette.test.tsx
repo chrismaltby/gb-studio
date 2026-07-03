@@ -129,21 +129,30 @@ jest.mock("ui/lists/FlatList", () => ({
   ),
 }));
 
-jest.mock("ui/lists/EntityListItem", () => ({
-  EntityListItem: ({
+jest.mock("ui/lists/EntityListItemDnD", () => ({
+  EntityListItemDnD: ({
     item,
     icon,
     onRename,
+    onDrop,
   }: {
-    item: { id: string };
+    item: (typeof mockScene.tilemap.layers)[number];
     icon: React.ReactNode;
     onRename: (name: string) => void;
+    onDrop: (
+      dragged: (typeof mockScene.tilemap.layers)[number],
+      target: (typeof mockScene.tilemap.layers)[number],
+    ) => void;
   }) => (
     <div>
       {icon}
       <button
         data-testid={`rename-${item.id}`}
         onClick={() => onRename("Renamed Layer")}
+      />
+      <button
+        data-testid={`drop-layer1-on-${item.id}`}
+        onClick={() => onDrop(mockScene.tilemap.layers[0], item)}
       />
     </div>
   ),
@@ -328,6 +337,22 @@ test("rename dispatches editTilemapLayer", () => {
       sceneId: "scene1",
       layerId: "layer1",
       changes: { name: "Renamed Layer" },
+    },
+  });
+});
+
+test("dropping a layer reorders it to the target layer position", () => {
+  render(<SceneTilePalette sceneId="scene1" />);
+  mockDispatch.mockClear();
+
+  fireEvent.click(screen.getByTestId("drop-layer1-on-layer2"));
+
+  expect(mockDispatch).toHaveBeenCalledWith({
+    type: "entities/moveTilemapLayer",
+    payload: {
+      sceneId: "scene1",
+      layerId: "layer1",
+      direction: 1,
     },
   });
 });

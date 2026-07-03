@@ -14,6 +14,7 @@ const ItemTypes = {
   CONSTANT: "CONSTANT",
   PALETTE_FOLDER: "PALETTE_FOLDER",
   PALETTE: "PALETTE",
+  TILEMAP_LAYER: "TILEMAP_LAYER",
 };
 
 export default ItemTypes;

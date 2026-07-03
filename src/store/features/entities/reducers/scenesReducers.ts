@@ -513,7 +513,7 @@ const moveTilemapLayer: CaseReducer<
   PayloadAction<{
     sceneId: string;
     layerId: string;
-    direction: -1 | 1 | "top" | "bottom";
+    direction: number | "top" | "bottom";
   }>
 > = (state, action) => {
   const scene = localSceneSelectById(state, action.payload.sceneId);
