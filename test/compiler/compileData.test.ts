@@ -512,7 +512,7 @@ test("should precompile a scene tilemap as a background keyed by scene id", asyn
 
   expect(usedBackgrounds).toHaveLength(1);
   expect(usedBackgrounds[0]?.id).toBe(scene.id);
-  expect(usedBackgrounds[0]?.symbol).toBe(`${scene.symbol}_tilemap`);
+  expect(usedBackgrounds[0]?.symbol).toBe(`${scene.symbol}_bg`);
   expect(usedBackgrounds[0]?.tilemap.data).toHaveLength(20 * 18);
   expect(usedBackgrounds[0]?.tilemapAttr.data[0]).toBe(0x23);
   expect(backgroundLookup[scene.id]).toBe(usedBackgrounds[0]);

@@ -13,6 +13,7 @@ jest.mock("store/hooks", () => ({
   useAppDispatch: () => mockDispatch,
   useAppSelector: (selector: (state: RootState) => unknown) =>
     selector(mockState),
+  useAppStore: () => ({ getState: () => mockState }),
 }));
 
 jest.mock("ui/buttons/DropdownButton", () => ({

@@ -143,12 +143,16 @@ test("draws the latest worker bitmap onto the visible canvas", async () => {
   const request = worker?.postMessage.mock.calls[0]?.[0];
   const canvasImage = {} as ImageBitmap;
 
-  worker?.emit({ id: request.id, width: 8, height: 8, canvasImage });
-
-  expect(bitmapContext.transferFromImageBitmap).toHaveBeenCalledWith(
+  worker?.emit({
+    canvasId: request.canvasId,
+    sequence: request.sequence,
+    width: 8,
+    height: 8,
     canvasImage,
-  );
-  expect(canvasContext.drawImage).toHaveBeenCalled();
+  });
+
+  expect(bitmapContext.transferFromImageBitmap).not.toHaveBeenCalled();
+  expect(canvasContext.drawImage).toHaveBeenCalledWith(canvasImage, 0, 0);
 });
 
 test("ignores stale worker responses", async () => {
@@ -180,12 +184,22 @@ test("ignores stale worker responses", async () => {
     />,
   );
   await waitFor(() => expect(worker?.postMessage).toHaveBeenCalledTimes(2));
+  const latestRequest = worker?.postMessage.mock.calls[1]?.[0];
   worker?.emit({
-    id: staleRequest.id,
+    canvasId: latestRequest.canvasId,
+    sequence: latestRequest.sequence,
+    width: 8,
+    height: 8,
+    canvasImage: {} as ImageBitmap,
+  });
+  canvasContext.drawImage.mockClear();
+  worker?.emit({
+    canvasId: staleRequest.canvasId,
+    sequence: staleRequest.sequence,
     width: 8,
     height: 8,
     canvasImage: {} as ImageBitmap,
   });
 
-  expect(bitmapContext.transferFromImageBitmap).not.toHaveBeenCalled();
+  expect(canvasContext.drawImage).not.toHaveBeenCalled();
 });

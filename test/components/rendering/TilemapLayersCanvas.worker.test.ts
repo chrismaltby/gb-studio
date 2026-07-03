@@ -111,7 +111,12 @@ test("fills cells whose tileset image is unavailable", async () => {
   const result = await renderTilemapLayers(data({ tilesets: [undefined] }));
 
   expect(result).toEqual(
-    expect.objectContaining({ id: 1, width: 8, height: 8 }),
+    expect.objectContaining({
+      canvasId: "1",
+      sequence: 1,
+      width: 8,
+      height: 8,
+    }),
   );
   expect(mockCanvases[0]?.context.fillRect).toHaveBeenCalledWith(0, 0, 8, 8);
   expect(mockCanvases[0]?.context.drawImage).not.toHaveBeenCalled();
