@@ -62,7 +62,7 @@ describe("shouldPreviewCollisionSelection", () => {
 });
 
 describe("getTileSelectionPreview", () => {
-  test("moves the selected tiles and returns flattened tile data", () => {
+  test("moves the selected tiles", () => {
     const preview = getTileSelectionPreview({
       scene: scene(),
       selection: selection(),
@@ -70,7 +70,6 @@ describe("getTileSelectionPreview", () => {
     });
 
     expect(preview?.tilemap.layers[0]?.tiles).toEqual([0, 1, 0]);
-    expect(preview?.resolved).toHaveLength(3);
   });
 
   test("clips a selection moved partly outside the scene", () => {

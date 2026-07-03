@@ -88,9 +88,15 @@ const data = (
   tilemap: {
     tilesets: [{ id: "tiles1", width: 1, height: 1 }],
     tileColors: [0],
-    layers: [],
+    layers: [
+      {
+        id: "layer1",
+        name: "Layer 1",
+        visible: true,
+        tiles: [encodeSceneTileRef(0, 0)],
+      },
+    ],
   },
-  tiles: [encodeSceneTileRef(0, 0)],
   tileColors: [0],
   tilesets: [undefined],
   palettes: [dummyPalette.colors],
@@ -135,4 +141,52 @@ test.each([
   expect(mockCanvases[0]?.context.scale).toHaveBeenCalledWith(scaleX, scaleY);
   expect(mockCanvases[0]?.context.save).toHaveBeenCalled();
   expect(mockCanvases[0]?.context.restore).toHaveBeenCalled();
+});
+
+test("flattens visible layers using the topmost tile", async () => {
+  (global.fetch as jest.Mock).mockResolvedValue({
+    ok: true,
+    blob: async () => new Blob(),
+  } as Response);
+
+  await renderTilemapLayers(
+    data({
+      tilemap: {
+        tilesets: [{ id: "tiles1", width: 3, height: 1 }],
+        layers: [
+          {
+            id: "lower",
+            name: "Lower",
+            visible: true,
+            tiles: [encodeSceneTileRef(0, 0)],
+          },
+          {
+            id: "hidden",
+            name: "Hidden",
+            visible: false,
+            tiles: [encodeSceneTileRef(0, 1)],
+          },
+          {
+            id: "upper",
+            name: "Upper",
+            visible: true,
+            tiles: [encodeSceneTileRef(0, 2)],
+          },
+        ],
+      },
+      tilesets: [{ id: "tiles1", width: 3, src: "flatten-layers.png" }],
+    }),
+  );
+
+  expect(mockCanvases[1]?.context.drawImage).toHaveBeenCalledWith(
+    expect.anything(),
+    16,
+    0,
+    8,
+    8,
+    0,
+    0,
+    8,
+    8,
+  );
 });

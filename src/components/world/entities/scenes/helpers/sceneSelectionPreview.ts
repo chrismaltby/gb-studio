@@ -1,6 +1,5 @@
 import type { ScenePaintSelection } from "store/features/editor/editorState";
 import {
-  flattenTilemapLayers,
   isTilemapLayerCellTopmost,
   moveTilemapLayerSelection,
   resolveSceneAutotiles,
@@ -21,7 +20,6 @@ type SceneSelectionPreviewScene = {
 
 type TileSelectionPreview = {
   tilemap: SceneTilemapData;
-  resolved: ReturnType<typeof flattenTilemapLayers>;
 };
 
 type LinkedTileSelectionPreviewMasks = {
@@ -82,10 +80,7 @@ export const getTileSelectionPreview = ({
   }
 
   const tilemap = { ...scene.tilemap, layers };
-  return {
-    tilemap,
-    resolved: flattenTilemapLayers(tilemap, scene.width, scene.height),
-  };
+  return { tilemap };
 };
 
 export const getLinkedTileSelectionPreviewMasks = ({

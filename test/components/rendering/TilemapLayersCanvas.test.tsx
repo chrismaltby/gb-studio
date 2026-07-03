@@ -69,7 +69,6 @@ const baseProps = {
   width: 1,
   height: 1,
   tilemap: { tilesets: [], tileColors: [0], layers: [] },
-  tiles: [0],
   tileColors: [0],
   palettes: [dummyPalette],
   monoBGP: [0, 1, 2, 3] as MonoBGPPalette,
@@ -123,7 +122,6 @@ test("sends tilemap rendering data to a worker", async () => {
     expect.objectContaining({
       width: 1,
       height: 1,
-      tiles: [0],
       tileColors: [0],
       tilesets: [expect.objectContaining({ id: "tiles1", width: 1 })],
       palettes: [dummyPalette.colors],
@@ -165,7 +163,22 @@ test("ignores stale worker responses", async () => {
   );
   const staleRequest = worker?.postMessage.mock.calls[0]?.[0];
 
-  view.rerender(<TilemapLayersCanvas {...baseProps} tiles={[1]} />);
+  view.rerender(
+    <TilemapLayersCanvas
+      {...baseProps}
+      tilemap={{
+        ...baseProps.tilemap,
+        layers: [
+          {
+            id: "layer1",
+            name: "Layer 1",
+            visible: true,
+            tiles: [1],
+          },
+        ],
+      }}
+    />,
+  );
   await waitFor(() => expect(worker?.postMessage).toHaveBeenCalledTimes(2));
   worker?.emit({
     id: staleRequest.id,

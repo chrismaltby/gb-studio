@@ -10,6 +10,27 @@ interface SceneTilesetLookup {
   entryByAbsoluteIndex: Array<SceneTilesetIndexEntry | undefined>;
 }
 
+export const flattenTilemapLayers = (
+  tilemap: SceneTilemapData,
+  width: number,
+  height: number,
+): number[] => {
+  const size = width * height;
+  const tiles = new Array<number>(size).fill(0);
+  for (const layer of tilemap.layers) {
+    if (!layer.visible) {
+      continue;
+    }
+    for (let index = 0; index < size; index++) {
+      const tile = layer.tiles[index];
+      if (tile) {
+        tiles[index] = tile;
+      }
+    }
+  }
+  return tiles;
+};
+
 export const buildSceneTilesetReferenceLookup = (
   tilemap: Pick<SceneTilemapData, "tilesets">,
 ): SceneTilesetLookup => {

@@ -9,6 +9,7 @@ import { hex2GBCrgb } from "shared/lib/helpers/color";
 import {
   buildSceneTilesetReferenceLookup,
   decodeSceneTileReference,
+  flattenTilemapLayers,
 } from "shared/lib/tiles/sceneTilemapReferences";
 import type {
   ColorCorrectionSetting,
@@ -30,7 +31,6 @@ export interface TilemapLayersCanvasData {
   width: number;
   height: number;
   tilemap: SceneTilemapData;
-  tiles: number[];
   tileColors: number[];
   tilesets: Array<TilemapLayersWorkerTileset | undefined>;
   palettes: string[][];
@@ -79,7 +79,6 @@ export const renderTilemapLayers = async (
     width,
     height,
     tilemap,
-    tiles,
     tileColors,
     tilesets,
     palettes,
@@ -87,6 +86,7 @@ export const renderTilemapLayers = async (
     monoBGP,
     colorCorrection,
   } = data;
+  const tiles = flattenTilemapLayers(tilemap, width, height);
   const canvas = new OffscreenCanvas(width * TILE_SIZE, height * TILE_SIZE);
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   if (!ctx) return;

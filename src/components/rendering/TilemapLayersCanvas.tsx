@@ -24,7 +24,6 @@ interface TilemapLayersCanvasProps {
   width: number;
   height: number;
   tilemap: SceneTilemapData;
-  tiles: number[];
   tileColors: number[];
   palettes: Palette[];
   previewAsMono?: boolean;
@@ -62,7 +61,6 @@ const TilemapLayersCanvas = memo(
     width,
     height,
     tilemap,
-    tiles,
     tileColors,
     palettes,
     previewAsMono,
@@ -130,7 +128,6 @@ const TilemapLayersCanvas = memo(
         width,
         height,
         tilemap,
-        tiles,
         tileColors,
         tilesets: workerTilesets,
         palettes: palettes.map((palette) => palette.colors),
@@ -146,7 +143,6 @@ const TilemapLayersCanvas = memo(
       previewAsMono,
       tileColors,
       tilemap,
-      tiles,
       width,
       workerTilesets,
     ]);

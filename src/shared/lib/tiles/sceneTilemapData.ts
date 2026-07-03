@@ -399,26 +399,7 @@ export const getTilemapLayersTileColors = (
     .concat(new Array(Math.max(0, size - tileColors.length)).fill(0));
 };
 
-export const flattenTilemapLayers = (
-  tilemap: SceneTilemapData,
-  width: number,
-  height: number,
-): number[] => {
-  const size = width * height;
-  const tiles = new Array<number>(size).fill(0);
-  for (const layer of tilemap.layers) {
-    if (!layer.visible) {
-      continue;
-    }
-    for (let i = 0; i < size; i++) {
-      const tile = layer.tiles[i];
-      if (tile) {
-        tiles[i] = tile;
-      }
-    }
-  }
-  return tiles;
-};
+export { flattenTilemapLayers } from "shared/lib/tiles/sceneTilemapReferences";
 
 export const pruneTilemapLayersTilesets = (
   tilemap: SceneTilemapData,
