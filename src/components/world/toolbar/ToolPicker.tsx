@@ -6,6 +6,11 @@ import {
   PaintIcon,
   ListIcon,
   JigsawIcon,
+  BackgroundIcon,
+  NoteIcon,
+  TriggerIcon,
+  ActorIcon,
+  SceneIcon,
 } from "ui/icons/Icons";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
@@ -178,25 +183,36 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
         <MenuItem
           onClick={setToolActors}
           title={`${l10n("TOOL_ADD_ACTOR_LABEL")} (a)`}
+          icon={<ActorIcon />}
         >
           {l10n("ACTOR")}
         </MenuItem>
         <MenuItem
           onClick={setToolTriggers}
           title={`${l10n("TOOL_ADD_TRIGGER_LABEL")} (t)`}
+          icon={<TriggerIcon />}
         >
           {l10n("TRIGGER")}
         </MenuItem>
         <MenuItem
           title={`${l10n("TOOL_ADD_SCENE_LABEL")} (s)`}
           subMenu={[
-            <MenuItem key="image" onClick={setToolSceneType("image")}>
+            <MenuItem
+              key="image"
+              onClick={setToolSceneType("image")}
+              icon={<BackgroundIcon />}
+            >
               {l10n("FIELD_IMAGE_SCENE")}
             </MenuItem>,
-            <MenuItem key="tilemap" onClick={setToolSceneType("tilemap")}>
+            <MenuItem
+              key="tilemap"
+              onClick={setToolSceneType("tilemap")}
+              icon={<JigsawIcon />}
+            >
               {l10n("FIELD_TILEMAP_SCENE")}
             </MenuItem>,
           ]}
+          icon={<SceneIcon />}
         >
           {l10n("SCENE")}
         </MenuItem>
@@ -204,6 +220,7 @@ const ToolPicker = ({ hasFocusForKeyboardShortcuts }: ToolPickerProps) => {
         <MenuItem
           onClick={setToolNote}
           title={`${l10n("TOOL_ADD_NOTE_LABEL")} (n)`}
+          icon={<NoteIcon />}
         >
           {l10n("NOTE")}
         </MenuItem>

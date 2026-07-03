@@ -10,14 +10,20 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import { SceneNavigatorPane } from "./SceneNavigatorPane";
 import { CustomEventNavigatorPane } from "./CustomEventNavigatorPane";
 import { Button } from "ui/buttons/Button";
-import { PlusIcon, SearchIcon } from "ui/icons/Icons";
+import {
+  BackgroundIcon,
+  JigsawIcon,
+  NoteIcon,
+  PlusIcon,
+  SearchIcon,
+} from "ui/icons/Icons";
 import { VariableNavigatorPane } from "./VariableNavigatorPane";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { EntityListSearch } from "ui/lists/EntityListItem";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { PrefabNavigatorPane } from "./PrefabNavigatorPane";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { ConstantNavigatorPane } from "./ConstantNavigatorPane";
 import { defaultProjectSettings } from "consts";
 
@@ -200,13 +206,19 @@ export const WorldNavigator = () => {
                 label={<PlusIcon />}
                 showArrow={false}
               >
-                <MenuItem onClick={onAddScene("image")}>
+                <MenuItem
+                  onClick={onAddScene("image")}
+                  icon={<BackgroundIcon />}
+                >
                   {l10n("FIELD_IMAGE_SCENE")}
                 </MenuItem>
-                <MenuItem onClick={onAddScene("tilemap")}>
+                <MenuItem onClick={onAddScene("tilemap")} icon={<JigsawIcon />}>
                   {l10n("FIELD_TILEMAP_SCENE")}
                 </MenuItem>
-                <MenuItem onClick={onAddNote}>{l10n("NOTE")}</MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={onAddNote} icon={<NoteIcon />}>
+                  {l10n("NOTE")}
+                </MenuItem>
               </DropdownButton>
               <FixedSpacer width={5} />
               <Button

@@ -43,6 +43,8 @@ import NoteView from "components/world/entities/notes/NoteView";
 import renderWorldContextMenu from "components/world/contextMenus/renderWorldContextMenu";
 import { useContextMenu } from "ui/hooks/use-context-menu";
 import WorldCursor from "components/world/WorldCursor";
+import { BackgroundIcon, JigsawIcon } from "ui/icons/Icons";
+import l10n from "shared/lib/lang/l10n";
 
 const MOUSE_ZOOM_SPEED = 0.5;
 
@@ -70,10 +72,24 @@ const NewSceneCursor = styled.div`
   position: absolute;
   cursor: pointer;
   background-color: rgba(3, 54, 99, 0.5);
+  color: ${(props) => props.theme.colors.text};
   width: 160px;
   height: 144px;
   border-radius: 4px;
   z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  cursor: copy;
+
+  svg {
+    width: 64px;
+    height: 64px;
+    fill: ${(props) => props.theme.colors.text};
+  }
 `;
 
 type Point = {
@@ -156,6 +172,7 @@ const WorldInteractionOverlay = React.memo(
     const dispatch = useAppDispatch();
     const store = useAppStore();
 
+    const sceneAddType = useAppSelector((state) => state.editor.sceneAddType);
     const [hoverState, setHoverState] = useState<Point>();
     const [selectionStart, setSelectionStart] = useState<Point>();
     const [selectionEnd, setSelectionEnd] = useState<Point>();
@@ -403,7 +420,19 @@ const WorldInteractionOverlay = React.memo(
               top: hoverState.y,
               pointerEvents: "auto",
             }}
-          />
+          >
+            {sceneAddType === "image" ? (
+              <>
+                <BackgroundIcon />
+                {l10n("FIELD_IMAGE_SCENE")}
+              </>
+            ) : (
+              <>
+                <JigsawIcon />
+                {l10n("FIELD_TILEMAP_SCENE")}
+              </>
+            )}
+          </NewSceneCursor>
         )}
 
         {tool === TOOL_NOTE && hoverState && (
