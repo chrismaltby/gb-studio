@@ -156,6 +156,17 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
     "autotileGroups",
   ] as const);
 
+  const colorMode = useAppSelector(
+    (state) => state.project.present.settings.colorMode,
+  );
+
+  const previewAsMono = useAppSelector(
+    (state) =>
+      state.project.present.settings.colorMode === "mono" ||
+      (state.project.present.settings.colorMode === "mixed" &&
+        state.project.present.settings.previewAsMono),
+  );
+
   const selectedSceneTile = useAppSelector(
     (state) => state.editor.selectedSceneTile,
   );
@@ -176,9 +187,7 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
   );
   const [paletteZoom, setPaletteZoom] = useState(200);
   const [editingDefaults, setEditingDefaults] = useState(false);
-  const [defaultEditMode, setDefaultEditMode] = useState<
-    "colors" | "collisions" | "autotiles"
-  >("collisions");
+  const [defaultEditMode, setDefaultEditMode] = useState<string>("collisions");
 
   const [renameLayerId, setRenameLayerId] = useState("");
   const dragStart = useRef<{ x: number; y: number } | undefined>(undefined);
@@ -256,10 +265,10 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
   const tileDefaultsTabs = useMemo(
     () => ({
       collisions: l10n("TOOL_COLLISIONS_LABEL"),
-      colors: l10n("FIELD_COLORS"),
+      ...(colorMode !== "mono" ? { colors: l10n("FIELD_COLORS") } : {}),
       autotiles: l10n("FIELD_AUTOTILES"),
     }),
-    [],
+    [colorMode],
   );
 
   useEffect(() => {
@@ -886,6 +895,7 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
                     src={assetURL("tilesets", selectedTileset)}
                     tiles={displayTileColors}
                     palettes={palettes}
+                    previewAsMono={previewAsMono}
                   />
                   {editingDefaults && defaultEditMode === "colors" && (
                     <>
