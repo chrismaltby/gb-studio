@@ -9,6 +9,7 @@ import {
   moveTilemapLayerSelection,
   pruneTilemapLayersTilesets,
   resolveSceneAutotiles,
+  resolveSceneAutotilesForCells,
   sceneStampLinePositions,
 } from "shared/lib/tiles/sceneTilemapData";
 
@@ -349,6 +350,27 @@ describe("isTilemapLayerCellTopmost", () => {
 });
 
 describe("resolveSceneAutotiles", () => {
+  test("sparse resolution matches whole-layer resolution", () => {
+    const base = encodeSceneTileRef(0, 2);
+    const autotiles = [0, base, 0, base, base, base, 0, base, 0];
+    const tilemap = {
+      tilesets: [{ id: "tiles", width: 8, height: 8 }],
+    };
+    const indexes = [1, 3, 4, 5, 7];
+    const wholeLayer = resolveSceneAutotiles(autotiles, 3, 3, tilemap);
+    const sparse = resolveSceneAutotilesForCells(
+      autotiles,
+      3,
+      3,
+      buildSceneTilesetLookup(tilemap),
+      indexes,
+    );
+
+    for (const index of indexes) {
+      expect(sparse.get(index)).toBe(wholeLayer[index]);
+    }
+  });
+
   test("resolves all 16 2x2 autotile variants from a 4x4 tile block", () => {
     expect(AUTOTILE_VARIANT_MASKS).toHaveLength(16);
     const tilesetWidth = 8;

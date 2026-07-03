@@ -3554,6 +3554,153 @@ test("Should paint scene tiles and snapshot tilesets", () => {
   ).toBe(5);
 });
 
+test("Should preserve state when repainting an unchanged tile with matching defaults", () => {
+  const state = tilemapPaintState(
+    {
+      width: 1,
+      height: 1,
+      collisions: [2],
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1", 1, 1)],
+        tileColors: [3],
+        layers: [
+          {
+            id: "layer1",
+            name: "Layer 1",
+            visible: true,
+            tiles: [encodeSceneTileRef(0, 0)],
+          },
+        ],
+      },
+    },
+    {
+      width: 1,
+      height: 1,
+      tileColors: [3],
+      tileCollisions: [2],
+    },
+  );
+
+  const painted = reducer(
+    state,
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "layer1",
+      tilesetId: "tiles1",
+      tileIndex: 0,
+      x: 0,
+      y: 0,
+    }),
+  );
+
+  expect(painted).toBe(state);
+});
+
+test("Should add a tileset snapshot even when the numeric tile value is unchanged", () => {
+  const tiles = [encodeSceneTileRef(1, 0)];
+  const baseState = tilemapPaintState({
+    width: 1,
+    height: 1,
+    tilemap: {
+      tilesets: [tilesetSnapshot("tiles1", 1, 1)],
+      tileColors: [0],
+      layers: [
+        {
+          id: "layer1",
+          name: "Layer 1",
+          visible: true,
+          tiles,
+        },
+      ],
+    },
+  });
+  const state: EntitiesState = {
+    ...baseState,
+    tilesets: {
+      entities: {
+        ...baseState.tilesets.entities,
+        tiles2: {
+          ...dummyTilesetResource,
+          id: "tiles2",
+          width: 1,
+          height: 1,
+          imageWidth: 8,
+          imageHeight: 8,
+          tileColors: [],
+          tileCollisions: [],
+          inode: "tiles2",
+          _v: 0,
+        },
+      },
+      ids: [...baseState.tilesets.ids, "tiles2"],
+    },
+  };
+
+  const painted = reducer(
+    state,
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "layer1",
+      tilesetId: "tiles2",
+      tileIndex: 0,
+      x: 0,
+      y: 0,
+    }),
+  );
+
+  expect(painted.scenes.entities.scene1?.tilemap?.tilesets).toEqual([
+    tilesetSnapshot("tiles1", 1, 1),
+    tilesetSnapshot("tiles2", 1, 1),
+  ]);
+  expect(painted.scenes.entities.scene1?.tilemap?.layers[0]?.tiles).toBe(tiles);
+});
+
+test("Should reapply defaults when repainting an unchanged tile", () => {
+  const state = tilemapPaintState(
+    {
+      width: 1,
+      height: 1,
+      collisions: [9],
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1", 1, 1)],
+        tileColors: [7],
+        layers: [
+          {
+            id: "layer1",
+            name: "Layer 1",
+            visible: true,
+            tiles: [encodeSceneTileRef(0, 0)],
+          },
+        ],
+      },
+    },
+    {
+      width: 1,
+      height: 1,
+      tileColors: [3],
+      tileCollisions: [2],
+    },
+  );
+
+  const painted = reducer(
+    state,
+    actions.paintSceneTile({
+      sceneId: "scene1",
+      layerId: "layer1",
+      tilesetId: "tiles1",
+      tileIndex: 0,
+      x: 0,
+      y: 0,
+    }),
+  );
+
+  expect(painted.scenes.entities.scene1?.tilemap?.tileColors).toEqual([3]);
+  expect(painted.scenes.entities.scene1?.collisions).toEqual([2]);
+  expect(painted.scenes.entities.scene1?.tilemap?.layers[0]?.tiles).toBe(
+    state.scenes.entities.scene1?.tilemap?.layers[0]?.tiles,
+  );
+});
+
 test("Should preserve unchanged tile default arrays while painting", () => {
   const collisions = [0, 0, 0, 0];
   const tileColors = [0, 0, 0, 0];

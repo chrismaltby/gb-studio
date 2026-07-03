@@ -203,6 +203,92 @@ export const resolveSceneAutotiles = (
   return resolved;
 };
 
+export const resolveSceneAutotilesForCells = (
+  autotiles: readonly number[],
+  width: number,
+  height: number,
+  tilesetLookup: SceneTilesetLookup,
+  cellIndexes: Iterable<number>,
+): Map<number, number> => {
+  const sourceCache = new Map<number, ResolvedAutotileSource | undefined>();
+  const sourceAt = (index: number) => {
+    if (sourceCache.has(index)) {
+      return sourceCache.get(index);
+    }
+    const ref = decodeSceneTileRef(autotiles[index] ?? 0, tilesetLookup);
+    const tilesetWidth = ref
+      ? tilesetLookup.entries[ref.tilesetIndex]?.width
+      : undefined;
+    const source =
+      ref && tilesetWidth
+        ? {
+            absoluteIndex: ref.absoluteIndex,
+            tilesetOffset: ref.tilesetOffset,
+            tileIndex: ref.tileIndex,
+            tilesetWidth,
+          }
+        : undefined;
+    sourceCache.set(index, source);
+    return source;
+  };
+  const connected = (
+    source: ResolvedAutotileSource,
+    x: number,
+    y: number,
+    offsetX: number,
+    offsetY: number,
+  ) => {
+    const neighbourX = x + offsetX;
+    const neighbourY = y + offsetY;
+    if (
+      neighbourX < 0 ||
+      neighbourY < 0 ||
+      neighbourX >= width ||
+      neighbourY >= height
+    ) {
+      return true;
+    }
+    return (
+      sourceAt(neighbourY * width + neighbourX)?.absoluteIndex ===
+      source.absoluteIndex
+    );
+  };
+  const resolved = new Map<number, number>();
+
+  for (const index of cellIndexes) {
+    const source = sourceAt(index);
+    if (!source) {
+      resolved.set(index, 0);
+      continue;
+    }
+    const x = index % width;
+    const y = Math.floor(index / width);
+    const north = connected(source, x, y, 0, -1);
+    const east = connected(source, x, y, 1, 0);
+    const south = connected(source, x, y, 0, 1);
+    const west = connected(source, x, y, -1, 0);
+    let mask = 0;
+    if (north && west && connected(source, x, y, -1, -1)) mask |= 1;
+    if (north && east && connected(source, x, y, 1, -1)) mask |= 2;
+    if (south && east && connected(source, x, y, 1, 1)) mask |= 4;
+    if (south && west && connected(source, x, y, -1, 1)) mask |= 8;
+    const variant = AUTOTILE_MASK_TO_VARIANT[mask] ?? -1;
+    resolved.set(
+      index,
+      variant >= 0
+        ? encodeSceneTileRef(
+            source.tilesetOffset,
+            source.tileIndex +
+              (variant % 4) +
+              Math.floor(variant / 4) * source.tilesetWidth,
+          )
+        : 0,
+    );
+  }
+
+  return resolved;
+};
+
 export const buildSceneTilesetLookup = (
   tilemap: Pick<SceneTilemapData, "tilesets">,
 ): SceneTilesetLookup => {
