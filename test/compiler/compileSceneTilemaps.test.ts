@@ -574,38 +574,79 @@ test("should not mutate input tilemap layers or tile colors during compilation",
   expect(scene.tilemap.layers[0].tiles).toEqual(originalLayerTiles);
 });
 
-test("should keep logo scenes fixed to 20x18 and truncate overlong attrs", async () => {
+test("should crop oversized logo tilemaps to the top-left 20x18 tiles", async () => {
   const tileset = makeTileset();
   const logoTileCount = 20 * 18;
+  const sourceWidth = 40;
+  const sourceHeight = 30;
+  const sourceTiles = Array.from(
+    { length: sourceWidth * sourceHeight },
+    (_, index) => encodeSceneTileRef(0, index % 4),
+  );
+  const sourceAttrs = Array.from(
+    { length: sourceWidth * sourceHeight },
+    (_, index) => index % 8,
+  );
+  const croppedTiles = Array.from({ length: logoTileCount }, (_, index) => {
+    const x = index % 20;
+    const y = Math.floor(index / 20);
+    return sourceTiles[y * sourceWidth + x];
+  });
+  const croppedAttrs = Array.from({ length: logoTileCount }, (_, index) => {
+    const x = index % 20;
+    const y = Math.floor(index / 20);
+    return sourceAttrs[y * sourceWidth + x];
+  });
   const scene = makeScene({
     id: "tilemap_logo",
     name: "Tilemap Logo Scene",
     symbol: "scene_tilemap_logo",
     type: "LOGO",
-    width: 40,
-    height: 30,
+    width: sourceWidth,
+    height: sourceHeight,
     tilemap: {
       tilesets: [tileset],
-      tileColors: new Array(logoTileCount + 50).fill(3),
+      tileColors: sourceAttrs,
       layers: [
         {
           id: "layer",
           name: "Layer",
           visible: true,
-          tiles: new Array(40 * 30).fill(encodeSceneTileRef(0, 1)),
+          tiles: sourceTiles,
+        },
+      ],
+    },
+  });
+  const expectedScene = makeScene({
+    id: "expected_tilemap_logo",
+    name: "Expected Tilemap Logo Scene",
+    symbol: "expected_scene_tilemap_logo",
+    type: "LOGO",
+    tilemap: {
+      tilesets: [tileset],
+      tileColors: croppedAttrs,
+      layers: [
+        {
+          id: "layer",
+          name: "Layer",
+          visible: true,
+          tiles: croppedTiles,
         },
       ],
     },
   });
 
   const result = await compileScene(scene, { [tileset.id]: tileset });
+  const expected = await compileScene(expectedScene, {
+    [tileset.id]: tileset,
+  });
 
   expect(result.width).toBe(20);
   expect(result.height).toBe(18);
   expect(result.is360).toBe(true);
   expect(result.tilemap).toHaveLength(logoTileCount);
-  expect(result.attr).toHaveLength(logoTileCount);
-  expect(result.vramData[0]).toHaveLength(logoTileCount * BYTES_PER_TILE);
+  expect(result.attr).toEqual(expected.attr);
+  expect(result.vramData).toEqual(expected.vramData);
 });
 
 test("should render missing tileset references as blank tiles", async () => {

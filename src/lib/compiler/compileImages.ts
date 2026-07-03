@@ -18,6 +18,8 @@ import {
   MAX_BACKGROUND_TILES,
   MAX_BACKGROUND_TILES_CGB,
   MAX_SCENE_TILE_COUNT,
+  SCREEN_HEIGHT,
+  SCREEN_WIDTH,
   TILE_SIZE,
 } from "consts";
 import { fileExists } from "lib/helpers/fs/fileExists";
@@ -48,6 +50,7 @@ import {
 const MAX_IMAGE_WIDTH = 255 * TILE_SIZE;
 const MAX_IMAGE_HEIGHT = 255 * TILE_SIZE;
 const MAX_PIXELS = MAX_SCENE_TILE_COUNT * TILE_SIZE * TILE_SIZE;
+const BLANK_TILE = new Uint8Array(16);
 
 type PrecompiledBackgroundData = Background & {
   commonTilesetId?: string;
@@ -215,18 +218,32 @@ export const compileImage = async (
   );
 
   if (is360) {
-    const tilemap = Array.from(Array(360)).map((_, i) => i);
-    const tiles = tileArrayToTileData(tileData);
-    const attr = buildAttr(tileAttrs, autoTileColors, tilemap.length);
+    const sourceWidth = Math.ceil(indexedImage.width / TILE_SIZE);
+    const logoTileCount = SCREEN_WIDTH * SCREEN_HEIGHT;
+    const sourceAttrs = buildAttr(tileAttrs, autoTileColors, tileData.length);
+    const logoTiles = Array.from({ length: logoTileCount }, (_, index) => {
+      const x = index % SCREEN_WIDTH;
+      const y = Math.floor(index / SCREEN_WIDTH);
+      return tileData[y * sourceWidth + x] ?? BLANK_TILE;
+    });
+    const attr = Array.from({ length: logoTileCount }, (_, index) => {
+      const x = index % SCREEN_WIDTH;
+      const y = Math.floor(index / SCREEN_WIDTH);
+      return sourceAttrs[y * sourceWidth + x] ?? 0;
+    });
+    const tilemap = Array.from({ length: logoTileCount }, (_, index) => index);
+    const tiles = tileArrayToTileData(logoTiles);
     return {
       ...img,
+      width: SCREEN_WIDTH,
+      height: SCREEN_HEIGHT,
       vramData: [[...tiles], []],
       tilemap,
       attr,
       autoPalettes,
       is360,
       colorMode,
-      tilesetLength: 360,
+      tilesetLength: logoTileCount,
     };
   }
 

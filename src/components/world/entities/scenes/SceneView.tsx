@@ -271,8 +271,11 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     return <></>;
   }
 
-  const scenePxWidth = scene.width * TILE_SIZE;
-  const scenePxHeight = scene.height * TILE_SIZE;
+  const sceneWidth = scene.type === "LOGO" ? 20 : scene.width;
+  const sceneHeight = scene.type === "LOGO" ? 18 : scene.height;
+
+  const scenePxWidth = sceneWidth * TILE_SIZE;
+  const scenePxHeight = sceneHeight * TILE_SIZE;
   const showResizeHandles = shouldShowSceneResizeHandles(
     editable,
     selected,
@@ -308,8 +311,8 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
           {scene.scrollBounds && showLayers && (
             <SceneOverlay $noPointerEvents>
               <SceneScrollBounds
-                width={scene.width}
-                height={scene.height}
+                width={sceneWidth}
+                height={sceneHeight}
                 scrollBounds={scene.scrollBounds}
               />
             </SceneOverlay>
@@ -317,8 +320,8 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
           {showSceneScreenGrid && selected && (
             <SceneOverlay $noPointerEvents>
               <SceneScreenGrid
-                width={scene.width}
-                height={scene.height}
+                width={sceneWidth}
+                height={sceneHeight}
                 scrollBounds={scene.scrollBounds}
               />
             </SceneOverlay>
@@ -338,8 +341,8 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
             sceneId={id}
             x={scene.x}
             y={scene.y}
-            width={scene.width}
-            height={scene.height}
+            width={sceneWidth}
+            height={sceneHeight}
             zoomRatio={zoomRatio}
           />
         )}

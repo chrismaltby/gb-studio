@@ -560,24 +560,27 @@ export const compileScene = (
     ? scene.playerSprite.symbol
     : "spritesheet_none";
 
+  const sceneWidth = scene.type === "LOGO" ? 20 : scene.width;
+  const sceneHeight = scene.type === "LOGO" ? 18 : scene.height;
+
   return toStructDataFile(
     SCENE_TYPE,
     scene.symbol,
     `// Scene: ${sceneName(scene, sceneIndex)}`,
     // Data
     {
-      width: scene.width,
-      height: scene.height,
+      width: sceneWidth,
+      height: sceneHeight,
       type: `SCENE_TYPE_${String(scene.type).toUpperCase()}`,
       background: toFarPtr(scene.background.symbol),
       collisions: toFarPtr(sceneCollisionsSymbol(scene.symbol)),
       parallax_rows: compileParallax(
-        scene.width > SCREEN_WIDTH ? scene.parallax : undefined,
+        sceneWidth > SCREEN_WIDTH ? scene.parallax : undefined,
       ),
       scroll_bounds: compileScrollBounds(
         scene.scrollBounds,
-        scene.width,
-        scene.height,
+        sceneWidth,
+        sceneHeight,
       ),
       palette: toFarPtr(paletteSymbol(bgPalette)),
       sprite_palette: toFarPtr(paletteSymbol(actorsPalette)),

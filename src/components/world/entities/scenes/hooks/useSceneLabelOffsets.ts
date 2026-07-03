@@ -26,9 +26,13 @@ export const useSceneLabelOffsets = (sceneId: string) => {
     (state) => sceneSelectors.selectById(state, sceneId)?.x ?? 0,
   );
 
-  const sceneWidth = useAppSelector(
-    (state) => sceneSelectors.selectById(state, sceneId)?.width ?? 0,
-  );
+  const sceneWidth = useAppSelector((state) => {
+    const scene = sceneSelectors.selectById(state, sceneId);
+    if (!scene) {
+      return 0;
+    }
+    return scene.type === "LOGO" ? 20 : scene.width;
+  });
 
   const worldScrollX = useAppSelector((state) => state.editor.worldScrollX);
 

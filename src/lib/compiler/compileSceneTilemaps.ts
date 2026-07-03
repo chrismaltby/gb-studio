@@ -80,7 +80,7 @@ export const compileTilemapLayers = async (
     return {
       id: scene.id,
       name: scene.name,
-      symbol: `${scene.symbol}_tilemap`,
+      symbol: `${scene.symbol}_bg`,
       width: SCREEN_WIDTH,
       height: SCREEN_HEIGHT,
       vramData: [[...BLANK_TILE], []],
@@ -140,19 +140,24 @@ export const compileTilemapLayers = async (
   }
 
   if (scene.type === "LOGO") {
-    const logoTileCount = 20 * 18;
-    const logoTiles = Array.from(
-      { length: logoTileCount },
-      (_, index) => cellTiles[index] ?? BLANK_TILE,
-    );
+    const logoTileCount = SCREEN_WIDTH * SCREEN_HEIGHT;
+    const logoTiles = Array.from({ length: logoTileCount }, (_, index) => {
+      const x = index % SCREEN_WIDTH;
+      const y = Math.floor(index / SCREEN_WIDTH);
+      return cellTiles[y * scene.width + x] ?? BLANK_TILE;
+    });
     const tilemap = Array.from({ length: logoTileCount }, (_, index) => index);
-    const attr = padArrayEnd(attrs, logoTileCount, 0).slice(0, logoTileCount);
+    const attr = Array.from({ length: logoTileCount }, (_, index) => {
+      const x = index % SCREEN_WIDTH;
+      const y = Math.floor(index / SCREEN_WIDTH);
+      return attrs[y * scene.width + x] ?? 0;
+    });
     return {
       id: scene.id,
       name: scene.name,
-      symbol: `${scene.symbol}_tilemap`,
-      width: 20,
-      height: 18,
+      symbol: `${scene.symbol}_bg`,
+      width: SCREEN_WIDTH,
+      height: SCREEN_HEIGHT,
       vramData: [[...tileArrayToTileData(logoTiles)], []],
       tilemap,
       attr,
@@ -207,7 +212,7 @@ export const compileTilemapLayers = async (
   return {
     id: scene.id,
     name: scene.name,
-    symbol: `${scene.symbol}_tilemap`,
+    symbol: `${scene.symbol}_bg`,
     width: scene.width,
     height: scene.height,
     vramData,

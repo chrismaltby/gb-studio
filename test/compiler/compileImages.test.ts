@@ -1,5 +1,7 @@
 import compileImages from "lib/compiler/compileImages";
+import { readFileToTilesDataArray } from "lib/tiles/readFileToTiles";
 import { ReferencedBackground } from "lib/compiler/precompile/determineUsedAssets";
+import { tileArrayToTileData } from "shared/lib/tiles/tileData";
 
 const BYTES_PER_TILE = 16;
 
@@ -20,6 +22,56 @@ test("should compile images", async () => {
   );
   expect(res[0]?.tilemap.length).toEqual(360);
   expect(res[0]?.vramData[0].length).toEqual(114 * BYTES_PER_TILE);
+});
+
+test("should crop oversized logo images to the top-left 20x18 tiles", async () => {
+  const sourceWidth = 56;
+  const sourceHeight = 56;
+  const tileColors = Array.from(
+    { length: sourceWidth * sourceHeight },
+    (_, index) => index % 8,
+  );
+  const backgroundData = [
+    {
+      id: "logo",
+      filename: "scribble.png",
+      imageWidth: sourceWidth * 8,
+      imageHeight: sourceHeight * 8,
+      tileColors,
+      is360: true,
+      colorMode: "mono",
+    },
+  ] as ReferencedBackground[];
+
+  const [result] = await compileImages(
+    backgroundData,
+    {},
+    "default",
+    false,
+    `${__dirname}/_files/`,
+    { warnings: () => {} },
+  );
+  const sourceTiles = await readFileToTilesDataArray(
+    `${__dirname}/_files/assets/backgrounds/scribble.png`,
+  );
+  const expectedTiles = Array.from({ length: 20 * 18 }, (_, index) => {
+    const x = index % 20;
+    const y = Math.floor(index / 20);
+    return sourceTiles[y * sourceWidth + x] ?? new Uint8Array(16);
+  });
+  const expectedAttrs = Array.from({ length: 20 * 18 }, (_, index) => {
+    const x = index % 20;
+    const y = Math.floor(index / 20);
+    return tileColors[y * sourceWidth + x];
+  });
+
+  expect(result?.vramData[0]).toEqual([
+    ...tileArrayToTileData(expectedTiles),
+  ]);
+  expect(result?.attr).toEqual(expectedAttrs);
+  expect(result?.tilemap).toEqual(
+    Array.from({ length: 20 * 18 }, (_, index) => index),
+  );
 });
 
 test("should compile split large images into two tilesets for CGB mode", async () => {
