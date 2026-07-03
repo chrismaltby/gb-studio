@@ -28,8 +28,6 @@ import {
   TILE_COLOR_PROP_PRIORITY,
   TILE_DEFAULT_UNSET,
   TILE_SIZE,
-  TOOL_COLLISIONS,
-  TOOL_TILES,
   defaultCollisionTileDefs,
 } from "consts";
 import l10n from "shared/lib/lang/l10n";
@@ -318,7 +316,6 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
   const selectLayer = useCallback(
     (layerId: string) => {
       dispatch(editorActions.setSelectedTilemapLayerId(layerId));
-      dispatch(editorActions.setTool({ tool: TOOL_TILES }));
     },
     [dispatch],
   );
@@ -571,7 +568,6 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
     dispatch(
       editorActions.setSelectedTileType({ tileType: value, tileMask: mask }),
     );
-    dispatch(editorActions.setTool({ tool: TOOL_COLLISIONS }));
   };
 
   return (
