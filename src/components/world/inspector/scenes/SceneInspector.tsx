@@ -176,7 +176,7 @@ export const SceneTilemapSizeControls = ({
         <Button
           onClick={() => dispatch(editorActions.setTool({ tool: TOOL_TILES }))}
         >
-          {l10n("FIELD_EDIT_TILES")}
+          {l10n("FIELD_EDIT_TILEMAP")}
         </Button>
       )}
     </div>

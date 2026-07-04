@@ -730,7 +730,7 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
               />
             }
           >
-            {l10n("FIELD_TILES")}
+            {l10n("FIELD_TILESET")}
           </SplitPaneHeader>
           <FormContainer>
             <FixedSpacer height={10} />

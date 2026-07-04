@@ -167,7 +167,7 @@ test("Edit Tiles switches to the tile tool", () => {
     />,
   );
 
-  fireEvent.click(screen.getByText("FIELD_EDIT_TILES"));
+  fireEvent.click(screen.getByText("FIELD_EDIT_TILEMAP"));
 
   expect(mockDispatch).toHaveBeenCalledWith({
     type: "editor/setTool",
