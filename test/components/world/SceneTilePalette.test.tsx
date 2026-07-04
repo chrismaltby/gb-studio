@@ -2,7 +2,7 @@
 
 import React from "react";
 import { fireEvent, render, screen } from "../../react-utils";
-import SceneTilePalette from "components/world/inspector/scenes/tilemap/SceneTilePalette";
+import SceneTilePalette from "components/world/inspector/scenes/tilemap/SceneTilemapPalettePane";
 import { TILE_COLOR_PROP_PRIORITY } from "consts";
 
 const mockDispatch: jest.Mock<unknown, [unknown]> = jest.fn(

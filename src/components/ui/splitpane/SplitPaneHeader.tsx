@@ -12,6 +12,7 @@ interface SplitPaneHeaderProps {
   buttons?: ReactNode;
   collapsed: boolean;
   sticky?: boolean;
+  borderTop?: boolean;
   borderBottom?: boolean;
   onToggle?: () => void;
 }
@@ -23,6 +24,7 @@ export const SplitPaneHeader: React.FC<SplitPaneHeaderProps> = ({
   collapsed,
   variant,
   sticky,
+  borderTop = false,
   borderBottom = true,
 }) => {
   const stopPropagation = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -35,6 +37,7 @@ export const SplitPaneHeader: React.FC<SplitPaneHeaderProps> = ({
       $collapsible={!!onToggle}
       $variant={variant}
       $sticky={sticky}
+      $borderTop={borderTop}
       $borderBottom={borderBottom}
     >
       {onToggle && (

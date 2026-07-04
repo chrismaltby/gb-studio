@@ -101,7 +101,8 @@ import navigationActions from "store/features/navigation/navigationActions";
 import { useEnabledSceneTypeIds } from "store/features/engine/hooks/useEnabledSceneTypeIds";
 import { AutoTileFlipSelect } from "components/forms/AutoTileFlipSelect";
 import { DMGPaletteSelectButton } from "components/forms/DMGPaletteSelectButton";
-import SceneTilePalette from "components/world/inspector/scenes/tilemap/SceneTilePalette";
+import SceneTilemapLayersPane from "components/world/inspector/scenes/tilemap/SceneTilemapLayersPane";
+import SceneTilemapPalettePane from "components/world/inspector/scenes/tilemap/SceneTilemapPalettePane";
 import { SceneBackgroundTypeDropdown } from "components/forms/SceneBackgroundTypeDropdown";
 import renderSceneInspectorMenu from "components/world/contextMenus/renderSceneInspectorMenu";
 
@@ -906,7 +907,8 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
             </div>
           </FormRow>
         </FormContainer>
-        <SceneTilePalette sceneId={scene.id} />
+        <SceneTilemapLayersPane sceneId={scene.id} />
+        <SceneTilemapPalettePane sceneId={scene.id} />
       </Sidebar>
     );
   }

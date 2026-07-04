@@ -7,6 +7,7 @@ interface StyledSplitPaneHeaderProps {
   $variant?: "normal" | "secondary";
   $collapsible: boolean;
   $sticky?: boolean;
+  $borderTop?: boolean;
   $borderBottom?: boolean;
 }
 
@@ -27,6 +28,14 @@ export const StyledSplitPaneHeader = styled.div<StyledSplitPaneHeaderProps>`
   svg {
     fill: ${(props) => props.theme.colors.sidebar.header.text};
   }
+
+  ${(props) =>
+    props.$borderTop
+      ? css`
+          border-top: 1px solid
+            ${(props) => props.theme.colors.sidebar.header.border};
+        `
+      : ""};
 
   ${(props) =>
     props.$borderBottom

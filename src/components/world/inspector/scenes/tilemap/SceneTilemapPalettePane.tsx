@@ -32,9 +32,6 @@ import {
 } from "consts";
 import l10n from "shared/lib/lang/l10n";
 import {
-  EyeClosedIcon,
-  EyeOpenIcon,
-  PlusIcon,
   PencilIcon,
   EraserIcon,
   PriorityTileIcon,
@@ -54,12 +51,7 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { FormContainer, FormField, FormRow } from "ui/form/layout/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
-import { SplitPaneVerticalDivider } from "ui/splitpane/SplitPaneDivider";
-import { FlatList } from "ui/lists/FlatList";
-import { EntityListItemDnD } from "ui/lists/EntityListItemDnD";
-import renderTilemapLayerContextMenu from "components/world/contextMenus/renderTilemapLayerContextMenu";
 import { TabBar } from "ui/tabs/Tabs";
-import ItemTypes from "renderer/lib/dnd/itemTypes";
 
 const Wrapper = styled.div`
   max-width: 100%;
@@ -120,23 +112,13 @@ const PaintTools = styled.div`
   }
 `;
 
-const TileSelectionLabel = styled.div`
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
-  background: ${(props) => props.theme.colors.sidebar.background};
-  padding: 5px 10px;
-  font-size: 11px;
-`;
-
-interface SceneTilePaletteProps {
+interface SceneTilemapPalettePaneProps {
   sceneId: string;
 }
 
 const paletteZoomLevels = [100, 200, 400, 800, 1600];
-const layerDragTypes = [ItemTypes.TILEMAP_LAYER];
 
-const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
+const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
   const dispatch = useAppDispatch();
 
   const scene = useAppSelectorPick(
@@ -189,7 +171,6 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
   const [editingDefaults, setEditingDefaults] = useState(false);
   const [defaultEditMode, setDefaultEditMode] = useState<string>("collisions");
 
-  const [renameLayerId, setRenameLayerId] = useState("");
   const dragStart = useRef<{ x: number; y: number } | undefined>(undefined);
 
   const defaultPaintLast = useRef<{ x: number; y: number } | undefined>(
@@ -223,7 +204,6 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
     return sceneType?.collisionTiles ?? defaultCollisionTileDefs;
   });
 
-  const displayLayers = useMemo(() => [...layers].reverse(), [layers]);
   const tilesetWidth = (selectedTileset?.width ?? 0) * TILE_SIZE;
   const tilesetHeight = (selectedTileset?.height ?? 0) * TILE_SIZE;
 
@@ -323,13 +303,6 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
       );
     }
   }, [dispatch, layers, selectedLayerId]);
-
-  const selectLayer = useCallback(
-    (layerId: string) => {
-      dispatch(editorActions.setSelectedTilemapLayerId(layerId));
-    },
-    [dispatch],
-  );
 
   const selectTileset = useCallback(
     (tilesetId: string) => {
@@ -583,127 +556,8 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
 
   return (
     <Wrapper>
-      <SplitPaneVerticalDivider />
-      <SplitPaneHeader
-        collapsed={false}
-        buttons={
-          tilemap ? (
-            <Button
-              variant="transparent"
-              size="small"
-              title={l10n("FIELD_ADD_LAYER")}
-              onClick={() => {
-                const action = entitiesActions.addTilemapLayer({
-                  sceneId,
-                  afterLayerId: selectedLayerId,
-                });
-                dispatch(action);
-                selectLayer(action.payload.layerId);
-              }}
-            >
-              <PlusIcon />
-            </Button>
-          ) : null
-        }
-      >
-        {l10n("FIELD_LAYERS")}
-      </SplitPaneHeader>
-      {tilemap && (
-        <FlatList
-          items={displayLayers}
-          selectedId={selectedLayerId}
-          setSelectedId={selectLayer}
-          height={displayLayers.length * 25}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && selectedLayerId) {
-              setRenameLayerId(selectedLayerId);
-            }
-          }}
-        >
-          {({ item: layer }) => (
-            <EntityListItemDnD
-              item={layer}
-              type="custom"
-              dragType={ItemTypes.TILEMAP_LAYER}
-              acceptTypes={layerDragTypes}
-              onDrop={(draggedLayer, targetLayer) => {
-                const draggedIndex = layers.findIndex(
-                  (candidate) => candidate.id === draggedLayer.id,
-                );
-                const targetIndex = layers.findIndex(
-                  (candidate) => candidate.id === targetLayer.id,
-                );
-                if (
-                  draggedIndex < 0 ||
-                  targetIndex < 0 ||
-                  draggedIndex === targetIndex
-                ) {
-                  return;
-                }
-                dispatch(
-                  entitiesActions.moveTilemapLayer({
-                    sceneId,
-                    layerId: draggedLayer.id,
-                    direction: targetIndex - draggedIndex,
-                  }),
-                );
-              }}
-              icon={
-                <Button
-                  size="small"
-                  variant="transparent"
-                  title={
-                    layer.visible
-                      ? l10n("FIELD_HIDE_LAYER")
-                      : l10n("FIELD_SHOW_LAYER")
-                  }
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    dispatch(
-                      entitiesActions.editTilemapLayer({
-                        sceneId,
-                        layerId: layer.id,
-                        changes: { visible: !layer.visible },
-                      }),
-                    );
-                  }}
-                >
-                  {layer.visible ? <EyeOpenIcon /> : <EyeClosedIcon />}
-                </Button>
-              }
-              rename={renameLayerId === layer.id}
-              onRename={(name) => {
-                dispatch(
-                  entitiesActions.editTilemapLayer({
-                    sceneId,
-                    layerId: layer.id,
-                    changes: { name },
-                  }),
-                );
-                setRenameLayerId("");
-              }}
-              onRenameCancel={() => setRenameLayerId("")}
-              renderContextMenu={() =>
-                renderTilemapLayerContextMenu({
-                  dispatch,
-                  sceneId,
-                  layerId: layer.id,
-                  layerIndex: layers.findIndex(
-                    (candidate) => candidate.id === layer.id,
-                  ),
-                  layerCount: layers.length,
-                  visible: layer.visible,
-                  onRename: () => setRenameLayerId(layer.id),
-                })
-              }
-            />
-          )}
-        </FlatList>
-      )}
-      <FixedSpacer height={5} />
       {tilemap && (
         <>
-          <SplitPaneVerticalDivider />
           <SplitPaneHeader
             collapsed={false}
             buttons={
@@ -729,6 +583,7 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
                 }}
               />
             }
+            borderTop
           >
             {l10n("FIELD_TILESET")}
           </SplitPaneHeader>
@@ -964,18 +819,10 @@ const SceneTilePalette = ({ sceneId }: SceneTilePaletteProps) => {
               </PaletteSurfaceFrame>
             </PaletteViewport>
           )}
-          <TileSelectionLabel>
-            {l10n("FIELD_TILE_N", {
-              tile: selectedTileIndex >= 0 ? selectedTileIndex : "—",
-            })}
-            {selectedTileWidth > 1 || selectedTileHeight > 1
-              ? ` (${selectedTileWidth}×${selectedTileHeight})`
-              : ""}
-          </TileSelectionLabel>
         </>
       )}
     </Wrapper>
   );
 };
 
-export default React.memo(SceneTilePalette);
+export default React.memo(SceneTilemapPalettePane);
