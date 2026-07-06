@@ -3,6 +3,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "../../react-utils";
 import SceneTilePalette from "components/world/inspector/scenes/tilemap/SceneTilemapPalettePane";
+import SceneTilemapLayersPane from "components/world/inspector/scenes/tilemap/SceneTilemapLayersPane";
 import { TILE_COLOR_PROP_PRIORITY } from "consts";
 
 const mockDispatch: jest.Mock<unknown, [unknown]> = jest.fn(
@@ -309,7 +310,7 @@ test("drag selection sets tile index, width, height and tileset width", () => {
 });
 
 test("add layer selects the new layer", () => {
-  render(<SceneTilePalette sceneId="scene1" />);
+  render(<SceneTilemapLayersPane sceneId="scene1" />);
   mockDispatch.mockClear();
 
   fireEvent.click(screen.getByTitle("FIELD_ADD_LAYER"));
@@ -326,7 +327,7 @@ test("add layer selects the new layer", () => {
 });
 
 test("rename dispatches editTilemapLayer", () => {
-  render(<SceneTilePalette sceneId="scene1" />);
+  render(<SceneTilemapLayersPane sceneId="scene1" />);
   mockDispatch.mockClear();
 
   fireEvent.click(screen.getByTestId("rename-layer1"));
@@ -342,7 +343,7 @@ test("rename dispatches editTilemapLayer", () => {
 });
 
 test("dropping a layer reorders it to the target layer position", () => {
-  render(<SceneTilePalette sceneId="scene1" />);
+  render(<SceneTilemapLayersPane sceneId="scene1" />);
   mockDispatch.mockClear();
 
   fireEvent.click(screen.getByTestId("drop-layer1-on-layer2"));

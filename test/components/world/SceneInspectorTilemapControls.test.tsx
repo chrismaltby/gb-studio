@@ -14,7 +14,11 @@ jest.mock("store/hooks", () => ({
 }));
 
 jest.mock(
-  "components/world/inspector/scenes/tilemap/SceneTilePalette",
+  "components/world/inspector/scenes/tilemap/SceneTilemapLayersPane",
+  () => () => null,
+);
+jest.mock(
+  "components/world/inspector/scenes/tilemap/SceneTilemapPalettePane",
   () => () => null,
 );
 jest.mock("components/script/ScriptEditor", () => () => null);
@@ -116,7 +120,7 @@ test("width and height controls dispatch axis-specific resizes", () => {
     />,
   );
 
-  fireEvent.change(screen.getByTestId("paintedSceneWidth"), {
+  fireEvent.change(screen.getByTestId("tilemapWidth"), {
     target: { value: "30" },
   });
   expect(mockDispatch).toHaveBeenLastCalledWith({
@@ -129,7 +133,7 @@ test("width and height controls dispatch axis-specific resizes", () => {
     },
   });
 
-  fireEvent.change(screen.getByTestId("paintedSceneHeight"), {
+  fireEvent.change(screen.getByTestId("tilemapHeight"), {
     target: { value: "24" },
   });
   expect(mockDispatch).toHaveBeenLastCalledWith({
@@ -153,8 +157,8 @@ test("logo scenes disable tilemap dimensions", () => {
     />,
   );
 
-  expect(screen.getByTestId("paintedSceneWidth")).toBeDisabled();
-  expect(screen.getByTestId("paintedSceneHeight")).toBeDisabled();
+  expect(screen.getByTestId("tilemapWidth")).toBeDisabled();
+  expect(screen.getByTestId("tilemapHeight")).toBeDisabled();
 });
 
 test("Edit Tiles switches to the tile tool", () => {
