@@ -16,7 +16,7 @@ import {
   triggerSelectors,
 } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import ConnectionsWorker, {
   ConnectionsWorkerRequest,
@@ -51,14 +51,7 @@ interface ConnectionMarkerProps {
   x: number;
   y: number;
   direction: ActorDirection | undefined;
-  type: ConnectionMarkerType;
   onMouseDown: (e: React.MouseEvent<SVGGElement>) => void;
-}
-
-type ConnectionMarkerType = "destination" | "player-start";
-
-interface ConnectionMarkerSVGProps {
-  $type: ConnectionMarkerType;
 }
 
 type DestinationMarkerProps = {
@@ -86,36 +79,17 @@ const defaultCoord = {
   value: 0,
 } as const;
 
-const ConnectionMarkerSVG = styled.g<ConnectionMarkerSVGProps>`
+const ConnectionMarkerSVG = styled.g`
   pointer-events: all;
 
-  ${(props) =>
-    props.$type === "player-start"
-      ? css`
-          rect {
-            fill: rgb(255, 87, 34);
-          }
+  rect {
+    fill: rgb(0, 188, 212);
+  }
 
-          &:hover rect {
-            stroke: rgb(255, 87, 34);
-            stroke-width: 2px;
-          }
-        `
-      : ""}
-
-  ${(props) =>
-    props.$type === "destination"
-      ? css`
-          rect {
-            fill: rgb(0, 188, 212);
-          }
-
-          &:hover rect {
-            stroke: rgb(0, 188, 212);
-            stroke-width: 2px;
-          }
-        `
-      : ""}
+  &:hover rect {
+    stroke: rgb(0, 188, 212);
+    stroke-width: 2px;
+  }
 `;
 
 const ConnectionMarker = ({
@@ -123,10 +97,9 @@ const ConnectionMarker = ({
   y,
   direction,
   onMouseDown,
-  type,
 }: ConnectionMarkerProps) => {
   return (
-    <ConnectionMarkerSVG $type={type} onMouseDown={onMouseDown}>
+    <ConnectionMarkerSVG onMouseDown={onMouseDown}>
       <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
       {direction === "up" && (
         <polygon
@@ -196,7 +169,6 @@ const DestinationMarker = ({
 
   return (
     <ConnectionMarker
-      type="destination"
       x={x}
       y={y}
       direction={direction}
@@ -224,30 +196,16 @@ const Connections = ({
   zoomRatio,
   editable,
 }: ConnectionsProps) => {
-  const dispatch = useAppDispatch();
   const [connections, setConnections] = useState<SceneTransitionCoords[]>([]);
   const showConnections = useAppSelector(
     (state) => state.project.present.settings.showConnections,
   );
   const selectedSceneId = useAppSelector((state) => state.editor.scene);
   const selectedEventId = useAppSelector((state) => state.editor.eventId);
-  const startSceneId = useAppSelector(
-    (state) => state.project.present.settings.startSceneId,
-  );
-  const startX = useAppSelector(
-    (state) => state.project.present.settings.startX,
-  );
-  const startY = useAppSelector(
-    (state) => state.project.present.settings.startY,
-  );
-  const startDirection = useAppSelector(
-    (state) => state.project.present.settings.startDirection,
-  );
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const scenesLookup = useAppSelector((state) =>
     sceneSelectors.selectEntities(state),
   );
-  const startScene = scenesLookup[startSceneId] || scenes[0];
   const actorsLookup = useAppSelector((state) =>
     actorSelectors.selectEntities(state),
   );
@@ -340,20 +298,6 @@ const Connections = ({
   useEffect(() => {
     throttledCalculate();
   }, [calculate, throttledCalculate]);
-
-  const onDragPlayerStart = useCallback(
-    (e: React.MouseEvent<SVGGElement>) => {
-      if (editable && e.nativeEvent.button !== MIDDLE_MOUSE) {
-        e.stopPropagation();
-        e.preventDefault();
-        dispatch(editorActions.dragPlayerStart());
-      }
-    },
-    [dispatch, editable],
-  );
-
-  const startX2 = startScene && startScene.x + (startX || 0) * 8 + 5;
-  const startY2 = startScene && 20 + startScene.y + (startY || 0) * 8 + 5;
 
   // Calculate absolute values of connections
   // by combining with the latest entity position values
@@ -482,15 +426,6 @@ const Connections = ({
           />
         </React.Fragment>
       ))}
-      {startScene && (
-        <ConnectionMarker
-          type="player-start"
-          x={startX2}
-          y={startY2}
-          direction={startDirection}
-          onMouseDown={onDragPlayerStart}
-        />
-      )}
     </ConnectionsSvg>
   );
 };

@@ -45,6 +45,7 @@ import { useContextMenu } from "ui/hooks/use-context-menu";
 import WorldCursor from "components/world/WorldCursor";
 import { BackgroundIcon, JigsawIcon } from "ui/icons/Icons";
 import l10n from "shared/lib/lang/l10n";
+import PlayerStartMarker from "components/world/connections/PlayerStartMarker";
 
 const MOUSE_ZOOM_SPEED = 0.5;
 
@@ -154,6 +155,8 @@ const WorldEntities = React.memo(
             editable={editable}
           />
         )}
+
+        <PlayerStartMarker editable={editable} />
       </>
     );
   },
