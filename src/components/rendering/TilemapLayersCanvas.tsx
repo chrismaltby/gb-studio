@@ -116,17 +116,20 @@ const TilemapLayersCanvas = memo(
           return;
         }
 
-        const bitmapCtx = canvasRef.current.getContext("bitmaprenderer");
+        const ctx = canvasRef.current.getContext("2d");
 
-        if (!bitmapCtx) {
+        if (!ctx) {
           canvasImage.close?.();
           return;
         }
 
-        bitmapCtx.transferFromImageBitmap(canvasImage);
+        ctx.clearRect(0, 0, width * TILE_SIZE, height * TILE_SIZE);
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(canvasImage, 0, 0);
+        canvasImage.close?.();
         lastRenderedSequence.current = sequence;
       },
-      [],
+      [height, width],
     );
 
     useEffect(() => {
