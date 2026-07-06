@@ -95,9 +95,18 @@ const PaletteSurface = styled.div`
 const TileSelection = styled.div`
   position: absolute;
   pointer-events: none;
-  border: 2px solid ${(props) => props.theme.colors.highlight};
+  border: 1px solid ${(props) => props.theme.colors.highlight};
   box-sizing: border-box;
-  box-shadow: 0 0 0 1px ${(props) => props.theme.colors.highlightText};
+  outline: 1px solid ${(props) => props.theme.colors.highlightText};
+
+  &:after {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    box-sizing: border-box;
+    border: 1px solid ${(props) => props.theme.colors.highlightText};
+  }
 `;
 
 const PaintTools = styled.div`

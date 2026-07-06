@@ -3,26 +3,41 @@ import styled from "styled-components";
 import { TILE_SIZE } from "consts";
 import { AUTOTILE_VARIANT_MASKS } from "shared/lib/tiles/sceneTilemapData";
 
+const Wrapper = styled.div`
+  position: absolute;
+  outline: 1px solid ${(props) => props.theme.colors.highlightText};
+  border-left: 1px solid ${(props) => props.theme.colors.highlight};
+  border-top: 1px solid ${(props) => props.theme.colors.highlight};
+`;
+
 const TileHint = styled.div`
   position: absolute;
   box-sizing: border-box;
   pointer-events: none;
-  border-style: solid;
-  border-color: ${(props) => props.theme.colors.highlight};
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.65),
-    0 0 0 1px ${(props) => props.theme.colors.highlightText};
+  border-right: 1px solid ${(props) => props.theme.colors.highlight};
+  border-bottom: 1px solid ${(props) => props.theme.colors.highlight};
+  width: 8px;
+  height: 8px;
+
+  &:after {
+    content: "";
+    display: block;
+    width: 7px;
+    height: 7px;
+    box-sizing: border-box;
+    border: 1px solid ${(props) => props.theme.colors.highlightText};
+  }
 `;
 
 const Connector = styled.div`
   position: absolute;
   pointer-events: none;
   box-sizing: border-box;
-  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 1));
+  background: #00e5ff;
+  width: 2px;
+  height: 2px;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5));
 `;
-
-const CONNECTED_COLOR = "#00e5ff";
 
 interface SceneAutotileSelectionProps {
   tileIndex: number;
@@ -35,36 +50,82 @@ const SceneAutotileSelection = ({
   tilesetWidth,
   type = "2x2",
 }: SceneAutotileSelectionProps) => {
-  const cornerSize = Math.max(2, Math.round(TILE_SIZE * 0.22));
-  const borderWidth = Math.max(1, Math.round(TILE_SIZE / 32));
   const startX = tileIndex % tilesetWidth;
   const startY = Math.floor(tileIndex / tilesetWidth);
 
   if (type === "9slice") {
     return (
-      <>
-        {Array.from({ length: 9 }, (_, variant) => (
-          <TileHint
-            key={variant}
-            data-autotile-9slice-variant={variant}
-            style={{
-              left: (startX + (variant % 3)) * TILE_SIZE,
-              top: (startY + Math.floor(variant / 3)) * TILE_SIZE,
-              width: TILE_SIZE,
-              height: TILE_SIZE,
-              borderWidth,
-            }}
-          />
-        ))}
-      </>
+      <Wrapper
+        style={{
+          left: startX * TILE_SIZE,
+          top: startY * TILE_SIZE,
+          width: 3 * TILE_SIZE,
+          height: 3 * TILE_SIZE,
+        }}
+      >
+        {Array.from({ length: 9 }, (_, variant) => {
+          const xi = variant % 3;
+          const yi = Math.floor(variant / 3);
+          return (
+            <TileHint
+              key={variant}
+              data-autotile-9slice-variant={variant}
+              style={{
+                left: xi * TILE_SIZE,
+                top: yi * TILE_SIZE,
+              }}
+            >
+              {xi <= 1 && yi <= 1 && (
+                <Connector
+                  style={{
+                    right: 0,
+                    bottom: 0,
+                  }}
+                />
+              )}
+              {xi >= 1 && yi <= 1 && (
+                <Connector
+                  style={{
+                    left: 0,
+                    bottom: 0,
+                  }}
+                />
+              )}
+              {xi <= 1 && yi >= 1 && (
+                <Connector
+                  style={{
+                    right: 0,
+                    top: 0,
+                  }}
+                />
+              )}
+              {xi >= 1 && yi >= 1 && (
+                <Connector
+                  style={{
+                    left: 0,
+                    top: 0,
+                  }}
+                />
+              )}
+            </TileHint>
+          );
+        })}
+      </Wrapper>
     );
   }
 
   return (
-    <>
+    <Wrapper
+      style={{
+        left: startX * TILE_SIZE,
+        top: startY * TILE_SIZE,
+        width: 4 * TILE_SIZE,
+        height: 4 * TILE_SIZE,
+      }}
+    >
       {AUTOTILE_VARIANT_MASKS.map((mask, variant) => {
-        const left = (startX + (variant % 4)) * TILE_SIZE;
-        const top = (startY + Math.floor(variant / 4)) * TILE_SIZE;
+        const left = (variant % 4) * TILE_SIZE;
+        const top = Math.floor(variant / 4) * TILE_SIZE;
         return (
           <TileHint
             key={mask}
@@ -72,9 +133,6 @@ const SceneAutotileSelection = ({
             style={{
               left,
               top,
-              width: TILE_SIZE,
-              height: TILE_SIZE,
-              borderWidth,
             }}
           >
             {!!(mask & 1) && (
@@ -82,9 +140,6 @@ const SceneAutotileSelection = ({
                 style={{
                   left: 0,
                   top: 0,
-                  width: cornerSize,
-                  height: cornerSize,
-                  background: CONNECTED_COLOR,
                 }}
               />
             )}
@@ -93,9 +148,6 @@ const SceneAutotileSelection = ({
                 style={{
                   right: 0,
                   top: 0,
-                  width: cornerSize,
-                  height: cornerSize,
-                  background: CONNECTED_COLOR,
                 }}
               />
             )}
@@ -104,9 +156,6 @@ const SceneAutotileSelection = ({
                 style={{
                   right: 0,
                   bottom: 0,
-                  width: cornerSize,
-                  height: cornerSize,
-                  background: CONNECTED_COLOR,
                 }}
               />
             )}
@@ -115,16 +164,13 @@ const SceneAutotileSelection = ({
                 style={{
                   left: 0,
                   bottom: 0,
-                  width: cornerSize,
-                  height: cornerSize,
-                  background: CONNECTED_COLOR,
                 }}
               />
             )}
           </TileHint>
         );
       })}
-    </>
+    </Wrapper>
   );
 };
 
