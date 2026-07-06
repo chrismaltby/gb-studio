@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback } from "react";
 import {
   TOOL_COLORS,
   TOOL_COLLISIONS,
@@ -11,7 +11,6 @@ import SceneInfo from "./SceneInfo";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import { SceneEventHelper } from "./SceneEventHelper";
-import { sceneName } from "shared/lib/entities/entitiesHelpers";
 import styled, { css } from "styled-components";
 import { LabelSpan } from "ui/buttons/LabelButton";
 import {
@@ -31,6 +30,7 @@ import { SceneTileSelectionOverlay } from "components/world/entities/scenes/Scen
 import { SceneTypeDisabledOverlay } from "components/world/entities/scenes/SceneTypeDisabledOverlay";
 import { useSceneContextMenu } from "components/world/contextMenus/useSceneContextMenu";
 import SceneResizeHandles from "components/world/entities/scenes/SceneResizeHandles";
+import { SceneFilteredOverlay } from "components/world/entities/scenes/SceneFilteredOverlay";
 
 const SCENE_LABEL_MARGIN = 50;
 
@@ -79,7 +79,6 @@ const SceneContent = styled.div`
 interface WrapperProps {
   $selected?: boolean;
   $multiSelected?: boolean;
-  $filtered?: boolean;
 }
 
 const Wrapper = styled.div<WrapperProps>`
@@ -147,24 +146,6 @@ const Wrapper = styled.div<WrapperProps>`
           }
         `
       : ""}
-
-  ${(props) =>
-    props.$filtered
-      ? css`
-          &:after {
-            content: "";
-            background-color: ${(props) => props.theme.colors.background};
-            border-radius: 4px;
-            opacity: 0.8;
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
-            pointer-events: none;
-          }
-        `
-      : ""}
 `;
 
 interface SceneOverlayProps {
@@ -191,7 +172,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
 
   const scene = useAppSelectorPick(
     (state) => sceneSelectors.selectById(state, id),
-    ["name", "x", "y", "width", "height", "scrollBounds", "type"],
+    ["x", "y", "width", "height", "scrollBounds", "type"],
   );
 
   const isTilemapScene = useAppSelector(
@@ -199,26 +180,10 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
   );
 
   const selected = useAppSelector((state) => state.editor.scene === id);
-  const sceneSelectionIds = useAppSelector(
-    (state) => state.editor.sceneSelectionIds,
+  const multiSelected = useAppSelector((state) =>
+    state.editor.sceneSelectionIds.includes(id),
   );
-  const multiSelected = sceneSelectionIds.includes(id);
-
-  const searchTerm = useAppSelector((state) => state.editor.searchTerm);
-  const name = useMemo(
-    () => (scene ? sceneName(scene, index) : ""),
-    [index, scene],
-  );
-
-  const sceneFiltered =
-    (searchTerm &&
-      name.toUpperCase().indexOf(searchTerm.toUpperCase()) === -1 &&
-      id !== searchTerm) ||
-    (sceneSelectionIds.length > 1 && !multiSelected) ||
-    false;
-
   const tool = useAppSelector((state) => state.editor.tool);
-
   const showLayers = useAppSelector((state) => state.editor.showLayers);
   const zoomRatio = useAppSelector((state) => state.editor.zoom / 100);
 
@@ -228,6 +193,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
       tool !== TOOL_TILES &&
       tool !== TOOL_ERASER) ||
     showLayers;
+
   const showSceneScreenGrid = useAppSelector(
     (state) => state.project.present.settings.showSceneScreenGrid,
   );
@@ -288,7 +254,6 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
     <Wrapper
       $selected={selected}
       $multiSelected={multiSelected}
-      $filtered={sceneFiltered}
       style={{
         left: scene.x,
         top: scene.y,
@@ -335,6 +300,7 @@ const SceneView = memo(({ id, index, editable }: SceneViewProps) => {
               <SceneEventHelper sceneId={id} />
             </SceneOverlay>
           )}
+          <SceneFilteredOverlay sceneId={id} index={index} />
         </SceneContent>
         {showResizeHandles && (
           <SceneResizeHandles
