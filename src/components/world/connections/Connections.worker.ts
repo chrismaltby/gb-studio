@@ -1,262 +1,178 @@
 import { EVENT_SWITCH_SCENE, MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import uniqBy from "lodash/uniqBy";
-import {
-  SceneNormalized,
-  ScriptEventNormalized,
-  ActorNormalized,
-  TriggerNormalized,
-  ActorPrefabNormalized,
-  TriggerPrefabNormalized,
-  ScriptNormalized,
-} from "shared/lib/entities/entitiesTypes";
-import {
-  ActorDirection,
-  ShowConnectionsSetting,
-} from "shared/lib/resources/types";
-import {
-  walkNormalizedSceneSpecificScripts,
-  walkNormalizedActorScripts,
-  walkNormalizedTriggerScripts,
-} from "shared/lib/scripts/walk";
-import { optimiseScriptValue } from "shared/lib/scriptValue/helpers";
-import { ensureScriptValue } from "shared/lib/scriptValue/types";
+import { ShowConnectionsSetting } from "shared/lib/resources/types";
 
 // eslint-disable-next-line no-restricted-globals
 const workerCtx: Worker = self as unknown as Worker;
 
+type ConnectionType = "actor" | "trigger" | "scene";
+
+export interface ConnectionScriptEvent {
+  id: string;
+  command: string;
+  sceneId?: string;
+  customEventId?: string;
+  commented?: boolean;
+  children?: string[][];
+}
+
+export interface ConnectionScriptSource {
+  id: string;
+  scripts: string[][];
+  overrides?: Record<string, { sceneId?: string; customEventId?: string }>;
+}
+
+export interface ConnectionScene extends ConnectionScriptSource {
+  actors: ConnectionScriptSource[];
+  triggers: ConnectionScriptSource[];
+}
+
 export interface ConnectionsWorkerRequest {
-  scenes: SceneNormalized[];
+  scenes: ConnectionScene[];
+  sceneIds: string[];
   showConnections: ShowConnectionsSetting;
   selectedSceneId: string;
-  eventsLookup: Record<string, ScriptEventNormalized>;
-  scenesLookup: Record<string, SceneNormalized>;
-  actorsLookup: Record<string, ActorNormalized>;
-  triggersLookup: Record<string, TriggerNormalized>;
-  actorPrefabsLookup: Record<string, ActorPrefabNormalized>;
-  triggerPrefabsLookup: Record<string, TriggerPrefabNormalized>;
-  customEventsLookup: Record<string, ScriptNormalized>;
+  events: Record<string, ConnectionScriptEvent>;
+  customEvents: Record<string, string[]>;
 }
 
 export interface ConnectionsWorkerResult {
-  connections: SceneTransitionCoords[];
+  connections: SceneTransition[];
 }
 
-export interface SceneTransitionCoords {
-  toX: number;
-  toY: number;
-  type: "actor" | "trigger" | "scene";
+export interface SceneTransition {
+  type: ConnectionType;
   eventId: string;
   fromSceneId: string;
   toSceneId: string;
   entityId: string;
-  direction?: ActorDirection;
 }
 
-interface CalculateTransitionCoordsProps {
-  type: "actor" | "trigger" | "scene";
-  scriptEvent: ScriptEventNormalized;
-  scene: SceneNormalized;
-  destSceneId: string;
-  entityId: string;
+interface WalkOptions {
+  depth: number;
+  overrides?: ConnectionScriptSource["overrides"];
+  visitedCustomEvents: Set<string>;
 }
 
-const defaultCoord = {
-  type: "number",
-  value: 0,
-} as const;
+const walkScript = (
+  script: string[],
+  events: ConnectionsWorkerRequest["events"],
+  customEvents: ConnectionsWorkerRequest["customEvents"],
+  options: WalkOptions,
+  callback: (event: ConnectionScriptEvent, sceneId?: string) => void,
+) => {
+  for (const eventId of script) {
+    const event = events[eventId];
+    if (!event || event.commented) {
+      continue;
+    }
 
-const calculateTransitionCoords = ({
-  type,
-  scriptEvent,
-  scene,
-  destSceneId,
-  entityId,
-}: CalculateTransitionCoordsProps): SceneTransitionCoords => {
-  const scriptEventX = optimiseScriptValue(
-    ensureScriptValue(scriptEvent.args?.x, defaultCoord),
-  );
-  const scriptEventY = optimiseScriptValue(
-    ensureScriptValue(scriptEvent.args?.y, defaultCoord),
-  );
+    const override = options.overrides?.[event.id];
+    callback(event, override?.sceneId ?? event.sceneId);
 
-  const toX = scriptEventX.type === "number" ? scriptEventX.value : 0;
-  const toY = scriptEventY.type === "number" ? scriptEventY.value : 0;
+    if (event.command !== "EVENT_CALL_CUSTOM_EVENT") {
+      event.children?.forEach((child) =>
+        walkScript(child, events, customEvents, options, callback),
+      );
+      continue;
+    }
 
-  return {
-    toX,
-    toY,
-    type,
-    eventId: scriptEvent.id,
-    fromSceneId: scene.id,
-    toSceneId: destSceneId,
-    entityId,
-    direction: scriptEvent.args?.direction as ActorDirection | undefined,
-  };
+    const customEventId = override?.customEventId ?? event.customEventId;
+    const customScript = customEventId && customEvents[customEventId];
+    if (
+      customScript &&
+      options.depth >= 0 &&
+      !options.visitedCustomEvents.has(customEventId)
+    ) {
+      const visitedCustomEvents = new Set(options.visitedCustomEvents);
+      visitedCustomEvents.add(customEventId);
+      walkScript(
+        customScript,
+        events,
+        customEvents,
+        {
+          ...options,
+          depth: options.depth - 1,
+          visitedCustomEvents,
+        },
+        callback,
+      );
+    }
+  }
 };
 
 const getSceneConnections = (
-  showConnections: ShowConnectionsSetting,
-  selectedSceneId: string,
-  scene: SceneNormalized,
-  eventsLookup: Record<string, ScriptEventNormalized>,
-  scenesLookup: Record<string, SceneNormalized>,
-  actorsLookup: Record<string, ActorNormalized>,
-  triggersLookup: Record<string, TriggerNormalized>,
-  actorPrefabsLookup: Record<string, ActorPrefabNormalized>,
-  triggerPrefabsLookup: Record<string, TriggerPrefabNormalized>,
-  customEventsLookup: Record<string, ScriptNormalized>,
+  request: ConnectionsWorkerRequest,
+  scene: ConnectionScene,
+  validSceneIds: Set<string>,
 ) => {
-  const ifMatches = (
-    scriptEvent: ScriptEventNormalized,
-    callback: (destSceneId: string) => void,
-  ) => {
-    if (scriptEvent.command === EVENT_SWITCH_SCENE) {
-      const destSceneId = String(scriptEvent.args?.sceneId || "");
+  const connections: SceneTransition[] = [];
 
-      if (
-        showConnections === "all" ||
-        scene.id === selectedSceneId ||
-        destSceneId === selectedSceneId
-      ) {
-        if (scenesLookup[destSceneId]) {
-          callback(destSceneId);
-        }
-      }
-    }
+  const walkSource = (source: ConnectionScriptSource, type: ConnectionType) => {
+    source.scripts.forEach((script) =>
+      walkScript(
+        script,
+        request.events,
+        request.customEvents,
+        {
+          depth: MAX_NESTED_SCRIPT_DEPTH,
+          overrides: source.overrides,
+          visitedCustomEvents: new Set(),
+        },
+        (event, destinationSceneId) => {
+          if (
+            event.command !== EVENT_SWITCH_SCENE ||
+            !destinationSceneId ||
+            !validSceneIds.has(destinationSceneId)
+          ) {
+            return;
+          }
+
+          if (
+            request.showConnections === "all" ||
+            scene.id === request.selectedSceneId ||
+            destinationSceneId === request.selectedSceneId
+          ) {
+            connections.push({
+              type,
+              eventId: event.id,
+              fromSceneId: scene.id,
+              toSceneId: destinationSceneId,
+              entityId: type === "scene" ? "" : source.id,
+            });
+          }
+        },
+      ),
+    );
   };
 
-  const connections: SceneTransitionCoords[] = [];
-
-  walkNormalizedSceneSpecificScripts(
-    scene,
-    eventsLookup,
-    {
-      customEvents: {
-        lookup: customEventsLookup,
-        maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-      },
-    },
-    (scriptEvent) => {
-      ifMatches(scriptEvent, (destSceneId) => {
-        connections.push(
-          calculateTransitionCoords({
-            type: "scene",
-            scriptEvent,
-            scene,
-            destSceneId,
-            entityId: "",
-          }),
-        );
-      });
-    },
-  );
-
-  scene.actors.forEach((entityId) => {
-    const entity = actorsLookup[entityId];
-
-    if (entity) {
-      walkNormalizedActorScripts(
-        entity,
-        eventsLookup,
-        actorPrefabsLookup,
-        {
-          customEvents: {
-            lookup: customEventsLookup,
-            maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-          },
-        },
-        (scriptEvent) => {
-          ifMatches(scriptEvent, (destSceneId) => {
-            connections.push(
-              calculateTransitionCoords({
-                type: "actor",
-                scriptEvent,
-                scene,
-                destSceneId,
-                entityId: entity.id,
-              }),
-            );
-          });
-        },
-      );
-    }
-  });
-
-  scene.triggers.forEach((entityId) => {
-    const entity = triggersLookup[entityId];
-
-    if (entity) {
-      walkNormalizedTriggerScripts(
-        entity,
-        eventsLookup,
-        triggerPrefabsLookup,
-        {
-          customEvents: {
-            lookup: customEventsLookup,
-            maxDepth: MAX_NESTED_SCRIPT_DEPTH,
-          },
-        },
-        (scriptEvent) => {
-          ifMatches(scriptEvent, (destSceneId) => {
-            connections.push(
-              calculateTransitionCoords({
-                type: "trigger",
-                scriptEvent,
-                scene,
-                destSceneId,
-                entityId: entity.id,
-              }),
-            );
-          });
-        },
-      );
-    }
-  });
+  walkSource(scene, "scene");
+  scene.actors.forEach((actor) => walkSource(actor, "actor"));
+  scene.triggers.forEach((trigger) => walkSource(trigger, "trigger"));
 
   return connections;
 };
 
-workerCtx.onmessage = async (evt) => {
-  const data = evt.data as ConnectionsWorkerRequest;
-  const {
-    scenes,
-    showConnections,
-    selectedSceneId,
-    eventsLookup,
-    scenesLookup,
-    actorsLookup,
-    triggersLookup,
-    actorPrefabsLookup,
-    triggerPrefabsLookup,
-    customEventsLookup,
-  } = data;
+export const calculateConnections = (request: ConnectionsWorkerRequest) => {
+  const validSceneIds = new Set(request.sceneIds);
+  const connections = request.scenes.flatMap((scene) =>
+    getSceneConnections(request, scene, validSceneIds),
+  );
 
-  const connections = scenes
-    .map((scene) =>
-      getSceneConnections(
-        showConnections,
-        selectedSceneId,
-        scene,
-        eventsLookup,
-        scenesLookup,
-        actorsLookup,
-        triggersLookup,
-        actorPrefabsLookup,
-        triggerPrefabsLookup,
-        customEventsLookup,
-      ),
-    )
-    .flat();
-
-  // Get unique connections by sceneId+entityId+eventId so multiple calls
-  // to custom scripts from the same source don't draw multiple overlapping lines
-  const uniqConnections = uniqBy(
+  return uniqBy(
     connections,
     (connection) =>
       `${connection.fromSceneId}_${connection.entityId}_${connection.eventId}`,
   );
+};
 
-  workerCtx.postMessage({ connections: uniqConnections });
+workerCtx.onmessage = (evt) => {
+  const request = evt.data as ConnectionsWorkerRequest;
+  // Multiple calls to the same custom event from one source should not draw
+  // multiple overlapping lines.
+  workerCtx.postMessage({
+    connections: calculateConnections(request),
+  } satisfies ConnectionsWorkerResult);
 };
 
 // -----------------------------------------------------------------

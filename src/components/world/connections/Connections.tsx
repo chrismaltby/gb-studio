@@ -21,19 +21,28 @@ import styled from "styled-components";
 import {
   useAppDispatch,
   useAppSelector,
+  useAppSelectorMapArray,
   useAppSelectorPick,
   useAppStore,
 } from "store/hooks";
 import ConnectionsWorker, {
+  ConnectionScene,
+  ConnectionScriptEvent,
+  ConnectionScriptSource,
   ConnectionsWorkerRequest,
   ConnectionsWorkerResult,
-  SceneTransitionCoords,
+  SceneTransition,
 } from "./Connections.worker";
 import throttle from "lodash/throttle";
 import { optimiseScriptValue } from "shared/lib/scriptValue/helpers";
 import { ensureScriptValue } from "shared/lib/scriptValue/types";
 import { ActorDirection } from "shared/lib/resources/types";
 import type { RootState } from "store/storeTypes";
+import {
+  actorScriptKeys,
+  sceneScriptKeys,
+  triggerScriptKeys,
+} from "shared/lib/entities/entitiesTypes";
 
 const worker = new ConnectionsWorker();
 
@@ -81,7 +90,7 @@ interface ConnectionProps {
 }
 
 interface SceneConnectionProps {
-  connection: SceneTransitionCoords;
+  connection: SceneTransition;
   editable: boolean;
 }
 
@@ -113,82 +122,156 @@ const ConnectionMarkerSVG = styled.g`
   }
 `;
 
-const lookupValues = <T,>(lookup: Record<string, T | undefined>) =>
-  Object.values(lookup).filter((value): value is T => value !== undefined);
-
-const omitObjectKeys = <T extends object>(value: T, keys: string[]) => {
-  const copy = { ...value };
-
-  keys.forEach((key) => {
-    delete (copy as Record<string, unknown>)[key];
-  });
-
-  return copy;
-};
-
-const normaliseScriptEventForTopology = (event: object) => {
-  const copy = { ...event } as Record<string, unknown>;
-
-  if (copy.args && typeof copy.args === "object" && !Array.isArray(copy.args)) {
-    const args = { ...(copy.args as Record<string, unknown>) };
-
-    // These affect the rendered geometry of an existing connection, not
-    // whether the connection exists. SceneConnection reads them directly.
-    delete args.x;
-    delete args.y;
-    delete args.direction;
-
-    copy.args = args;
-  }
-
-  return copy;
-};
-
-const selectConnectionTopologyKey = (state: RootState) => {
-  const showConnections = state.project.present.settings.showConnections;
-
-  return JSON.stringify({
-    showConnections,
-    selectedSceneId: showConnections === "all" ? "" : state.editor.scene,
-
-    scenes: lookupValues(sceneSelectors.selectEntities(state)).map((scene) =>
-      omitObjectKeys(scene, ["x", "y", "width", "height", "scrollBounds"]),
-    ),
-
-    actors: lookupValues(actorSelectors.selectEntities(state)).map((actor) =>
-      omitObjectKeys(actor, ["x", "y"]),
-    ),
-
-    triggers: lookupValues(triggerSelectors.selectEntities(state)).map(
-      (trigger) => omitObjectKeys(trigger, ["x", "y", "width", "height"]),
-    ),
-
-    events: lookupValues(scriptEventSelectors.selectEntities(state)).map(
-      normaliseScriptEventForTopology,
-    ),
-
-    customEvents: lookupValues(customEventSelectors.selectEntities(state)),
-    actorPrefabs: lookupValues(actorPrefabSelectors.selectEntities(state)),
-    triggerPrefabs: lookupValues(triggerPrefabSelectors.selectEntities(state)),
-  });
-};
-
 const buildConnectionsWorkerRequest = (
   state: RootState,
-): ConnectionsWorkerRequest => ({
-  showConnections: state.project.present.settings.showConnections,
-  selectedSceneId: state.editor.scene,
-  scenes: sceneSelectors.selectAll(state),
-  eventsLookup: scriptEventSelectors.selectEntities(state),
-  scenesLookup: sceneSelectors.selectEntities(state),
-  actorsLookup: actorSelectors.selectEntities(state),
-  triggersLookup: triggerSelectors.selectEntities(state),
-  actorPrefabsLookup: actorPrefabSelectors.selectEntities(state),
-  triggerPrefabsLookup: triggerPrefabSelectors.selectEntities(state),
-  customEventsLookup: customEventSelectors.selectEntities(state),
-});
+): ConnectionsWorkerRequest => {
+  const showConnections = state.project.present.settings.showConnections;
+  const scenesLookup = sceneSelectors.selectEntities(state);
+  const actorsLookup = actorSelectors.selectEntities(state);
+  const triggersLookup = triggerSelectors.selectEntities(state);
+  const actorPrefabsLookup = actorPrefabSelectors.selectEntities(state);
+  const triggerPrefabsLookup = triggerPrefabSelectors.selectEntities(state);
 
-const getConnectionId = (connection: SceneTransitionCoords) =>
+  const toOverrides = (
+    overrides: Record<string, { args?: Record<string, unknown> }> | undefined,
+  ): ConnectionScriptSource["overrides"] => {
+    if (!overrides) {
+      return undefined;
+    }
+    const connectionOverrides = Object.entries(overrides)
+      .filter(
+        ([, override]) =>
+          override.args?.sceneId !== undefined ||
+          override.args?.customEventId !== undefined,
+      )
+      .map(([id, override]) => [
+        id,
+        {
+          sceneId:
+            override.args?.sceneId === undefined
+              ? undefined
+              : String(override.args.sceneId),
+          customEventId:
+            override.args?.customEventId === undefined
+              ? undefined
+              : String(override.args.customEventId),
+        },
+      ]);
+    return connectionOverrides.length
+      ? Object.fromEntries(connectionOverrides)
+      : undefined;
+  };
+
+  const toActor = (id: string): ConnectionScriptSource | undefined => {
+    const actor = actorsLookup[id];
+    if (!actor) return undefined;
+    const prefab = actor.prefabId
+      ? actorPrefabsLookup[actor.prefabId]
+      : undefined;
+    const scriptOwner = prefab || actor;
+    return {
+      id,
+      scripts: actorScriptKeys.map((key) => scriptOwner[key]),
+      overrides: prefab ? toOverrides(actor.prefabScriptOverrides) : undefined,
+    };
+  };
+
+  const toTrigger = (id: string): ConnectionScriptSource | undefined => {
+    const trigger = triggersLookup[id];
+    if (!trigger) return undefined;
+    const prefab = trigger.prefabId
+      ? triggerPrefabsLookup[trigger.prefabId]
+      : undefined;
+    const scriptOwner = prefab || trigger;
+    return {
+      id,
+      scripts: triggerScriptKeys.map((key) => scriptOwner[key]),
+      overrides: prefab
+        ? toOverrides(trigger.prefabScriptOverrides)
+        : undefined,
+    };
+  };
+
+  const scenes = sceneSelectors.selectAll(state).map(
+    (scene): ConnectionScene => ({
+      id: scene.id,
+      scripts: sceneScriptKeys.map((key) => scene[key]),
+      actors: scene.actors
+        .map(toActor)
+        .filter((actor): actor is ConnectionScriptSource => !!actor),
+      triggers: scene.triggers
+        .map(toTrigger)
+        .filter((trigger): trigger is ConnectionScriptSource => !!trigger),
+    }),
+  );
+
+  const events = Object.fromEntries(
+    scriptEventSelectors.selectAll(state).map((event) => {
+      const compactEvent: ConnectionScriptEvent = {
+        id: event.id,
+        command: event.command,
+        sceneId:
+          event.args?.sceneId === undefined
+            ? undefined
+            : String(event.args.sceneId),
+        customEventId:
+          event.args?.customEventId === undefined
+            ? undefined
+            : String(event.args.customEventId),
+        commented: !!event.args?.__comment,
+        children: event.children
+          ? Object.values(event.children).filter(
+              (child): child is string[] => !!child,
+            )
+          : undefined,
+      };
+      return [event.id, compactEvent];
+    }),
+  );
+
+  return {
+    showConnections,
+    selectedSceneId: showConnections === "all" ? "" : state.editor.scene,
+    scenes,
+    sceneIds: Object.keys(scenesLookup),
+    events,
+    customEvents: Object.fromEntries(
+      customEventSelectors
+        .selectAll(state)
+        .map((customEvent) => [customEvent.id, customEvent.script]),
+    ),
+  };
+};
+
+const scriptSourceTopologySignature = (
+  source: Record<string, unknown>,
+  scriptKeys: readonly string[],
+) =>
+  JSON.stringify({
+    id: source.id,
+    prefabId: source.prefabId,
+    scripts: scriptKeys.map((key) => source[key]),
+    overrides:
+      source.prefabScriptOverrides &&
+      Object.entries(
+        source.prefabScriptOverrides as Record<
+          string,
+          { args?: Record<string, unknown> }
+        >,
+      )
+        .filter(
+          ([, override]) =>
+            override.args?.sceneId !== undefined ||
+            override.args?.customEventId !== undefined,
+        )
+        .map(([id, override]) => [
+          id,
+          override.args?.sceneId,
+          override.args?.customEventId,
+        ]),
+  });
+
+const getConnectionId = (connection: SceneTransition) =>
   `${connection.fromSceneId}_${connection.entityId}_${connection.eventId}`;
 
 const ConnectionMarker = memo(
@@ -289,7 +372,7 @@ const Connection = memo(({ x1, y1, x2, y2, qx, qy }: ConnectionProps) => {
 });
 
 const useConnectionGeometry = (
-  connection: SceneTransitionCoords,
+  connection: SceneTransition,
 ): ConnectionGeometry | undefined => {
   const fromScene = useAppSelectorPick(
     (state) => sceneSelectors.selectById(state, connection.fromSceneId),
@@ -301,13 +384,8 @@ const useConnectionGeometry = (
     ["args", "command"],
   );
 
-  const toSceneId =
-    scriptEvent?.command === EVENT_SWITCH_SCENE
-      ? String(scriptEvent.args?.sceneId || "")
-      : connection.toSceneId;
-
   const toScene = useAppSelectorPick(
-    (state) => sceneSelectors.selectById(state, toSceneId),
+    (state) => sceneSelectors.selectById(state, connection.toSceneId),
     ["x", "y"],
   );
 
@@ -405,8 +483,6 @@ const SceneConnection = memo(
       return null;
     }
 
-    console.log("UPDATE SceneConnection", geometry.x1);
-
     return (
       <>
         <Connection
@@ -439,13 +515,90 @@ const Connections = ({
   editable,
 }: ConnectionsProps) => {
   const store = useAppStore();
-  const [connections, setConnections] = useState<SceneTransitionCoords[]>([]);
+  const [connections, setConnections] = useState<SceneTransition[]>([]);
 
   const showConnections = useAppSelector(
     (state) => state.project.present.settings.showConnections,
   );
+  const selectedSceneId = useAppSelector((state) => state.editor.scene);
 
-  const connectionTopologyKey = useAppSelector(selectConnectionTopologyKey);
+  // These hooks recompute small signatures for comparison on a store update,
+  // but retain their array identity when only geometry or presentation data
+  // changed. In particular, scene tiledata and coordinates are never read.
+  const sceneTopology = useAppSelectorMapArray(
+    sceneSelectors.selectAll,
+    (scene) =>
+      JSON.stringify({
+        id: scene.id,
+        actors: scene.actors,
+        triggers: scene.triggers,
+        scripts: sceneScriptKeys.map((key) => scene[key]),
+      }),
+  );
+  const actorTopology = useAppSelectorMapArray(
+    actorSelectors.selectAll,
+    (actor) => scriptSourceTopologySignature(actor, actorScriptKeys),
+  );
+  const triggerTopology = useAppSelectorMapArray(
+    triggerSelectors.selectAll,
+    (trigger) => scriptSourceTopologySignature(trigger, triggerScriptKeys),
+  );
+  const actorPrefabTopology = useAppSelectorMapArray(
+    actorPrefabSelectors.selectAll,
+    (prefab) => scriptSourceTopologySignature(prefab, actorScriptKeys),
+  );
+  const triggerPrefabTopology = useAppSelectorMapArray(
+    triggerPrefabSelectors.selectAll,
+    (prefab) => scriptSourceTopologySignature(prefab, triggerScriptKeys),
+  );
+  const eventTopology = useAppSelectorMapArray(
+    scriptEventSelectors.selectAll,
+    (event) =>
+      JSON.stringify({
+        id: event.id,
+        command: event.command,
+        sceneId: event.args?.sceneId,
+        customEventId: event.args?.customEventId,
+        commented: !!event.args?.__comment,
+        children: event.children,
+      }),
+  );
+  const customEventTopology = useAppSelectorMapArray(
+    customEventSelectors.selectAll,
+    (customEvent) => JSON.stringify([customEvent.id, customEvent.script]),
+  );
+
+  const topologyInputs: readonly unknown[] = [
+    actorPrefabTopology,
+    actorTopology,
+    customEventTopology,
+    eventTopology,
+    sceneTopology,
+    showConnections,
+    showConnections === "all" ? "" : selectedSceneId,
+    triggerPrefabTopology,
+    triggerTopology,
+  ];
+  const workerRequestCache = useRef<{
+    inputs: readonly unknown[];
+    request: ConnectionsWorkerRequest;
+  } | null>(null);
+  const cachedWorkerRequest = workerRequestCache.current;
+  let workerRequest: ConnectionsWorkerRequest;
+  if (
+    !cachedWorkerRequest ||
+    cachedWorkerRequest.inputs.some(
+      (input, index) => input !== topologyInputs[index],
+    )
+  ) {
+    workerRequest = buildConnectionsWorkerRequest(store.getState());
+    workerRequestCache.current = {
+      inputs: topologyInputs,
+      request: workerRequest,
+    };
+  } else {
+    workerRequest = cachedWorkerRequest.request;
+  }
 
   const isWorking = useRef(false);
   const isWorkQueued = useRef(false);
@@ -467,8 +620,8 @@ const Connections = ({
     }
 
     isWorking.current = true;
-    worker.postMessage(buildConnectionsWorkerRequest(state));
-  }, [store]);
+    worker.postMessage(workerRequest);
+  }, [store, workerRequest]);
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<ConnectionsWorkerResult>) => {
@@ -507,7 +660,7 @@ const Connections = ({
 
   useEffect(() => {
     throttledCalculate();
-  }, [connectionTopologyKey, throttledCalculate]);
+  }, [throttledCalculate, workerRequest]);
 
   useEffect(() => {
     return () => {
