@@ -196,6 +196,114 @@ describe("pruneTilemapLayersTilesets", () => {
       tilesetOffset: 5,
     });
   });
+
+  test("rewrites invalid tile and autotile refs to 0", () => {
+    const result = pruneTilemapLayersTilesets({
+      tilesets: [tilesetsLookup.grass],
+      layers: [
+        {
+          id: "layer",
+          name: "Layer",
+          visible: true,
+          tiles: [9999],
+          autotiles: [9999],
+        },
+      ],
+    });
+
+    expect(result.tilesets).toEqual([]);
+    expect(result.layers[0]?.tiles).toEqual([0]);
+    expect(result.layers[0]?.autotiles).toEqual([0]);
+  });
+
+  test("removes trailing unused tilesets without changing tile refs", () => {
+    const tileRef = encodeSceneTileRef(0, 3);
+
+    const tilemap = {
+      tilesets: [tilesetsLookup.grass, tilesetsLookup.unused],
+      layers: [
+        {
+          id: "layer",
+          name: "Layer",
+          visible: true,
+          tiles: [tileRef],
+        },
+      ],
+    };
+
+    const result = pruneTilemapLayersTilesets(tilemap);
+
+    expect(result.tilesets).toEqual([tilesetsLookup.grass]);
+    expect(result.layers[0]?.tiles).toEqual([tileRef]);
+  });
+
+  test("returns original tilemap when all tilesets are used and refs do not need remapping", () => {
+    const tilemap = {
+      tilesets: [tilesetsLookup.grass, tilesetsLookup.props],
+      layers: [
+        {
+          id: "layer",
+          name: "Layer",
+          visible: true,
+          tiles: [
+            encodeSceneTileRef(0, 1),
+            encodeSceneTileRef(
+              buildSceneTilesetLookup({
+                tilesets: [tilesetsLookup.grass, tilesetsLookup.props],
+              }).entries[1]?.offset ?? 0,
+              2,
+            ),
+          ],
+        },
+      ],
+    };
+
+    const result = pruneTilemapLayersTilesets(tilemap);
+
+    expect(result).toBe(tilemap);
+  });
+
+  test("removes all tilesets when no tile or autotile refs are used", () => {
+    const result = pruneTilemapLayersTilesets({
+      tilesets: [tilesetsLookup.grass, tilesetsLookup.props],
+      layers: [
+        {
+          id: "layer",
+          name: "Layer",
+          visible: true,
+          tiles: [0, 0, 0],
+          autotiles: [0, 0, 0],
+        },
+      ],
+    });
+
+    expect(result.tilesets).toEqual([]);
+    expect(result.layers[0]?.tiles).toEqual([0, 0, 0]);
+    expect(result.layers[0]?.autotiles).toEqual([0, 0, 0]);
+  });
+
+  test("does not mutate the input tilemap", () => {
+    const tilemap = {
+      tilesets: [tilesetsLookup.unused, tilesetsLookup.props],
+      layers: [
+        {
+          id: "layer",
+          name: "Layer",
+          visible: true,
+          tiles: [encodeSceneTileRef(5, 1)],
+        },
+      ],
+    };
+
+    const originalTilesets = tilemap.tilesets;
+    const originalTiles = tilemap.layers[0]?.tiles;
+
+    const result = pruneTilemapLayersTilesets(tilemap);
+
+    expect(tilemap.tilesets).toBe(originalTilesets);
+    expect(tilemap.layers[0]?.tiles).toBe(originalTiles);
+    expect(result).not.toBe(tilemap);
+  });
 });
 
 describe("moveTilemapLayerSelection", () => {

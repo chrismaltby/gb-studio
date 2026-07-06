@@ -406,58 +406,153 @@ export const pruneTilemapLayersTilesets = (
 ): SceneTilemapData => {
   const usedTilesetIds = new Set<string>();
   const tilesetLookup = buildSceneTilesetLookup(tilemap);
+  const { entries, entryByAbsoluteIndex } = tilesetLookup;
 
-  // Find tilesets that are still being referenced
+  const usedTilesetIndexes = new Array<boolean>(entries.length).fill(false);
+  let invalidRefSeen = false;
+
+  const scanRefs = (values: readonly number[] | undefined) => {
+    if (!values) {
+      return;
+    }
+
+    for (let i = 0; i < values.length; i++) {
+      const value = values[i];
+
+      if (!value) {
+        if (value !== 0) {
+          invalidRefSeen = true;
+        }
+        continue;
+      }
+
+      const entry = entryByAbsoluteIndex[value - 1];
+
+      if (!entry) {
+        invalidRefSeen = true;
+        continue;
+      }
+
+      usedTilesetIds.add(entry.tilesetId);
+      usedTilesetIndexes[entry.tilesetIndex] = true;
+    }
+  };
+
+  // Find tilesets that are still being referenced.
   for (const layer of tilemap.layers) {
-    for (const value of layer.tiles) {
-      const ref = decodeSceneTileRef(value, tilesetLookup);
-      if (ref?.tilesetId) {
-        usedTilesetIds.add(ref.tilesetId);
-      }
-    }
-
-    for (const value of layer.autotiles ?? []) {
-      const ref = decodeSceneTileRef(value, tilesetLookup);
-      if (ref?.tilesetId) {
-        usedTilesetIds.add(ref.tilesetId);
-      }
-    }
+    scanRefs(layer.tiles);
+    scanRefs(layer.autotiles);
   }
 
   // Keep only tilesets that are still referenced
   const seenTilesetIds = new Set<string>();
-  const tilesets = tilemap.tilesets.filter((tileset) => {
-    if (!usedTilesetIds.has(tileset.id) || seenTilesetIds.has(tileset.id)) {
-      return false;
+  const tilesets: SceneTilemapData["tilesets"] = [];
+  const newOffsetByTilesetId = new Map<string, number>();
+
+  let nextOffset = 0;
+  let tilesetsChanged = false;
+
+  for (let index = 0; index < tilemap.tilesets.length; index++) {
+    const tileset = tilemap.tilesets[index];
+    const entry = entries[index];
+
+    const keep =
+      !!entry &&
+      usedTilesetIds.has(tileset.id) &&
+      !seenTilesetIds.has(tileset.id);
+
+    if (!keep) {
+      tilesetsChanged = true;
+      continue;
     }
+
     seenTilesetIds.add(tileset.id);
-    return true;
-  });
+    newOffsetByTilesetId.set(tileset.id, nextOffset);
+    tilesets.push(tileset);
 
-  const nextTilemap = {
-    ...tilemap,
-    tilesets,
-  };
-
-  // Remap layers to use the compacted tilesets
-  const nextLookup = buildSceneTilesetLookup(nextTilemap);
-
-  const remapRef = (value: number) => {
-    const ref = decodeSceneTileRef(value, tilesetLookup);
-    if (!ref?.tilesetId) {
-      return 0;
+    if (tilesets.length - 1 !== index) {
+      tilesetsChanged = true;
     }
 
-    const newEntry = nextLookup.entryByTilesetId.get(ref.tilesetId);
-    return newEntry ? encodeSceneTileRef(newEntry.offset, ref.tileIndex) : 0;
+    nextOffset += entry.count;
+  }
+
+  if (tilesets.length !== tilemap.tilesets.length) {
+    tilesetsChanged = true;
+  }
+
+  // Map every original tileset index to the new offset for its tileset id
+  const newOffsetByTilesetIndex = new Array<number>(entries.length).fill(-1);
+
+  for (const entry of entries) {
+    const newOffset = newOffsetByTilesetId.get(entry.tilesetId);
+    if (newOffset !== undefined) {
+      newOffsetByTilesetIndex[entry.tilesetIndex] = newOffset;
+    }
+  }
+
+  let remapRequired = invalidRefSeen;
+
+  if (!remapRequired) {
+    for (let index = 0; index < entries.length; index++) {
+      const entry = entries[index];
+
+      if (
+        usedTilesetIndexes[index] &&
+        newOffsetByTilesetIndex[index] !== entry.offset
+      ) {
+        remapRequired = true;
+        break;
+      }
+    }
+  }
+
+  if (!tilesetsChanged && !remapRequired) {
+    return tilemap;
+  }
+
+  if (!remapRequired) {
+    return {
+      ...tilemap,
+      tilesets,
+    };
+  }
+
+  const remapRefs = (values: readonly number[]): number[] => {
+    const result = new Array<number>(values.length);
+
+    for (let i = 0; i < values.length; i++) {
+      const value = values[i];
+
+      if (!value) {
+        result[i] = 0;
+        continue;
+      }
+
+      const absoluteIndex = value - 1;
+      const entry = entryByAbsoluteIndex[absoluteIndex];
+
+      if (!entry) {
+        result[i] = 0;
+        continue;
+      }
+
+      const newOffset = newOffsetByTilesetIndex[entry.tilesetIndex];
+
+      result[i] =
+        newOffset >= 0 ? newOffset + (absoluteIndex - entry.offset) + 1 : 0;
+    }
+
+    return result;
   };
 
   return {
-    ...nextTilemap,
+    ...tilemap,
+    tilesets,
     layers: tilemap.layers.map((layer) => ({
       ...layer,
-      tiles: layer.tiles.map(remapRef),
-      autotiles: layer.autotiles?.map(remapRef),
+      tiles: remapRefs(layer.tiles),
+      autotiles: layer.autotiles ? remapRefs(layer.autotiles) : undefined,
     })),
   };
 };
