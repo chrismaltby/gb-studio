@@ -1303,4 +1303,187 @@ describe("pruneMissingEntities", () => {
       },
     ]);
   });
+
+  test("does not traverse or clone fields not defined in the schema", () => {
+    const stateSchema = new schema.Entity("states");
+    const spriteSchema = new schema.Entity("sprites", {
+      states: [stateSchema],
+    });
+
+    const unschemaData = {
+      nullableValues: [null, undefined, "keep-me"],
+      nested: {
+        expensiveArray: [1, 2, 3],
+      },
+    };
+
+    const input = {
+      id: "sprite1",
+      states: [{ id: "state1" }],
+      unschemaData,
+    };
+
+    const result = pruneMissingEntities(input, spriteSchema);
+
+    expect(result).toEqual(input);
+    expect(result.unschemaData).toBe(unschemaData);
+    expect(result.unschemaData.nested).toBe(unschemaData.nested);
+    expect(result.unschemaData.nested.expensiveArray).toBe(
+      unschemaData.nested.expensiveArray,
+    );
+  });
+
+  test("preserves schema-defined array identity when no pruning is needed", () => {
+    const stateSchema = new schema.Entity("states");
+    const spriteSchema = new schema.Entity("sprites", {
+      states: [stateSchema],
+    });
+
+    const states = [{ id: "state1" }, { id: "state2" }];
+    const input = {
+      id: "sprite1",
+      states,
+    };
+
+    const result = pruneMissingEntities(input, spriteSchema);
+
+    expect(result).toEqual(input);
+    expect(result).toBe(input);
+    expect(result.states).toBe(states);
+  });
+
+  test("clones only the schema-defined path that changed", () => {
+    const stateSchema = new schema.Entity("states");
+    const spriteSchema = new schema.Entity("sprites", {
+      states: [stateSchema],
+    });
+
+    const metadata = {
+      expensiveArray: [1, 2, 3],
+    };
+
+    const states = [undefined, { id: "state1" }];
+    const input = {
+      id: "sprite1",
+      states,
+      metadata,
+    };
+
+    const result = pruneMissingEntities(input, spriteSchema);
+
+    expect(result).toEqual({
+      id: "sprite1",
+      states: [{ id: "state1" }],
+      metadata,
+    });
+
+    expect(result).not.toBe(input);
+    expect(result.states).not.toBe(states);
+    expect(result.metadata).toBe(metadata);
+  });
+
+  test("plain object schema does not traverse unrelated fields", () => {
+    const itemSchema = new schema.Entity("items");
+
+    const values = [null, undefined, "keep-me"];
+    const unrelated = {
+      deep: {
+        values,
+      },
+    };
+
+    const input = {
+      items: [{ id: "item1" }],
+      unrelated,
+    };
+
+    const result = pruneMissingEntities(input, {
+      items: [itemSchema],
+    });
+
+    expect(result).toBe(input);
+    expect(result.unrelated).toBe(unrelated);
+    expect(result.unrelated.deep.values).toBe(values);
+  });
+
+  test("preserves Values schema object identity when no pruning is needed", () => {
+    const scriptEventSchema = new schema.Entity("scriptEvents");
+    scriptEventSchema.define({
+      children: new schema.Values([scriptEventSchema]),
+    });
+
+    const trueBranch = [{ id: "child1", command: "EVENT_END" }];
+    const children = {
+      true: trueBranch,
+      false: [],
+    };
+
+    const input = {
+      id: "event1",
+      command: "EVENT_IF_TRUE",
+      children,
+    };
+
+    const result = pruneMissingEntities(input, scriptEventSchema);
+
+    expect(result).toBe(input);
+    expect(result.children).toBe(children);
+    expect(result.children.true).toBe(trueBranch);
+  });
+
+  test("Values schema clones only branches that need pruning", () => {
+    const scriptEventSchema = new schema.Entity("scriptEvents");
+    scriptEventSchema.define({
+      children: new schema.Values([scriptEventSchema]),
+    });
+
+    const falseBranch = [{ id: "child2", command: "EVENT_END" }];
+    const children = {
+      true: [undefined, { id: "child1", command: "EVENT_END" }],
+      false: falseBranch,
+    };
+
+    const input = {
+      id: "event1",
+      command: "EVENT_IF_TRUE",
+      children,
+    };
+
+    const result = pruneMissingEntities(input, scriptEventSchema);
+
+    expect(result).toEqual({
+      id: "event1",
+      command: "EVENT_IF_TRUE",
+      children: {
+        true: [{ id: "child1", command: "EVENT_END" }],
+        false: falseBranch,
+      },
+    });
+
+    expect(result).not.toBe(input);
+    expect(result.children).not.toBe(children);
+    expect(result.children.false).toBe(falseBranch);
+  });
+
+  test("does not access items inside large arrays when the field is not schema-defined", () => {
+    const itemSchema = new schema.Entity("items");
+
+    const dangerousItem = {};
+    Object.defineProperty(dangerousItem, "value", {
+      get() {
+        throw new Error("Should not be read");
+      },
+    });
+
+    const input = {
+      items: [{ id: "item1" }],
+      tileData: [dangerousItem],
+    };
+
+    expect(() =>
+      pruneMissingEntities(input, {
+        items: [itemSchema],
+      }),
+    ).not.toThrow();
+  });
 });

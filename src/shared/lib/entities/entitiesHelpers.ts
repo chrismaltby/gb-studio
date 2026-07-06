@@ -318,27 +318,78 @@ export const pruneMissingEntities = <T>(
   input: T,
   normalizrSchema?: Schema<unknown>,
 ): T => {
+  if (normalizrSchema === undefined) {
+    return input;
+  }
+
   if (Array.isArray(input)) {
     const itemSchema = getArrayItemSchema(normalizrSchema);
-    const result = input.map((item) => pruneMissingEntities(item, itemSchema));
     if (itemSchema === undefined) {
-      return result as T;
+      return input;
     }
-    return result.filter((item) => item !== undefined && item !== null) as T;
+
+    let changed = false;
+    const result: unknown[] = [];
+
+    for (const item of input) {
+      const prunedItem = pruneMissingEntities(item, itemSchema);
+
+      if (prunedItem === undefined || prunedItem === null) {
+        changed = true;
+        continue;
+      }
+
+      if (prunedItem !== item) {
+        changed = true;
+      }
+
+      result.push(prunedItem);
+    }
+
+    return (changed ? result : input) as T;
   }
 
   if (input !== null && typeof input === "object") {
-    const objectSchema = getObjectSchema(normalizrSchema);
     const valuesSchema = getValuesSchema(normalizrSchema);
-    const result: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(input)) {
-      result[key] = pruneMissingEntities(
-        value,
-        valuesSchema ?? objectSchema?.[key],
-      );
+    const inputObject = input as Record<string, unknown>;
+    if (valuesSchema !== undefined) {
+      let result: Record<string, unknown> | undefined;
+
+      for (const [key, value] of Object.entries(inputObject)) {
+        const prunedValue = pruneMissingEntities(value, valuesSchema);
+
+        if (prunedValue !== value) {
+          result ??= { ...inputObject };
+          result[key] = prunedValue;
+        }
+      }
+
+      return (result ?? input) as T;
     }
 
-    return result as T;
+    const objectSchema = getObjectSchema(normalizrSchema);
+
+    if (objectSchema === undefined) {
+      return input;
+    }
+
+    let result: Record<string, unknown> | undefined;
+
+    for (const [key, childSchema] of Object.entries(objectSchema)) {
+      if (!(key in inputObject)) {
+        continue;
+      }
+
+      const value = inputObject[key];
+      const prunedValue = pruneMissingEntities(value, childSchema);
+
+      if (prunedValue !== value) {
+        result ??= { ...inputObject };
+        result[key] = prunedValue;
+      }
+    }
+
+    return (result ?? input) as T;
   }
 
   return input;
