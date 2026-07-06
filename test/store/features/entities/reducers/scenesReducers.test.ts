@@ -1890,6 +1890,7 @@ test("Should snapshot, reuse, and resolve a 9-slice autotile definition", () => 
   expect(tilemap?.autotiles).toEqual([
     { type: "9slice", startTile: encodeSceneTileRef(0, 10) },
   ]);
+  expect(layer?.autotiles?.filter(Boolean)).toEqual(new Array(9).fill(1));
   for (let y = 0; y < 3; y++) {
     for (let x = 0; x < 3; x++) {
       const index = (y + 1) * 5 + x + 1;

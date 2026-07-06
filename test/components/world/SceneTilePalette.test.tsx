@@ -514,7 +514,9 @@ test("selecting 9 Slice toggles a generic 9-slice definition", () => {
   render(<SceneTilePalette sceneId="scene1" />);
   const surface = enterDefaultsMode();
   fireEvent.click(screen.getByTestId("defaults-autotiles"));
-  fireEvent.click(screen.getByRole("button", { name: "9 Slice" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "FIELD_AUTOTILE_TYPE_9_SLICE" }),
+  );
   mockDispatch.mockClear();
 
   fireEvent.mouseDown(surface, { clientX: 20, clientY: 20 });

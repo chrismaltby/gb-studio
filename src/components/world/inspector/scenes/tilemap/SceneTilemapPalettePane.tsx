@@ -733,19 +733,19 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
                 <PaintTools>
                   <Button
                     variant="transparent"
-                    title="2x2"
+                    title={l10n("FIELD_AUTOTILE_TYPE_2X2")}
                     active={autotileType === "2x2"}
                     onClick={() => setAutotileType("2x2")}
                   >
-                    2x2
+                    {l10n("FIELD_AUTOTILE_TYPE_2X2")}
                   </Button>
                   <Button
                     variant="transparent"
-                    title="9 Slice"
+                    title={l10n("FIELD_AUTOTILE_TYPE_9_SLICE")}
                     active={autotileType === "9slice"}
                     onClick={() => setAutotileType("9slice")}
                   >
-                    9 Slice
+                    {l10n("FIELD_AUTOTILE_TYPE_9_SLICE")}
                   </Button>
                 </PaintTools>
               )}

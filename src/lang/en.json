@@ -1456,6 +1456,8 @@
   "FIELD_NO_COLLISION": "No Collision",
   "FIELD_COLORS": "Colors",
   "FIELD_AUTOTILES": "Autotiles",
+  "FIELD_AUTOTILE_TYPE_2X2": "2x2",
+  "FIELD_AUTOTILE_TYPE_9_SLICE": "9 Slice",
   "FIELD_EDIT_TILEMAP": "Edit Tilemap",
   "FIELD_IMAGE": "Image",
   "FIELD_TILEMAP": "Tilemap",

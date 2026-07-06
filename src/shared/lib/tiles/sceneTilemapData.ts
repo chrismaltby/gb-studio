@@ -1,4 +1,5 @@
 import {
+  AutotileDefinition,
   AutotileType,
   SceneTilemapLayer,
   SceneTilemapData,
@@ -433,6 +434,46 @@ export const getTilemapLayersTileColors = (
 
 export { flattenTilemapLayers } from "shared/lib/tiles/sceneTilemapReferences";
 
+export const remapSceneAutotileDefinitions = (
+  definitions: readonly AutotileDefinition[] | undefined,
+  layers: readonly SceneTilemapLayer[],
+  remapStartTile: (
+    value: number,
+    definition: AutotileDefinition,
+    definitionId: number,
+  ) => number,
+): {
+  autotiles: AutotileDefinition[];
+  layers: SceneTilemapLayer[];
+} => {
+  const idMap = new Map<number, number>();
+  const autotiles: AutotileDefinition[] = [];
+
+  for (const [index, definition] of (definitions ?? []).entries()) {
+    const startTile = remapStartTile(
+      definition.startTile,
+      definition,
+      index + 1,
+    );
+    if (!startTile) continue;
+    idMap.set(index + 1, autotiles.length + 1);
+    autotiles.push({ ...definition, startTile });
+  }
+
+  const nextLayers = layers.map((layer) => ({
+    ...layer,
+    ...(layer.autotiles
+      ? {
+          autotiles: layer.autotiles.map((id) =>
+            id ? (idMap.get(id) ?? 0) : 0,
+          ),
+        }
+      : {}),
+  }));
+
+  return { autotiles, layers: nextLayers };
+};
+
 export const pruneTilemapLayersTilesets = (
   tilemap: SceneTilemapData,
 ): SceneTilemapData => {
@@ -443,32 +484,34 @@ export const pruneTilemapLayersTilesets = (
     }
   }
 
-  const autotileIdMap = new Map<number, number>();
-  const autotileDefinitions = (tilemap.autotiles ?? []).filter(
-    (definition, index) => {
-      const oldId = index + 1;
-      if (!usedAutotileIds.has(oldId)) return false;
-      autotileIdMap.set(oldId, autotileIdMap.size + 1);
-      return true;
-    },
-  );
-  const autotilesChanged =
-    autotileDefinitions.length !== (tilemap.autotiles?.length ?? 0) ||
-    Array.from(autotileIdMap).some(([oldId, newId]) => oldId !== newId);
-  const remapAutotileIds = (values: readonly number[]): number[] =>
-    values.map((value) => (value ? (autotileIdMap.get(value) ?? 0) : 0));
-  const layersWithPrunedAutotiles = autotilesChanged
-    ? tilemap.layers.map((layer) => ({
-        ...layer,
-        ...(layer.autotiles
-          ? { autotiles: remapAutotileIds(layer.autotiles) }
-          : {}),
-      }))
-    : tilemap.layers;
-
   const usedTilesetIds = new Set<string>();
   const tilesetLookup = buildSceneTilesetLookup(tilemap);
   const { entries, entryByAbsoluteIndex } = tilesetLookup;
+  const remappedAutotiles = remapSceneAutotileDefinitions(
+    tilemap.autotiles,
+    tilemap.layers,
+    (startTile, definition, definitionId) => {
+      if (!usedAutotileIds.has(definitionId)) return 0;
+      const ref = decodeSceneTileRef(startTile, tilesetLookup);
+      const entry = ref ? entries[ref.tilesetIndex] : undefined;
+      if (!ref || !entry || entry.width <= 0) return 0;
+      const x = ref.tileIndex % entry.width;
+      const y = Math.floor(ref.tileIndex / entry.width);
+      const groupSize = definition.type === "9slice" ? 3 : 4;
+      return x + groupSize <= entry.width && y + groupSize <= entry.height
+        ? startTile
+        : 0;
+    },
+  );
+  const autotileDefinitions = remappedAutotiles.autotiles;
+  const layersWithPrunedAutotiles = remappedAutotiles.layers;
+  const autotilesChanged =
+    autotileDefinitions.length !== (tilemap.autotiles?.length ?? 0) ||
+    layersWithPrunedAutotiles.some((layer, index) =>
+      layer.autotiles?.some(
+        (id, cellIndex) => id !== tilemap.layers[index]?.autotiles?.[cellIndex],
+      ),
+    );
 
   const usedTilesetIndexes = new Array<boolean>(entries.length).fill(false);
   let invalidRefSeen = false;

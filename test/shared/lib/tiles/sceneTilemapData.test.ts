@@ -99,7 +99,7 @@ describe("pruneTilemapLayersTilesets", () => {
   });
 
   test("remaps autotile refs after pruning earlier unused tilesets", () => {
-    const propsTileIndex = 7;
+    const propsTileIndex = 6;
     const propsOffset = buildSceneTilesetLookup({
       tilesets: [tilesetsLookup.unused, tilesetsLookup.props],
     }).entries[1]?.offset;
@@ -172,7 +172,7 @@ describe("pruneTilemapLayersTilesets", () => {
         tilesetsLookup.props,
         tilesetsLookup.props,
       ],
-      autotiles: [{ type: "2x2", startTile: encodeSceneTileRef(110, 9) }],
+      autotiles: [{ type: "2x2", startTile: encodeSceneTileRef(110, 6) }],
       layers: [
         {
           id: "visible",
@@ -227,15 +227,15 @@ describe("pruneTilemapLayersTilesets", () => {
     expect(
       decodeSceneTileRef(result.autotiles?.[0]?.startTile ?? 0, tilesetLookup),
     ).toEqual({
-      absoluteIndex: 14,
+      absoluteIndex: 11,
       tilesetIndex: 1,
-      tileIndex: 9,
+      tileIndex: 6,
       tilesetId: "props",
       tilesetOffset: 5,
     });
   });
 
-  test("rewrites invalid tile and autotile refs to 0", () => {
+  test("rewrites invalid tile refs and autotile definition ids to 0", () => {
     const result = pruneTilemapLayersTilesets({
       tilesets: [tilesetsLookup.grass],
       autotiles: [{ type: "2x2", startTile: 9999 }],
@@ -252,6 +252,26 @@ describe("pruneTilemapLayersTilesets", () => {
 
     expect(result.tilesets).toEqual([]);
     expect(result.layers[0]?.tiles).toEqual([0]);
+    expect(result.layers[0]?.autotiles).toEqual([0]);
+  });
+
+  test("prunes invalid used autotile definitions and clears layer ids", () => {
+    const result = pruneTilemapLayersTilesets({
+      tilesets: [tilesetsLookup.grass],
+      autotiles: [{ type: "2x2", startTile: 9999 }],
+      layers: [
+        {
+          id: "layer",
+          name: "Layer",
+          visible: true,
+          tiles: [0],
+          autotiles: [1],
+        },
+      ],
+    });
+
+    expect(result.tilesets).toEqual([]);
+    expect(result.autotiles).toEqual([]);
     expect(result.layers[0]?.autotiles).toEqual([0]);
   });
 
@@ -580,6 +600,36 @@ describe("resolveSceneAutotiles", () => {
             ?.tileIndex,
         ).toBe(10 + y * tilesetWidth + x);
       }
+    }
+  });
+
+  test("sparse 9-slice resolution matches whole-layer resolution", () => {
+    const startTile = encodeSceneTileRef(0, 10);
+    const autotiles = new Array(5 * 5).fill(0);
+    const indexes: number[] = [];
+    for (let y = 1; y <= 3; y++) {
+      for (let x = 1; x <= 3; x++) {
+        const index = y * 5 + x;
+        autotiles[index] = 1;
+        indexes.push(index);
+      }
+    }
+    const tilemap = {
+      tilesets: [{ id: "tiles", width: 8, height: 8 }],
+      autotiles: [{ type: "9slice" as const, startTile }],
+    };
+
+    const wholeLayer = resolveSceneAutotiles(autotiles, 5, 5, tilemap);
+    const sparse = resolveSceneAutotilesForCells(
+      autotiles,
+      5,
+      5,
+      tilemap,
+      indexes,
+    );
+
+    for (const index of indexes) {
+      expect(sparse.get(index)).toBe(wholeLayer[index]);
     }
   });
 

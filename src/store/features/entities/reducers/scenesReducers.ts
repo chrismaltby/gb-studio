@@ -31,7 +31,11 @@ import {
   defaultLocalisedSceneName,
   applyReparentEntityToCollection,
 } from "shared/lib/entities/entitiesHelpers";
-import { Palette, Variable } from "shared/lib/resources/types";
+import {
+  AutotileDefinition,
+  Palette,
+  Variable,
+} from "shared/lib/resources/types";
 import {
   actorsAdapter,
   triggersAdapter,
@@ -1074,7 +1078,9 @@ const paintSceneTile: CaseReducer<
     isErasing || action.payload.tileIndex < 0
       ? 0
       : encodeSceneTileRef(tilesetOffset, action.payload.tileIndex);
-  const autotileDefinitions = [...(tilemap.autotiles ?? [])];
+  const autotileDefinitions: AutotileDefinition[] = [
+    ...(tilemap.autotiles ?? []),
+  ];
   let didAddAutotileDefinition = false;
   let autotileDefinitionId = 0;
   if (!isErasing && action.payload.autotile && tileRef) {

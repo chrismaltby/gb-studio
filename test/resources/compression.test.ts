@@ -37,7 +37,7 @@ describe("compression.ts", () => {
             ...dummyCompressedSceneResource,
             collisions: [],
             tilemap: {
-              tilesets: [{ id: "tiles", width: 3, height: 1 }],
+              tilesets: [{ id: "tiles", width: 4, height: 4 }],
               autotiles: [{ type: "2x2", startTile: 1 }],
               tileColors: [0, 2, 2],
               layers: [

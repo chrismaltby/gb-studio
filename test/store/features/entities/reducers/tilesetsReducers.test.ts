@@ -425,11 +425,9 @@ test("Should automatically shrink a loaded tileset and clear cropped references"
   });
   expect(resized.scenes.entities.scene1?.tilemap?.layers[0]).toMatchObject({
     tiles: [encodeSceneTileRef(0, 3), 0, encodeSceneTileRef(4, 1)],
-    autotiles: [1],
+    autotiles: [0],
   });
-  expect(resized.scenes.entities.scene1?.tilemap?.autotiles).toEqual([
-    { type: "2x2", startTile: 0 },
-  ]);
+  expect(resized.scenes.entities.scene1?.tilemap?.autotiles).toEqual([]);
 });
 
 test("Should ignore invalid loaded tileset dimensions", () => {

@@ -8,6 +8,7 @@ import {
   buildSceneTilesetLookup,
   decodeSceneTileRef,
   encodeSceneTileRef,
+  remapSceneAutotileDefinitions,
 } from "shared/lib/tiles/sceneTilemapData";
 import {
   PayloadAction,
@@ -21,6 +22,7 @@ import {
   updateEntitySymbol,
 } from "shared/lib/entities/entitiesHelpers";
 import {
+  AutotileDefinition,
   AutotileType,
   CompressedTilesetResourceAsset,
 } from "shared/lib/resources/types";
@@ -213,14 +215,15 @@ export const updateTilemapReferencesForTilesets = (
       return encodeSceneTileRef(newEntry.offset, nextTileIndex);
     };
 
-    const layers = sceneTilemap.layers.map((layer) => ({
+    const layersWithRemappedTiles = sceneTilemap.layers.map((layer) => ({
       ...layer,
       tiles: layer.tiles.map(remapRef),
     }));
-    const autotiles = sceneTilemap.autotiles?.map((definition) => ({
-      ...definition,
-      startTile: remapRef(definition.startTile),
-    }));
+    const remappedAutotiles = remapSceneAutotileDefinitions(
+      sceneTilemap.autotiles,
+      layersWithRemappedTiles,
+      remapRef,
+    );
 
     memo.push({
       id: scene.id,
@@ -228,8 +231,10 @@ export const updateTilemapReferencesForTilesets = (
         tilemap: {
           ...sceneTilemap,
           tilesets: resizedTilesets,
-          ...(autotiles ? { autotiles } : {}),
-          layers,
+          ...(sceneTilemap.autotiles
+            ? { autotiles: remappedAutotiles.autotiles }
+            : {}),
+          layers: remappedAutotiles.layers,
         },
       },
     });
@@ -387,7 +392,7 @@ const toggleTilesetAutotileGroup: CaseReducer<
     clickedX + groupSize <= tileset.width &&
     clickedY + groupSize <= tileset.height;
 
-  let nextAutotiles = autotiles;
+  let nextAutotiles: AutotileDefinition[] = autotiles;
 
   if (existingDefinition) {
     // Autotile already existed, remove it
