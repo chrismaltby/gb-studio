@@ -762,6 +762,32 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
     }, 100);
   }, [dispatch]);
 
+  const onEditPaletteIds = useMemo(
+    () =>
+      Array.from({ length: 8 }, (_, index) => (paletteId: string) => {
+        const paletteIds = Array.from(
+          { length: 8 },
+          (_, i) => scene?.paletteIds?.[i] ?? "",
+        );
+        paletteIds[index] = paletteId;
+        onChangeSceneProp("paletteIds", paletteIds);
+      }),
+    [scene?.paletteIds, onChangeSceneProp],
+  );
+
+  const onEditSpritePaletteIds = useMemo(
+    () =>
+      Array.from({ length: 8 }, (_, index) => (paletteId: string) => {
+        const spritePaletteIds = Array.from(
+          { length: 8 },
+          (_, i) => scene?.spritePaletteIds?.[i] ?? "",
+        );
+        spritePaletteIds[index] = paletteId;
+        onChangeSceneProp("spritePaletteIds", spritePaletteIds);
+      }),
+    [scene?.spritePaletteIds, onChangeSceneProp],
+  );
+
   if (!scene) {
     return <WorldInspector />;
   }
@@ -778,23 +804,7 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
     canAutoTileFlip &&
     (background?.autoTileFlipOverride !== undefined ||
       autoTileFlipOverrideOpen);
-  const onEditPaletteId = (index: number) => (paletteId: string) => {
-    const paletteIds = Array.from(
-      { length: 8 },
-      (_, i) => scene.paletteIds?.[i] ?? "",
-    );
-    paletteIds[index] = paletteId;
-    onChangeSceneProp("paletteIds", paletteIds);
-  };
 
-  const onEditSpritePaletteId = (index: number) => (paletteId: string) => {
-    const spritePaletteIds = Array.from(
-      { length: 8 },
-      (_, i) => scene.spritePaletteIds?.[i] ?? "",
-    );
-    spritePaletteIds[index] = paletteId;
-    onChangeSceneProp("spritePaletteIds", spritePaletteIds);
-  };
 
   const isStartingScene = startSceneId === id;
 
@@ -1243,7 +1253,7 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
                                   ""
                                 }
                                 type={index === 6 ? "tile" : "sgb"}
-                                onChange={onEditPaletteId(index)}
+                                onChange={onEditPaletteIds[index]}
                                 slotNumber={index + 1}
                                 optional
                                 optionalDefaultPaletteId={
@@ -1342,7 +1352,7 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
                                     scene.paletteIds[index]) ||
                                   ""
                                 }
-                                onChange={onEditPaletteId(index)}
+                                onChange={onEditPaletteIds[index]}
                                 slotNumber={index + 1}
                                 optional
                                 optionalDefaultPaletteId={
@@ -1369,7 +1379,7 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
                                     scene.paletteIds[index]) ||
                                   ""
                                 }
-                                onChange={onEditPaletteId(index)}
+                                onChange={onEditPaletteIds[index]}
                                 slotNumber={index + 1}
                                 optional
                                 optionalDefaultPaletteId={
@@ -1404,7 +1414,7 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
                                 ""
                               }
                               slotNumber={index + 1}
-                              onChange={onEditSpritePaletteId(index)}
+                              onChange={onEditSpritePaletteIds[index]}
                               optional
                               optionalDefaultPaletteId={
                                 defaultSpritePaletteIds[index] || ""
