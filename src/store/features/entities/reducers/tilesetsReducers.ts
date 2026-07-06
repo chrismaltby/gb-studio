@@ -20,7 +20,10 @@ import {
   upsertAssetEntity,
   updateEntitySymbol,
 } from "shared/lib/entities/entitiesHelpers";
-import { CompressedTilesetResourceAsset } from "shared/lib/resources/types";
+import {
+  AutotileType,
+  CompressedTilesetResourceAsset,
+} from "shared/lib/resources/types";
 import {
   localSceneSelectById,
   localTilesetSelectById,
@@ -57,7 +60,7 @@ const loadTileset: CaseReducer<
       ...action.payload.data,
       tileCollisions: [],
       tileColors: [],
-      autotileGroups: [],
+      autotiles: [],
     },
     [
       "id",
@@ -66,7 +69,7 @@ const loadTileset: CaseReducer<
       "height",
       "tileCollisions",
       "tileColors",
-      "autotileGroups",
+      "autotiles",
     ],
   );
   updateTilemapReferencesForTilesets(state, [action.payload.data.id]);
@@ -125,17 +128,18 @@ export const updateTilemapReferencesForTilesets = (
       nextHeight,
       TILE_DEFAULT_UNSET,
     );
-    const autotileGroups =
+    const autotiles =
       oldWidth > 0
-        ? (tileset.autotileGroups ?? [])
-            .map((tileIndex) => {
-              const x = tileIndex % oldWidth;
-              const y = Math.floor(tileIndex / oldWidth);
-              return x + 4 <= nextWidth && y + 4 <= nextHeight
-                ? y * nextWidth + x
+        ? (tileset.autotiles ?? [])
+            .map((definition) => {
+              const x = definition.startTile % oldWidth;
+              const y = Math.floor(definition.startTile / oldWidth);
+              const groupSize = definition.type === "9slice" ? 3 : 4;
+              return x + groupSize <= nextWidth && y + groupSize <= nextHeight
+                ? { ...definition, startTile: y * nextWidth + x }
                 : undefined;
             })
-            .filter((value): value is number => value !== undefined)
+            .filter((value): value is NonNullable<typeof value> => !!value)
         : [];
 
     tilesetsAdapter.updateOne(state.tilesets, {
@@ -145,7 +149,7 @@ export const updateTilemapReferencesForTilesets = (
         height: nextHeight,
         tileColors,
         tileCollisions,
-        autotileGroups,
+        autotiles,
       },
     });
     resizes.set(tileset.id, { width: nextWidth, height: nextHeight });
@@ -212,7 +216,10 @@ export const updateTilemapReferencesForTilesets = (
     const layers = sceneTilemap.layers.map((layer) => ({
       ...layer,
       tiles: layer.tiles.map(remapRef),
-      autotiles: layer.autotiles?.map(remapRef),
+    }));
+    const autotiles = sceneTilemap.autotiles?.map((definition) => ({
+      ...definition,
+      startTile: remapRef(definition.startTile),
     }));
 
     memo.push({
@@ -221,6 +228,7 @@ export const updateTilemapReferencesForTilesets = (
         tilemap: {
           ...sceneTilemap,
           tilesets: resizedTilesets,
+          ...(autotiles ? { autotiles } : {}),
           layers,
         },
       },
@@ -345,46 +353,59 @@ const paintTilesetCollision: CaseReducer<
 
 const toggleTilesetAutotileGroup: CaseReducer<
   EntitiesState,
-  PayloadAction<{ tilesetId: string; tileIndex: number }>
+  PayloadAction<{
+    tilesetId: string;
+    tileIndex: number;
+    type?: AutotileType;
+  }>
 > = (state, action) => {
   const tileset = localTilesetSelectById(state, action.payload.tilesetId);
   if (!tileset) {
     return;
   }
 
-  const groups = tileset.autotileGroups ?? [];
+  const autotiles = tileset.autotiles ?? [];
+  const type = action.payload.type ?? "2x2";
   const clickedX = action.payload.tileIndex % tileset.width;
   const clickedY = Math.floor(action.payload.tileIndex / tileset.width);
 
   // Find existing overlapping autotile
-  const existingGroup = groups.find((tileIndex) => {
-    const groupX = tileIndex % tileset.width;
-    const groupY = Math.floor(tileIndex / tileset.width);
+  const existingDefinition = autotiles.find((definition) => {
+    const groupX = definition.startTile % tileset.width;
+    const groupY = Math.floor(definition.startTile / tileset.width);
+    const groupSize = definition.type === "9slice" ? 3 : 4;
     return (
       clickedX >= groupX &&
-      clickedX < groupX + 4 &&
+      clickedX < groupX + groupSize &&
       clickedY >= groupY &&
-      clickedY < groupY + 4
+      clickedY < groupY + groupSize
     );
   });
 
+  const groupSize = type === "9slice" ? 3 : 4;
   const isValidAutotile =
-    clickedX + 4 <= tileset.width && clickedY + 4 <= tileset.height;
+    clickedX + groupSize <= tileset.width &&
+    clickedY + groupSize <= tileset.height;
 
-  let nextGroups = groups;
+  let nextAutotiles = autotiles;
 
-  if (existingGroup !== undefined) {
+  if (existingDefinition) {
     // Autotile already existed, remove it
-    nextGroups = groups.filter((tileIndex) => tileIndex !== existingGroup);
+    nextAutotiles = autotiles.filter(
+      (definition) => definition !== existingDefinition,
+    );
   } else if (isValidAutotile) {
     // Autotile didn't exist but is valid, add it
-    nextGroups = [...groups, action.payload.tileIndex];
+    nextAutotiles = [
+      ...autotiles,
+      { type, startTile: action.payload.tileIndex },
+    ];
   }
 
-  if (nextGroups !== groups) {
+  if (nextAutotiles !== autotiles) {
     tilesetsAdapter.updateOne(state.tilesets, {
       id: tileset.id,
-      changes: { autotileGroups: nextGroups },
+      changes: { autotiles: nextAutotiles },
     });
   }
 };

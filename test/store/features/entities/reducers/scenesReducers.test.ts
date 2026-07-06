@@ -1841,6 +1841,66 @@ test("Should update neighbouring RPG-style autotiles when painting and erasing",
   expect(erasedLayer?.tiles[5 * 20 + 6]).toBe(0);
 });
 
+test("Should snapshot, reuse, and resolve a 9-slice autotile definition", () => {
+  let painted = tilemapPaintState(
+    {
+      width: 5,
+      height: 5,
+      tilemap: {
+        tilesets: [tilesetSnapshot("tiles1", 8, 8)],
+        tileColors: new Array(25).fill(0),
+        layers: [
+          {
+            id: "layer1",
+            name: "Layer 1",
+            visible: true,
+            tiles: new Array(25).fill(0),
+          },
+        ],
+      },
+    },
+    {
+      width: 8,
+      height: 8,
+      imageWidth: 64,
+      imageHeight: 64,
+      autotiles: [{ type: "9slice", startTile: 10 }],
+    },
+  );
+
+  for (let y = 1; y <= 3; y++) {
+    for (let x = 1; x <= 3; x++) {
+      painted = reducer(
+        painted,
+        actions.paintSceneTile({
+          sceneId: "scene1",
+          layerId: "layer1",
+          tilesetId: "tiles1",
+          tileIndex: 10,
+          autotile: true,
+          x,
+          y,
+        }),
+      );
+    }
+  }
+
+  const tilemap = painted.scenes.entities.scene1?.tilemap;
+  const layer = tilemap?.layers[0];
+  expect(tilemap?.autotiles).toEqual([
+    { type: "9slice", startTile: encodeSceneTileRef(0, 10) },
+  ]);
+  for (let y = 0; y < 3; y++) {
+    for (let x = 0; x < 3; x++) {
+      const index = (y + 1) * 5 + x + 1;
+      expect(layer?.autotiles?.[index]).toBe(1);
+      expect(decodeSceneRef(tilemap, layer?.tiles[index] ?? 0)?.tileIndex).toBe(
+        10 + y * 8 + x,
+      );
+    }
+  }
+});
+
 test.each([false, true])(
   "Should paint every tile in a fast dragged line (autotile: %s)",
   (autotile) => {

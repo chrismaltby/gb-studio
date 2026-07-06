@@ -27,3 +27,14 @@ test("shows connectors for each active neighbour in the autotile mask", () => {
   expect(isolated?.children).toHaveLength(0);
   expect(connected?.children).toHaveLength(4);
 });
+
+test("highlights all nine 9-slice variants", () => {
+  const { container } = render(
+    <SceneAutotileSelection tileIndex={3} tilesetWidth={10} type="9slice" />,
+  );
+
+  const variants = container.querySelectorAll("[data-autotile-9slice-variant]");
+  expect(variants).toHaveLength(9);
+  expect(variants[0]).toHaveStyle({ left: "24px", top: "0px" });
+  expect(variants[8]).toHaveStyle({ left: "40px", top: "16px" });
+});

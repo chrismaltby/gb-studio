@@ -108,7 +108,9 @@ const createState = ({
                 ...dummyTilesetResource,
                 inode: "tileset1",
                 _v: 0,
-                autotileGroups: validAutotile ? [0] : [],
+                autotiles: validAutotile
+                  ? [{ type: "2x2" as const, startTile: 0 }]
+                  : [],
               },
             },
           },

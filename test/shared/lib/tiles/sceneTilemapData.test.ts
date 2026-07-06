@@ -76,13 +76,19 @@ describe("pruneTilemapLayersTilesets", () => {
 
     const result = pruneTilemapLayersTilesets({
       tilesets: [tilesetsLookup.grass, tilesetsLookup.props],
+      autotiles: [
+        {
+          type: "2x2",
+          startTile: encodeSceneTileRef(propsOffset ?? 0, 3),
+        },
+      ],
       layers: [
         {
           id: "layer",
           name: "Layer",
           visible: true,
           tiles: [0],
-          autotiles: [encodeSceneTileRef(propsOffset ?? 0, 3)],
+          autotiles: [1],
         },
       ],
     });
@@ -100,20 +106,26 @@ describe("pruneTilemapLayersTilesets", () => {
 
     const result = pruneTilemapLayersTilesets({
       tilesets: [tilesetsLookup.unused, tilesetsLookup.props],
+      autotiles: [
+        {
+          type: "2x2",
+          startTile: encodeSceneTileRef(propsOffset ?? 0, propsTileIndex),
+        },
+      ],
       layers: [
         {
           id: "layer",
           name: "Layer",
           visible: true,
           tiles: [0],
-          autotiles: [encodeSceneTileRef(propsOffset ?? 0, propsTileIndex)],
+          autotiles: [1],
         },
       ],
     });
 
     const tilesetLookup = buildSceneTilesetLookup(result);
     const ref = decodeSceneTileRef(
-      result.layers[0]?.autotiles?.[0] ?? 0,
+      result.autotiles?.[0]?.startTile ?? 0,
       tilesetLookup,
     );
 
@@ -127,6 +139,31 @@ describe("pruneTilemapLayersTilesets", () => {
     });
   });
 
+  test("prunes unused autotile definitions and remaps layer definition ids", () => {
+    const result = pruneTilemapLayersTilesets({
+      tilesets: [tilesetsLookup.grass, tilesetsLookup.props],
+      autotiles: [
+        { type: "2x2", startTile: encodeSceneTileRef(0, 0) },
+        { type: "9slice", startTile: encodeSceneTileRef(5, 7) },
+      ],
+      layers: [
+        {
+          id: "layer",
+          name: "Layer",
+          visible: true,
+          tiles: [0],
+          autotiles: [2],
+        },
+      ],
+    });
+
+    expect(result.tilesets).toEqual([tilesetsLookup.props]);
+    expect(result.autotiles).toEqual([
+      { type: "9slice", startTile: encodeSceneTileRef(0, 7) },
+    ]);
+    expect(result.layers[0]?.autotiles).toEqual([1]);
+  });
+
   test("prunes unused tilesets and rewrites references across every layer", () => {
     const result = pruneTilemapLayersTilesets({
       tilesets: [
@@ -135,6 +172,7 @@ describe("pruneTilemapLayersTilesets", () => {
         tilesetsLookup.props,
         tilesetsLookup.props,
       ],
+      autotiles: [{ type: "2x2", startTile: encodeSceneTileRef(110, 9) }],
       layers: [
         {
           id: "visible",
@@ -147,7 +185,7 @@ describe("pruneTilemapLayersTilesets", () => {
           name: "Hidden",
           visible: false,
           tiles: [encodeSceneTileRef(110, 9)],
-          autotiles: [encodeSceneTileRef(110, 9)],
+          autotiles: [1],
         },
       ],
     });
@@ -187,7 +225,7 @@ describe("pruneTilemapLayersTilesets", () => {
       tilesetOffset: 5,
     });
     expect(
-      decodeSceneTileRef(result.layers[1]?.autotiles?.[0] ?? 0, tilesetLookup),
+      decodeSceneTileRef(result.autotiles?.[0]?.startTile ?? 0, tilesetLookup),
     ).toEqual({
       absoluteIndex: 14,
       tilesetIndex: 1,
@@ -200,13 +238,14 @@ describe("pruneTilemapLayersTilesets", () => {
   test("rewrites invalid tile and autotile refs to 0", () => {
     const result = pruneTilemapLayersTilesets({
       tilesets: [tilesetsLookup.grass],
+      autotiles: [{ type: "2x2", startTile: 9999 }],
       layers: [
         {
           id: "layer",
           name: "Layer",
           visible: true,
           tiles: [9999],
-          autotiles: [9999],
+          autotiles: [2],
         },
       ],
     });
@@ -460,9 +499,10 @@ describe("isTilemapLayerCellTopmost", () => {
 describe("resolveSceneAutotiles", () => {
   test("sparse resolution matches whole-layer resolution", () => {
     const base = encodeSceneTileRef(0, 2);
-    const autotiles = [0, base, 0, base, base, base, 0, base, 0];
+    const autotiles = [0, 1, 0, 1, 1, 1, 0, 1, 0];
     const tilemap = {
       tilesets: [{ id: "tiles", width: 8, height: 8 }],
+      autotiles: [{ type: "2x2" as const, startTile: base }],
     };
     const indexes = [1, 3, 4, 5, 7];
     const wholeLayer = resolveSceneAutotiles(autotiles, 3, 3, tilemap);
@@ -470,7 +510,7 @@ describe("resolveSceneAutotiles", () => {
       autotiles,
       3,
       3,
-      buildSceneTilesetLookup(tilemap),
+      tilemap,
       indexes,
     );
 
@@ -494,16 +534,17 @@ describe("resolveSceneAutotiles", () => {
         autotileTilesets.b,
         autotileTilesets.tiles,
       ],
+      autotiles: [{ type: "2x2" as const, startTile: base }],
     };
     const tilesetLookup = buildSceneTilesetLookup(tilemap);
 
     for (const [variant, mask] of AUTOTILE_VARIANT_MASKS.entries()) {
       const autotiles = new Array(9).fill(0);
-      autotiles[4] = base;
-      if (mask & 1) [1, 3, 0].forEach((index) => (autotiles[index] = base));
-      if (mask & 2) [1, 5, 2].forEach((index) => (autotiles[index] = base));
-      if (mask & 4) [7, 5, 8].forEach((index) => (autotiles[index] = base));
-      if (mask & 8) [7, 3, 6].forEach((index) => (autotiles[index] = base));
+      autotiles[4] = 1;
+      if (mask & 1) [1, 3, 0].forEach((index) => (autotiles[index] = 1));
+      if (mask & 2) [1, 5, 2].forEach((index) => (autotiles[index] = 1));
+      if (mask & 4) [7, 5, 8].forEach((index) => (autotiles[index] = 1));
+      if (mask & 8) [7, 3, 6].forEach((index) => (autotiles[index] = 1));
 
       const resolved = decodeSceneTileRef(
         resolveSceneAutotiles(autotiles, 3, 3, tilemap)[4],
@@ -516,15 +557,42 @@ describe("resolveSceneAutotiles", () => {
     }
   });
 
+  test("resolves a filled region using all nine 9-slice tiles", () => {
+    const tilesetWidth = 8;
+    const startTile = encodeSceneTileRef(0, 10);
+    const autotiles = new Array(5 * 5).fill(0);
+    for (let y = 1; y <= 3; y++) {
+      for (let x = 1; x <= 3; x++) {
+        autotiles[y * 5 + x] = 1;
+      }
+    }
+    const tilemap = {
+      tilesets: [{ id: "tiles", width: tilesetWidth, height: 8 }],
+      autotiles: [{ type: "9slice" as const, startTile }],
+    };
+    const lookup = buildSceneTilesetLookup(tilemap);
+    const resolved = resolveSceneAutotiles(autotiles, 5, 5, tilemap);
+
+    for (let y = 0; y < 3; y++) {
+      for (let x = 0; x < 3; x++) {
+        expect(
+          decodeSceneTileRef(resolved[(y + 1) * 5 + x + 1] ?? 0, lookup)
+            ?.tileIndex,
+        ).toBe(10 + y * tilesetWidth + x);
+      }
+    }
+  });
+
   test("treats out-of-bounds autotile neighbours as connected", () => {
     const tilesetWidth = 8;
     const base = encodeSceneTileRef(0, 0);
     const tilemap = {
       tilesets: [{ id: "tiles", width: tilesetWidth, height: 4 }],
+      autotiles: [{ type: "2x2" as const, startTile: base }],
     };
 
     const resolved = decodeSceneTileRef(
-      resolveSceneAutotiles([base], 1, 1, tilemap)[0],
+      resolveSceneAutotiles([1], 1, 1, tilemap)[0],
       buildSceneTilesetLookup(tilemap),
     );
 
@@ -538,12 +606,12 @@ describe("resolveSceneAutotiles", () => {
   test("resolves empty and invalid autotile refs to blank tiles", () => {
     const tilemap = {
       tilesets: [{ id: "tiles", width: 8, height: 4 }],
+      autotiles: [{ type: "2x2" as const, startTile: 0 }],
     };
 
     expect(resolveSceneAutotiles([0], 1, 1, tilemap)).toEqual([0]);
 
-    const invalidRef = encodeSceneTileRef(100, 0);
-    expect(resolveSceneAutotiles([invalidRef], 1, 1, tilemap)).toEqual([0]);
+    expect(resolveSceneAutotiles([2], 1, 1, tilemap)).toEqual([0]);
   });
 
   test("does not connect neighbouring autotiles with different source refs", () => {
@@ -552,11 +620,15 @@ describe("resolveSceneAutotiles", () => {
     const other = encodeSceneTileRef(0, 1);
     const tilemap = {
       tilesets: [{ id: "tiles", width: tilesetWidth, height: 4 }],
+      autotiles: [
+        { type: "2x2" as const, startTile: base },
+        { type: "2x2" as const, startTile: other },
+      ],
     };
     const tilesetLookup = buildSceneTilesetLookup(tilemap);
 
     const resolved = decodeSceneTileRef(
-      resolveSceneAutotiles([base, other], 2, 1, tilemap)[0],
+      resolveSceneAutotiles([1, 2], 2, 1, tilemap)[0],
       tilesetLookup,
     );
 

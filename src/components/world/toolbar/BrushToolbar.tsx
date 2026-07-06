@@ -266,7 +266,11 @@ const BrushToolbar = ({ hasFocusForKeyboardShortcuts }: BrushToolbarProps) => {
       selectedSceneTile.width === 1 &&
       selectedSceneTile.height === 1 &&
       selectedSceneTile.tileIndex >= 0 &&
-      Boolean(tileset.autotileGroups?.includes(selectedSceneTile.tileIndex))
+      Boolean(
+        tileset.autotiles?.some(
+          (definition) => definition.startTile === selectedSceneTile.tileIndex,
+        ),
+      )
     );
   });
 

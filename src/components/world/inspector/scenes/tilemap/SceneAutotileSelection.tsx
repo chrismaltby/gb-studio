@@ -27,16 +27,38 @@ const CONNECTED_COLOR = "#00e5ff";
 interface SceneAutotileSelectionProps {
   tileIndex: number;
   tilesetWidth: number;
+  type?: "2x2" | "9slice";
 }
 
 const SceneAutotileSelection = ({
   tileIndex,
   tilesetWidth,
+  type = "2x2",
 }: SceneAutotileSelectionProps) => {
   const cornerSize = Math.max(2, Math.round(TILE_SIZE * 0.22));
   const borderWidth = Math.max(1, Math.round(TILE_SIZE / 32));
   const startX = tileIndex % tilesetWidth;
   const startY = Math.floor(tileIndex / tilesetWidth);
+
+  if (type === "9slice") {
+    return (
+      <>
+        {Array.from({ length: 9 }, (_, variant) => (
+          <TileHint
+            key={variant}
+            data-autotile-9slice-variant={variant}
+            style={{
+              left: (startX + (variant % 3)) * TILE_SIZE,
+              top: (startY + Math.floor(variant / 3)) * TILE_SIZE,
+              width: TILE_SIZE,
+              height: TILE_SIZE,
+              borderWidth,
+            }}
+          />
+        ))}
+      </>
+    );
+  }
 
   return (
     <>

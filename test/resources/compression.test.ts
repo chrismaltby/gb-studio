@@ -38,6 +38,7 @@ describe("compression.ts", () => {
             collisions: [],
             tilemap: {
               tilesets: [{ id: "tiles", width: 3, height: 1 }],
+              autotiles: [{ type: "2x2", startTile: 1 }],
               tileColors: [0, 2, 2],
               layers: [
                 {
@@ -344,7 +345,10 @@ describe("compression.ts", () => {
             ...dummyProjectResources.tilesets[0],
             tileColors: [TILE_DEFAULT_UNSET, 0xff, 3, 0x80],
             tileCollisions: [TILE_DEFAULT_UNSET, 0, 0x0f, 0x80],
-            autotileGroups: [4, 32],
+            autotiles: [
+              { type: "2x2", startTile: 4 },
+              { type: "9slice", startTile: 32 },
+            ],
           },
         ],
       };
@@ -359,7 +363,10 @@ describe("compression.ts", () => {
       expect(decompressed.tilesets[0]?.tileCollisions).toEqual(
         resources.tilesets[0]?.tileCollisions,
       );
-      expect(decompressed.tilesets[0]?.autotileGroups).toEqual([4, 32]);
+      expect(decompressed.tilesets[0]?.autotiles).toEqual([
+        { type: "2x2", startTile: 4 },
+        { type: "9slice", startTile: 32 },
+      ]);
     });
   });
 });

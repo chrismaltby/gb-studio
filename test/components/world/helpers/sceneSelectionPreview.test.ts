@@ -99,6 +99,8 @@ describe("getTileSelectionPreview", () => {
     const preview = getTileSelectionPreview({
       scene: scene(
         tilemap({
+          tilesets: [{ id: "tiles", width: 4, height: 4 }],
+          autotiles: [{ type: "2x2", startTile: 1 }],
           layers: [
             {
               id: "lower",

@@ -218,6 +218,7 @@ test("Should update all tilemap references for resized tilesets on load", () => 
             { id: "tiles1", width: 2, height: 2 },
             { id: "tiles2", width: 2, height: 1 },
           ],
+          autotiles: [{ type: "2x2", startTile: encodeSceneTileRef(0, 3) }],
           layers: [
             {
               id: "layer",
@@ -227,7 +228,7 @@ test("Should update all tilemap references for resized tilesets on load", () => 
                 encodeSceneTileRef(0, 3),
                 encodeSceneTileRef(4, 1),
               ]),
-              autotiles: compressNumberArray([encodeSceneTileRef(0, 3)]),
+              autotiles: compressNumberArray([1]),
             },
           ],
         },
@@ -255,6 +256,9 @@ test("Should update all tilemap references for resized tilesets on load", () => 
   ]);
   expect(newState.scenes.entities.scene1?.tilemap?.layers[0]).toMatchObject({
     tiles: [encodeSceneTileRef(0, 4), encodeSceneTileRef(6, 1)],
-    autotiles: [encodeSceneTileRef(0, 4)],
+    autotiles: [1],
   });
+  expect(newState.scenes.entities.scene1?.tilemap?.autotiles).toEqual([
+    { type: "2x2", startTile: encodeSceneTileRef(0, 4) },
+  ]);
 });

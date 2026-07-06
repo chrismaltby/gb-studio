@@ -105,7 +105,45 @@ test("Should register a 4x4 tileset autotile group", () => {
     }),
   );
 
-  expect(registered.tilesets.entities.tiles1?.autotileGroups).toEqual([9]);
+  expect(registered.tilesets.entities.tiles1?.autotiles).toEqual([
+    { type: "2x2", startTile: 9 },
+  ]);
+});
+
+test("Should register a 3x3 tileset 9-slice autotile", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    tilesets: {
+      entities: {
+        tiles1: {
+          ...dummyTilesetResource,
+          id: "tiles1",
+          width: 8,
+          height: 8,
+          imageWidth: 64,
+          imageHeight: 64,
+          tileColors: [],
+          tileCollisions: [],
+          inode: "tiles1",
+          _v: 0,
+        },
+      },
+      ids: ["tiles1"],
+    },
+  };
+
+  const registered = reducer(
+    state,
+    actions.toggleTilesetAutotileGroup({
+      tilesetId: "tiles1",
+      tileIndex: 9,
+      type: "9slice",
+    }),
+  );
+
+  expect(registered.tilesets.entities.tiles1?.autotiles).toEqual([
+    { type: "9slice", startTile: 9 },
+  ]);
 });
 
 test("Should remove a tileset autotile group when clicking inside it", () => {
@@ -122,7 +160,7 @@ test("Should remove a tileset autotile group when clicking inside it", () => {
           imageHeight: 64,
           tileColors: [],
           tileCollisions: [],
-          autotileGroups: [9],
+          autotiles: [{ type: "2x2", startTile: 9 }],
           inode: "tiles1",
           _v: 0,
         },
@@ -140,7 +178,7 @@ test("Should remove a tileset autotile group when clicking inside it", () => {
     }),
   );
 
-  expect(removed.tilesets.entities.tiles1?.autotileGroups).toEqual([]);
+  expect(removed.tilesets.entities.tiles1?.autotiles).toEqual([]);
 });
 
 test("Should ignore invalid tileset autotile group origins", () => {
@@ -157,7 +195,7 @@ test("Should ignore invalid tileset autotile group origins", () => {
           imageHeight: 64,
           tileColors: [],
           tileCollisions: [],
-          autotileGroups: [9],
+          autotiles: [{ type: "2x2", startTile: 9 }],
           inode: "tiles1",
           _v: 0,
         },
@@ -174,7 +212,9 @@ test("Should ignore invalid tileset autotile group origins", () => {
     }),
   );
 
-  expect(unchanged.tilesets.entities.tiles1?.autotileGroups).toEqual([9]);
+  expect(unchanged.tilesets.entities.tiles1?.autotiles).toEqual([
+    { type: "2x2", startTile: 9 },
+  ]);
 });
 
 test("Should automatically grow a loaded tileset and remap scene references", () => {
@@ -191,7 +231,7 @@ test("Should automatically grow a loaded tileset and remap scene references", ()
           imageHeight: 16,
           tileColors: [10, 11, 12, 13],
           tileCollisions: [20, 21, 22, 23],
-          autotileGroups: [0],
+          autotiles: [{ type: "2x2", startTile: 0 }],
           inode: "tiles1",
           _v: 0,
         },
@@ -225,6 +265,7 @@ test("Should automatically grow a loaded tileset and remap scene references", ()
               { id: "tiles1", width: 2, height: 2 },
               { id: "tiles2", width: 2, height: 1 },
             ],
+            autotiles: [{ type: "2x2", startTile: encodeSceneTileRef(0, 3) }],
             layers: [
               {
                 id: "layer1",
@@ -236,7 +277,7 @@ test("Should automatically grow a loaded tileset and remap scene references", ()
                   0,
                   0,
                 ],
-                autotiles: [encodeSceneTileRef(0, 3), 0, 0, 0],
+                autotiles: [1, 0, 0, 0],
               },
             ],
           },
@@ -278,7 +319,7 @@ test("Should automatically grow a loaded tileset and remap scene references", ()
     23,
     TILE_DEFAULT_UNSET,
   ]);
-  expect(resized.tilesets.entities.tiles1?.autotileGroups).toEqual([]);
+  expect(resized.tilesets.entities.tiles1?.autotiles).toEqual([]);
   expect(resized.scenes.entities.scene1?.tilemap?.tilesets).toEqual([
     { id: "tiles1", width: 3, height: 2 },
     { id: "tiles2", width: 2, height: 1 },
@@ -289,8 +330,11 @@ test("Should automatically grow a loaded tileset and remap scene references", ()
     0,
     0,
   ]);
+  expect(resized.scenes.entities.scene1?.tilemap?.autotiles).toEqual([
+    { type: "2x2", startTile: encodeSceneTileRef(0, 4) },
+  ]);
   expect(resized.scenes.entities.scene1?.tilemap?.layers[0]?.autotiles).toEqual(
-    [encodeSceneTileRef(0, 4), 0, 0, 0],
+    [1, 0, 0, 0],
   );
 });
 
@@ -308,7 +352,7 @@ test("Should automatically shrink a loaded tileset and clear cropped references"
           imageHeight: 16,
           tileColors: [10, 11, 12, 13, 14, 15],
           tileCollisions: [20, 21, 22, 23, 24, 25],
-          autotileGroups: [0],
+          autotiles: [{ type: "2x2", startTile: 0 }],
           inode: "tiles1",
           _v: 0,
         },
@@ -337,6 +381,7 @@ test("Should automatically shrink a loaded tileset and clear cropped references"
               { id: "tiles1", width: 3, height: 2 },
               { id: "tiles2", width: 2, height: 1 },
             ],
+            autotiles: [{ type: "2x2", startTile: encodeSceneTileRef(0, 5) }],
             layers: [
               {
                 id: "layer1",
@@ -347,7 +392,7 @@ test("Should automatically shrink a loaded tileset and clear cropped references"
                   encodeSceneTileRef(0, 5),
                   encodeSceneTileRef(6, 1),
                 ],
-                autotiles: [encodeSceneTileRef(0, 5)],
+                autotiles: [1],
               },
             ],
           },
@@ -376,12 +421,15 @@ test("Should automatically shrink a loaded tileset and clear cropped references"
     height: 2,
     tileColors: [10, 11, 13, 14],
     tileCollisions: [20, 21, 23, 24],
-    autotileGroups: [],
+    autotiles: [],
   });
   expect(resized.scenes.entities.scene1?.tilemap?.layers[0]).toMatchObject({
     tiles: [encodeSceneTileRef(0, 3), 0, encodeSceneTileRef(4, 1)],
-    autotiles: [0],
+    autotiles: [1],
   });
+  expect(resized.scenes.entities.scene1?.tilemap?.autotiles).toEqual([
+    { type: "2x2", startTile: 0 },
+  ]);
 });
 
 test("Should ignore invalid loaded tileset dimensions", () => {

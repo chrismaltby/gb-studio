@@ -1,4 +1,5 @@
 import {
+  AutotileType,
   SceneTilemapLayer,
   SceneTilemapData,
 } from "shared/lib/resources/types";
@@ -102,17 +103,51 @@ const AUTOTILE_MASK_TO_VARIANT: readonly number[] = [
 ];
 
 type ResolvedAutotileSource = {
-  absoluteIndex: number;
+  definitionId: number;
+  type: AutotileType;
   tilesetOffset: number;
   tileIndex: number;
   tilesetWidth: number;
+};
+
+const resolveAutotileVariant = (
+  source: ResolvedAutotileSource,
+  north: boolean,
+  east: boolean,
+  south: boolean,
+  west: boolean,
+  connected: (offsetX: number, offsetY: number) => boolean,
+): number => {
+  if (source.type === "9slice") {
+    const variantX = !west ? 0 : !east ? 2 : 1;
+    const variantY = !north ? 0 : !south ? 2 : 1;
+    return encodeSceneTileRef(
+      source.tilesetOffset,
+      source.tileIndex + variantX + variantY * source.tilesetWidth,
+    );
+  }
+
+  let mask = 0;
+  if (north && west && connected(-1, -1)) mask |= 1;
+  if (north && east && connected(1, -1)) mask |= 2;
+  if (south && east && connected(1, 1)) mask |= 4;
+  if (south && west && connected(-1, 1)) mask |= 8;
+  const variant = AUTOTILE_MASK_TO_VARIANT[mask] ?? -1;
+  return variant >= 0
+    ? encodeSceneTileRef(
+        source.tilesetOffset,
+        source.tileIndex +
+          (variant % 4) +
+          Math.floor(variant / 4) * source.tilesetWidth,
+      )
+    : 0;
 };
 
 export const resolveSceneAutotiles = (
   autotiles: readonly number[],
   width: number,
   height: number,
-  tilemap: Pick<SceneTilemapData, "tilesets">,
+  tilemap: Pick<SceneTilemapData, "tilesets" | "autotiles">,
 ): number[] => {
   const size = width * height;
   const tilesetLookup = buildSceneTilesetLookup(tilemap);
@@ -120,9 +155,13 @@ export const resolveSceneAutotiles = (
   const autotileSources = new Array<ResolvedAutotileSource | undefined>(size);
 
   for (let index = 0; index < size; index++) {
-    const ref = decodeSceneTileRef(autotiles[index] ?? 0, tilesetLookup);
+    const definitionId = autotiles[index] ?? 0;
+    const definition = tilemap.autotiles?.[definitionId - 1];
+    const ref = definition
+      ? decodeSceneTileRef(definition.startTile, tilesetLookup)
+      : undefined;
 
-    if (!ref) {
+    if (!ref || !definition) {
       continue;
     }
 
@@ -133,7 +172,8 @@ export const resolveSceneAutotiles = (
     }
 
     autotileSources[index] = {
-      absoluteIndex: ref.absoluteIndex,
+      definitionId,
+      type: definition.type,
       tilesetOffset: ref.tilesetOffset,
       tileIndex: ref.tileIndex,
       tilesetWidth,
@@ -160,8 +200,8 @@ export const resolveSceneAutotiles = (
     }
 
     return (
-      autotileSources[neighbourY * width + neighbourX]?.absoluteIndex ===
-      source.absoluteIndex
+      autotileSources[neighbourY * width + neighbourX]?.definitionId ===
+      source.definitionId
     );
   };
 
@@ -182,22 +222,14 @@ export const resolveSceneAutotiles = (
     const south = connected(source, x, y, 0, 1);
     const west = connected(source, x, y, -1, 0);
 
-    let mask = 0;
-    if (north && west && connected(source, x, y, -1, -1)) mask |= 1;
-    if (north && east && connected(source, x, y, 1, -1)) mask |= 2;
-    if (south && east && connected(source, x, y, 1, 1)) mask |= 4;
-    if (south && west && connected(source, x, y, -1, 1)) mask |= 8;
-
-    const variant = AUTOTILE_MASK_TO_VARIANT[mask] ?? -1;
-
-    if (variant >= 0) {
-      resolved[index] = encodeSceneTileRef(
-        source.tilesetOffset,
-        source.tileIndex +
-          (variant % 4) +
-          Math.floor(variant / 4) * source.tilesetWidth,
-      );
-    }
+    resolved[index] = resolveAutotileVariant(
+      source,
+      north,
+      east,
+      south,
+      west,
+      (offsetX, offsetY) => connected(source, x, y, offsetX, offsetY),
+    );
   }
 
   return resolved;
@@ -207,22 +239,28 @@ export const resolveSceneAutotilesForCells = (
   autotiles: readonly number[],
   width: number,
   height: number,
-  tilesetLookup: SceneTilesetLookup,
+  tilemap: Pick<SceneTilemapData, "tilesets" | "autotiles">,
   cellIndexes: Iterable<number>,
 ): Map<number, number> => {
+  const tilesetLookup = buildSceneTilesetLookup(tilemap);
   const sourceCache = new Map<number, ResolvedAutotileSource | undefined>();
   const sourceAt = (index: number) => {
     if (sourceCache.has(index)) {
       return sourceCache.get(index);
     }
-    const ref = decodeSceneTileRef(autotiles[index] ?? 0, tilesetLookup);
+    const definitionId = autotiles[index] ?? 0;
+    const definition = tilemap.autotiles?.[definitionId - 1];
+    const ref = definition
+      ? decodeSceneTileRef(definition.startTile, tilesetLookup)
+      : undefined;
     const tilesetWidth = ref
       ? tilesetLookup.entries[ref.tilesetIndex]?.width
       : undefined;
     const source =
-      ref && tilesetWidth
+      ref && definition && tilesetWidth
         ? {
-            absoluteIndex: ref.absoluteIndex,
+            definitionId,
+            type: definition.type,
             tilesetOffset: ref.tilesetOffset,
             tileIndex: ref.tileIndex,
             tilesetWidth,
@@ -249,8 +287,8 @@ export const resolveSceneAutotilesForCells = (
       return true;
     }
     return (
-      sourceAt(neighbourY * width + neighbourX)?.absoluteIndex ===
-      source.absoluteIndex
+      sourceAt(neighbourY * width + neighbourX)?.definitionId ===
+      source.definitionId
     );
   };
   const resolved = new Map<number, number>();
@@ -267,22 +305,16 @@ export const resolveSceneAutotilesForCells = (
     const east = connected(source, x, y, 1, 0);
     const south = connected(source, x, y, 0, 1);
     const west = connected(source, x, y, -1, 0);
-    let mask = 0;
-    if (north && west && connected(source, x, y, -1, -1)) mask |= 1;
-    if (north && east && connected(source, x, y, 1, -1)) mask |= 2;
-    if (south && east && connected(source, x, y, 1, 1)) mask |= 4;
-    if (south && west && connected(source, x, y, -1, 1)) mask |= 8;
-    const variant = AUTOTILE_MASK_TO_VARIANT[mask] ?? -1;
     resolved.set(
       index,
-      variant >= 0
-        ? encodeSceneTileRef(
-            source.tilesetOffset,
-            source.tileIndex +
-              (variant % 4) +
-              Math.floor(variant / 4) * source.tilesetWidth,
-          )
-        : 0,
+      resolveAutotileVariant(
+        source,
+        north,
+        east,
+        south,
+        west,
+        (offsetX, offsetY) => connected(source, x, y, offsetX, offsetY),
+      ),
     );
   }
 
@@ -404,6 +436,36 @@ export { flattenTilemapLayers } from "shared/lib/tiles/sceneTilemapReferences";
 export const pruneTilemapLayersTilesets = (
   tilemap: SceneTilemapData,
 ): SceneTilemapData => {
+  const usedAutotileIds = new Set<number>();
+  for (const layer of tilemap.layers) {
+    for (const definitionId of layer.autotiles ?? []) {
+      if (definitionId > 0) usedAutotileIds.add(definitionId);
+    }
+  }
+
+  const autotileIdMap = new Map<number, number>();
+  const autotileDefinitions = (tilemap.autotiles ?? []).filter(
+    (definition, index) => {
+      const oldId = index + 1;
+      if (!usedAutotileIds.has(oldId)) return false;
+      autotileIdMap.set(oldId, autotileIdMap.size + 1);
+      return true;
+    },
+  );
+  const autotilesChanged =
+    autotileDefinitions.length !== (tilemap.autotiles?.length ?? 0) ||
+    Array.from(autotileIdMap).some(([oldId, newId]) => oldId !== newId);
+  const remapAutotileIds = (values: readonly number[]): number[] =>
+    values.map((value) => (value ? (autotileIdMap.get(value) ?? 0) : 0));
+  const layersWithPrunedAutotiles = autotilesChanged
+    ? tilemap.layers.map((layer) => ({
+        ...layer,
+        ...(layer.autotiles
+          ? { autotiles: remapAutotileIds(layer.autotiles) }
+          : {}),
+      }))
+    : tilemap.layers;
+
   const usedTilesetIds = new Set<string>();
   const tilesetLookup = buildSceneTilesetLookup(tilemap);
   const { entries, entryByAbsoluteIndex } = tilesetLookup;
@@ -439,10 +501,10 @@ export const pruneTilemapLayersTilesets = (
   };
 
   // Find tilesets that are still being referenced.
-  for (const layer of tilemap.layers) {
+  for (const layer of layersWithPrunedAutotiles) {
     scanRefs(layer.tiles);
-    scanRefs(layer.autotiles);
   }
+  scanRefs(autotileDefinitions.map((definition) => definition.startTile));
 
   // Keep only tilesets that are still referenced
   const seenTilesetIds = new Set<string>();
@@ -507,7 +569,7 @@ export const pruneTilemapLayersTilesets = (
     }
   }
 
-  if (!tilesetsChanged && !remapRequired) {
+  if (!tilesetsChanged && !remapRequired && !autotilesChanged) {
     return tilemap;
   }
 
@@ -515,6 +577,8 @@ export const pruneTilemapLayersTilesets = (
     return {
       ...tilemap,
       tilesets,
+      ...(tilemap.autotiles ? { autotiles: autotileDefinitions } : {}),
+      layers: layersWithPrunedAutotiles,
     };
   }
 
@@ -549,10 +613,17 @@ export const pruneTilemapLayersTilesets = (
   return {
     ...tilemap,
     tilesets,
-    layers: tilemap.layers.map((layer) => ({
+    ...(tilemap.autotiles
+      ? {
+          autotiles: autotileDefinitions.map((definition) => ({
+            ...definition,
+            startTile: remapRefs([definition.startTile])[0] ?? 0,
+          })),
+        }
+      : {}),
+    layers: layersWithPrunedAutotiles.map((layer) => ({
       ...layer,
       tiles: remapRefs(layer.tiles),
-      autotiles: layer.autotiles ? remapRefs(layer.autotiles) : undefined,
     })),
   };
 };

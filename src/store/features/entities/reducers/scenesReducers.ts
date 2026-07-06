@@ -1038,27 +1038,25 @@ const paintSceneTile: CaseReducer<
   const isErasing = Boolean(action.payload.erase);
   const tilesets = [...tilemap.tilesets];
   let didAddTileset = false;
+  const activeTileset = !isErasing
+    ? localTilesetSelectById(sourceState, action.payload.tilesetId)
+    : undefined;
   const hasTileset = tilesets.some(
     (tileset) => tileset.id === action.payload.tilesetId,
   );
 
   if (!isErasing && action.payload.tileIndex >= 0 && !hasTileset) {
-    const tileset = localTilesetSelectById(
-      sourceState,
-      action.payload.tilesetId,
-    );
-    if (!tileset) {
+    if (!activeTileset) {
       return;
     }
     tilesets.push({
-      id: tileset.id,
-      width: tileset.width,
-      height: tileset.height,
+      id: activeTileset.id,
+      width: activeTileset.width,
+      height: activeTileset.height,
     });
     didAddTileset = true;
   }
 
-  const tilemapWithTileset = { ...tilemap, tilesets };
   let tilesetOffset = 0;
   let activeTilesetCount = 0;
   for (const tileset of tilesets) {
@@ -1076,7 +1074,34 @@ const paintSceneTile: CaseReducer<
     isErasing || action.payload.tileIndex < 0
       ? 0
       : encodeSceneTileRef(tilesetOffset, action.payload.tileIndex);
-  const autotileRef = tileRef;
+  const autotileDefinitions = [...(tilemap.autotiles ?? [])];
+  let didAddAutotileDefinition = false;
+  let autotileDefinitionId = 0;
+  if (!isErasing && action.payload.autotile && tileRef) {
+    const sourceDefinition = activeTileset?.autotiles?.find(
+      (definition) => definition.startTile === action.payload.tileIndex,
+    ) ?? { type: "2x2" as const, startTile: action.payload.tileIndex };
+    const existingIndex = autotileDefinitions.findIndex(
+      (definition) =>
+        definition.type === sourceDefinition.type &&
+        definition.startTile === tileRef,
+    );
+    if (existingIndex >= 0) {
+      autotileDefinitionId = existingIndex + 1;
+    } else {
+      autotileDefinitions.push({
+        ...sourceDefinition,
+        startTile: tileRef,
+      });
+      autotileDefinitionId = autotileDefinitions.length;
+      didAddAutotileDefinition = true;
+    }
+  }
+  const tilemapWithTileset = {
+    ...tilemap,
+    tilesets,
+    autotiles: autotileDefinitions,
+  };
   const drawSize = brush === "16px" ? 2 : 1;
   const changedCells = new Set<number>();
   let tiles: number[] | undefined;
@@ -1240,12 +1265,7 @@ const paintSceneTile: CaseReducer<
   };
 
   const setValue = (x: number, y: number, value: number) =>
-    writeCell(
-      x,
-      y,
-      value,
-      !isErasing && action.payload.autotile ? autotileRef : 0,
-    );
+    writeCell(x, y, value, autotileDefinitionId);
   const getValue = (x: number, y: number) => getTile(y * scene.width + x);
   const equal = (a: number, b: number) => a === b;
   const stamp = action.payload.stamp;
@@ -1403,7 +1423,7 @@ const paintSceneTile: CaseReducer<
             autotileValues,
             scene.width,
             scene.height,
-            getTilesetLookup(),
+            tilemapWithTileset,
             cellsToResolve,
           );
 
@@ -1424,7 +1444,13 @@ const paintSceneTile: CaseReducer<
   }
 
   const layerChanged = Boolean(tiles || autotiles);
-  if (!layerChanged && !tileColors && !collisions && !didAddTileset) {
+  if (
+    !layerChanged &&
+    !tileColors &&
+    !collisions &&
+    !didAddTileset &&
+    !didAddAutotileDefinition
+  ) {
     return;
   }
 
@@ -1444,6 +1470,7 @@ const paintSceneTile: CaseReducer<
       tilemap: {
         ...tilemap,
         ...(didAddTileset ? { tilesets } : {}),
+        ...(didAddAutotileDefinition ? { autotiles: autotileDefinitions } : {}),
         ...(tileColors ? { tileColors } : {}),
         layers,
       },

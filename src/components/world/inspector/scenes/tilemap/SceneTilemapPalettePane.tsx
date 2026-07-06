@@ -135,7 +135,7 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
   const tilesets = useAppSelectorPickArray(tilesetSelectors.selectAll, [
     "id",
     "width",
-    "autotileGroups",
+    "autotiles",
   ] as const);
 
   const colorMode = useAppSelector(
@@ -170,6 +170,7 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
   const [paletteZoom, setPaletteZoom] = useState(200);
   const [editingDefaults, setEditingDefaults] = useState(false);
   const [defaultEditMode, setDefaultEditMode] = useState<string>("collisions");
+  const [autotileType, setAutotileType] = useState<"2x2" | "9slice">("2x2");
 
   const dragStart = useRef<{ x: number; y: number } | undefined>(undefined);
 
@@ -228,7 +229,11 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
     selectedTileWidth === 1 &&
     selectedTileHeight === 1 &&
     selectedTileIndex >= 0 &&
-    Boolean(selectedTileset?.autotileGroups?.includes(selectedTileIndex));
+    Boolean(
+      selectedTileset?.autotiles?.some(
+        (definition) => definition.startTile === selectedTileIndex,
+      ),
+    );
 
   const palettes = useMemo(
     () =>
@@ -281,7 +286,9 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
           tilesetId: tileset.id,
           tileIndex: 0,
           tilesetWidth: tileset.width,
-          autotile: Boolean(tileset.autotileGroups?.includes(0)),
+          autotile: Boolean(
+            tileset.autotiles?.some((definition) => definition.startTile === 0),
+          ),
           persistTileset: tileset.id !== preferredTilesetId,
           activateTool: false,
         }),
@@ -312,7 +319,11 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
           tilesetId,
           tileIndex: 0,
           tilesetWidth: tileset?.width,
-          autotile: Boolean(tileset?.autotileGroups?.includes(0)),
+          autotile: Boolean(
+            tileset?.autotiles?.some(
+              (definition) => definition.startTile === 0,
+            ),
+          ),
           persistTileset: true,
         }),
       );
@@ -378,27 +389,33 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
       e.preventDefault();
 
       const clickedIndex = position.y * selectedTileset.width + position.x;
-      const autotileGroup = selectedTileset.autotileGroups?.find(
-        (tileIndex) => {
-          const groupX = tileIndex % selectedTileset.width;
-          const groupY = Math.floor(tileIndex / selectedTileset.width);
+      const autotileDefinition = selectedTileset.autotiles?.find(
+        (definition) => {
+          const groupX = definition.startTile % selectedTileset.width;
+          const groupY = Math.floor(
+            definition.startTile / selectedTileset.width,
+          );
+          const groupSize = definition.type === "9slice" ? 3 : 4;
           return (
             position.x >= groupX &&
-            position.x < groupX + 4 &&
+            position.x < groupX + groupSize &&
             position.y >= groupY &&
-            position.y < groupY + 4
+            position.y < groupY + groupSize
           );
         },
       );
 
-      if (autotileGroup !== undefined) {
+      if (autotileDefinition) {
         dragStart.current = undefined;
         const selectIndividualTile =
-          selectedAutotile && selectedTileIndex === autotileGroup;
+          selectedAutotile &&
+          selectedTileIndex === autotileDefinition.startTile;
         dispatch(
           editorActions.selectSceneTileForPainting({
             tilesetId: selectedTileset.id,
-            tileIndex: selectIndividualTile ? clickedIndex : autotileGroup,
+            tileIndex: selectIndividualTile
+              ? clickedIndex
+              : autotileDefinition.startTile,
             tilesetWidth: selectedTileset.width,
             autotile: !selectIndividualTile,
           }),
@@ -428,10 +445,11 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
         entitiesActions.toggleTilesetAutotileGroup({
           tilesetId: selectedTileset.id,
           tileIndex: position.y * selectedTileset.width + position.x,
+          type: autotileType,
         }),
       );
     },
-    [dispatch, getTilePosition, selectedTileset],
+    [autotileType, dispatch, getTilePosition, selectedTileset],
   );
 
   const startDefaultPaint = useCallback(
@@ -711,6 +729,26 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
                   ))}
                 </PaintTools>
               )}
+              {defaultEditMode === "autotiles" && (
+                <PaintTools>
+                  <Button
+                    variant="transparent"
+                    title="2x2"
+                    active={autotileType === "2x2"}
+                    onClick={() => setAutotileType("2x2")}
+                  >
+                    2x2
+                  </Button>
+                  <Button
+                    variant="transparent"
+                    title="9 Slice"
+                    active={autotileType === "9slice"}
+                    onClick={() => setAutotileType("9slice")}
+                  >
+                    9 Slice
+                  </Button>
+                </PaintTools>
+              )}
             </>
           )}
           {selectedTileset && (
@@ -787,17 +825,24 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
                   )}
                   {editingDefaults &&
                     defaultEditMode === "autotiles" &&
-                    selectedTileset.autotileGroups?.map((tileIndex) => (
+                    selectedTileset.autotiles?.map((definition) => (
                       <SceneAutotileSelection
-                        key={tileIndex}
-                        tileIndex={tileIndex}
+                        key={`${definition.type}-${definition.startTile}`}
+                        tileIndex={definition.startTile}
                         tilesetWidth={selectedTileset.width}
+                        type={definition.type}
                       />
                     ))}
                   {!editingDefaults && selectedAutotile && canAutotile && (
                     <SceneAutotileSelection
                       tileIndex={selectedTileIndex}
                       tilesetWidth={selectedTileset.width}
+                      type={
+                        selectedTileset.autotiles?.find(
+                          (definition) =>
+                            definition.startTile === selectedTileIndex,
+                        )?.type
+                      }
                     />
                   )}
                   {!editingDefaults && (!selectedAutotile || !canAutotile) && (

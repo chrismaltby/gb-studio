@@ -267,6 +267,20 @@ export const TriggerPrefabResource = Type.Composite([
 
 export type TriggerPrefabResource = Static<typeof TriggerPrefabResource>;
 
+export const AutotileDefinition = Type.Union([
+  Type.Object({
+    type: Type.Literal("2x2"),
+    startTile: Type.Number(),
+  }),
+  Type.Object({
+    type: Type.Literal("9slice"),
+    startTile: Type.Number(),
+  }),
+]);
+
+export type AutotileDefinition = Static<typeof AutotileDefinition>;
+export type AutotileType = AutotileDefinition["type"];
+
 export const CompressedSceneTilemapLayer = Type.Object({
   id: Type.String(),
   name: Type.String(),
@@ -289,6 +303,7 @@ export type TilesetSnapshot = Static<typeof TilesetSnapshot>;
 
 export const CompressedSceneTilemapData = Type.Object({
   tilesets: Type.Array(TilesetSnapshot),
+  autotiles: Type.Optional(Type.Array(AutotileDefinition)),
   tileColors: Type.Optional(Type.String()),
   layers: Type.Array(CompressedSceneTilemapLayer),
 });
@@ -309,6 +324,7 @@ export type SceneTilemapLayer = Static<typeof SceneTilemapLayer>;
 
 export const SceneTilemapData = Type.Object({
   tilesets: Type.Array(TilesetSnapshot),
+  autotiles: Type.Optional(Type.Array(AutotileDefinition)),
   tileColors: Type.Optional(Type.Array(Type.Number())),
   layers: Type.Array(SceneTilemapLayer),
 });
@@ -497,7 +513,7 @@ export const CompressedTilesetResource = Type.Object({
   imageHeight: Type.Number(),
   tileColors: Type.Optional(Type.String()),
   tileCollisions: Type.Optional(Type.String()),
-  autotileGroups: Type.Optional(Type.Array(Type.Number())),
+  autotiles: Type.Optional(Type.Array(AutotileDefinition)),
   plugin: Type.Optional(Type.String()),
 });
 

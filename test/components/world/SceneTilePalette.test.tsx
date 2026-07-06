@@ -38,7 +38,10 @@ const mockTilesets = [
     height: 5,
     tileColors: new Array(50).fill(-1),
     tileCollisions: new Array(50).fill(-1),
-    autotileGroups: [] as number[],
+    autotiles: [] as Array<{
+      type: "2x2" | "9slice";
+      startTile: number;
+    }>,
   },
   {
     id: "tileset2",
@@ -48,7 +51,10 @@ const mockTilesets = [
     height: 4,
     tileColors: new Array(32).fill(-1),
     tileCollisions: new Array(32).fill(-1),
-    autotileGroups: [] as number[],
+    autotiles: [] as Array<{
+      type: "2x2" | "9slice";
+      startTile: number;
+    }>,
   },
 ];
 const mockState = {
@@ -252,8 +258,8 @@ beforeEach(() => {
   mockState.project.present.settings.selectedSceneTilesetId = "tileset1";
   mockTilesets[0].tileColors.fill(-1);
   mockTilesets[0].tileCollisions.fill(-1);
-  mockTilesets[0].autotileGroups.length = 0;
-  mockTilesets[1].autotileGroups.length = 0;
+  mockTilesets[0].autotiles.length = 0;
+  mockTilesets[1].autotiles.length = 0;
 });
 
 const setPaletteBounds = (width = 80, height = 40) => {
@@ -468,7 +474,7 @@ test("property defaults dispatch the priority flag", () => {
 });
 
 test("selecting an autotile group enables autotile painting", () => {
-  mockTilesets[0].autotileGroups.push(0);
+  mockTilesets[0].autotiles.push({ type: "2x2", startTile: 0 });
   render(<SceneTilePalette sceneId="scene1" />);
   mockDispatch.mockClear();
   const surface = setPaletteBounds();
@@ -499,12 +505,31 @@ test("clicking in autotile defaults mode toggles a tileset group", () => {
     {
       tilesetId: "tileset1",
       tileIndex: 22,
+      type: "2x2",
+    },
+  );
+});
+
+test("selecting 9 Slice toggles a generic 9-slice definition", () => {
+  render(<SceneTilePalette sceneId="scene1" />);
+  const surface = enterDefaultsMode();
+  fireEvent.click(screen.getByTestId("defaults-autotiles"));
+  fireEvent.click(screen.getByRole("button", { name: "9 Slice" }));
+  mockDispatch.mockClear();
+
+  fireEvent.mouseDown(surface, { clientX: 20, clientY: 20 });
+
+  expect(dispatched("entities/toggleTilesetAutotileGroup")[0]?.payload).toEqual(
+    {
+      tilesetId: "tileset1",
+      tileIndex: 22,
+      type: "9slice",
     },
   );
 });
 
 test("invalid selections disable autotile painting", () => {
-  mockTilesets[0].autotileGroups.push(0);
+  mockTilesets[0].autotiles.push({ type: "2x2", startTile: 0 });
   mockState.editor.selectedSceneTile = {
     ...mockState.editor.selectedSceneTile,
     width: 2,
