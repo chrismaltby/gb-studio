@@ -8,6 +8,7 @@ import {
   buildSceneTilesetLookup,
   decodeSceneTileRef,
   encodeSceneTileRef,
+  isSceneAutotileDefinitionValid,
   remapSceneAutotileDefinitions,
 } from "shared/lib/tiles/sceneTilemapData";
 import {
@@ -222,7 +223,15 @@ export const updateTilemapReferencesForTilesets = (
     const remappedAutotiles = remapSceneAutotileDefinitions(
       sceneTilemap.autotiles,
       layersWithRemappedTiles,
-      remapRef,
+      (startTile, definition) => {
+        const remappedStartTile = remapRef(startTile);
+        return isSceneAutotileDefinitionValid(
+          { ...definition, startTile: remappedStartTile },
+          newLookup,
+        )
+          ? remappedStartTile
+          : 0;
+      },
     );
 
     memo.push({

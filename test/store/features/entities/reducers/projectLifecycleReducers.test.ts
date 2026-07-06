@@ -256,9 +256,7 @@ test("Should update all tilemap references for resized tilesets on load", () => 
   ]);
   expect(newState.scenes.entities.scene1?.tilemap?.layers[0]).toMatchObject({
     tiles: [encodeSceneTileRef(0, 4), encodeSceneTileRef(6, 1)],
-    autotiles: [1],
+    autotiles: [0],
   });
-  expect(newState.scenes.entities.scene1?.tilemap?.autotiles).toEqual([
-    { type: "2x2", startTile: encodeSceneTileRef(0, 4) },
-  ]);
+  expect(newState.scenes.entities.scene1?.tilemap?.autotiles).toEqual([]);
 });

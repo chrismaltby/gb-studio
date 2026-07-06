@@ -51,6 +51,15 @@ test("encodes and decodes scene tile references", () => {
   expect(decodeSceneTileRef(0, tilesetLookup)).toBeUndefined();
 });
 
+test("reserves 0 as the empty scene tile reference", () => {
+  const tilemap = { tilesets: [tilesetsLookup.grass] };
+  const tilesetLookup = buildSceneTilesetLookup(tilemap);
+
+  expect(encodeSceneTileRef(0, 0)).toBe(1);
+  expect(decodeSceneTileRef(0, tilesetLookup)).toBeUndefined();
+  expect(decodeSceneTileRef(1, tilesetLookup)?.tileIndex).toBe(0);
+});
+
 test("flattens visible layers while keeping scene tile colors independent", () => {
   const result = flattenTilemapLayers(
     {

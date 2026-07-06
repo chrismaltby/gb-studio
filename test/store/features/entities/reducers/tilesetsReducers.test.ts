@@ -330,11 +330,9 @@ test("Should automatically grow a loaded tileset and remap scene references", ()
     0,
     0,
   ]);
-  expect(resized.scenes.entities.scene1?.tilemap?.autotiles).toEqual([
-    { type: "2x2", startTile: encodeSceneTileRef(0, 4) },
-  ]);
+  expect(resized.scenes.entities.scene1?.tilemap?.autotiles).toEqual([]);
   expect(resized.scenes.entities.scene1?.tilemap?.layers[0]?.autotiles).toEqual(
-    [1, 0, 0, 0],
+    [0, 0, 0, 0],
   );
 });
 
@@ -428,6 +426,147 @@ test("Should automatically shrink a loaded tileset and clear cropped references"
     autotiles: [0],
   });
   expect(resized.scenes.entities.scene1?.tilemap?.autotiles).toEqual([]);
+});
+
+test("Should clear scene autotiles when a resized tileset no longer fits their footprint", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    tilesets: {
+      entities: {
+        tiles1: {
+          ...dummyTilesetResource,
+          id: "tiles1",
+          width: 4,
+          height: 4,
+          imageWidth: 24,
+          imageHeight: 24,
+          tileColors: new Array(16).fill(TILE_DEFAULT_UNSET),
+          tileCollisions: new Array(16).fill(TILE_DEFAULT_UNSET),
+          autotiles: [{ type: "2x2", startTile: 0 }],
+          inode: "tiles1",
+          _v: 0,
+        },
+      },
+      ids: ["tiles1"],
+    },
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummySceneNormalized,
+          id: "scene1",
+          tilemap: {
+            tilesets: [{ id: "tiles1", width: 4, height: 4 }],
+            autotiles: [{ type: "2x2", startTile: encodeSceneTileRef(0, 0) }],
+            layers: [
+              {
+                id: "layer1",
+                name: "Layer 1",
+                visible: true,
+                tiles: [encodeSceneTileRef(0, 0)],
+                autotiles: [1],
+              },
+            ],
+          },
+        },
+      },
+      ids: ["scene1"],
+    },
+  };
+
+  const resized = reducer(
+    state,
+    actions.loadTileset({
+      data: {
+        ...state.tilesets.entities.tiles1,
+        _resourceType: "tileset",
+        width: 3,
+        height: 3,
+        tileColors: "",
+        tileCollisions: "",
+      } as CompressedTilesetResourceAsset,
+    }),
+  );
+
+  expect(resized.scenes.entities.scene1?.tilemap?.tilesets).toEqual([
+    { id: "tiles1", width: 3, height: 3 },
+  ]);
+  expect(resized.scenes.entities.scene1?.tilemap?.autotiles).toEqual([]);
+  expect(resized.scenes.entities.scene1?.tilemap?.layers[0]?.autotiles).toEqual(
+    [0],
+  );
+});
+
+test("Should preserve and remap scene autotiles whose footprint still fits after resize", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    tilesets: {
+      entities: {
+        tiles1: {
+          ...dummyTilesetResource,
+          id: "tiles1",
+          width: 5,
+          height: 5,
+          imageWidth: 48,
+          imageHeight: 40,
+          tileColors: new Array(25).fill(TILE_DEFAULT_UNSET),
+          tileCollisions: new Array(25).fill(TILE_DEFAULT_UNSET),
+          autotiles: [{ type: "2x2", startTile: 6 }],
+          inode: "tiles1",
+          _v: 0,
+        },
+      },
+      ids: ["tiles1"],
+    },
+    scenes: {
+      entities: {
+        scene1: {
+          ...dummySceneNormalized,
+          id: "scene1",
+          tilemap: {
+            tilesets: [{ id: "tiles1", width: 5, height: 5 }],
+            autotiles: [
+              { type: "2x2", startTile: encodeSceneTileRef(0, 6) },
+            ],
+            layers: [
+              {
+                id: "layer1",
+                name: "Layer 1",
+                visible: true,
+                tiles: [encodeSceneTileRef(0, 6)],
+                autotiles: [1],
+              },
+            ],
+          },
+        },
+      },
+      ids: ["scene1"],
+    },
+  };
+
+  const resized = reducer(
+    state,
+    actions.loadTileset({
+      data: {
+        ...state.tilesets.entities.tiles1,
+        _resourceType: "tileset",
+        width: 6,
+        height: 5,
+        tileColors: "",
+        tileCollisions: "",
+      } as CompressedTilesetResourceAsset,
+    }),
+  );
+
+  expect(resized.tilesets.entities.tiles1?.autotiles).toEqual([
+    { type: "2x2", startTile: 7 },
+  ]);
+  expect(resized.scenes.entities.scene1?.tilemap?.autotiles).toEqual([
+    { type: "2x2", startTile: encodeSceneTileRef(0, 7) },
+  ]);
+  expect(resized.scenes.entities.scene1?.tilemap?.layers[0]).toMatchObject({
+    tiles: [encodeSceneTileRef(0, 7)],
+    autotiles: [1],
+  });
 });
 
 test("Should ignore invalid loaded tileset dimensions", () => {

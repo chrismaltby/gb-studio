@@ -434,6 +434,19 @@ export const getTilemapLayersTileColors = (
 
 export { flattenTilemapLayers } from "shared/lib/tiles/sceneTilemapReferences";
 
+export const isSceneAutotileDefinitionValid = (
+  definition: AutotileDefinition,
+  tilesetLookup: SceneTilesetLookup,
+): boolean => {
+  const ref = decodeSceneTileRef(definition.startTile, tilesetLookup);
+  const entry = ref ? tilesetLookup.entries[ref.tilesetIndex] : undefined;
+  if (!ref || !entry || entry.width <= 0) return false;
+  const x = ref.tileIndex % entry.width;
+  const y = Math.floor(ref.tileIndex / entry.width);
+  const groupSize = definition.type === "9slice" ? 3 : 4;
+  return x + groupSize <= entry.width && y + groupSize <= entry.height;
+};
+
 export const remapSceneAutotileDefinitions = (
   definitions: readonly AutotileDefinition[] | undefined,
   layers: readonly SceneTilemapLayer[],
@@ -492,13 +505,7 @@ export const pruneTilemapLayersTilesets = (
     tilemap.layers,
     (startTile, definition, definitionId) => {
       if (!usedAutotileIds.has(definitionId)) return 0;
-      const ref = decodeSceneTileRef(startTile, tilesetLookup);
-      const entry = ref ? entries[ref.tilesetIndex] : undefined;
-      if (!ref || !entry || entry.width <= 0) return 0;
-      const x = ref.tileIndex % entry.width;
-      const y = Math.floor(ref.tileIndex / entry.width);
-      const groupSize = definition.type === "9slice" ? 3 : 4;
-      return x + groupSize <= entry.width && y + groupSize <= entry.height
+      return isSceneAutotileDefinitionValid(definition, tilesetLookup)
         ? startTile
         : 0;
     },
