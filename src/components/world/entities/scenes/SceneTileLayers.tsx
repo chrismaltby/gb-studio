@@ -15,7 +15,7 @@ import {
   paletteSelectors,
   sceneSelectors,
 } from "store/features/entities/entitiesSelectors";
-import { useAppSelector } from "store/hooks";
+import { useAppSelector, useAppSelectorPick } from "store/hooks";
 import ScenePriorityMap from "./ScenePriorityMap";
 import SceneCollisions from "./SceneCollisions";
 import SceneSlopePreview from "./SceneSlopePreview";
@@ -44,8 +44,18 @@ interface SceneTileLayersProps {
 }
 
 export const SceneTileLayers = ({ sceneId }: SceneTileLayersProps) => {
-  const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, sceneId),
+  const scene = useAppSelectorPick(
+    (state) => sceneSelectors.selectById(state, sceneId),
+    [
+      "type",
+      "width",
+      "height",
+      "backgroundId",
+      "tilemap",
+      "collisions",
+      "paletteIds",
+      "monoBGP",
+    ],
   );
 
   const background = useAppSelector((state) =>
