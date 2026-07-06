@@ -36,6 +36,8 @@ import {
   EraserIcon,
   PriorityTileIcon,
   ShieldIcon,
+  Autotile9SliceIcon,
+  Autotile2x2Icon,
 } from "ui/icons/Icons";
 import PaletteBlock from "components/forms/PaletteBlock";
 import { CollisionTileIcon } from "components/collisions/CollisionTileIcon";
@@ -737,7 +739,7 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
                     active={autotileType === "2x2"}
                     onClick={() => setAutotileType("2x2")}
                   >
-                    {l10n("FIELD_AUTOTILE_TYPE_2X2")}
+                    <Autotile2x2Icon />
                   </Button>
                   <Button
                     variant="transparent"
@@ -745,7 +747,7 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
                     active={autotileType === "9slice"}
                     onClick={() => setAutotileType("9slice")}
                   >
-                    {l10n("FIELD_AUTOTILE_TYPE_9_SLICE")}
+                    <Autotile9SliceIcon />
                   </Button>
                 </PaintTools>
               )}
