@@ -108,6 +108,13 @@
       }
     },
     {
+      "id": "71689",
+      "type": "user",
+      "attributes": {
+        "full_name": "Michael Towns (gamebuoygames)"
+      }
+    },
+    {
       "id": "27034715",
       "type": "user",
       "attributes": {
@@ -198,13 +205,6 @@
       "type": "user",
       "attributes": {
         "full_name": "Martin Cremerius-Gauer"
-      }
-    },
-    {
-      "id": "71689",
-      "type": "user",
-      "attributes": {
-        "full_name": "Michael Towns (gamebuoygames)"
       }
     },
     {
