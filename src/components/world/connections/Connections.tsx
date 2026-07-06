@@ -1,5 +1,6 @@
-import { MIDDLE_MOUSE } from "consts";
+import { EVENT_SWITCH_SCENE, MIDDLE_MOUSE } from "consts";
 import React, {
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -17,7 +18,12 @@ import {
 } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
 import styled from "styled-components";
-import { useAppDispatch, useAppSelector } from "store/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useAppSelectorPick,
+  useAppStore,
+} from "store/hooks";
 import ConnectionsWorker, {
   ConnectionsWorkerRequest,
   ConnectionsWorkerResult,
@@ -26,8 +32,8 @@ import ConnectionsWorker, {
 import throttle from "lodash/throttle";
 import { optimiseScriptValue } from "shared/lib/scriptValue/helpers";
 import { ensureScriptValue } from "shared/lib/scriptValue/types";
-import { filterUndefined } from "shared/lib/helpers/array";
 import { ActorDirection } from "shared/lib/resources/types";
+import type { RootState } from "store/storeTypes";
 
 const worker = new ConnectionsWorker();
 
@@ -74,6 +80,21 @@ interface ConnectionProps {
   qy: number;
 }
 
+interface SceneConnectionProps {
+  connection: SceneTransitionCoords;
+  editable: boolean;
+}
+
+interface ConnectionGeometry {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  qx: number;
+  qy: number;
+  direction: ActorDirection | undefined;
+}
+
 const defaultCoord = {
   type: "number",
   value: 0,
@@ -92,92 +113,169 @@ const ConnectionMarkerSVG = styled.g`
   }
 `;
 
-const ConnectionMarker = ({
-  x,
-  y,
-  direction,
-  onMouseDown,
-}: ConnectionMarkerProps) => {
-  return (
-    <ConnectionMarkerSVG onMouseDown={onMouseDown}>
-      <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
-      {direction === "up" && (
-        <polygon
-          points={`${x},${y + 2} ${x + 4},${y - 3} ${x + 8},${y + 2}`}
-          style={{
-            fill: "#fbe9e7",
-          }}
-        />
-      )}
-      {direction === "down" && (
-        <polygon
-          points={`${x},${y - 2} ${x + 4},${y + 3} ${x + 8},${y - 2}`}
-          style={{
-            fill: "#fbe9e7",
-          }}
-        />
-      )}
-      {direction === "left" && (
-        <polygon
-          points={`${x},${y} ${x + 6},${y - 3} ${x + 6},${y + 3}`}
-          style={{
-            fill: "#fbe9e7",
-          }}
-        />
-      )}
-      {direction === "right" && (
-        <polygon
-          points={`${x + 8},${y} ${x + 2},${y - 3} ${x + 2},${y + 3}`}
-          style={{
-            fill: "#fbe9e7",
-          }}
-        />
-      )}
-    </ConnectionMarkerSVG>
-  );
+const lookupValues = <T,>(lookup: Record<string, T | undefined>) =>
+  Object.values(lookup).filter((value): value is T => value !== undefined);
+
+const omitObjectKeys = <T extends object>(value: T, keys: string[]) => {
+  const copy = { ...value };
+
+  keys.forEach((key) => {
+    delete (copy as Record<string, unknown>)[key];
+  });
+
+  return copy;
 };
 
-const DestinationMarker = ({
-  x,
-  y,
-  direction,
-  selectionType,
-  sceneId,
-  eventId,
-  entityId,
-  editable,
-}: DestinationMarkerProps) => {
-  const dispatch = useAppDispatch();
+const normaliseScriptEventForTopology = (event: object) => {
+  const copy = { ...event } as Record<string, unknown>;
 
-  const onDragDestinationStart = useCallback(
-    (e: React.MouseEvent<SVGGElement>) => {
-      if (editable && e.nativeEvent.button !== MIDDLE_MOUSE) {
-        e.stopPropagation();
-        e.preventDefault();
-        dispatch(
-          editorActions.dragDestinationStart({
-            eventId,
-            sceneId,
-            selectionType,
-            entityId,
-          }),
-        );
-      }
-    },
-    [dispatch, editable, entityId, eventId, sceneId, selectionType],
-  );
+  if (copy.args && typeof copy.args === "object" && !Array.isArray(copy.args)) {
+    const args = { ...(copy.args as Record<string, unknown>) };
 
-  return (
-    <ConnectionMarker
-      x={x}
-      y={y}
-      direction={direction}
-      onMouseDown={onDragDestinationStart}
-    />
-  );
+    // These affect the rendered geometry of an existing connection, not
+    // whether the connection exists. SceneConnection reads them directly.
+    delete args.x;
+    delete args.y;
+    delete args.direction;
+
+    copy.args = args;
+  }
+
+  return copy;
 };
 
-const Connection = ({ x1, y1, x2, y2, qx, qy }: ConnectionProps) => {
+const selectConnectionTopologyKey = (state: RootState) => {
+  const showConnections = state.project.present.settings.showConnections;
+
+  return JSON.stringify({
+    showConnections,
+    selectedSceneId: showConnections === "all" ? "" : state.editor.scene,
+
+    scenes: lookupValues(sceneSelectors.selectEntities(state)).map((scene) =>
+      omitObjectKeys(scene, ["x", "y", "width", "height", "scrollBounds"]),
+    ),
+
+    actors: lookupValues(actorSelectors.selectEntities(state)).map((actor) =>
+      omitObjectKeys(actor, ["x", "y"]),
+    ),
+
+    triggers: lookupValues(triggerSelectors.selectEntities(state)).map(
+      (trigger) => omitObjectKeys(trigger, ["x", "y", "width", "height"]),
+    ),
+
+    events: lookupValues(scriptEventSelectors.selectEntities(state)).map(
+      normaliseScriptEventForTopology,
+    ),
+
+    customEvents: lookupValues(customEventSelectors.selectEntities(state)),
+    actorPrefabs: lookupValues(actorPrefabSelectors.selectEntities(state)),
+    triggerPrefabs: lookupValues(triggerPrefabSelectors.selectEntities(state)),
+  });
+};
+
+const buildConnectionsWorkerRequest = (
+  state: RootState,
+): ConnectionsWorkerRequest => ({
+  showConnections: state.project.present.settings.showConnections,
+  selectedSceneId: state.editor.scene,
+  scenes: sceneSelectors.selectAll(state),
+  eventsLookup: scriptEventSelectors.selectEntities(state),
+  scenesLookup: sceneSelectors.selectEntities(state),
+  actorsLookup: actorSelectors.selectEntities(state),
+  triggersLookup: triggerSelectors.selectEntities(state),
+  actorPrefabsLookup: actorPrefabSelectors.selectEntities(state),
+  triggerPrefabsLookup: triggerPrefabSelectors.selectEntities(state),
+  customEventsLookup: customEventSelectors.selectEntities(state),
+});
+
+const getConnectionId = (connection: SceneTransitionCoords) =>
+  `${connection.fromSceneId}_${connection.entityId}_${connection.eventId}`;
+
+const ConnectionMarker = memo(
+  ({ x, y, direction, onMouseDown }: ConnectionMarkerProps) => {
+    return (
+      <ConnectionMarkerSVG onMouseDown={onMouseDown}>
+        <rect x={x - 4} y={y - 4} rx={4} ry={4} width={16} height={8} />
+        {direction === "up" && (
+          <polygon
+            points={`${x},${y + 2} ${x + 4},${y - 3} ${x + 8},${y + 2}`}
+            style={{
+              fill: "#fbe9e7",
+            }}
+          />
+        )}
+        {direction === "down" && (
+          <polygon
+            points={`${x},${y - 2} ${x + 4},${y + 3} ${x + 8},${y - 2}`}
+            style={{
+              fill: "#fbe9e7",
+            }}
+          />
+        )}
+        {direction === "left" && (
+          <polygon
+            points={`${x},${y} ${x + 6},${y - 3} ${x + 6},${y + 3}`}
+            style={{
+              fill: "#fbe9e7",
+            }}
+          />
+        )}
+        {direction === "right" && (
+          <polygon
+            points={`${x + 8},${y} ${x + 2},${y - 3} ${x + 2},${y + 3}`}
+            style={{
+              fill: "#fbe9e7",
+            }}
+          />
+        )}
+      </ConnectionMarkerSVG>
+    );
+  },
+);
+
+const DestinationMarker = memo(
+  ({
+    x,
+    y,
+    direction,
+    selectionType,
+    sceneId,
+    eventId,
+    entityId,
+    editable,
+  }: DestinationMarkerProps) => {
+    const dispatch = useAppDispatch();
+
+    const onDragDestinationStart = useCallback(
+      (e: React.MouseEvent<SVGGElement>) => {
+        if (editable && e.nativeEvent.button !== MIDDLE_MOUSE) {
+          e.stopPropagation();
+          e.preventDefault();
+          dispatch(
+            editorActions.dragDestinationStart({
+              eventId,
+              sceneId,
+              selectionType,
+              entityId,
+            }),
+          );
+        }
+      },
+      [dispatch, editable, entityId, eventId, sceneId, selectionType],
+    );
+
+    return (
+      <ConnectionMarker
+        x={x}
+        y={y}
+        direction={direction}
+        onMouseDown={onDragDestinationStart}
+      />
+    );
+  },
+);
+
+const Connection = memo(({ x1, y1, x2, y2, qx, qy }: ConnectionProps) => {
   return (
     <g>
       <path
@@ -188,7 +286,151 @@ const Connection = ({ x1, y1, x2, y2, qx, qy }: ConnectionProps) => {
       />
     </g>
   );
+});
+
+const useConnectionGeometry = (
+  connection: SceneTransitionCoords,
+): ConnectionGeometry | undefined => {
+  const fromScene = useAppSelectorPick(
+    (state) => sceneSelectors.selectById(state, connection.fromSceneId),
+    ["x", "y"],
+  );
+
+  const scriptEvent = useAppSelectorPick(
+    (state) => scriptEventSelectors.selectById(state, connection.eventId),
+    ["args", "command"],
+  );
+
+  const toSceneId =
+    scriptEvent?.command === EVENT_SWITCH_SCENE
+      ? String(scriptEvent.args?.sceneId || "")
+      : connection.toSceneId;
+
+  const toScene = useAppSelectorPick(
+    (state) => sceneSelectors.selectById(state, toSceneId),
+    ["x", "y"],
+  );
+
+  const actor = useAppSelectorPick(
+    (state) =>
+      connection.type === "actor"
+        ? actorSelectors.selectById(state, connection.entityId)
+        : undefined,
+    ["x", "y"],
+  );
+
+  const trigger = useAppSelectorPick(
+    (state) =>
+      connection.type === "trigger"
+        ? triggerSelectors.selectById(state, connection.entityId)
+        : undefined,
+    ["x", "y", "width", "height"],
+  );
+
+  return useMemo(() => {
+    if (!scriptEvent || scriptEvent.command !== EVENT_SWITCH_SCENE) {
+      return undefined;
+    }
+
+    if (!fromScene || !toScene) {
+      return undefined;
+    }
+
+    const scriptEventX = optimiseScriptValue(
+      ensureScriptValue(scriptEvent.args?.x, defaultCoord),
+    );
+    const scriptEventY = optimiseScriptValue(
+      ensureScriptValue(scriptEvent.args?.y, defaultCoord),
+    );
+
+    const toX = scriptEventX.type === "number" ? scriptEventX.value : 0;
+    const toY = scriptEventY.type === "number" ? scriptEventY.value : 0;
+
+    let entityX = 0;
+    let entityY = 0;
+    let entityWidth = 0;
+    let entityHeight = 0;
+
+    if (connection.type === "trigger") {
+      if (!trigger) {
+        return undefined;
+      }
+
+      entityX = trigger.x;
+      entityY = trigger.y;
+      entityWidth = trigger.width ?? 2;
+      entityHeight = trigger.height ?? 1;
+    } else if (connection.type === "actor") {
+      if (!actor) {
+        return undefined;
+      }
+
+      entityX = actor.x;
+      entityY = actor.y;
+      entityWidth = 2;
+      entityHeight = 1;
+    }
+
+    const x1 = fromScene.x + (entityX + entityWidth / 2) * 8;
+    const x2 = toScene.x + toX * 8 + 5;
+    const y1 = 20 + fromScene.y + (entityY + entityHeight / 2) * 8;
+    const y2 = 20 + toScene.y + toY * 8 + 5;
+
+    const xDiff = Math.abs(x1 - x2);
+    const yDiff = Math.abs(y1 - y2);
+
+    const xQ = xDiff < yDiff ? -0.1 * xDiff : xDiff * 0.4;
+    const yQ = yDiff < xDiff ? -0.1 * yDiff : yDiff * 0.4;
+
+    const qx = x1 < x2 ? x1 + xQ : x1 - xQ;
+    const qy = y1 < y2 ? y1 + yQ : y1 - yQ;
+
+    return {
+      x1,
+      y1,
+      x2,
+      y2,
+      qx,
+      qy,
+      direction: scriptEvent.args?.direction as ActorDirection | undefined,
+    };
+  }, [actor, connection.type, fromScene, scriptEvent, toScene, trigger]);
 };
+
+const SceneConnection = memo(
+  ({ connection, editable }: SceneConnectionProps) => {
+    const geometry = useConnectionGeometry(connection);
+
+    if (!geometry) {
+      return null;
+    }
+
+    console.log("UPDATE SceneConnection", geometry.x1);
+
+    return (
+      <>
+        <Connection
+          x1={geometry.x1}
+          x2={geometry.x2}
+          y1={geometry.y1}
+          y2={geometry.y2}
+          qx={geometry.qx}
+          qy={geometry.qy}
+        />
+        <DestinationMarker
+          x={geometry.x2}
+          y={geometry.y2}
+          sceneId={connection.fromSceneId}
+          entityId={connection.entityId}
+          eventId={connection.eventId}
+          direction={geometry.direction}
+          selectionType={connection.type}
+          editable={editable}
+        />
+      </>
+    );
+  },
+);
 
 const Connections = ({
   width,
@@ -196,86 +438,54 @@ const Connections = ({
   zoomRatio,
   editable,
 }: ConnectionsProps) => {
+  const store = useAppStore();
   const [connections, setConnections] = useState<SceneTransitionCoords[]>([]);
+
   const showConnections = useAppSelector(
     (state) => state.project.present.settings.showConnections,
   );
-  const selectedSceneId = useAppSelector((state) => state.editor.scene);
-  const selectedEventId = useAppSelector((state) => state.editor.eventId);
-  const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
-  const scenesLookup = useAppSelector((state) =>
-    sceneSelectors.selectEntities(state),
-  );
-  const actorsLookup = useAppSelector((state) =>
-    actorSelectors.selectEntities(state),
-  );
-  const triggersLookup = useAppSelector((state) =>
-    triggerSelectors.selectEntities(state),
-  );
-  const eventsLookup = useAppSelector((state) =>
-    scriptEventSelectors.selectEntities(state),
-  );
-  const customEventsLookup = useAppSelector((state) =>
-    customEventSelectors.selectEntities(state),
-  );
-  const actorPrefabsLookup = useAppSelector(
-    actorPrefabSelectors.selectEntities,
-  );
-  const triggerPrefabsLookup = useAppSelector(
-    triggerPrefabSelectors.selectEntities,
-  );
+
+  const connectionTopologyKey = useAppSelector(selectConnectionTopologyKey);
+
+  const isWorking = useRef(false);
+  const isWorkQueued = useRef(false);
 
   const calculate = useCallback(() => {
+    const state = store.getState();
+    const showConnections = state.project.present.settings.showConnections;
+
     if (!showConnections) {
       isWorkQueued.current = false;
       isWorking.current = false;
       setConnections([]);
       return;
     }
+
     if (isWorking.current) {
       isWorkQueued.current = true;
       return;
     }
-    isWorking.current = true;
-    const request: ConnectionsWorkerRequest = {
-      showConnections,
-      selectedSceneId,
-      scenes,
-      eventsLookup,
-      scenesLookup,
-      actorsLookup,
-      triggersLookup,
-      actorPrefabsLookup,
-      triggerPrefabsLookup,
-      customEventsLookup,
-    };
-    worker.postMessage(request);
-  }, [
-    actorPrefabsLookup,
-    actorsLookup,
-    customEventsLookup,
-    eventsLookup,
-    scenes,
-    scenesLookup,
-    selectedSceneId,
-    showConnections,
-    triggerPrefabsLookup,
-    triggersLookup,
-  ]);
 
-  const isWorking = useRef(false);
-  const isWorkQueued = useRef(false);
+    isWorking.current = true;
+    worker.postMessage(buildConnectionsWorkerRequest(state));
+  }, [store]);
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<ConnectionsWorkerResult>) => {
       isWorking.current = false;
-      setConnections(e.data.connections);
+
+      if (!store.getState().project.present.settings.showConnections) {
+        setConnections([]);
+      } else {
+        setConnections(e.data.connections);
+      }
+
       if (isWorkQueued.current) {
         isWorkQueued.current = false;
         calculate();
       }
     },
-    [calculate],
+    [calculate, store],
   );
 
   useEffect(() => {
@@ -297,102 +507,15 @@ const Connections = ({
 
   useEffect(() => {
     throttledCalculate();
-  }, [calculate, throttledCalculate]);
+  }, [connectionTopologyKey, throttledCalculate]);
 
-  // Calculate absolute values of connections
-  // by combining with the latest entity position values
-  const absoluteConnections = useMemo(() => {
-    return filterUndefined(
-      connections.map((connection) => {
-        let toX = connection.toX;
-        let toY = connection.toY;
-        let toSceneId = connection.toSceneId;
+  useEffect(() => {
+    return () => {
+      throttledCalculate.cancel();
+    };
+  }, [throttledCalculate]);
 
-        // If currently editing a script event by dragging destination marker
-        // then perform full calculation to get most up to date values for that event
-        if (connection.eventId === selectedEventId) {
-          const scriptEvent = eventsLookup[connection.eventId];
-          if (scriptEvent) {
-            const scriptEventX = optimiseScriptValue(
-              ensureScriptValue(scriptEvent.args?.x, defaultCoord),
-            );
-            const scriptEventY = optimiseScriptValue(
-              ensureScriptValue(scriptEvent.args?.y, defaultCoord),
-            );
-            toX = scriptEventX.type === "number" ? scriptEventX.value : 0;
-            toY = scriptEventY.type === "number" ? scriptEventY.value : 0;
-            toSceneId = String(scriptEvent.args?.sceneId || "");
-          }
-        }
-
-        const fromScene = scenesLookup[connection.fromSceneId];
-        const toScene = scenesLookup[toSceneId];
-
-        if (!fromScene || !toScene) {
-          return undefined;
-        }
-
-        const startX = fromScene.x;
-        const startY = fromScene.y;
-        const destX = toScene.x;
-        const destY = toScene.y;
-
-        let entityX = 0;
-        let entityY = 0;
-        let entityWidth = 0;
-        let entityHeight = 0;
-
-        if (connection.type === "trigger") {
-          const trigger = triggersLookup[connection.entityId];
-          if (trigger) {
-            entityX = trigger.x;
-            entityY = trigger.y;
-            entityWidth = trigger.width ?? 2;
-            entityHeight = trigger.height ?? 1;
-          }
-        } else if (connection.type === "actor") {
-          const actor = actorsLookup[connection.entityId];
-          if (actor) {
-            entityX = actor.x;
-            entityY = actor.y;
-            entityWidth = 2;
-            entityHeight = 1;
-          }
-        }
-
-        const x1 = startX + (entityX + entityWidth / 2) * 8;
-        const x2 = destX + toX * 8 + 5;
-        const y1 = 20 + startY + (entityY + entityHeight / 2) * 8;
-        const y2 = 20 + destY + toY * 8 + 5;
-
-        const xDiff = Math.abs(x1 - x2);
-        const yDiff = Math.abs(y1 - y2);
-
-        const xQ = xDiff < yDiff ? -0.1 * xDiff : xDiff * 0.4;
-        const yQ = yDiff < xDiff ? -0.1 * yDiff : yDiff * 0.4;
-
-        const qx = x1 < x2 ? x1 + xQ : x1 - xQ;
-        const qy = y1 < y2 ? y1 + yQ : y1 - yQ;
-
-        return {
-          ...connection,
-          x1,
-          y1,
-          x2,
-          y2,
-          qx,
-          qy,
-        };
-      }),
-    );
-  }, [
-    actorsLookup,
-    connections,
-    eventsLookup,
-    scenesLookup,
-    selectedEventId,
-    triggersLookup,
-  ]);
+  const visibleConnections = showConnections ? connections : [];
 
   return (
     <ConnectionsSvg
@@ -402,29 +525,12 @@ const Connections = ({
         strokeWidth: 2 / zoomRatio,
       }}
     >
-      {absoluteConnections.map((connection) => (
-        <React.Fragment
-          key={`m_${connection.fromSceneId}_${connection.entityId}_${connection.eventId}`}
-        >
-          <Connection
-            x1={connection.x1}
-            x2={connection.x2}
-            y1={connection.y1}
-            y2={connection.y2}
-            qx={connection.qx}
-            qy={connection.qy}
-          />
-          <DestinationMarker
-            x={connection.x2}
-            y={connection.y2}
-            sceneId={connection.fromSceneId}
-            entityId={connection.entityId}
-            eventId={connection.eventId}
-            direction={connection.direction}
-            selectionType={connection.type}
-            editable={editable}
-          />
-        </React.Fragment>
+      {visibleConnections.map((connection) => (
+        <SceneConnection
+          key={`m_${getConnectionId(connection)}`}
+          connection={connection}
+          editable={editable}
+        />
       ))}
     </ConnectionsSvg>
   );

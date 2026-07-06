@@ -49,16 +49,15 @@ export interface SceneTransitionCoords {
   fromSceneId: string;
   toSceneId: string;
   entityId: string;
-  direction: ActorDirection;
+  direction?: ActorDirection;
 }
 
 interface CalculateTransitionCoordsProps {
   type: "actor" | "trigger" | "scene";
   scriptEvent: ScriptEventNormalized;
   scene: SceneNormalized;
-  destScene: SceneNormalized;
+  destSceneId: string;
   entityId: string;
-  direction?: ActorDirection;
 }
 
 const defaultCoord = {
@@ -70,7 +69,7 @@ const calculateTransitionCoords = ({
   type,
   scriptEvent,
   scene,
-  destScene,
+  destSceneId,
   entityId,
 }: CalculateTransitionCoordsProps): SceneTransitionCoords => {
   const scriptEventX = optimiseScriptValue(
@@ -89,9 +88,9 @@ const calculateTransitionCoords = ({
     type,
     eventId: scriptEvent.id,
     fromSceneId: scene.id,
-    toSceneId: destScene.id,
+    toSceneId: destSceneId,
     entityId,
-    direction: scriptEvent.args?.direction as ActorDirection,
+    direction: scriptEvent.args?.direction as ActorDirection | undefined,
   };
 };
 
@@ -109,24 +108,25 @@ const getSceneConnections = (
 ) => {
   const ifMatches = (
     scriptEvent: ScriptEventNormalized,
-    callback: (destScene: SceneNormalized) => void,
+    callback: (destSceneId: string) => void,
   ) => {
     if (scriptEvent.command === EVENT_SWITCH_SCENE) {
-      const destId = String(scriptEvent.args?.sceneId || "");
+      const destSceneId = String(scriptEvent.args?.sceneId || "");
+
       if (
         showConnections === "all" ||
         scene.id === selectedSceneId ||
-        destId === selectedSceneId
+        destSceneId === selectedSceneId
       ) {
-        const destScene = scenesLookup[destId];
-        if (destScene) {
-          callback(destScene);
+        if (scenesLookup[destSceneId]) {
+          callback(destSceneId);
         }
       }
     }
   };
 
   const connections: SceneTransitionCoords[] = [];
+
   walkNormalizedSceneSpecificScripts(
     scene,
     eventsLookup,
@@ -137,13 +137,13 @@ const getSceneConnections = (
       },
     },
     (scriptEvent) => {
-      ifMatches(scriptEvent, (destScene) => {
+      ifMatches(scriptEvent, (destSceneId) => {
         connections.push(
           calculateTransitionCoords({
             type: "scene",
             scriptEvent,
             scene,
-            destScene,
+            destSceneId,
             entityId: "",
           }),
         );
@@ -153,6 +153,7 @@ const getSceneConnections = (
 
   scene.actors.forEach((entityId) => {
     const entity = actorsLookup[entityId];
+
     if (entity) {
       walkNormalizedActorScripts(
         entity,
@@ -165,13 +166,13 @@ const getSceneConnections = (
           },
         },
         (scriptEvent) => {
-          ifMatches(scriptEvent, (destScene) => {
+          ifMatches(scriptEvent, (destSceneId) => {
             connections.push(
               calculateTransitionCoords({
                 type: "actor",
                 scriptEvent,
                 scene,
-                destScene,
+                destSceneId,
                 entityId: entity.id,
               }),
             );
@@ -183,6 +184,7 @@ const getSceneConnections = (
 
   scene.triggers.forEach((entityId) => {
     const entity = triggersLookup[entityId];
+
     if (entity) {
       walkNormalizedTriggerScripts(
         entity,
@@ -195,13 +197,13 @@ const getSceneConnections = (
           },
         },
         (scriptEvent) => {
-          ifMatches(scriptEvent, (destScene) => {
+          ifMatches(scriptEvent, (destSceneId) => {
             connections.push(
               calculateTransitionCoords({
                 type: "trigger",
                 scriptEvent,
                 scene,
-                destScene,
+                destSceneId,
                 entityId: entity.id,
               }),
             );
