@@ -86,19 +86,9 @@ const data = (
   sequence: 1,
   width: 1,
   height: 1,
-  tilemap: {
-    tilesets: [{ id: "tiles1", width: 1, height: 1 }],
-    tileColors: [0],
-    layers: [
-      {
-        id: "layer1",
-        name: "Layer 1",
-        visible: true,
-        tiles: [encodeSceneTileRef(0, 0)],
-      },
-    ],
-  },
-  tileColors: [0],
+  tiles: Uint32Array.from([encodeSceneTileRef(0, 0)]),
+  tileColors: Uint8Array.from([0]),
+  tilesetSnapshots: [{ id: "tiles1", width: 1, height: 1 }],
   tilesets: [undefined],
   palettes: [dummyPalette.colors],
   previewAsMono: false,
@@ -139,7 +129,7 @@ test.each([
 
   await renderTilemapLayers(
     data({
-      tileColors: [attributes],
+      tileColors: Uint8Array.from([attributes]),
       tilesets: [{ id: "tiles1", width: 1, src: `tiles-${attributes}.png` }],
     }),
   );
@@ -149,7 +139,7 @@ test.each([
   expect(mockCanvases[0]?.context.restore).toHaveBeenCalled();
 });
 
-test("flattens visible layers using the topmost tile", async () => {
+test("renders the provided flattened tile data", async () => {
   (global.fetch as jest.Mock).mockResolvedValue({
     ok: true,
     blob: async () => new Blob(),
@@ -157,29 +147,8 @@ test("flattens visible layers using the topmost tile", async () => {
 
   await renderTilemapLayers(
     data({
-      tilemap: {
-        tilesets: [{ id: "tiles1", width: 3, height: 1 }],
-        layers: [
-          {
-            id: "lower",
-            name: "Lower",
-            visible: true,
-            tiles: [encodeSceneTileRef(0, 0)],
-          },
-          {
-            id: "hidden",
-            name: "Hidden",
-            visible: false,
-            tiles: [encodeSceneTileRef(0, 1)],
-          },
-          {
-            id: "upper",
-            name: "Upper",
-            visible: true,
-            tiles: [encodeSceneTileRef(0, 2)],
-          },
-        ],
-      },
+      tiles: Uint32Array.from([encodeSceneTileRef(0, 2)]),
+      tilesetSnapshots: [{ id: "tiles1", width: 3, height: 1 }],
       tilesets: [{ id: "tiles1", width: 3, src: "flatten-layers.png" }],
     }),
   );

@@ -88,6 +88,18 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  mockWorkers.forEach((worker) => {
+    const request = worker.postMessage.mock.calls.at(-1)?.[0];
+    if (request) {
+      worker.emit({
+        canvasId: request.canvasId,
+        sequence: request.sequence,
+        width: 8,
+        height: 8,
+        canvasImage: { close: jest.fn() } as unknown as ImageBitmap,
+      });
+    }
+  });
   jest.restoreAllMocks();
 });
 
@@ -118,15 +130,20 @@ test("sends tilemap rendering data to a worker", async () => {
   const worker = mockWorkers.find(
     (item) => item.postMessage.mock.calls.length > 0,
   );
+  expect(worker?.postMessage.mock.calls.at(-1)?.[0]).not.toHaveProperty(
+    "tilemap",
+  );
   expect(worker?.postMessage).toHaveBeenLastCalledWith(
     expect.objectContaining({
       width: 1,
       height: 1,
-      tileColors: [0],
+      tiles: Uint32Array.from([0]),
+      tileColors: Uint8Array.from([0]),
       tilesets: [expect.objectContaining({ id: "tiles1", width: 1 })],
       palettes: [dummyPalette.colors],
       colorCorrection: "none",
     }),
+    expect.any(Array),
   );
 });
 
@@ -151,8 +168,10 @@ test("draws the latest worker bitmap onto the visible canvas", async () => {
     canvasImage,
   });
 
-  expect(bitmapContext.transferFromImageBitmap).not.toHaveBeenCalled();
-  expect(canvasContext.drawImage).toHaveBeenCalledWith(canvasImage, 0, 0);
+  expect(bitmapContext.transferFromImageBitmap).toHaveBeenCalledWith(
+    canvasImage,
+  );
+  expect(canvasContext.drawImage).not.toHaveBeenCalled();
 });
 
 test("ignores stale worker responses", async () => {
@@ -183,6 +202,13 @@ test("ignores stale worker responses", async () => {
       }}
     />,
   );
+  worker?.emit({
+    canvasId: staleRequest.canvasId,
+    sequence: staleRequest.sequence,
+    width: 8,
+    height: 8,
+    canvasImage: {} as ImageBitmap,
+  });
   await waitFor(() => expect(worker?.postMessage).toHaveBeenCalledTimes(2));
   const latestRequest = worker?.postMessage.mock.calls[1]?.[0];
   worker?.emit({
@@ -192,7 +218,7 @@ test("ignores stale worker responses", async () => {
     height: 8,
     canvasImage: {} as ImageBitmap,
   });
-  canvasContext.drawImage.mockClear();
+  bitmapContext.transferFromImageBitmap.mockClear();
   worker?.emit({
     canvasId: staleRequest.canvasId,
     sequence: staleRequest.sequence,
@@ -201,5 +227,5 @@ test("ignores stale worker responses", async () => {
     canvasImage: {} as ImageBitmap,
   });
 
-  expect(canvasContext.drawImage).not.toHaveBeenCalled();
+  expect(bitmapContext.transferFromImageBitmap).not.toHaveBeenCalled();
 });

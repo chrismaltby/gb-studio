@@ -33,6 +33,8 @@ const state = {
 jest.mock("store/hooks", () => ({
   useAppSelector: (selector: (value: typeof state) => unknown) =>
     selector(state),
+  useAppSelectorPick: (selector: (value: typeof state) => unknown) =>
+    selector(state),
 }));
 
 jest.mock("store/features/entities/entitiesSelectors", () => ({

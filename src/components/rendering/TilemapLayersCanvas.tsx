@@ -9,16 +9,15 @@ import type {
 import { TILE_SIZE } from "consts";
 import { getSettings } from "store/features/settings/settingsState";
 import type { RootState } from "store/configureStore";
-import TilemapLayersCanvasWorker, {
+import type {
   TilemapLayersCanvasResult,
   TilemapLayersWorkerTileset,
 } from "./TilemapLayersCanvas.worker";
-
-const workerPool: TilemapLayersCanvasWorker[] = [];
-const workerCount = Math.max(1, navigator.hardwareConcurrency || 1);
-for (let index = 0; index < workerCount; index++) {
-  workerPool.push(new TilemapLayersCanvasWorker());
-}
+import { scheduleFlattenTilemap } from "./tilemapLayersScheduler";
+import {
+  createTilemapLayersWorkerHandle,
+  TilemapLayersWorkerHandle,
+} from "./tilemapLayersWorkerPool";
 
 interface TilemapLayersCanvasProps {
   width: number;
@@ -28,6 +27,7 @@ interface TilemapLayersCanvasProps {
   palettes: Palette[];
   previewAsMono?: boolean;
   monoBGP: MonoBGPPalette;
+  priority?: boolean;
 }
 
 type TilemapLayersTileset = {
@@ -39,7 +39,7 @@ type TilemapLayersTileset = {
   _v?: number;
 };
 
-const paintedSceneTilesetsSelector = (
+const sceneTilemapTilesetsSelector = (
   state: RootState,
   snapshotIds: string[],
 ): Array<TilemapLayersTileset | undefined> =>
@@ -65,6 +65,7 @@ const TilemapLayersCanvas = memo(
     palettes,
     previewAsMono,
     monoBGP,
+    priority,
   }: TilemapLayersCanvasProps) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -72,15 +73,17 @@ const TilemapLayersCanvas = memo(
     const nextRequestSequence = useRef(0);
     const lastRenderedSequence = useRef(0);
 
-    const worker = useRef(
-      workerPool[Math.floor(workerPool.length * Math.random())],
-    );
+    const worker = useRef<TilemapLayersWorkerHandle | null>(null);
+    if (!worker.current) {
+      worker.current = createTilemapLayersWorkerHandle(canvasId.current);
+    }
+    const workerHandle = worker.current;
     const colorCorrection = useAppSelector(
       (state) => getSettings(state).colorCorrection,
     );
     const tilesets = useAppSelector(
       (state) =>
-        paintedSceneTilesetsSelector(
+        sceneTilemapTilesetsSelector(
           state,
           tilemap.tilesets.map(({ id }) => id),
         ),
@@ -113,55 +116,64 @@ const TilemapLayersCanvas = memo(
           return;
         }
 
-        const ctx = canvasRef.current.getContext("2d");
-        if (!ctx) {
+        const bitmapCtx = canvasRef.current.getContext("bitmaprenderer");
+
+        if (!bitmapCtx) {
           canvasImage.close?.();
           return;
         }
 
-        ctx.clearRect(0, 0, width * TILE_SIZE, height * TILE_SIZE);
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(canvasImage, 0, 0);
-
-        canvasImage.close?.();
+        bitmapCtx.transferFromImageBitmap(canvasImage);
         lastRenderedSequence.current = sequence;
       },
-      [height, width],
+      [],
     );
 
     useEffect(() => {
-      const currentWorker = worker.current;
-      currentWorker.addEventListener("message", onWorkerComplete);
-      return () => {
-        currentWorker.removeEventListener("message", onWorkerComplete);
-      };
-    }, [onWorkerComplete]);
+      return workerHandle.subscribe(onWorkerComplete);
+    }, [onWorkerComplete, workerHandle]);
 
     useEffect(() => {
       const sequence = ++nextRequestSequence.current;
 
-      worker.current.postMessage({
-        canvasId: canvasId.current,
-        sequence,
+      return scheduleFlattenTilemap(
+        tilemap,
         width,
         height,
-        tilemap,
-        tileColors,
-        tilesets: workerTilesets,
-        palettes: palettes.map((palette) => palette.colors),
-        previewAsMono,
-        monoBGP,
-        colorCorrection,
-      });
+        (flattenedTiles) => {
+          const tiles = new Uint32Array(flattenedTiles);
+          const workerTileColors = Uint8Array.from(tileColors);
+          workerHandle.request(
+            {
+              canvasId: canvasId.current,
+              sequence,
+              width,
+              height,
+              tiles,
+              tileColors: workerTileColors,
+              tilesetSnapshots: tilemap.tilesets,
+              tilesets: workerTilesets,
+              palettes: palettes.map((palette) => palette.colors),
+              previewAsMono,
+              monoBGP,
+              colorCorrection,
+            },
+            [tiles.buffer, workerTileColors.buffer],
+          );
+        },
+        priority,
+      );
     }, [
       colorCorrection,
       height,
       monoBGP,
       palettes,
+      priority,
       previewAsMono,
       tileColors,
       tilemap,
       width,
+      workerHandle,
       workerTilesets,
     ]);
 

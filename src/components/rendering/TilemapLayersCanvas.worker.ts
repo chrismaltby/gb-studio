@@ -9,12 +9,11 @@ import { hex2GBCrgb } from "shared/lib/helpers/color";
 import {
   buildSceneTilesetReferenceLookup,
   decodeSceneTileReference,
-  flattenTilemapLayers,
 } from "shared/lib/tiles/sceneTilemapReferences";
 import type {
   ColorCorrectionSetting,
   MonoBGPPalette,
-  SceneTilemapData,
+  TilesetSnapshot,
 } from "shared/lib/resources/types";
 
 // eslint-disable-next-line no-restricted-globals
@@ -31,8 +30,9 @@ export interface TilemapLayersCanvasData {
   sequence: number;
   width: number;
   height: number;
-  tilemap: SceneTilemapData;
-  tileColors: number[];
+  tiles: Uint32Array;
+  tileColors: Uint8Array;
+  tilesetSnapshots: TilesetSnapshot[];
   tilesets: Array<TilemapLayersWorkerTileset | undefined>;
   palettes: string[][];
   previewAsMono?: boolean;
@@ -81,17 +81,17 @@ export const renderTilemapLayers = async (
     sequence,
     width,
     height,
-    tilemap,
+    tiles,
     tileColors,
+    tilesetSnapshots,
     tilesets,
     palettes,
     previewAsMono,
     monoBGP,
     colorCorrection,
   } = data;
-  const tiles = flattenTilemapLayers(tilemap, width, height);
   const canvas = new OffscreenCanvas(width * TILE_SIZE, height * TILE_SIZE);
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
   const loadedImages = await Promise.all(
@@ -114,7 +114,9 @@ export const renderTilemapLayers = async (
   ctx.fillStyle = `rgb(${emptyColor.r}, ${emptyColor.g}, ${emptyColor.b})`;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  const tilesetLookup = buildSceneTilesetReferenceLookup(tilemap);
+  const tilesetLookup = buildSceneTilesetReferenceLookup({
+    tilesets: tilesetSnapshots,
+  });
   const tilesetsLookup = Object.fromEntries(
     tilesets
       .filter((tileset): tileset is TilemapLayersWorkerTileset => !!tileset)

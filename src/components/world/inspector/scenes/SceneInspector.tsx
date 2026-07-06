@@ -137,7 +137,7 @@ export const SceneTilemapSizeControls = ({
     >
       <div style={{ display: "flex", gap: 5 }}>
         <CoordinateInput
-          name="paintedSceneWidth"
+          name="tilemapWidth"
           coordinate="w"
           min={20}
           max={Math.min(255, Math.floor(MAX_SCENE_TILE_COUNT / height))}
@@ -155,7 +155,7 @@ export const SceneTilemapSizeControls = ({
           }
         />
         <CoordinateInput
-          name="paintedSceneHeight"
+          name="tilemapHeight"
           coordinate="h"
           min={18}
           max={Math.min(255, Math.floor(MAX_SCENE_TILE_COUNT / width))}

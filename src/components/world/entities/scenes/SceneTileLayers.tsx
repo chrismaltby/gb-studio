@@ -216,6 +216,7 @@ export const SceneTileLayers = ({ sceneId }: SceneTileLayersProps) => {
           palettes={palettes}
           previewAsMono={previewAsMono}
           monoBGP={monoBGP}
+          priority={selected}
         />
       ) : (
         background &&
