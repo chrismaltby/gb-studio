@@ -579,9 +579,47 @@ const WorldView = () => {
         return;
       }
       e.preventDefault();
+      if (scenePaintSelection) {
+        dispatch(clipboardActions.copySceneGridSelection());
+        return;
+      }
       dispatch(clipboardActions.copySelectedEntity());
     },
-    [dispatch],
+    [dispatch, scenePaintSelection],
+  );
+
+  const onCut = useCallback(
+    (e: ClipboardEvent) => {
+      if (!(e.target instanceof HTMLElement) || e.target.nodeName !== "BODY")
+        return;
+      if (!scenePaintSelection) return;
+      e.preventDefault();
+      dispatch(clipboardActions.copySceneGridSelection());
+      if (scenePaintSelection.mode === "tiles" && scenePaintSelection.layerId) {
+        dispatch(
+          entitiesActions.deleteSceneTileSelection({
+            sceneId: scenePaintSelection.sceneId,
+            layerId: scenePaintSelection.layerId,
+            selection: scenePaintSelection.selection,
+          }),
+        );
+      } else if (scenePaintSelection.mode === "colors") {
+        dispatch(
+          entitiesActions.deleteSceneColorSelection({
+            sceneId: scenePaintSelection.sceneId,
+            selection: scenePaintSelection.selection,
+          }),
+        );
+      } else if (scenePaintSelection.mode === "collisions") {
+        dispatch(
+          entitiesActions.deleteSceneCollisionSelection({
+            sceneId: scenePaintSelection.sceneId,
+            selection: scenePaintSelection.selection,
+          }),
+        );
+      }
+    },
+    [dispatch, scenePaintSelection],
   );
 
   const onPaste = useCallback(
@@ -592,12 +630,24 @@ const WorldView = () => {
       }
       e.preventDefault();
       try {
+        const state = store.getState();
+        const hover = state.editor.hover;
+        if (hover.sceneId) {
+          dispatch(
+            clipboardActions.pasteSceneGridSelectionAt({
+              sceneId: hover.sceneId,
+              layerId: state.editor.selectedTilemapLayerId,
+              x: hover.x,
+              y: hover.y,
+            }),
+          );
+        }
         dispatch(clipboardActions.pasteClipboardEntity());
       } catch (err) {
         // Clipboard isn't pastable, just ignore it
       }
     },
-    [dispatch],
+    [dispatch, store],
   );
 
   //#endregion Clipboard handling
@@ -948,6 +998,7 @@ const WorldView = () => {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("copy", onCopy);
+    window.addEventListener("cut", onCut);
     window.addEventListener("paste", onPaste);
     window.addEventListener("resize", onWindowResize);
     window.addEventListener("blur", onWindowBlur);
@@ -956,6 +1007,7 @@ const WorldView = () => {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       window.removeEventListener("copy", onCopy);
+      window.removeEventListener("cut", onCut);
       window.removeEventListener("paste", onPaste);
       window.removeEventListener("resize", onWindowResize);
       window.removeEventListener("blur", onWindowBlur);
@@ -964,6 +1016,7 @@ const WorldView = () => {
     };
   }, [
     onCopy,
+    onCut,
     onEndWorldDrag,
     onKeyDown,
     onKeyUp,

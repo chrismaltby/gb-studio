@@ -524,9 +524,7 @@ test("Should preserve and remap scene autotiles whose footprint still fits after
           id: "scene1",
           tilemap: {
             tilesets: [{ id: "tiles1", width: 5, height: 5 }],
-            autotiles: [
-              { type: "2x2", startTile: encodeSceneTileRef(0, 6) },
-            ],
+            autotiles: [{ type: "2x2", startTile: encodeSceneTileRef(0, 6) }],
             layers: [
               {
                 id: "layer1",

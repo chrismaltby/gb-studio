@@ -34,6 +34,7 @@ import {
 import {
   AutotileDefinition,
   Palette,
+  TilesetSnapshot,
   Variable,
 } from "shared/lib/resources/types";
 import {
@@ -83,8 +84,10 @@ import {
 } from "shared/lib/helpers/paint";
 import {
   clearGridSelection,
+  clearGridSelectionMasked,
   moveGridSelection,
   moveGridSelectionMasked,
+  pasteGridSelection,
   normalizeGridSize,
   resizeGridWithOffset,
 } from "shared/lib/tiles/grid";
@@ -556,7 +559,9 @@ const mergeTilemapLayerDown: CaseReducer<
     return;
   }
 
-  const layerIndex = scene.tilemap.layers.findIndex(
+  const tilemap = scene.tilemap;
+
+  const layerIndex = tilemap.layers.findIndex(
     (layer) => layer.id === action.payload.layerId,
   );
   const sourceLayer = scene.tilemap.layers[layerIndex];
@@ -883,16 +888,37 @@ const deleteSceneTileSelection: CaseReducer<
     return;
   }
 
-  const layerIndex = scene.tilemap.layers.findIndex(
+  const tilemap = scene.tilemap;
+
+  const layerIndex = tilemap.layers.findIndex(
     (layer) => layer.id === action.payload.layerId,
   );
 
-  const layer = scene.tilemap.layers[layerIndex];
+  const layer = tilemap.layers[layerIndex];
   if (!layer) {
     return;
   }
 
-  const layers = [...scene.tilemap.layers];
+  const shouldClearLinkedCell = (cellIndex: number) =>
+    isTilemapLayerCellTopmost(tilemap, layerIndex, cellIndex);
+  const tileColors = clearGridSelectionMasked(
+    getTilemapLayersTileColors(tilemap, scene.width, scene.height),
+    scene.width,
+    scene.height,
+    action.payload.selection,
+    0,
+    shouldClearLinkedCell,
+  );
+  const collisions = clearGridSelectionMasked(
+    scene.collisions,
+    scene.width,
+    scene.height,
+    action.payload.selection,
+    0,
+    shouldClearLinkedCell,
+  );
+
+  const layers = [...tilemap.layers];
   layers[layerIndex] = clearTilemapLayerSelection(
     layer,
     scene.width,
@@ -905,7 +931,7 @@ const deleteSceneTileSelection: CaseReducer<
       layers[layerIndex].autotiles ?? [],
       scene.width,
       scene.height,
-      scene.tilemap,
+      tilemap,
     );
     layers[layerIndex].tiles = layers[layerIndex].tiles.map(
       (tile, index) => resolvedTiles[index] || tile,
@@ -914,7 +940,10 @@ const deleteSceneTileSelection: CaseReducer<
 
   scenesAdapter.updateOne(state.scenes, {
     id: scene.id,
-    changes: { tilemap: { ...scene.tilemap, layers } },
+    changes: {
+      collisions,
+      tilemap: { ...tilemap, tileColors, layers },
+    },
   });
 };
 
@@ -996,6 +1025,285 @@ const deleteSceneColorSelection: CaseReducer<
       ),
     },
   });
+};
+
+const pasteSceneGridSelection: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    sceneId: string;
+    layerId?: string;
+    mode: "tiles" | "collisions" | "colors";
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    values: number[];
+    autotiles?: number[];
+    tileColors?: number[];
+    collisions?: number[];
+    linkedCells?: boolean[];
+    tilesets?: TilesetSnapshot[];
+    autotileDefinitions?: AutotileDefinition[];
+  }>
+> = (state, action) => {
+  const scene = localSceneSelectById(state, action.payload.sceneId);
+  if (!scene) return;
+  const p = action.payload;
+  if (p.mode === "collisions") {
+    scenesAdapter.updateOne(state.scenes, {
+      id: scene.id,
+      changes: {
+        collisions: pasteGridSelection(
+          scene.collisions,
+          scene.width,
+          scene.height,
+          p.x,
+          p.y,
+          p.width,
+          p.height,
+          p.values,
+          0,
+        ),
+      },
+    });
+  } else if (p.mode === "colors") {
+    if (scene.tilemap) {
+      scenesAdapter.updateOne(state.scenes, {
+        id: scene.id,
+        changes: {
+          tilemap: {
+            ...scene.tilemap,
+            tileColors: pasteGridSelection(
+              getTilemapLayersTileColors(
+                scene.tilemap,
+                scene.width,
+                scene.height,
+              ),
+              scene.width,
+              scene.height,
+              p.x,
+              p.y,
+              p.width,
+              p.height,
+              p.values,
+              0,
+            ),
+          },
+        },
+      });
+    } else {
+      const background = localBackgroundSelectById(state, scene.backgroundId);
+      if (background)
+        backgroundsAdapter.updateOne(state.backgrounds, {
+          id: background.id,
+          changes: {
+            tileColors: pasteGridSelection(
+              background.tileColors,
+              background.width,
+              background.height,
+              p.x,
+              p.y,
+              p.width,
+              p.height,
+              p.values,
+              0,
+            ),
+          },
+        });
+    }
+  } else if (scene.tilemap && p.layerId) {
+    const index = scene.tilemap.layers.findIndex(
+      (layer) => layer.id === p.layerId,
+    );
+    const layer = scene.tilemap.layers[index];
+    if (!layer) return;
+
+    let pasteTiles = p.values;
+    let pasteAutotiles = p.autotiles;
+    let destinationTilesets = scene.tilemap.tilesets;
+    let destinationAutotileDefinitions = scene.tilemap.autotiles;
+
+    if (p.tilesets) {
+      const sourceLookup = buildSceneTilesetLookup({ tilesets: p.tilesets });
+      const usedTilesetIds = new Set<string>();
+      const collectTilesetId = (value: number) => {
+        const ref = decodeSceneTileRef(value, sourceLookup);
+        if (ref) usedTilesetIds.add(ref.tilesetId);
+      };
+      p.values.forEach(collectTilesetId);
+      p.autotiles?.forEach((definitionId) => {
+        const definition = p.autotileDefinitions?.[definitionId - 1];
+        if (definition) collectTilesetId(definition.startTile);
+      });
+
+      destinationTilesets = [...scene.tilemap.tilesets];
+      for (const sourceTileset of p.tilesets) {
+        if (
+          usedTilesetIds.has(sourceTileset.id) &&
+          !destinationTilesets.some(
+            (destination) => destination.id === sourceTileset.id,
+          )
+        ) {
+          const currentTileset = localTilesetSelectById(
+            state,
+            sourceTileset.id,
+          );
+          if (!currentTileset) {
+            continue;
+          }
+          destinationTilesets.push({
+            id: currentTileset.id,
+            width: currentTileset.width,
+            height: currentTileset.height,
+          });
+        }
+      }
+
+      const destinationLookup = buildSceneTilesetLookup({
+        tilesets: destinationTilesets,
+      });
+      const remapTileRef = (value: number) => {
+        const sourceRef = decodeSceneTileRef(value, sourceLookup);
+        if (!sourceRef) return 0;
+        const sourceEntry = sourceLookup.entries[sourceRef.tilesetIndex];
+        const destinationEntry = destinationLookup.entryByTilesetId.get(
+          sourceRef.tilesetId,
+        );
+        if (!sourceEntry || !destinationEntry || sourceEntry.width <= 0) {
+          return 0;
+        }
+        const tileX = sourceRef.tileIndex % sourceEntry.width;
+        const tileY = Math.floor(sourceRef.tileIndex / sourceEntry.width);
+        if (
+          tileX >= destinationEntry.width ||
+          tileY >= destinationEntry.height
+        ) {
+          return 0;
+        }
+        return encodeSceneTileRef(
+          destinationEntry.offset,
+          tileY * destinationEntry.width + tileX,
+        );
+      };
+
+      pasteTiles = p.values.map(remapTileRef);
+      if (p.autotiles && p.autotileDefinitions) {
+        const nextAutotileDefinitions = [...(scene.tilemap.autotiles ?? [])];
+        destinationAutotileDefinitions = nextAutotileDefinitions;
+        const definitionIdMap = new Map<number, number>();
+        pasteAutotiles = p.autotiles.map((sourceDefinitionId) => {
+          if (!sourceDefinitionId) return 0;
+          const cached = definitionIdMap.get(sourceDefinitionId);
+          if (cached !== undefined) return cached;
+          const sourceDefinition =
+            p.autotileDefinitions?.[sourceDefinitionId - 1];
+          if (!sourceDefinition) return 0;
+          const startTile = remapTileRef(sourceDefinition.startTile);
+          if (!startTile) return 0;
+          let destinationIndex = nextAutotileDefinitions.findIndex(
+            (definition) =>
+              definition.type === sourceDefinition.type &&
+              definition.startTile === startTile,
+          );
+          if (destinationIndex < 0) {
+            nextAutotileDefinitions.push({
+              ...sourceDefinition,
+              startTile,
+            });
+            destinationIndex = nextAutotileDefinitions.length - 1;
+          }
+          const destinationId = destinationIndex + 1;
+          definitionIdMap.set(sourceDefinitionId, destinationId);
+          return destinationId;
+        });
+      }
+    }
+
+    const tilemapForPaste = {
+      ...scene.tilemap,
+      tilesets: destinationTilesets,
+      ...(destinationAutotileDefinitions
+        ? { autotiles: destinationAutotileDefinitions }
+        : {}),
+    };
+    const layers = [...scene.tilemap.layers];
+    const nextLayer = {
+      ...layer,
+      tiles: pasteGridSelection(
+        layer.tiles,
+        scene.width,
+        scene.height,
+        p.x,
+        p.y,
+        p.width,
+        p.height,
+        pasteTiles,
+        0,
+      ),
+      ...(layer.autotiles || pasteAutotiles
+        ? {
+            autotiles: pasteGridSelection(
+              layer.autotiles ?? [],
+              scene.width,
+              scene.height,
+              p.x,
+              p.y,
+              p.width,
+              p.height,
+              pasteAutotiles ?? [],
+              0,
+            ),
+          }
+        : {}),
+    };
+    if (nextLayer.autotiles) {
+      const resolved = resolveSceneAutotiles(
+        nextLayer.autotiles,
+        scene.width,
+        scene.height,
+        tilemapForPaste,
+      );
+      nextLayer.tiles = nextLayer.tiles.map(
+        (tile, cell) => resolved[cell] || tile,
+      );
+    }
+    layers[index] = nextLayer;
+    const nextTilemap = { ...tilemapForPaste, layers };
+    const tileColors = [
+      ...getTilemapLayersTileColors(scene.tilemap, scene.width, scene.height),
+    ];
+    const collisions = [...scene.collisions];
+    if (p.tileColors && p.collisions && p.linkedCells) {
+      for (let sourceY = 0; sourceY < p.height; sourceY++) {
+        for (let sourceX = 0; sourceX < p.width; sourceX++) {
+          const sourceIndex = sourceY * p.width + sourceX;
+          const targetX = p.x + sourceX;
+          const targetY = p.y + sourceY;
+          if (
+            !p.linkedCells[sourceIndex] ||
+            targetX < 0 ||
+            targetY < 0 ||
+            targetX >= scene.width ||
+            targetY >= scene.height
+          ) {
+            continue;
+          }
+          const targetIndex = targetY * scene.width + targetX;
+          if (isTilemapLayerCellTopmost(nextTilemap, index, targetIndex)) {
+            tileColors[targetIndex] = p.tileColors[sourceIndex] ?? 0;
+            collisions[targetIndex] = p.collisions[sourceIndex] ?? 0;
+          }
+        }
+      }
+    }
+    scenesAdapter.updateOne(state.scenes, {
+      id: scene.id,
+      changes: {
+        collisions,
+        tilemap: { ...nextTilemap, tileColors },
+      },
+    });
+  }
 };
 
 const paintSceneTile: CaseReducer<
@@ -2016,6 +2324,7 @@ const scenesReducers = {
   deleteSceneTileSelection,
   deleteSceneCollisionSelection,
   deleteSceneColorSelection,
+  pasteSceneGridSelection,
   editScenes,
   setSceneSymbol,
   removeScene,

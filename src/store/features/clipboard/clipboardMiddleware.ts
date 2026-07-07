@@ -13,6 +13,7 @@ import {
   spriteAnimationSelectors,
   scriptEventSelectors,
   sceneSelectors,
+  backgroundSelectors,
   actorPrefabSelectors,
   triggerPrefabSelectors,
 } from "store/features/entities/entitiesSelectors";
@@ -32,6 +33,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import { copy as rawCopy, pasteAny } from "./clipboardHelpers";
 import {
+  ClipboardSceneGrid,
   ClipboardType,
   ClipboardTypeActors,
   ClipboardTypeMetasprites,
@@ -41,6 +43,7 @@ import {
   ClipboardTypeScriptEvents,
   ClipboardTypeSpriteState,
   ClipboardTypeTriggers,
+  ClipboardTypeSceneGrid,
 } from "./clipboardTypes";
 import clipboardActions from "./clipboardActions";
 import {
@@ -72,6 +75,11 @@ import {
 import { batch } from "react-redux";
 import { sortSubsetStringArray } from "shared/lib/helpers/array";
 import { MetaspriteTile, Variable } from "shared/lib/resources/types";
+import { copyGridSelection } from "shared/lib/tiles/grid";
+import {
+  getTilemapLayersTileColors,
+  isTilemapLayerCellTopmost,
+} from "shared/lib/tiles/sceneTilemapData";
 
 const generateLocalVariableInsertActions = (
   originalId: string,
@@ -475,6 +483,120 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
 
     if (actions.copyText.match(action)) {
       API.clipboard.writeText(action.payload);
+    } else if (actions.copySceneGridSelection.match(action)) {
+      const state = store.getState();
+      const selection = state.editor.scenePaintSelection;
+      if (!selection) return;
+      const scene = sceneSelectors.selectById(state, selection.sceneId);
+      if (!scene) return;
+      let values: number[] | undefined;
+      let autotiles: number[] | undefined;
+      let tileColors: number[] | undefined;
+      let collisions: number[] | undefined;
+      let linkedCells: boolean[] | undefined;
+      let tilesets: ClipboardSceneGrid["tilesets"];
+      let autotileDefinitions: ClipboardSceneGrid["autotileDefinitions"];
+      if (selection.mode === "tiles") {
+        const tilemap = scene.tilemap;
+        if (!tilemap) return;
+        tilesets = tilemap.tilesets;
+        autotileDefinitions = tilemap.autotiles;
+        const layerIndex = tilemap.layers.findIndex(
+          (layer) => layer.id === selection.layerId,
+        );
+        const layer = layerIndex >= 0 ? tilemap.layers[layerIndex] : undefined;
+        if (!layer) return;
+        values = copyGridSelection(
+          layer.tiles,
+          scene.width,
+          scene.height,
+          selection.selection,
+          0,
+        );
+        if (layer.autotiles) {
+          autotiles = copyGridSelection(
+            layer.autotiles,
+            scene.width,
+            scene.height,
+            selection.selection,
+            0,
+          );
+        }
+        const colors = getTilemapLayersTileColors(
+          tilemap,
+          scene.width,
+          scene.height,
+        );
+        tileColors = copyGridSelection(
+          colors,
+          scene.width,
+          scene.height,
+          selection.selection,
+          0,
+        );
+        collisions = copyGridSelection(
+          scene.collisions,
+          scene.width,
+          scene.height,
+          selection.selection,
+          0,
+        );
+        linkedCells = [];
+        for (let y = 0; y < selection.selection.height; y++) {
+          for (let x = 0; x < selection.selection.width; x++) {
+            const sceneX = selection.selection.x + x;
+            const sceneY = selection.selection.y + y;
+            const cellIndex = sceneY * scene.width + sceneX;
+            linkedCells.push(
+              sceneX >= 0 &&
+                sceneY >= 0 &&
+                sceneX < scene.width &&
+                sceneY < scene.height &&
+                isTilemapLayerCellTopmost(tilemap, layerIndex, cellIndex),
+            );
+          }
+        }
+      } else if (selection.mode === "collisions") {
+        values = copyGridSelection(
+          scene.collisions,
+          scene.width,
+          scene.height,
+          selection.selection,
+          0,
+        );
+      } else {
+        const background = scene.backgroundId
+          ? backgroundSelectors.selectById(state, scene.backgroundId)
+          : undefined;
+        const width = scene.tilemap ? scene.width : background?.width;
+        const height = scene.tilemap ? scene.height : background?.height;
+        const colors = scene.tilemap
+          ? getTilemapLayersTileColors(scene.tilemap, scene.width, scene.height)
+          : background?.tileColors;
+        if (!width || !height || !colors) return;
+        values = copyGridSelection(
+          colors,
+          width,
+          height,
+          selection.selection,
+          0,
+        );
+      }
+      copy({
+        format: ClipboardTypeSceneGrid,
+        data: {
+          mode: selection.mode,
+          width: selection.selection.width,
+          height: selection.selection.height,
+          values,
+          autotiles,
+          tileColors,
+          collisions,
+          linkedCells,
+          tilesets,
+          autotileDefinitions,
+        },
+      });
     } else if (actions.copySpriteState.match(action)) {
       const state = store.getState();
       const spriteStateLookup = spriteStateSelectors.selectEntities(state);

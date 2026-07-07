@@ -13,7 +13,9 @@ import {
   ClipboardTypeActors,
   ClipboardTypeScenes,
   ClipboardTypeTriggers,
+  ClipboardTypeSceneGrid,
 } from "./clipboardTypes";
+import entitiesActions from "store/features/entities/entitiesActions";
 
 const fetchClipboard = createAction("clipboard/fetch");
 const copyText = createAction<string>("clipboard/copyText");
@@ -77,6 +79,33 @@ const pasteSceneAt = createAction<{
   x: number;
   y: number;
 }>("clipboard/pasteSceneAt");
+const copySceneGridSelection = createAction("clipboard/copySceneGridSelection");
+const pasteSceneGridSelectionAt =
+  (payload: { sceneId: string; layerId?: string; x: number; y: number }) =>
+  async (dispatch: ThunkDispatch<RootState, unknown, UnknownAction>) => {
+    const clipboard = await pasteAny();
+    if (!clipboard || clipboard.format !== ClipboardTypeSceneGrid) return;
+    dispatch(
+      entitiesActions.pasteSceneGridSelection({
+        ...payload,
+        ...clipboard.data,
+      }),
+    );
+    dispatch(
+      editorActions.setScenePaintSelection({
+        sceneId: payload.sceneId,
+        layerId: clipboard.data.mode === "tiles" ? payload.layerId : undefined,
+        mode: clipboard.data.mode,
+        selection: {
+          x: payload.x,
+          y: payload.y,
+          width: clipboard.data.width,
+          height: clipboard.data.height,
+        },
+        offset: { x: 0, y: 0 },
+      }),
+    );
+  };
 
 const copySelectedEntity =
   () =>
@@ -186,6 +215,8 @@ const clipboardActions = {
   pasteTriggerAt,
   pasteActorAt,
   pasteSceneAt,
+  copySceneGridSelection,
+  pasteSceneGridSelectionAt,
 };
 
 export default clipboardActions;

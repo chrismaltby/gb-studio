@@ -10,7 +10,12 @@ import {
   ActorPrefabNormalized,
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
-import { MetaspriteTile, Variable } from "shared/lib/resources/types";
+import {
+  AutotileDefinition,
+  MetaspriteTile,
+  TilesetSnapshot,
+  Variable,
+} from "shared/lib/resources/types";
 import { ScriptValue } from "shared/lib/scriptValue/types";
 
 export const ClipboardTypeScriptEvents = "gbstudio.scriptevents";
@@ -22,6 +27,7 @@ export const ClipboardTypeTriggers = " gbstudio.triggers";
 export const ClipboardTypeActors = " gbstudio.actors";
 export const ClipboardTypeScenes = " gbstudio.scenes";
 export const ClipboardTypeScriptValue = " gbstudio.value";
+export const ClipboardTypeSceneGrid = "gbstudio.scenegrid";
 
 export type NarrowClipboardType<T, N> = T extends { format: N } ? T : never;
 
@@ -82,6 +88,19 @@ export type ClipboardScriptValue = {
   value: ScriptValue;
 };
 
+export type ClipboardSceneGrid = {
+  mode: "tiles" | "collisions" | "colors";
+  width: number;
+  height: number;
+  values: number[];
+  autotiles?: number[];
+  tileColors?: number[];
+  collisions?: number[];
+  linkedCells?: boolean[];
+  tilesets?: TilesetSnapshot[];
+  autotileDefinitions?: AutotileDefinition[];
+};
+
 export type ClipboardType =
   | {
       format: typeof ClipboardTypeMetaspriteTiles;
@@ -118,6 +137,10 @@ export type ClipboardType =
   | {
       format: typeof ClipboardTypeScriptValue;
       data: ClipboardScriptValue;
+    }
+  | {
+      format: typeof ClipboardTypeSceneGrid;
+      data: ClipboardSceneGrid;
     };
 
 export type ClipboardFormat = ClipboardType["format"];
@@ -132,4 +155,5 @@ export const ClipboardTypes: ClipboardFormat[] = [
   ClipboardTypeActors,
   ClipboardTypeScenes,
   ClipboardTypeScriptValue,
+  ClipboardTypeSceneGrid,
 ];

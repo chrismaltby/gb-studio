@@ -211,7 +211,8 @@ export const useSceneGridSelectionCursorMode = (): SceneCursorMode => {
 
       if (
         selectionMode === "tiles" &&
-        (!layerId || !scene.tilemap?.layers.some((layer) => layer.id === layerId))
+        (!layerId ||
+          !scene.tilemap?.layers.some((layer) => layer.id === layerId))
       ) {
         return false;
       }

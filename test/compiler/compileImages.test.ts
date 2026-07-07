@@ -65,9 +65,7 @@ test("should crop oversized logo images to the top-left 20x18 tiles", async () =
     return tileColors[y * sourceWidth + x];
   });
 
-  expect(result?.vramData[0]).toEqual([
-    ...tileArrayToTileData(expectedTiles),
-  ]);
+  expect(result?.vramData[0]).toEqual([...tileArrayToTileData(expectedTiles)]);
   expect(result?.attr).toEqual(expectedAttrs);
   expect(result?.tilemap).toEqual(
     Array.from({ length: 20 * 18 }, (_, index) => index),

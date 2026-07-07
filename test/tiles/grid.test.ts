@@ -1,9 +1,33 @@
 import {
   clearGridSelection,
+  copyGridSelection,
   moveGridSelection,
   moveGridSelectionMasked,
+  pasteGridSelection,
   resizeGrid,
 } from "shared/lib/tiles/grid";
+
+describe("copyGridSelection and pasteGridSelection", () => {
+  test("copies a rectangular selection and pastes it at an offset", () => {
+    const copied = copyGridSelection(
+      [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      3,
+      3,
+      { x: 1, y: 0, width: 2, height: 2 },
+      0,
+    );
+    expect(copied).toEqual([2, 3, 5, 6]);
+    expect(
+      pasteGridSelection(new Array(9).fill(0), 3, 3, 0, 1, 2, 2, copied, 0),
+    ).toEqual([0, 0, 0, 2, 3, 0, 5, 6, 0]);
+  });
+
+  test("clips values pasted beyond the grid edge", () => {
+    expect(
+      pasteGridSelection([1, 2, 3, 4], 2, 2, 1, 1, 2, 2, [5, 6, 7, 8], 0),
+    ).toEqual([1, 2, 3, 5]);
+  });
+});
 
 describe("clearGridSelection", () => {
   test("It clears a rectangular selection", () => {

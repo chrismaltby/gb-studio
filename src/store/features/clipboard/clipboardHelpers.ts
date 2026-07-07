@@ -21,6 +21,8 @@ import {
   ClipboardTypeScriptValue,
   ClipboardTypeSpriteState,
   ClipboardTypeTriggers,
+  ClipboardSceneGrid,
+  ClipboardTypeSceneGrid,
   NarrowClipboardType,
 } from "./clipboardTypes";
 import { isScriptValue } from "shared/lib/scriptValue/types";
@@ -131,6 +133,66 @@ const isClipboardScriptValue = (
   return "value" in wide && isScriptValue(wide.value);
 };
 
+const isClipboardSceneGrid = (input: unknown): input is ClipboardSceneGrid => {
+  if (typeof input !== "object" || input === null) return false;
+  const wide = input as Partial<ClipboardSceneGrid>;
+  const cellCount = (wide.width ?? 0) * (wide.height ?? 0);
+  const isNumberArray = (value: unknown, length: number) =>
+    Array.isArray(value) &&
+    value.length === length &&
+    value.every((item) => typeof item === "number");
+  const isTilesetSnapshot = (value: unknown) => {
+    if (typeof value !== "object" || value === null) return false;
+    const snapshot = value as {
+      id?: unknown;
+      width?: unknown;
+      height?: unknown;
+    };
+    return (
+      typeof snapshot.id === "string" &&
+      Number.isInteger(snapshot.width) &&
+      (snapshot.width as number) > 0 &&
+      Number.isInteger(snapshot.height) &&
+      (snapshot.height as number) > 0
+    );
+  };
+  const isAutotileDefinition = (value: unknown) => {
+    if (typeof value !== "object" || value === null) return false;
+    const definition = value as { type?: unknown; startTile?: unknown };
+    return (
+      (definition.type === "2x2" || definition.type === "9slice") &&
+      typeof definition.startTile === "number" &&
+      Number.isFinite(definition.startTile)
+    );
+  };
+  return (
+    (wide.mode === "tiles" ||
+      wide.mode === "collisions" ||
+      wide.mode === "colors") &&
+    Number.isInteger(wide.width) &&
+    Number.isInteger(wide.height) &&
+    (wide.width ?? 0) > 0 &&
+    (wide.height ?? 0) > 0 &&
+    isNumberArray(wide.values, cellCount) &&
+    (wide.autotiles === undefined ||
+      isNumberArray(wide.autotiles, cellCount)) &&
+    (wide.tileColors === undefined ||
+      isNumberArray(wide.tileColors, cellCount)) &&
+    (wide.collisions === undefined ||
+      isNumberArray(wide.collisions, cellCount)) &&
+    (wide.linkedCells === undefined ||
+      (Array.isArray(wide.linkedCells) &&
+        wide.linkedCells.length === cellCount &&
+        wide.linkedCells.every((item) => typeof item === "boolean"))) &&
+    (wide.tilesets === undefined ||
+      (Array.isArray(wide.tilesets) &&
+        wide.tilesets.every(isTilesetSnapshot))) &&
+    (wide.autotileDefinitions === undefined ||
+      (Array.isArray(wide.autotileDefinitions) &&
+        wide.autotileDefinitions.every(isAutotileDefinition)))
+  );
+};
+
 export const copy = (payload: ClipboardType) => {
   const buffer = Buffer.from(JSON.stringify(payload.data), "utf8");
   API.clipboard.writeBuffer(payload.format, buffer);
@@ -213,6 +275,13 @@ export const paste = async <T extends ClipboardFormat>(
         format: ClipboardTypeScriptValue,
         data,
       } as NarrowClipboardType<ClipboardType, T>;
+    }
+  } else if (format === ClipboardTypeSceneGrid) {
+    if (isClipboardSceneGrid(data)) {
+      return { format: ClipboardTypeSceneGrid, data } as NarrowClipboardType<
+        ClipboardType,
+        T
+      >;
     }
   }
   return undefined;

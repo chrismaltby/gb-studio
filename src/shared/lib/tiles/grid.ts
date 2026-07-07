@@ -123,6 +123,76 @@ export const clearGridSelection = <T>(
   return result;
 };
 
+export const clearGridSelectionMasked = <T>(
+  values: readonly T[],
+  width: number,
+  height: number,
+  selection: GridSelection,
+  emptyValue: T,
+  shouldClear: (cellIndex: number) => boolean,
+): T[] => {
+  const result = createGrid(values, width, height, emptyValue);
+  const bounds = getSelectionBounds(selection, width, height);
+
+  for (let y = bounds.yStart; y < bounds.yEnd; y++) {
+    for (let x = bounds.xStart; x < bounds.xEnd; x++) {
+      const cellIndex = getGridIndex(x, y, width);
+      if (shouldClear(cellIndex)) result[cellIndex] = emptyValue;
+    }
+  }
+  return result;
+};
+
+export const copyGridSelection = <T>(
+  values: readonly T[],
+  width: number,
+  height: number,
+  selection: GridSelection,
+  emptyValue: T,
+): T[] => {
+  const source = createGrid(values, width, height, emptyValue);
+  const result = new Array<T>(selection.width * selection.height).fill(
+    emptyValue,
+  );
+
+  for (let y = 0; y < selection.height; y++) {
+    for (let x = 0; x < selection.width; x++) {
+      const sourceX = selection.x + x;
+      const sourceY = selection.y + y;
+      if (isInsideGrid(sourceX, sourceY, width, height)) {
+        result[getGridIndex(x, y, selection.width)] =
+          source[getGridIndex(sourceX, sourceY, width)];
+      }
+    }
+  }
+  return result;
+};
+
+export const pasteGridSelection = <T>(
+  values: readonly T[],
+  width: number,
+  height: number,
+  pasteX: number,
+  pasteY: number,
+  pasteWidth: number,
+  pasteHeight: number,
+  pasteValues: readonly T[],
+  emptyValue: T,
+): T[] => {
+  const result = createGrid(values, width, height, emptyValue);
+  for (let y = 0; y < pasteHeight; y++) {
+    for (let x = 0; x < pasteWidth; x++) {
+      const targetX = pasteX + x;
+      const targetY = pasteY + y;
+      if (isInsideGrid(targetX, targetY, width, height)) {
+        result[getGridIndex(targetX, targetY, width)] =
+          pasteValues[getGridIndex(x, y, pasteWidth)] ?? emptyValue;
+      }
+    }
+  }
+  return result;
+};
+
 export const moveGridSelection = <T>(
   values: readonly T[],
   width: number,

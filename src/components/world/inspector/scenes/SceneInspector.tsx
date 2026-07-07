@@ -805,7 +805,6 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
     (background?.autoTileFlipOverride !== undefined ||
       autoTileFlipOverrideOpen);
 
-
   const isStartingScene = startSceneId === id;
 
   const lockButton = (

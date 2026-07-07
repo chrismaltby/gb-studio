@@ -2681,6 +2681,176 @@ test("Should move linked colors and collisions when moving topmost scene tiles",
   expect(moved.scenes.entities.scene1?.tilemap?.tileColors).toEqual([0, 2, 1]);
 });
 
+test("Should delete linked colors and collisions with topmost scene tiles", () => {
+  const tile = encodeSceneTileRef(0, 0);
+  const state = tilemapPaintState({
+    width: 2,
+    height: 1,
+    collisions: [1, 2],
+    tilemap: {
+      tilesets: [tilesetSnapshot("tiles1")],
+      tileColors: [3, 4],
+      layers: [
+        { id: "lower", name: "Lower", visible: true, tiles: [tile, tile] },
+        { id: "upper", name: "Upper", visible: true, tiles: [tile, 0] },
+      ],
+    },
+  });
+
+  const deletedUpper = reducer(
+    state,
+    actions.deleteSceneTileSelection({
+      sceneId: "scene1",
+      layerId: "upper",
+      selection: { x: 0, y: 0, width: 1, height: 1 },
+    }),
+  );
+  expect(deletedUpper.scenes.entities.scene1?.collisions).toEqual([0, 2]);
+  expect(deletedUpper.scenes.entities.scene1?.tilemap?.tileColors).toEqual([
+    0, 4,
+  ]);
+
+  const deletedCoveredLower = reducer(
+    state,
+    actions.deleteSceneTileSelection({
+      sceneId: "scene1",
+      layerId: "lower",
+      selection: { x: 0, y: 0, width: 1, height: 1 },
+    }),
+  );
+  expect(deletedCoveredLower.scenes.entities.scene1?.collisions).toEqual([
+    1, 2,
+  ]);
+  expect(
+    deletedCoveredLower.scenes.entities.scene1?.tilemap?.tileColors,
+  ).toEqual([3, 4]);
+});
+
+test("Should paste linked colors and collisions only where pasted tiles are topmost", () => {
+  const tile = encodeSceneTileRef(0, 0);
+  const state = tilemapPaintState({
+    width: 3,
+    height: 1,
+    collisions: [1, 2, 3],
+    tilemap: {
+      tilesets: [tilesetSnapshot("tiles1")],
+      tileColors: [4, 5, 6],
+      layers: [
+        { id: "lower", name: "Lower", visible: true, tiles: [0, 0, 0] },
+        { id: "upper", name: "Upper", visible: true, tiles: [0, 0, tile] },
+      ],
+    },
+  });
+
+  const pasted = reducer(
+    state,
+    actions.pasteSceneGridSelection({
+      sceneId: "scene1",
+      layerId: "lower",
+      mode: "tiles",
+      x: 1,
+      y: 0,
+      width: 2,
+      height: 1,
+      values: [tile, tile],
+      tileColors: [7, 8],
+      collisions: [9, 10],
+      linkedCells: [true, true],
+    }),
+  );
+
+  expect(pasted.scenes.entities.scene1?.collisions).toEqual([1, 9, 3]);
+  expect(pasted.scenes.entities.scene1?.tilemap?.tileColors).toEqual([4, 7, 6]);
+});
+
+test("Should remap pasted tile and autotile refs to the destination tileset order", () => {
+  const sourceTilesets = [
+    { id: "tilesA", width: 4, height: 4 },
+    { id: "tilesB", width: 4, height: 4 },
+  ];
+  const destinationTilesets = [sourceTilesets[1], sourceTilesets[0]];
+  const state = tilemapPaintState({
+    width: 1,
+    height: 1,
+    tilemap: {
+      tilesets: destinationTilesets,
+      autotiles: [{ type: "2x2", startTile: 1 }],
+      tileColors: [0],
+      layers: [
+        {
+          id: "layer1",
+          name: "Layer 1",
+          visible: true,
+          tiles: [0],
+          autotiles: [0],
+        },
+      ],
+    },
+  });
+
+  const pasted = reducer(
+    state,
+    actions.pasteSceneGridSelection({
+      sceneId: "scene1",
+      layerId: "layer1",
+      mode: "tiles",
+      x: 0,
+      y: 0,
+      width: 1,
+      height: 1,
+      values: [1],
+      autotiles: [1],
+      tilesets: sourceTilesets,
+      autotileDefinitions: [{ type: "2x2", startTile: 1 }],
+    }),
+  );
+
+  const pastedTilemap = pasted.scenes.entities.scene1?.tilemap;
+  expect(
+    decodeSceneRef(pastedTilemap, pastedTilemap?.layers[0]?.tiles[0] ?? 0)
+      ?.tilesetId,
+  ).toBe("tilesA");
+  expect(pasted.scenes.entities.scene1?.tilemap?.layers[0]?.autotiles).toEqual([
+    2,
+  ]);
+  expect(pasted.scenes.entities.scene1?.tilemap?.autotiles).toEqual([
+    { type: "2x2", startTile: 1 },
+    { type: "2x2", startTile: 17 },
+  ]);
+});
+
+test("Should clear pasted tile refs when the source tileset resource no longer exists", () => {
+  const state = tilemapPaintState({
+    width: 1,
+    height: 1,
+    tilemap: {
+      tilesets: [tilesetSnapshot("tiles1", 4, 4)],
+      tileColors: [0],
+      layers: [{ id: "layer1", name: "Layer 1", visible: true, tiles: [0] }],
+    },
+  });
+
+  const pasted = reducer(
+    state,
+    actions.pasteSceneGridSelection({
+      sceneId: "scene1",
+      layerId: "layer1",
+      mode: "tiles",
+      x: 0,
+      y: 0,
+      width: 1,
+      height: 1,
+      values: [1],
+      tilesets: [{ id: "deletedTileset", width: 4, height: 4 }],
+    }),
+  );
+
+  expect(pasted.scenes.entities.scene1?.tilemap?.layers[0]?.tiles).toEqual([0]);
+  expect(pasted.scenes.entities.scene1?.tilemap?.tilesets).toEqual([
+    tilesetSnapshot("tiles1", 4, 4),
+  ]);
+});
+
 test("Should not move linked colors and collisions when selected scene tile is hidden by a higher layer", () => {
   const lowerTile = encodeSceneTileRef(0, 0);
   const upperTile = encodeSceneTileRef(0, 1);

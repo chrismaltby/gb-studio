@@ -18,10 +18,7 @@ const mockEditor = {
   scenePaintSelection: undefined,
 } as Pick<
   EditorState,
-  | "tool"
-  | "selectedBrush"
-  | "selectedTilemapLayerId"
-  | "scenePaintSelection"
+  "tool" | "selectedBrush" | "selectedTilemapLayerId" | "scenePaintSelection"
 >;
 const mockScene = {
   ...dummySceneNormalized,
