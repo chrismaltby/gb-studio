@@ -176,6 +176,8 @@ const WorldInteractionOverlay = React.memo(
     const store = useAppStore();
 
     const sceneAddType = useAppSelector((state) => state.editor.sceneAddType);
+    const pasteMode = useAppSelector((state) => state.editor.pasteMode);
+
     const [hoverState, setHoverState] = useState<Point>();
     const [selectionStart, setSelectionStart] = useState<Point>();
     const [selectionEnd, setSelectionEnd] = useState<Point>();
@@ -424,17 +426,18 @@ const WorldInteractionOverlay = React.memo(
               pointerEvents: "auto",
             }}
           >
-            {sceneAddType === "image" ? (
-              <>
-                <BackgroundIcon />
-                {l10n("FIELD_IMAGE_SCENE")}
-              </>
-            ) : (
-              <>
-                <JigsawIcon />
-                {l10n("FIELD_TILEMAP_SCENE")}
-              </>
-            )}
+            {!pasteMode &&
+              (sceneAddType === "image" ? (
+                <>
+                  <BackgroundIcon />
+                  {l10n("FIELD_IMAGE_SCENE")}
+                </>
+              ) : (
+                <>
+                  <JigsawIcon />
+                  {l10n("FIELD_TILEMAP_SCENE")}
+                </>
+              ))}
           </NewSceneCursor>
         )}
 
