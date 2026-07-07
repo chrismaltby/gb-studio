@@ -82,7 +82,6 @@ const PaletteSurface = styled.div`
   line-height: 0;
   cursor: crosshair;
   user-select: none;
-  overflow: hidden;
 
   canvas {
     position: absolute;
