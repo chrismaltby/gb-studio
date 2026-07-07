@@ -202,7 +202,7 @@ export const compileTilemapLayers = async (
   const maxTiles = cgbOnly ? MAX_BACKGROUND_TILES_CGB : MAX_BACKGROUND_TILES;
   if (tilesetLength > maxTiles) {
     warnings(
-      l10n("WARNING_BACKGROUND_TOO_MANY_TILES", {
+      l10n("WARNING_TILEMAP_TOO_MANY_TILES", {
         tilesetLength,
         maxTilesetLength: maxTiles,
       }),

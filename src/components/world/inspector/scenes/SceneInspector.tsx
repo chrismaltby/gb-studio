@@ -105,6 +105,7 @@ import SceneTilemapLayersPane from "components/world/inspector/scenes/tilemap/Sc
 import SceneTilemapPalettePane from "components/world/inspector/scenes/tilemap/SceneTilemapPalettePane";
 import { SceneBackgroundTypeDropdown } from "components/forms/SceneBackgroundTypeDropdown";
 import renderSceneInspectorMenu from "components/world/contextMenus/renderSceneInspectorMenu";
+import SceneTilemapInfoPane from "components/world/inspector/scenes/tilemap/SceneTilemapInfoPane";
 
 interface SceneInspectorProps {
   id: string;
@@ -918,6 +919,7 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
         </FormContainer>
         <SceneTilemapLayersPane sceneId={scene.id} />
         <SceneTilemapPalettePane sceneId={scene.id} />
+        <SceneTilemapInfoPane sceneId={scene.id} />
       </Sidebar>
     );
   }

@@ -1464,6 +1464,8 @@
   "FIELD_IMAGE_SCENE": "Image Scene",
   "FIELD_TILEMAP_SCENE": "Tilemap Scene",
   "FIELD_MERGE_DOWN": "Merge Down",
+  "FIELD_INFO": "Info",
+  "FIELD_UNIQUE_TILES": "Unique Tiles",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -2106,6 +2108,7 @@
   "WARNING_PLUGIN_MODIFIED_OUTSIDE_ENGINE_ROOT": "Plugin attempted to modify a file outside of engine root \"{filename}\"",
   "WARNING_PLUGIN_OVERWROTE_FILE": "Plugin \"{pluginName}\" overwrote \"{filename}\" which was already written by \"{previousPlugin}\"",
   "WARNING_PLUGIN_PATCH_CONFLICT_OVERWRITTEN": "Plugin \"{pluginName}\" could not patch \"{filename}\" because it was already overwritten by plugin \"{previousPlugin}\"",
+  "WARNING_TILEMAP_TOO_MANY_TILES": "Tilemap contains too many unique 8x8px tiles ({tilesetLength} where limit is {maxTilesetLength}) meaning it may not display correctly.",
 
   "// 12": "Errors -------------------------------------------------------",
 
