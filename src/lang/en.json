@@ -2339,6 +2339,8 @@
 
   "// 21": "Messages -----------------------------------------------------",
 
+  "MESSAGE_NO_TILESETS_FOUND": "No tilesets found",
+  "MESSAGE_ADD_TILESET_FILES": "Add tileset .png files to the project assets/tilesets folder to create tilemaps.",
   "MESSAGE_NO_SONGS_FOUND": "No songs found",
   "MESSAGE_ADD_UGE_FILES": "Please add .uge files to the project assets/music folder or create a new song with the + button above.",
   "MESSAGE_WHAT_ABOUT_MOD": "What about .mod files?",

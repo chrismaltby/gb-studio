@@ -54,6 +54,7 @@ import { FormContainer, FormField, FormRow } from "ui/form/layout/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
 import { TabBar } from "ui/tabs/Tabs";
+import { Alert } from "ui/alerts/Alert";
 
 const Wrapper = styled.div`
   max-width: 100%;
@@ -568,7 +569,10 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
     [defaultEditMode, dispatch, eraser, getTilePosition, selectedTileset],
   );
 
-  if (!scene) return null;
+  if (!scene) {
+    return null;
+  }
+
   const tilemap = hasTilemap ? { layers } : undefined;
 
   const selectCollision = (
@@ -576,7 +580,9 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
     e: React.MouseEvent<HTMLButtonElement>,
   ) => {
     const tile = collisionTileDefs[tileIndex];
-    if (!tile) return;
+    if (!tile) {
+      return;
+    }
     let value = tile.flag;
     const mask = tile.mask ?? 0xff;
     if (e.shiftKey && tile.multi) {
@@ -585,7 +591,9 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
           ? selectedTileType & mask & ~tile.flag
           : (selectedTileType & mask) | tile.flag;
     }
-    if (e.shiftKey && tile.extra !== undefined) value |= tile.extra;
+    if (e.shiftKey && tile.extra !== undefined) {
+      value |= tile.extra;
+    }
     dispatch(
       editorActions.setSelectedTileType({ tileType: value, tileMask: mask }),
     );
@@ -628,26 +636,33 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
             <FixedSpacer height={10} />
             <FormRow>
               <FormField name="">
-                <InputGroup>
-                  <TilesetSelect
-                    name="paintTilesetId"
-                    value={selectedTilesetId}
-                    onChange={selectTileset}
-                  />
-                  <InputGroupAppend>
-                    <Button
-                      variant={editingDefaults ? "primary" : "normal"}
-                      title={l10n("FIELD_EDIT_TILE_DEFAULTS")}
-                      onClick={() => setEditingDefaults(!editingDefaults)}
-                    >
-                      <PencilIcon />
-                    </Button>
-                  </InputGroupAppend>
-                </InputGroup>
+                {tilesets.length > 0 ? (
+                  <InputGroup>
+                    <TilesetSelect
+                      name="paintTilesetId"
+                      value={selectedTilesetId}
+                      onChange={selectTileset}
+                    />
+                    <InputGroupAppend>
+                      <Button
+                        variant={editingDefaults ? "primary" : "normal"}
+                        title={l10n("FIELD_EDIT_TILE_DEFAULTS")}
+                        onClick={() => setEditingDefaults(!editingDefaults)}
+                      >
+                        <PencilIcon />
+                      </Button>
+                    </InputGroupAppend>
+                  </InputGroup>
+                ) : (
+                  <Alert variant="warning">
+                    <strong>{l10n("MESSAGE_NO_TILESETS_FOUND")}</strong>
+                    <p>{l10n("MESSAGE_ADD_TILESET_FILES")}</p>
+                  </Alert>
+                )}
               </FormField>
             </FormRow>
           </FormContainer>
-          {editingDefaults && (
+          {editingDefaults && tilesets.length > 0 && (
             <>
               <TabBar
                 value={defaultEditMode}
