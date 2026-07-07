@@ -33,6 +33,7 @@ interface TilePaintState {
   lastPaintY: number;
   lastDrawX: number;
   lastDrawY: number;
+  isErasing: boolean;
   axisLock?: "horizontal" | "vertical";
 }
 
@@ -62,6 +63,7 @@ export const useTilePaintCursorMode = (): SceneCursorMode => {
     lastPaintY: -1,
     lastDrawX: -1,
     lastDrawY: -1,
+    isErasing: false,
   });
 
   const isStamp =
@@ -76,6 +78,7 @@ export const useTilePaintCursorMode = (): SceneCursorMode => {
       startY: number,
       endX?: number,
       endY?: number,
+      erase = editor.scenePaintEraser,
     ) => {
       const drawLine = endX !== undefined && endY !== undefined;
       const payload = {
@@ -84,7 +87,7 @@ export const useTilePaintCursorMode = (): SceneCursorMode => {
         tilesetId: selectedSceneTile.tilesetId,
         tileIndex: selectedSceneTile.tileIndex,
         autotile: selectedSceneTile.autotile,
-        erase: editor.scenePaintEraser,
+        erase,
         stamp: {
           width: selectedSceneTile.width,
           height: selectedSceneTile.height,
@@ -104,8 +107,14 @@ export const useTilePaintCursorMode = (): SceneCursorMode => {
   );
 
   const getStampLastPosition = useCallback(
-    (startX: number, startY: number, endX: number, endY: number) => {
-      if (!isStamp) {
+    (
+      startX: number,
+      startY: number,
+      endX: number,
+      endY: number,
+      erase = editor.scenePaintEraser,
+    ) => {
+      if (erase || !isStamp) {
         return undefined;
       }
 
@@ -120,7 +129,12 @@ export const useTilePaintCursorMode = (): SceneCursorMode => {
 
       return positions[positions.length - 1];
     },
-    [isStamp, selectedSceneTile.height, selectedSceneTile.width],
+    [
+      editor.scenePaintEraser,
+      isStamp,
+      selectedSceneTile.height,
+      selectedSceneTile.width,
+    ],
   );
 
   const onMouseDown = useCallback<SceneCursorMouseDownHandler>(
@@ -156,6 +170,10 @@ export const useTilePaintCursorMode = (): SceneCursorMode => {
       }
 
       const state = stateRef.current;
+      const isErasing =
+        editor.scenePaintEraser || e.raw.nativeEvent.which === 3;
+      const interactionIsStamp = isStamp && !isErasing;
+      state.isErasing = isErasing;
 
       if (state.sceneId !== e.sceneId || state.layerId !== layer.id) {
         state.lastPaintX = -1;
@@ -173,11 +191,17 @@ export const useTilePaintCursorMode = (): SceneCursorMode => {
         state.lastDrawX >= 0 &&
         state.lastDrawY >= 0;
       const stampLastPosition =
-        canDrawShiftLine && isStamp
-          ? getStampLastPosition(state.lastDrawX, state.lastDrawY, e.x, e.y)
+        canDrawShiftLine && interactionIsStamp
+          ? getStampLastPosition(
+              state.lastDrawX,
+              state.lastDrawY,
+              e.x,
+              e.y,
+              isErasing,
+            )
           : undefined;
 
-      if (canDrawShiftLine && isStamp && !stampLastPosition) {
+      if (canDrawShiftLine && interactionIsStamp && !stampLastPosition) {
         state.lastPaintX = state.lastDrawX;
         state.lastPaintY = state.lastDrawY;
       } else {
@@ -190,6 +214,7 @@ export const useTilePaintCursorMode = (): SceneCursorMode => {
           startY,
           canDrawShiftLine ? e.x : undefined,
           canDrawShiftLine ? e.y : undefined,
+          isErasing,
         );
         state.lastPaintX = stampLastPosition?.x ?? e.x;
         state.lastPaintY = stampLastPosition?.y ?? e.y;
@@ -243,15 +268,25 @@ export const useTilePaintCursorMode = (): SceneCursorMode => {
 
       const startX = state.lastPaintX >= 0 ? state.lastPaintX : targetX;
       const startY = state.lastPaintY >= 0 ? state.lastPaintY : targetY;
+      const interactionIsStamp = isStamp && !state.isErasing;
       const stampLastPosition = getStampLastPosition(
         startX,
         startY,
         targetX,
         targetY,
+        state.isErasing,
       );
 
-      if (!isStamp || stampLastPosition) {
-        paint(state.sceneId, state.layerId, startX, startY, targetX, targetY);
+      if (!interactionIsStamp || stampLastPosition) {
+        paint(
+          state.sceneId,
+          state.layerId,
+          startX,
+          startY,
+          targetX,
+          targetY,
+          state.isErasing,
+        );
         state.lastPaintX = stampLastPosition?.x ?? targetX;
         state.lastPaintY = stampLastPosition?.y ?? targetY;
         state.lastDrawX = stampLastPosition?.x ?? targetX;
