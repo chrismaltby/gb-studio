@@ -22,10 +22,34 @@ import { FlatList } from "ui/lists/FlatList";
 import { EntityListItemDnD } from "ui/lists/EntityListItemDnD";
 import renderTilemapLayerContextMenu from "components/world/contextMenus/renderTilemapLayerContextMenu";
 import ItemTypes from "renderer/lib/dnd/itemTypes";
+import styled, { css } from "styled-components";
 
 interface SceneTilemapLayersPaneProps {
   sceneId: string;
 }
+
+const VisibilityButton = styled.div<{ $visible: boolean }>`
+  button {
+    width: 24px;
+    margin-right: 5px;
+    svg {
+      margin: 0;
+      width: 12px;
+      height: 12px;
+      max-width: 12px;
+      max-height: 12px;
+
+      ${(props) =>
+        props.$visible
+          ? css`
+              fill: ${props.theme.colors.text};
+            `
+          : css`
+              opacity: 0.5;
+            `}
+    }
+  }
+`;
 
 const layerDragTypes = [ItemTypes.TILEMAP_LAYER];
 
@@ -155,27 +179,29 @@ const SceneTilemapLayersPane = ({ sceneId }: SceneTilemapLayersPaneProps) => {
                 );
               }}
               icon={
-                <Button
-                  size="small"
-                  variant="transparent"
-                  title={
-                    layer.visible
-                      ? l10n("FIELD_HIDE_LAYER")
-                      : l10n("FIELD_SHOW_LAYER")
-                  }
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    dispatch(
-                      entitiesActions.editTilemapLayer({
-                        sceneId,
-                        layerId: layer.id,
-                        changes: { visible: !layer.visible },
-                      }),
-                    );
-                  }}
-                >
-                  {layer.visible ? <EyeOpenIcon /> : <EyeClosedIcon />}
-                </Button>
+                <VisibilityButton $visible={layer.visible}>
+                  <Button
+                    size="small"
+                    variant="transparent"
+                    title={
+                      layer.visible
+                        ? l10n("FIELD_HIDE_LAYER")
+                        : l10n("FIELD_SHOW_LAYER")
+                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      dispatch(
+                        entitiesActions.editTilemapLayer({
+                          sceneId,
+                          layerId: layer.id,
+                          changes: { visible: !layer.visible },
+                        }),
+                      );
+                    }}
+                  >
+                    {layer.visible ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                  </Button>
+                </VisibilityButton>
               }
               rename={renameLayerId === layer.id}
               onRename={(name) => {
