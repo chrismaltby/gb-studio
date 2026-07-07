@@ -57,13 +57,36 @@ const Handle = styled.div<{ $edge: ResizeEdge }>`
 `;
 
 const Preview = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: absolute;
   z-index: 250;
   pointer-events: none;
   box-sizing: border-box;
   border: 2px solid ${(props) => props.theme.colors.highlight};
-  background: ${(props) => props.theme.colors.highlight};
-  opacity: 0.3;
+
+  span {
+    position: relative;
+    border-radius: 40px;
+    padding: 5px 10px;
+    background: ${(props) => props.theme.colors.highlight};
+    color: ${(props) => props.theme.colors.highlightText};
+  }
+
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: ${(props) => props.theme.colors.highlight};
+    opacity: 0.3;
+  }
 `;
 
 export const resizeGeometry = (
@@ -234,7 +257,11 @@ const SceneResizeHandles = ({
             width: preview.width * TILE_SIZE,
             height: preview.height * TILE_SIZE,
           }}
-        />
+        >
+          <span>
+            {preview.width} x {preview.height}
+          </span>
+        </Preview>
       )}
       {(["top", "right", "bottom", "left"] as ResizeEdge[]).map((edge) => (
         <Handle
