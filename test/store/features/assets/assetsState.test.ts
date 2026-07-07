@@ -83,3 +83,19 @@ test("Should replace existing warnings", () => {
     Date.now() - 1000,
   );
 });
+
+test("Should cache scene tilemap information", () => {
+  const action = actions.setSceneTilemapAssetInfo({
+    sceneId: "scene1",
+    warnings: ["warning 1"],
+    numTiles: 42,
+  });
+  const newState = reducer(initialState, action);
+  expect(newState.sceneTilemaps.scene1).toMatchObject({
+    warnings: ["warning 1"],
+    numTiles: 42,
+  });
+  expect(newState.sceneTilemaps.scene1.timestamp).toBeGreaterThan(
+    Date.now() - 1000,
+  );
+});

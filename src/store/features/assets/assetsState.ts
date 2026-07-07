@@ -17,17 +17,40 @@ type BackgroundAsset = {
 export interface AssetsState {
   backgroundsLoading: boolean;
   backgrounds: Record<string, BackgroundAsset>;
+  sceneTilemaps: Record<
+    string,
+    { numTiles: number; warnings: string[]; timestamp: number }
+  >;
 }
 
 export const initialState: AssetsState = {
   backgroundsLoading: false,
   backgrounds: {},
+  sceneTilemaps: {},
 };
 
 const assetsSlice = createSlice({
   name: "assets",
   initialState,
   reducers: {
+    loadSceneTilemapAssetInfo: (
+      _state,
+      _action: PayloadAction<{ sceneId: string }>,
+    ) => {},
+    setSceneTilemapAssetInfo: (
+      state,
+      action: PayloadAction<{
+        sceneId: string;
+        numTiles: number;
+        warnings: string[];
+      }>,
+    ) => {
+      state.sceneTilemaps[action.payload.sceneId] = {
+        numTiles: action.payload.numTiles,
+        warnings: action.payload.warnings,
+        timestamp: Date.now(),
+      };
+    },
     loadBackgroundAssetInfo: (
       state,
       _action: PayloadAction<{

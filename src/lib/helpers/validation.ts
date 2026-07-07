@@ -1,12 +1,16 @@
 import { compileImage } from "lib/compiler/compileImages";
+import compileSceneTilemaps from "lib/compiler/compileSceneTilemaps";
 import {
   Background,
   ColorCorrectionSetting,
   ColorModeSetting,
   Palette,
   TilesetAsset,
+  Scene,
+  Tileset,
 } from "shared/lib/resources/types";
 import { HexPalette } from "shared/lib/tiles/autoColor";
+import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 
 export interface BackgroundInfo {
   numTiles: number;
@@ -56,5 +60,37 @@ export const getBackgroundInfo = async (
       autoPalettes: [],
       attr: [],
     };
+  }
+};
+
+export interface SceneTilemapInfo {
+  numTiles: number;
+  warnings: string[];
+}
+
+export const getSceneTilemapInfo = async (
+  scene: SceneNormalized,
+  tilesets: Tileset[],
+  colorMode: ColorModeSetting,
+  autoTileFlipEnabled: boolean,
+  projectPath: string,
+): Promise<SceneTilemapInfo> => {
+  const warnings: string[] = [];
+  try {
+    const tilesetsLookup = Object.fromEntries(
+      tilesets.map((tileset) => [tileset.id, tileset]),
+    );
+    const [result] = await compileSceneTilemaps(
+      [scene as unknown as Scene],
+      tilesetsLookup,
+      colorMode,
+      projectPath,
+      autoTileFlipEnabled,
+      { warnings: (msg) => warnings.push(msg) },
+    );
+    return { numTiles: result?.tilesetLength ?? 0, warnings };
+  } catch (e) {
+    warnings.push(String(e));
+    return { numTiles: 0, warnings };
   }
 };

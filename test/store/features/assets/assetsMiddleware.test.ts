@@ -11,6 +11,46 @@ jest.mock("../../../__mocks__/apiMock");
 
 const mockedAPI = jest.mocked(API);
 const mockedGetBackgroundInfo = mockedAPI.project.getBackgroundInfo;
+const mockedGetSceneTilemapInfo = mockedAPI.project.getSceneTilemapInfo;
+
+test("Should debounce scene tilemap asset checks", async () => {
+  jest.useFakeTimers();
+  mockedGetSceneTilemapInfo.mockClear();
+  mockedGetSceneTilemapInfo.mockResolvedValue({ numTiles: 12, warnings: [] });
+  const scene = { id: "scene1", tilemap: { tilesets: [], layers: [] } };
+  const store = {
+    getState: () => ({
+      project: {
+        present: {
+          entities: {
+            scenes: { entities: { scene1: scene }, ids: ["scene1"] },
+            tilesets: { entities: {}, ids: [] },
+          },
+          settings: { colorMode: "mono", autoTileFlipEnabled: false },
+        },
+      },
+    }),
+    dispatch: jest.fn(),
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
+  const next = jest.fn();
+  const action = actions.loadSceneTilemapAssetInfo({ sceneId: "scene1" });
+
+  middleware(store)(next)(action);
+  middleware(store)(next)(action);
+  expect(mockedGetSceneTilemapInfo).not.toHaveBeenCalled();
+  jest.advanceTimersByTime(750);
+  await Promise.resolve();
+
+  expect(mockedGetSceneTilemapInfo).toHaveBeenCalledTimes(1);
+  expect(store.dispatch).toHaveBeenCalledWith(
+    actions.setSceneTilemapAssetInfo({
+      sceneId: "scene1",
+      numTiles: 12,
+      warnings: [],
+    }),
+  );
+  jest.useRealTimers();
+});
 
 test("Should trigger call to check background assets", async () => {
   mockedGetBackgroundInfo.mockClear();

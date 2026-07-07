@@ -18,6 +18,11 @@ const APIMock = {
         warnings: [],
         lookup: [],
       }),
+    getSceneTilemapInfo: () =>
+      Promise.resolve({
+        numTiles: 1,
+        warnings: [],
+      }),
   },
 
   music: {

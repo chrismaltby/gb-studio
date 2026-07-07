@@ -66,7 +66,7 @@ import {
   musicTemplatesRoot,
   THEME_SETTING_KEY,
 } from "consts";
-import { getBackgroundInfo } from "lib/helpers/validation";
+import { getBackgroundInfo, getSceneTilemapInfo } from "lib/helpers/validation";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import { guardAssetWithinProject } from "lib/helpers/assets";
 import type { Song } from "shared/lib/uge/types";
@@ -1779,6 +1779,18 @@ ipcMain.handle(
       projectRoot,
     );
   },
+);
+
+ipcMain.handle(
+  "project:get-scene-tilemap-info",
+  (_event, scene, tilesets, colorMode, autoTileFlipEnabled) =>
+    getSceneTilemapInfo(
+      scene,
+      tilesets,
+      colorMode,
+      autoTileFlipEnabled,
+      Path.dirname(projectPath),
+    ),
 );
 
 ipcMain.handle(

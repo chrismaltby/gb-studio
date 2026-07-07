@@ -5,6 +5,7 @@ import { RootState } from "store/storeTypes";
 import {
   backgroundSelectors,
   tilesetSelectors,
+  sceneSelectors,
 } from "store/features/entities/entitiesSelectors";
 import API from "renderer/lib/api";
 import { HexPalette } from "shared/lib/tiles/autoColor";
@@ -14,6 +15,9 @@ import {
   ColorModeSetting,
 } from "shared/lib/resources/types";
 import { DMG_PALETTE } from "consts";
+
+const sceneTilemapTimers = new Map<string, ReturnType<typeof setTimeout>>();
+const sceneTilemapRequests = new Map<string, number>();
 
 const generateAssetHash = (
   background: BackgroundAsset,
@@ -29,6 +33,35 @@ const generateAssetHash = (
 
 const assetsMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action) => {
+    if (actions.loadSceneTilemapAssetInfo.match(action)) {
+      const { sceneId } = action.payload;
+      const requestId = (sceneTilemapRequests.get(sceneId) ?? 0) + 1;
+      sceneTilemapRequests.set(sceneId, requestId);
+      const previousTimer = sceneTilemapTimers.get(sceneId);
+      if (previousTimer) clearTimeout(previousTimer);
+      sceneTilemapTimers.set(
+        sceneId,
+        setTimeout(() => {
+          sceneTilemapTimers.delete(sceneId);
+          const state = store.getState();
+          const scene = sceneSelectors.selectById(state, sceneId);
+          if (!scene?.tilemap) return;
+          API.project
+            .getSceneTilemapInfo(
+              scene,
+              tilesetSelectors.selectAll(state),
+              state.project.present.settings.colorMode,
+              state.project.present.settings.autoTileFlipEnabled,
+            )
+            .then((info) => {
+              if (sceneTilemapRequests.get(sceneId) !== requestId) return;
+              store.dispatch(
+                actions.setSceneTilemapAssetInfo({ sceneId, ...info }),
+              );
+            });
+        }, 750),
+      );
+    }
     if (
       actions.loadBackgroundAssetInfo.match(action) ||
       actions.extractBackgroundAssetInfo.match(action)

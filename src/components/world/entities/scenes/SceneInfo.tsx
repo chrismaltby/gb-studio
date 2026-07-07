@@ -10,7 +10,13 @@ import {
   SCREEN_WIDTH,
 } from "consts";
 import React, { memo, useCallback, useEffect, useState } from "react";
-import { useAppSelector, useAppSelectorPick, useAppStore } from "store/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useAppSelectorPick,
+  useAppStore,
+} from "store/hooks";
+import assetsActions from "store/features/assets/assetsActions";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -102,6 +108,7 @@ const SceneInfoButton = styled.div<SceneInfoButtonProps>`
 
 const SceneInfo = memo(({ sceneId }: SceneInfoProps) => {
   const store = useAppStore();
+  const dispatch = useAppDispatch();
 
   const scene = useAppSelectorPick(
     (state) => sceneSelectors.selectById(state, sceneId),
@@ -109,6 +116,7 @@ const SceneInfo = memo(({ sceneId }: SceneInfoProps) => {
       "id",
       "type",
       "backgroundId",
+      "tilesetId",
       "colorModeOverride",
       "spriteMode",
       "actors",
@@ -145,6 +153,18 @@ const SceneInfo = memo(({ sceneId }: SceneInfoProps) => {
   const backgroundNumTiles = useAppSelector(
     (state) => state.assets.backgrounds[scene?.backgroundId || ""]?.numTiles,
   );
+  const sceneTilemap = useAppSelector(
+    (state) => sceneSelectors.selectById(state, sceneId)?.tilemap,
+  );
+  const sceneTilemapNumTiles = useAppSelector(
+    (state) => state.assets.sceneTilemaps[sceneId]?.numTiles,
+  );
+  const autoTileFlipEnabled = useAppSelector(
+    (state) => state.project.present.settings.autoTileFlipEnabled,
+  );
+  const projectColorMode = useAppSelector(
+    (state) => state.project.present.settings.colorMode,
+  );
   const isCGBOnly = useAppSelector(
     (state) =>
       (state.project.present.settings.colorMode !== "mono" &&
@@ -160,6 +180,22 @@ const SceneInfo = memo(({ sceneId }: SceneInfoProps) => {
   const [tileCount, setTileCount] = useState(0);
   const [actorWarnings, setActorWarnings] = useState<string[]>([]);
   const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (sceneTilemap) {
+      dispatch(assetsActions.loadSceneTilemapAssetInfo({ sceneId }));
+    }
+  }, [
+    dispatch,
+    sceneId,
+    sceneTilemap,
+    scene?.width,
+    scene?.height,
+    scene?.colorModeOverride,
+    scene?.tilesetId,
+    autoTileFlipEnabled,
+    projectColorMode,
+  ]);
 
   const recalculateCounts = useCallback(() => {
     const state = store.getState();
@@ -449,7 +485,7 @@ const SceneInfo = memo(({ sceneId }: SceneInfoProps) => {
   const maxSpriteTiles =
     scene.type !== "LOGO"
       ? maxSpriteTilesForBackgroundTilesLength(
-          backgroundNumTiles,
+          sceneTilemap ? sceneTilemapNumTiles : backgroundNumTiles,
           isCGBOnly,
           spriteMode,
         )

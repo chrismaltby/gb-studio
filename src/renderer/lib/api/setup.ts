@@ -15,7 +15,7 @@ import type {
   ProjectExportType,
 } from "store/features/buildGame/buildGameActions";
 import type { SettingsState } from "store/features/settings/settingsState";
-import type { BackgroundInfo } from "lib/helpers/validation";
+import type { BackgroundInfo, SceneTilemapInfo } from "lib/helpers/validation";
 import type { Song } from "shared/lib/uge/types";
 import type { UGIInstrument } from "shared/lib/uge/ugiHelper";
 import type { PrecompiledSpriteSheetData } from "lib/compiler/compileSprites";
@@ -43,6 +43,7 @@ import {
   FontResourceAsset,
   MusicAsset,
   MusicResourceAsset,
+  Tileset,
   ProjectResources,
   SoundResourceAsset,
   Sprite,
@@ -281,6 +282,19 @@ const APISetup = {
         uiPalette,
         colorMode,
         colorCorrection,
+        autoTileFlipEnabled,
+      ),
+    getSceneTilemapInfo: (
+      scene: import("shared/lib/entities/entitiesTypes").SceneNormalized,
+      tilesets: Tileset[],
+      colorMode: ColorModeSetting,
+      autoTileFlipEnabled: boolean,
+    ): Promise<SceneTilemapInfo> =>
+      ipcRenderer.invoke(
+        "project:get-scene-tilemap-info",
+        scene,
+        tilesets,
+        colorMode,
         autoTileFlipEnabled,
       ),
     extractBackgroundMonoTiles: (
