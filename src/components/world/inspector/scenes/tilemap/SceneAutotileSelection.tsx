@@ -1,32 +1,17 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { TILE_SIZE } from "consts";
 import { AUTOTILE_VARIANT_MASKS } from "shared/lib/tiles/sceneTilemapData";
-
-const Wrapper = styled.div`
-  position: absolute;
-  outline: 1px solid ${(props) => props.theme.colors.highlightText};
-  border-left: 1px solid ${(props) => props.theme.colors.highlight};
-  border-top: 1px solid ${(props) => props.theme.colors.highlight};
-`;
+import { AutotileType } from "shared/lib/resources/types";
 
 const TileHint = styled.div`
   position: absolute;
   box-sizing: border-box;
   pointer-events: none;
-  border-right: 1px solid ${(props) => props.theme.colors.highlight};
-  border-bottom: 1px solid ${(props) => props.theme.colors.highlight};
+  border-right: 1px solid ${(props) => props.theme.colors.highlightText};
+  border-bottom: 1px solid ${(props) => props.theme.colors.highlightText};
   width: 8px;
   height: 8px;
-
-  &:after {
-    content: "";
-    display: block;
-    width: 7px;
-    height: 7px;
-    box-sizing: border-box;
-    border: 1px solid ${(props) => props.theme.colors.highlightText};
-  }
 `;
 
 const Connector = styled.div`
@@ -36,13 +21,46 @@ const Connector = styled.div`
   background: #00e5ff;
   width: 2px;
   height: 2px;
-  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5));
+`;
+
+const Wrapper = styled.div<{ $type: AutotileType }>`
+  position: absolute;
+  outline: 1px solid ${(props) => props.theme.colors.highlight};
+  box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 1);
+
+  ${(props) =>
+    props.$type === "2x2" &&
+    css`
+      width: ${TILE_SIZE * 4}px;
+      height: ${TILE_SIZE * 4}px;
+
+      ${TileHint}:nth-child(4n) {
+        border-right: 0;
+      }
+      ${TileHint}:nth-child(n + 13) {
+        border-bottom: 0;
+      }
+    `}
+
+  ${(props) =>
+    props.$type === "9slice" &&
+    css`
+      width: ${TILE_SIZE * 3}px;
+      height: ${TILE_SIZE * 3}px;
+
+      ${TileHint}:nth-child(3n) {
+        border-right: 0;
+      }
+      ${TileHint}:nth-child(n + 7) {
+        border-bottom: 0;
+      }
+    `}
 `;
 
 interface SceneAutotileSelectionProps {
   tileIndex: number;
   tilesetWidth: number;
-  type?: "2x2" | "9slice";
+  type?: AutotileType;
 }
 
 const SceneAutotileSelection = ({
@@ -56,11 +74,10 @@ const SceneAutotileSelection = ({
   if (type === "9slice") {
     return (
       <Wrapper
+        $type={type}
         style={{
           left: startX * TILE_SIZE,
           top: startY * TILE_SIZE,
-          width: 3 * TILE_SIZE,
-          height: 3 * TILE_SIZE,
         }}
       >
         {Array.from({ length: 9 }, (_, variant) => {
@@ -116,11 +133,10 @@ const SceneAutotileSelection = ({
 
   return (
     <Wrapper
+      $type={type}
       style={{
         left: startX * TILE_SIZE,
         top: startY * TILE_SIZE,
-        width: 4 * TILE_SIZE,
-        height: 4 * TILE_SIZE,
       }}
     >
       {AUTOTILE_VARIANT_MASKS.map((mask, variant) => {
