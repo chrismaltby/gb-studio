@@ -95,7 +95,6 @@ const PaletteSurface = styled.div`
 const TileSelection = styled.div`
   position: absolute;
   pointer-events: none;
-  // border: 1px solid ${(props) => props.theme.colors.highlight};
   box-sizing: border-box;
   outline: 1px solid ${(props) => props.theme.colors.highlight};
   box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 1);
@@ -162,14 +161,42 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
   const selectedLayerId = useAppSelector(
     (state) => state.editor.selectedTilemapLayerId,
   );
-  const selectedAutotile = selectedSceneTile?.autotile ?? false;
 
   const preferredTilesetId = useAppSelector(
     (state) => state.project.present.settings.selectedSceneTilesetId,
   );
+
   const selectedTileset = useAppSelector((state) =>
     tilesetSelectors.selectById(state, selectedTilesetId),
   );
+
+  const validAutotileType = useMemo(() => {
+    if (
+      !selectedTileset ||
+      selectedTileWidth !== 1 ||
+      selectedTileHeight !== 1 ||
+      selectedTileIndex < 0
+    ) {
+      return false;
+    }
+
+    return (
+      selectedTileset.autotiles?.find(
+        (definition) => definition.startTile === selectedTileIndex,
+      )?.type ?? false
+    );
+  }, [
+    selectedTileset,
+    selectedTileWidth,
+    selectedTileHeight,
+    selectedTileIndex,
+  ]);
+
+  const selectedAutotileType =
+    selectedSceneTile?.autotile && validAutotileType
+      ? validAutotileType
+      : false;
+
   const [paletteZoom, setPaletteZoom] = useState(200);
   const [editingDefaults, setEditingDefaults] = useState(false);
   const [defaultEditMode, setDefaultEditMode] = useState<string>("collisions");
@@ -227,17 +254,6 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
     [selectedTileset?.tileCollisions],
   );
 
-  const canAutotile =
-    Boolean(selectedTileset) &&
-    selectedTileWidth === 1 &&
-    selectedTileHeight === 1 &&
-    selectedTileIndex >= 0 &&
-    Boolean(
-      selectedTileset?.autotiles?.some(
-        (definition) => definition.startTile === selectedTileIndex,
-      ),
-    );
-
   const palettes = useMemo(
     () =>
       Array.from({ length: 8 }, (_, index) =>
@@ -260,10 +276,10 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
   );
 
   useEffect(() => {
-    if (selectedAutotile && !canAutotile) {
+    if (selectedSceneTile?.autotile && !validAutotileType) {
       dispatch(editorActions.setSelectedSceneTileAutotile(false));
     }
-  }, [canAutotile, dispatch, selectedAutotile]);
+  }, [dispatch, selectedSceneTile?.autotile, validAutotileType]);
 
   useEffect(() => {
     const clearDrag = () => {
@@ -411,7 +427,7 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
       if (autotileDefinition) {
         dragStart.current = undefined;
         const selectIndividualTile =
-          selectedAutotile &&
+          Boolean(selectedAutotileType) &&
           selectedTileIndex === autotileDefinition.startTile;
         dispatch(
           editorActions.selectSceneTileForPainting({
@@ -432,7 +448,7 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
     [
       dispatch,
       getTilePosition,
-      selectedAutotile,
+      selectedAutotileType,
       selectedTileIndex,
       selectedTileset,
       updateTileSelection,
@@ -836,19 +852,14 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
                         type={definition.type}
                       />
                     ))}
-                  {!editingDefaults && selectedAutotile && canAutotile && (
+                  {!editingDefaults && selectedAutotileType && (
                     <SceneAutotileSelection
                       tileIndex={selectedTileIndex}
                       tilesetWidth={selectedTileset.width}
-                      type={
-                        selectedTileset.autotiles?.find(
-                          (definition) =>
-                            definition.startTile === selectedTileIndex,
-                        )?.type
-                      }
+                      type={selectedAutotileType}
                     />
                   )}
-                  {!editingDefaults && (!selectedAutotile || !canAutotile) && (
+                  {!editingDefaults && !selectedAutotileType && (
                     <TileSelection
                       style={{
                         left:

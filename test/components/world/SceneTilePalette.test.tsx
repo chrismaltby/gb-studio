@@ -186,6 +186,8 @@ jest.mock("ui/icons/Icons", () => ({
   EraserIcon: () => null,
   PriorityTileIcon: () => null,
   ShieldIcon: () => null,
+  Autotile9SliceIcon: () => null,
+  Autotile2x2Icon: () => null,
 }));
 jest.mock("components/forms/PaletteBlock", () => () => null);
 jest.mock("components/collisions/CollisionTileIcon", () => ({

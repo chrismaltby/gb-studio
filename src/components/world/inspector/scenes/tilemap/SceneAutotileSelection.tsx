@@ -60,13 +60,13 @@ const Wrapper = styled.div<{ $type: AutotileType }>`
 interface SceneAutotileSelectionProps {
   tileIndex: number;
   tilesetWidth: number;
-  type?: AutotileType;
+  type: AutotileType;
 }
 
 const SceneAutotileSelection = ({
   tileIndex,
   tilesetWidth,
-  type = "2x2",
+  type,
 }: SceneAutotileSelectionProps) => {
   const startX = tileIndex % tilesetWidth;
   const startY = Math.floor(tileIndex / tilesetWidth);
