@@ -10,10 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add selection tool to collision and color painting modes, allowing a selection of tiles to be dragged or deleted
+- Add Tilemap scenes, allowing scenes to be built from tilesets and edited directly within the application
+- Add default collision, color, and priority properties for tilesets which are used when painting Tilemap scenes
+- Add autotile groups for tilesets, supporting 2x2 Wang tiles and 9-slice autotiles
 
 ### Changed
 
 - Improve actor and trigger dragging so entities keep their grabbed offset instead of snapping position to the cursor
+- Pressing `s` while creating a scene now toggles between creating an Image Scene or Tilemap Scene
 
 ### Fixed
 
