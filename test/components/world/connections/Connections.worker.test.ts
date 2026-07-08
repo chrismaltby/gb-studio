@@ -26,7 +26,14 @@ const request = (): ConnectionsWorkerRequest => ({
         {
           id: "actor1",
           scripts: [["switch"]],
-          overrides: { switch: { sceneId: "scene1" } },
+          overrides: {
+            switch: {
+              sceneId: "scene1",
+              x: { type: "number", value: 7 },
+              y: { type: "number", value: 8 },
+              direction: "left",
+            },
+          },
         },
       ],
       triggers: [],
@@ -53,6 +60,9 @@ const request = (): ConnectionsWorkerRequest => ({
       id: "switch",
       command: "EVENT_SWITCH_SCENE",
       sceneId: "scene2",
+      x: { type: "number", value: 1 },
+      y: { type: "number", value: 2 },
+      direction: "right",
     },
   },
   customEvents: { custom1: ["branch"] },
@@ -66,6 +76,9 @@ test("finds nested custom-event transitions and applies prefab overrides", () =>
       fromSceneId: "scene1",
       toSceneId: "scene2",
       entityId: "",
+      toX: 1,
+      toY: 2,
+      direction: "right",
     },
     {
       type: "actor",
@@ -73,6 +86,9 @@ test("finds nested custom-event transitions and applies prefab overrides", () =>
       fromSceneId: "scene1",
       toSceneId: "scene1",
       entityId: "actor1",
+      toX: 7,
+      toY: 8,
+      direction: "left",
     },
   ]);
 });

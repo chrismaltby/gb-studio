@@ -1,6 +1,11 @@
 import { EVENT_SWITCH_SCENE, MAX_NESTED_SCRIPT_DEPTH } from "consts";
 import uniqBy from "lodash/uniqBy";
-import { ShowConnectionsSetting } from "shared/lib/resources/types";
+import {
+  ActorDirection,
+  ShowConnectionsSetting,
+} from "shared/lib/resources/types";
+import { optimiseScriptValue } from "shared/lib/scriptValue/helpers";
+import { ensureScriptValue } from "shared/lib/scriptValue/types";
 
 // eslint-disable-next-line no-restricted-globals
 const workerCtx: Worker = self as unknown as Worker;
@@ -12,6 +17,9 @@ export interface ConnectionScriptEvent {
   command: string;
   sceneId?: string;
   customEventId?: string;
+  x?: unknown;
+  y?: unknown;
+  direction?: ActorDirection;
   commented?: boolean;
   children?: string[][];
 }
@@ -19,7 +27,16 @@ export interface ConnectionScriptEvent {
 export interface ConnectionScriptSource {
   id: string;
   scripts: string[][];
-  overrides?: Record<string, { sceneId?: string; customEventId?: string }>;
+  overrides?: Record<
+    string,
+    {
+      sceneId?: string;
+      customEventId?: string;
+      x?: unknown;
+      y?: unknown;
+      direction?: ActorDirection;
+    }
+  >;
 }
 
 export interface ConnectionScene extends ConnectionScriptSource {
@@ -46,6 +63,9 @@ export interface SceneTransition {
   fromSceneId: string;
   toSceneId: string;
   entityId: string;
+  toX: number;
+  toY: number;
+  direction?: ActorDirection;
 }
 
 interface WalkOptions {
@@ -54,12 +74,32 @@ interface WalkOptions {
   visitedCustomEvents: Set<string>;
 }
 
+const defaultCoord = {
+  type: "number",
+  value: 0,
+} as const;
+
+const eventDestinationCoord = (value: unknown): number => {
+  const scriptValue = optimiseScriptValue(
+    ensureScriptValue(value, defaultCoord),
+  );
+  return scriptValue.type === "number" ? scriptValue.value : 0;
+};
+
 const walkScript = (
   script: string[],
   events: ConnectionsWorkerRequest["events"],
   customEvents: ConnectionsWorkerRequest["customEvents"],
   options: WalkOptions,
-  callback: (event: ConnectionScriptEvent, sceneId?: string) => void,
+  callback: (
+    event: ConnectionScriptEvent,
+    resolvedArgs: {
+      sceneId?: string;
+      x?: unknown;
+      y?: unknown;
+      direction?: ActorDirection;
+    },
+  ) => void,
 ) => {
   for (const eventId of script) {
     const event = events[eventId];
@@ -68,7 +108,12 @@ const walkScript = (
     }
 
     const override = options.overrides?.[event.id];
-    callback(event, override?.sceneId ?? event.sceneId);
+    callback(event, {
+      sceneId: override?.sceneId ?? event.sceneId,
+      x: override?.x ?? event.x,
+      y: override?.y ?? event.y,
+      direction: override?.direction ?? event.direction,
+    });
 
     if (event.command !== "EVENT_CALL_CUSTOM_EVENT") {
       event.children?.forEach((child) =>
@@ -119,11 +164,11 @@ const getSceneConnections = (
           overrides: source.overrides,
           visitedCustomEvents: new Set(),
         },
-        (event, destinationSceneId) => {
+        (event, destination) => {
           if (
             event.command !== EVENT_SWITCH_SCENE ||
-            !destinationSceneId ||
-            !validSceneIds.has(destinationSceneId)
+            !destination.sceneId ||
+            !validSceneIds.has(destination.sceneId)
           ) {
             return;
           }
@@ -131,14 +176,17 @@ const getSceneConnections = (
           if (
             request.showConnections === "all" ||
             scene.id === request.selectedSceneId ||
-            destinationSceneId === request.selectedSceneId
+            destination.sceneId === request.selectedSceneId
           ) {
             connections.push({
               type,
               eventId: event.id,
               fromSceneId: scene.id,
-              toSceneId: destinationSceneId,
+              toSceneId: destination.sceneId,
               entityId: type === "scene" ? "" : source.id,
+              toX: eventDestinationCoord(destination.x),
+              toY: eventDestinationCoord(destination.y),
+              direction: destination.direction,
             });
           }
         },

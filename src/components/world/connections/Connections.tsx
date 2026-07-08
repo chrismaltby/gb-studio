@@ -34,8 +34,6 @@ import ConnectionsWorker, {
   SceneTransition,
 } from "./Connections.worker";
 import throttle from "lodash/throttle";
-import { optimiseScriptValue } from "shared/lib/scriptValue/helpers";
-import { ensureScriptValue } from "shared/lib/scriptValue/types";
 import { ActorDirection } from "shared/lib/resources/types";
 import type { RootState } from "store/storeTypes";
 import {
@@ -104,11 +102,6 @@ interface ConnectionGeometry {
   direction: ActorDirection | undefined;
 }
 
-const defaultCoord = {
-  type: "number",
-  value: 0,
-} as const;
-
 const ConnectionMarkerSVG = styled.g`
   pointer-events: all;
 
@@ -142,7 +135,10 @@ const buildConnectionsWorkerRequest = (
       .filter(
         ([, override]) =>
           override.args?.sceneId !== undefined ||
-          override.args?.customEventId !== undefined,
+          override.args?.customEventId !== undefined ||
+          override.args?.x !== undefined ||
+          override.args?.y !== undefined ||
+          override.args?.direction !== undefined,
       )
       .map(([id, override]) => [
         id,
@@ -155,6 +151,9 @@ const buildConnectionsWorkerRequest = (
             override.args?.customEventId === undefined
               ? undefined
               : String(override.args.customEventId),
+          x: override.args?.x,
+          y: override.args?.y,
+          direction: override.args?.direction as ActorDirection | undefined,
         },
       ]);
     return connectionOverrides.length
@@ -218,6 +217,9 @@ const buildConnectionsWorkerRequest = (
           event.args?.customEventId === undefined
             ? undefined
             : String(event.args.customEventId),
+        x: event.args?.x,
+        y: event.args?.y,
+        direction: event.args?.direction as ActorDirection | undefined,
         commented: !!event.args?.__comment,
         children: event.children
           ? Object.values(event.children).filter(
@@ -262,12 +264,18 @@ const scriptSourceTopologySignature = (
         .filter(
           ([, override]) =>
             override.args?.sceneId !== undefined ||
-            override.args?.customEventId !== undefined,
+            override.args?.customEventId !== undefined ||
+            override.args?.x !== undefined ||
+            override.args?.y !== undefined ||
+            override.args?.direction !== undefined,
         )
         .map(([id, override]) => [
           id,
           override.args?.sceneId,
           override.args?.customEventId,
+          override.args?.x,
+          override.args?.y,
+          override.args?.direction,
         ]),
   });
 
@@ -381,7 +389,7 @@ const useConnectionGeometry = (
 
   const scriptEvent = useAppSelectorPick(
     (state) => scriptEventSelectors.selectById(state, connection.eventId),
-    ["args", "command"],
+    ["command"],
   );
 
   const toScene = useAppSelectorPick(
@@ -414,15 +422,8 @@ const useConnectionGeometry = (
       return undefined;
     }
 
-    const scriptEventX = optimiseScriptValue(
-      ensureScriptValue(scriptEvent.args?.x, defaultCoord),
-    );
-    const scriptEventY = optimiseScriptValue(
-      ensureScriptValue(scriptEvent.args?.y, defaultCoord),
-    );
-
-    const toX = scriptEventX.type === "number" ? scriptEventX.value : 0;
-    const toY = scriptEventY.type === "number" ? scriptEventY.value : 0;
+    const toX = connection.toX;
+    const toY = connection.toY;
 
     let entityX = 0;
     let entityY = 0;
@@ -470,9 +471,19 @@ const useConnectionGeometry = (
       y2,
       qx,
       qy,
-      direction: scriptEvent.args?.direction as ActorDirection | undefined,
+      direction: connection.direction,
     };
-  }, [actor, connection.type, fromScene, scriptEvent, toScene, trigger]);
+  }, [
+    actor,
+    connection.direction,
+    connection.toX,
+    connection.toY,
+    connection.type,
+    fromScene,
+    scriptEvent,
+    toScene,
+    trigger,
+  ]);
 };
 
 const SceneConnection = memo(
@@ -559,6 +570,9 @@ const Connections = ({
         command: event.command,
         sceneId: event.args?.sceneId,
         customEventId: event.args?.customEventId,
+        x: event.args?.x,
+        y: event.args?.y,
+        direction: event.args?.direction,
         commented: !!event.args?.__comment,
         children: event.children,
       }),
