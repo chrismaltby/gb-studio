@@ -17,7 +17,7 @@ import {
   triggerSelectors,
 } from "store/features/entities/entitiesSelectors";
 import editorActions from "store/features/editor/editorActions";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import {
   useAppDispatch,
   useAppSelector,
@@ -51,13 +51,38 @@ interface ConnectionsProps {
   editable: boolean;
 }
 
-const ConnectionsSvg = styled.svg`
+const ConnectionMarkerSVG = styled.g`
+  pointer-events: all;
+
+  rect {
+    fill: rgb(0, 188, 212);
+  }
+
+  &:hover rect {
+    stroke: rgb(0, 188, 212);
+    stroke-width: 2px;
+  }
+`;
+
+const ConnectionsSvg = styled.svg<{ $isDragging: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
   stroke-width: 2px;
   pointer-events: none;
   z-index: 11;
+
+  &:hover {
+    z-index: 50;
+  }
+
+  ${(props) =>
+    props.$isDragging &&
+    css`
+      ${ConnectionMarkerSVG} {
+        pointer-events: none;
+      }
+    `}
 `;
 
 interface ConnectionMarkerProps {
@@ -101,19 +126,6 @@ interface ConnectionGeometry {
   qy: number;
   direction: ActorDirection | undefined;
 }
-
-const ConnectionMarkerSVG = styled.g`
-  pointer-events: all;
-
-  rect {
-    fill: rgb(0, 188, 212);
-  }
-
-  &:hover rect {
-    stroke: rgb(0, 188, 212);
-    stroke-width: 2px;
-  }
-`;
 
 const buildConnectionsWorkerRequest = (
   state: RootState,
@@ -451,9 +463,9 @@ const useConnectionGeometry = (
     }
 
     const x1 = fromScene.x + (entityX + entityWidth / 2) * 8;
-    const x2 = toScene.x + toX * 8 + 5;
+    const x2 = toScene.x + toX * 8 + 4;
     const y1 = 20 + fromScene.y + (entityY + entityHeight / 2) * 8;
-    const y2 = 20 + toScene.y + toY * 8 + 5;
+    const y2 = 20 + toScene.y + toY * 8 + 4;
 
     const xDiff = Math.abs(x1 - x2);
     const yDiff = Math.abs(y1 - y2);
@@ -532,6 +544,7 @@ const Connections = ({
     (state) => state.project.present.settings.showConnections,
   );
   const selectedSceneId = useAppSelector((state) => state.editor.scene);
+  const isDragging = useAppSelector((state) => !!state.editor.dragging);
 
   // These hooks recompute small signatures for comparison on a store update,
   // but retain their array identity when only geometry or presentation data
@@ -691,6 +704,7 @@ const Connections = ({
       style={{
         strokeWidth: 2 / zoomRatio,
       }}
+      $isDragging={isDragging}
     >
       {visibleConnections.map((connection) => (
         <SceneConnection

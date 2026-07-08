@@ -22,6 +22,7 @@ interface SceneStartMarkerProps {
 
 interface MarkerProps {
   $direction: ActorDirection | undefined;
+  $isDragging: boolean;
 }
 
 const Marker = styled.div<MarkerProps>`
@@ -37,6 +38,7 @@ const Marker = styled.div<MarkerProps>`
   justify-content: center;
   &:hover {
     outline: 2px solid rgb(255, 87, 34);
+    z-index: 50;
   }
 
   svg {
@@ -60,6 +62,12 @@ const Marker = styled.div<MarkerProps>`
         transform: rotate(180deg);
       `}
   }
+
+  ${(props) =>
+    props.$isDragging &&
+    css`
+      pointer-events: none;
+    `}
 `;
 
 const SceneStartMarker = memo(
@@ -79,6 +87,7 @@ const SceneStartMarker = memo(
       (state) => sceneSelectors.selectById(state, sceneId),
       ["x", "y"],
     );
+    const isDragging = useAppSelector((state) => !!state.editor.dragging);
 
     const onDragPlayerStart = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
@@ -105,6 +114,7 @@ const SceneStartMarker = memo(
           top: startY2,
         }}
         $direction={startDirection}
+        $isDragging={isDragging}
         onMouseDown={onDragPlayerStart}
       >
         <TriangleIcon />
