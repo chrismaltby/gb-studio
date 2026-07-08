@@ -1,133 +1,162 @@
 {
   "_resourceType": "trigger",
-  "id": "6cf16df1-aaab-4366-a332-ba4668305f1f",
-  "_index": 11,
-  "symbol": "trigger_11",
-  "prefabId": "",
+  "id": "ec5edcb7-be57-401a-aa87-aaaa46d17745",
   "name": "",
-  "x": 44,
-  "y": 28,
-  "width": 9,
-  "height": 1,
+  "prefabId": "",
+  "_index": 11,
+  "symbol": "trigger_55",
+  "x": 42,
+  "y": 42,
+  "width": 2,
+  "height": 10,
   "prefabScriptOverrides": {},
   "script": [
     {
-      "id": "8ca632e3-9666-4b6f-9c7b-0dbf2982d3b4",
-      "command": "EVENT_IF",
+      "id": "885b7568-0a34-4b6f-8486-a550bc355511",
+      "command": "EVENT_GROUP",
       "args": {
-        "variable": "10",
-        "__collapseElse": false,
-        "condition": {
-          "type": "eq",
-          "valueA": {
-            "type": "variable",
-            "value": "10"
-          },
-          "valueB": {
-            "type": "false"
-          }
-        }
+        "__label": "Flower Quest"
       },
       "children": {
         "true": [
           {
-            "id": "783d406a-974b-4aca-98c1-15ff90525af7",
-            "command": "EVENT_IF_ACTOR_AT_POSITION",
+            "id": "509d35db-45b6-4f63-80b0-b8114ebad47b",
+            "command": "EVENT_ACTOR_ACTIVATE",
             "args": {
-              "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
+              "actorId": "d4ff973f-bc1d-4074-bcbd-1901495320cf"
+            }
+          },
+          {
+            "id": "ec063dd9-15b2-4da2-84bf-f5453be18a76",
+            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+            "args": {
+              "actorId": "c4058748-207b-4686-9668-bff37e5bceea",
               "x": {
                 "type": "number",
-                "value": 36
+                "value": 0
               },
               "y": {
                 "type": "number",
-                "value": 24
+                "value": 1
               },
-              "__collapseElse": false,
-              "__collapse": false
-            },
-            "children": {
-              "true": [],
-              "false": [
-                {
-                  "id": "3424533e-b62f-4947-834c-c65395ed43bb",
-                  "command": "EVENT_ACTOR_SET_DIRECTION",
-                  "args": {
-                    "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
-                    "direction": {
-                      "type": "direction",
-                      "value": "down"
-                    }
-                  }
-                },
-                {
-                  "id": "7e752fa7-b623-4d8b-83f0-d3be1fb7e35d",
-                  "command": "EVENT_ACTOR_EMOTE",
-                  "args": {
-                    "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
-                    "emoteId": "c8d5eadd-dced-43df-8367-1e4d9bfc7923"
-                  }
-                },
-                {
-                  "id": "d5aa9121-5fd8-499b-a32b-1fdbf78991a0",
-                  "command": "EVENT_ACTOR_MOVE_TO",
-                  "args": {
-                    "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
-                    "x": {
-                      "type": "number",
-                      "value": 44
-                    },
-                    "y": {
-                      "type": "number",
-                      "value": 19
-                    },
-                    "moveType": "vertical",
-                    "useCollisions": false,
-                    "collideWith": []
-                  }
-                },
-                {
-                  "id": "35d3fc86-6e24-4e08-a5cf-7f891147511b",
-                  "command": "EVENT_ACTOR_MOVE_TO",
-                  "args": {
-                    "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
-                    "x": {
-                      "type": "number",
-                      "value": 38
-                    },
-                    "y": {
-                      "type": "number",
-                      "value": 21
-                    },
-                    "moveType": "horizontal",
-                    "useCollisions": false,
-                    "collideWith": []
-                  }
-                },
-                {
-                  "id": "3a2b8c40-54d3-4c74-89c2-c2d8bdd564f1",
-                  "command": "EVENT_ACTOR_MOVE_TO",
-                  "args": {
-                    "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
-                    "x": {
-                      "type": "number",
-                      "value": 36
-                    },
-                    "y": {
-                      "type": "number",
-                      "value": 24
-                    },
-                    "moveType": "horizontal",
-                    "useCollisions": false,
-                    "__collapse": false,
-                    "collideWith": []
-                  }
-                }
-              ]
+              "moveType": "horizontal",
+              "useCollisions": false,
+              "collideWith": []
+            }
+          },
+          {
+            "id": "c58b8c86-8953-4e1f-a291-61e4f4aa4bc6",
+            "command": "EVENT_ACTOR_SET_DIRECTION",
+            "args": {
+              "actorId": "d4ff973f-bc1d-4074-bcbd-1901495320cf",
+              "direction": {
+                "type": "direction",
+                "value": "left"
+              }
+            }
+          },
+          {
+            "id": "4a5a0e21-115d-422f-99ce-b8dae67a9571",
+            "command": "EVENT_ACTOR_EMOTE",
+            "args": {
+              "actorId": "d4ff973f-bc1d-4074-bcbd-1901495320cf",
+              "emoteId": "c8d5eadd-dced-43df-8367-1e4d9bfc7923"
+            }
+          },
+          {
+            "id": "c793ca73-9fa3-43cc-a161-6d7c6451bf6b",
+            "command": "EVENT_TEXT",
+            "args": {
+              "text": [
+                "HEY!!!\nKEEP OFF MY\nFLOWERS!"
+              ],
+              "avatarId": ""
+            }
+          },
+          {
+            "id": "b24fa254-aef9-4501-9794-bf962c2ec1cf",
+            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+            "args": {
+              "actorId": "$self$",
+              "x": {
+                "type": "number",
+                "value": -2
+              },
+              "y": {
+                "type": "number",
+                "value": 0
+              },
+              "moveType": "horizontal",
+              "useCollisions": false,
+              "collideWith": []
+            }
+          },
+          {
+            "id": "94a0cf8e-573e-4536-b304-aa72ddf64c99",
+            "command": "EVENT_ACTOR_SET_DIRECTION",
+            "args": {
+              "actorId": "player",
+              "direction": {
+                "type": "direction",
+                "value": "right"
+              }
+            }
+          },
+          {
+            "id": "cebdb057-4e2b-45d9-9559-0a50077bb8bb",
+            "command": "EVENT_ACTOR_SET_DIRECTION",
+            "args": {
+              "actorId": "d4ff973f-bc1d-4074-bcbd-1901495320cf",
+              "direction": {
+                "type": "direction",
+                "value": "up"
+              }
+            }
+          },
+          {
+            "id": "3f3e960e-1d6c-4746-9cf3-8a6ea2dd26b2",
+            "command": "EVENT_ACTOR_EMOTE",
+            "args": {
+              "actorId": "d4ff973f-bc1d-4074-bcbd-1901495320cf",
+              "emoteId": "62ecc274-3e8e-4f49-9da0-32ccab871f1f"
+            }
+          },
+          {
+            "id": "dab2bb00-c0bb-4931-ae1e-15ba98cf0d83",
+            "command": "EVENT_ACTOR_MOVE_RELATIVE",
+            "args": {
+              "actorId": "c4058748-207b-4686-9668-bff37e5bceea",
+              "x": {
+                "type": "number",
+                "value": 0
+              },
+              "y": {
+                "type": "number",
+                "value": -1
+              },
+              "moveType": "horizontal",
+              "useCollisions": false,
+              "collideWith": []
+            }
+          },
+          {
+            "id": "581637a3-5760-45f5-9a54-f9e507c69442",
+            "command": "EVENT_ACTOR_DEACTIVATE",
+            "args": {
+              "actorId": "d4ff973f-bc1d-4074-bcbd-1901495320cf"
+            }
+          },
+          {
+            "id": "6bd0cc2f-605a-41f8-8058-96a62ead4cd5",
+            "command": "EVENT_SET_VALUE",
+            "args": {
+              "variable": "6",
+              "value": {
+                "type": "true"
+              }
             }
           }
-        ],
-        "false": []
+        ]
       }
     }
   ],

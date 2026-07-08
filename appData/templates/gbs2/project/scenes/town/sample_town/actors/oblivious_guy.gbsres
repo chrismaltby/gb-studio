@@ -1,35 +1,35 @@
 {
   "_resourceType": "actor",
-  "id": "5cf6eb6c-be62-4efc-9cbb-14a8efac21a8",
-  "_index": 5,
-  "symbol": "actor_oblivious_guy",
-  "prefabId": "",
+  "id": "ac1d60bb-f3c2-4a34-ab78-ddc838d3960b",
   "name": "Oblivious Guy",
-  "coordinateType": "tiles",
-  "x": 18,
-  "y": 16,
   "frame": 0,
   "animate": false,
   "spriteSheetId": "dfa75239-299d-41fe-a6cd-9e9438da1938",
-  "paletteId": "",
+  "prefabId": "",
   "direction": "down",
   "moveSpeed": 1,
   "animSpeed": 15,
+  "paletteId": "",
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
   "collisionExtraFlags": [],
   "prefabScriptOverrides": {},
+  "_index": 1,
+  "symbol": "actor_33",
+  "coordinateType": "tiles",
+  "x": 17,
+  "y": 14,
   "script": [
     {
-      "id": "b1c3d75d-d579-47af-8f3e-4cd96178fbb0",
+      "id": "f977d164-985a-4d97-9e0e-13d7d9d3738b",
       "command": "EVENT_TEXT",
       "args": {
         "text": "Check out this\nsweet duck!"
       }
     },
     {
-      "id": "0830a973-dd64-44ad-ad07-a677a31a27aa",
+      "id": "525f75b9-5ada-4d9d-b40e-085ea4b097ac",
       "command": "EVENT_SET_VALUE",
       "args": {
         "variable": "15",
@@ -39,10 +39,10 @@
       }
     },
     {
-      "id": "8ffac2a0-a735-40f1-b51e-dd270cc09ba9",
+      "id": "9b6587a9-b8b9-4b93-b5c5-d0be16b3043f",
       "command": "EVENT_ACTOR_SET_DIRECTION",
       "args": {
-        "actorId": "5cf6eb6c-be62-4efc-9cbb-14a8efac21a8",
+        "actorId": "ac1d60bb-f3c2-4a34-ab78-ddc838d3960b",
         "direction": {
           "type": "direction",
           "value": "down"

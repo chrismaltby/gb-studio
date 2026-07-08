@@ -1,18 +1,18 @@
 {
   "_resourceType": "trigger",
-  "id": "cf13bc1e-d286-4ca5-96ac-981daeb62600",
-  "_index": 10,
-  "symbol": "trigger_10",
-  "prefabId": "",
+  "id": "05c30fa1-90af-4873-b736-7402f512bc03",
   "name": "",
-  "x": 34,
-  "y": 29,
-  "width": 10,
+  "prefabId": "",
+  "_index": 10,
+  "symbol": "trigger_53",
+  "x": 44,
+  "y": 28,
+  "width": 9,
   "height": 1,
   "prefabScriptOverrides": {},
   "script": [
     {
-      "id": "821c37fd-bef5-46cb-991f-921f9f9f942c",
+      "id": "863f2dc0-5cf6-41c7-88ab-19e79fe2c58c",
       "command": "EVENT_IF",
       "args": {
         "variable": "10",
@@ -31,17 +31,17 @@
       "children": {
         "true": [
           {
-            "id": "542c7717-13ee-407d-847f-df78b8000a05",
+            "id": "0d83aae8-cf47-4eaa-9c68-d04103a5a76d",
             "command": "EVENT_IF_ACTOR_AT_POSITION",
             "args": {
-              "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
+              "actorId": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
               "x": {
                 "type": "number",
-                "value": 47
+                "value": 36
               },
               "y": {
                 "type": "number",
-                "value": 25
+                "value": 24
               },
               "__collapseElse": false,
               "__collapse": false
@@ -50,10 +50,10 @@
               "true": [],
               "false": [
                 {
-                  "id": "416861aa-d34c-4628-a3d3-a5aa568853a2",
+                  "id": "a726204f-028c-4788-9275-842b9394fa23",
                   "command": "EVENT_ACTOR_SET_DIRECTION",
                   "args": {
-                    "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
+                    "actorId": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
                     "direction": {
                       "type": "direction",
                       "value": "down"
@@ -61,36 +61,18 @@
                   }
                 },
                 {
-                  "id": "c2ae4130-caa3-48f6-8976-a6b49b01a6b8",
+                  "id": "85486200-39f1-4a37-a1fb-5454656a5a85",
                   "command": "EVENT_ACTOR_EMOTE",
                   "args": {
-                    "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
+                    "actorId": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
                     "emoteId": "c8d5eadd-dced-43df-8367-1e4d9bfc7923"
                   }
                 },
                 {
-                  "id": "948ee671-779a-40d2-8f5a-ed696fc860d8",
+                  "id": "04204102-fa70-40eb-bfdc-785c973e1b40",
                   "command": "EVENT_ACTOR_MOVE_TO",
                   "args": {
-                    "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
-                    "x": {
-                      "type": "number",
-                      "value": 38
-                    },
-                    "y": {
-                      "type": "number",
-                      "value": 21
-                    },
-                    "moveType": "vertical",
-                    "useCollisions": false,
-                    "collideWith": []
-                  }
-                },
-                {
-                  "id": "54e8de9d-2933-447b-8b7d-5895e4cd4ee4",
-                  "command": "EVENT_ACTOR_MOVE_TO",
-                  "args": {
-                    "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
+                    "actorId": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
                     "x": {
                       "type": "number",
                       "value": 44
@@ -105,17 +87,35 @@
                   }
                 },
                 {
-                  "id": "9320bf19-49d6-410d-ad63-6c27ae1621ac",
+                  "id": "c9b4541c-04cb-4fd4-b5d3-18f06c310f8f",
                   "command": "EVENT_ACTOR_MOVE_TO",
                   "args": {
-                    "actorId": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
+                    "actorId": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
                     "x": {
                       "type": "number",
-                      "value": 47
+                      "value": 38
                     },
                     "y": {
                       "type": "number",
-                      "value": 25
+                      "value": 21
+                    },
+                    "moveType": "horizontal",
+                    "useCollisions": false,
+                    "collideWith": []
+                  }
+                },
+                {
+                  "id": "9dfad07b-7ec5-46a9-b908-f3aea8e3fc0d",
+                  "command": "EVENT_ACTOR_MOVE_TO",
+                  "args": {
+                    "actorId": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
+                    "x": {
+                      "type": "number",
+                      "value": 36
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 24
                     },
                     "moveType": "horizontal",
                     "useCollisions": false,

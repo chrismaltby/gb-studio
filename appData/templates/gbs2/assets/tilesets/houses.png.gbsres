@@ -1,0 +1,14 @@
+{
+  "_resourceType": "tileset",
+  "id": "7b9f1d42-c6ff-4110-ab7c-cd175a9cc684",
+  "name": "houses",
+  "symbol": "tileset_houses",
+  "width": 8,
+  "height": 10,
+  "tileColors": "1;2;1:4;4:2;1:6;4:2;1:6;4;-1;2;4;2:2;4;2;3:2;2:6;-1:2;2:6;-1:2;2:6;-1:2;2:6;-1:2;2;4;2:2;4;2;-1:2;2:6;-1:2",
+  "tileCollisions": "f:m;-1:2;f:6;-1:2;f:2;0:2;f:2;-1:2;f:6;-1:2;f:6;-1:2;f:6;-1:2;f:6;-1:2;f:2;0:2;f:2;-1:2",
+  "filename": "houses.png",
+  "imageWidth": 64,
+  "imageHeight": 80,
+  "autotiles": []
+}

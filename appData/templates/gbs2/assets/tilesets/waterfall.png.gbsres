@@ -5,6 +5,8 @@
   "symbol": "tileset_waterfall",
   "width": 4,
   "height": 2,
+  "tileColors": "1:8",
+  "tileCollisions": "",
   "imageWidth": 32,
   "imageHeight": 16,
   "filename": "waterfall.png"

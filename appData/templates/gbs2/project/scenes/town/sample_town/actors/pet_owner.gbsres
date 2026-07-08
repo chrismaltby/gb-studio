@@ -1,35 +1,35 @@
 {
   "_resourceType": "actor",
-  "id": "c73c195d-5cc8-4417-bdb0-b0c55c4b6188",
-  "_index": 2,
-  "symbol": "actor_pet_owner",
-  "prefabId": "",
+  "id": "05613397-de65-42af-8f8a-d5984af541c9",
   "name": "Pet Owner",
-  "coordinateType": "tiles",
-  "x": 24,
-  "y": 44,
   "frame": 0,
   "animate": false,
   "spriteSheetId": "52ad34df-f245-4b2a-b94c-a82af1002871",
-  "paletteId": "",
+  "prefabId": "",
   "direction": "down",
   "moveSpeed": 1,
   "animSpeed": 15,
+  "paletteId": "",
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
   "collisionExtraFlags": [],
   "prefabScriptOverrides": {},
+  "_index": 8,
+  "symbol": "actor_30",
+  "coordinateType": "tiles",
+  "x": 25,
+  "y": 44,
   "script": [
     {
-      "id": "137799a4-c0db-46dd-91c9-36c0e5386e3d",
+      "id": "e26f0693-f859-4a33-8c6e-2b8cda139ada",
       "command": "EVENT_TEXT",
       "args": {
         "text": "Have you seen my\ncat anywhere?"
       }
     },
     {
-      "id": "ef31c786-4d05-4ec4-9828-0b20bea82a50",
+      "id": "2cc58b42-ef7e-46bd-b3dd-eea51800be22",
       "command": "EVENT_IF",
       "args": {
         "variable": "13",
@@ -42,7 +42,7 @@
       "children": {
         "true": [
           {
-            "id": "a36892fc-7718-4107-b5b5-07b6c5eea254",
+            "id": "3dcaa654-6334-4a22-b232-4638444c69ac",
             "command": "EVENT_TEXT",
             "args": {
               "text": [
@@ -51,7 +51,7 @@
             }
           },
           {
-            "id": "d63037fd-1207-4d62-a104-170f4c817eeb",
+            "id": "50f69884-03f2-485b-9e88-62e51931ff1a",
             "command": "EVENT_SET_VALUE",
             "args": {
               "variable": "0",
@@ -68,7 +68,7 @@
   "startScript": [],
   "updateScript": [
     {
-      "id": "df3086d6-d8de-4585-90ec-86e30e1f6bc0",
+      "id": "0736d6fa-74d7-46a1-8b94-307ca0633bf9",
       "command": "EVENT_WAIT",
       "args": {
         "time": {
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "1cdbafd2-f869-4b98-9bfa-c0605295792b",
+      "id": "6ba9d659-9236-42db-9397-7e5a25e38f1d",
       "command": "EVENT_VARIABLE_MATH",
       "args": {
         "vectorX": "T0",
@@ -95,7 +95,7 @@
       }
     },
     {
-      "id": "fb2cbbea-950c-49da-8b5f-aaf298f8e543",
+      "id": "18c849ae-c78f-4ff5-9bb3-6bbb82945b01",
       "command": "EVENT_SWITCH",
       "args": {
         "variable": "T0",
@@ -185,7 +185,7 @@
       "children": {
         "true0": [
           {
-            "id": "6be1f7d7-c9b8-4b05-a4d7-9e1188c49d1e",
+            "id": "3a089709-340e-484f-9cb4-85de70e7454e",
             "command": "EVENT_ACTOR_MOVE_RELATIVE",
             "args": {
               "actorId": "$self$",
@@ -209,7 +209,7 @@
         ],
         "true1": [
           {
-            "id": "710bbb50-b788-40e3-b475-a8fcd3fa9c26",
+            "id": "82a48a70-4192-44b9-ae8b-2873017b327b",
             "command": "EVENT_ACTOR_MOVE_RELATIVE",
             "args": {
               "actorId": "$self$",
@@ -233,7 +233,7 @@
         ],
         "true2": [
           {
-            "id": "00169b2f-5915-44fb-b3cc-5713e0dea645",
+            "id": "066586cf-ebd5-4105-9ee1-e041e6869362",
             "command": "EVENT_ACTOR_MOVE_RELATIVE",
             "args": {
               "actorId": "$self$",
@@ -257,7 +257,7 @@
         ],
         "true3": [
           {
-            "id": "6065f155-545f-4ea6-a7f9-c3d16eb2d2b6",
+            "id": "778950d0-5371-4e41-835e-618548f4b8c0",
             "command": "EVENT_ACTOR_MOVE_RELATIVE",
             "args": {
               "actorId": "$self$",
@@ -293,7 +293,7 @@
         "true15": [],
         "false": [
           {
-            "id": "482fc26f-67cd-4e58-a848-a3e50d8122e4",
+            "id": "ae5fb6c0-2f80-41e9-80be-6706b4b810b8",
             "command": "EVENT_WAIT",
             "args": {
               "time": {

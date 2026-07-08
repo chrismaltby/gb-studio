@@ -160,6 +160,21 @@
       "id": "5fa52cd0-57cd-414c-8b93-5601c6e9636f__L0",
       "name": "Defeated",
       "symbol": "var_defeated_2"
+    },
+    {
+      "id": "f7a4eebd-b698-459e-abba-a63a1366c99c__L0",
+      "name": "Waterfall Tile",
+      "symbol": "var_waterfall_tile_0"
+    },
+    {
+      "id": "f7a4eebd-b698-459e-abba-a63a1366c99c__L1",
+      "name": "WaterTile",
+      "symbol": "var_watertile_0"
+    },
+    {
+      "id": "f7a4eebd-b698-459e-abba-a63a1366c99c__L2",
+      "name": "Flower Tile",
+      "symbol": "var_flower_tile_0"
     }
   ],
   "constants": []

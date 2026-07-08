@@ -15,7 +15,7 @@
       "id": "302de014-bd56-4255-8545-e53eea881997",
       "command": "EVENT_SWITCH_SCENE",
       "args": {
-        "sceneId": "94c18861-b352-4f49-a64d-52f2e3415077",
+        "sceneId": "4e26a44e-ca20-448d-b47a-9982231bf69f",
         "x": {
           "type": "number",
           "value": 44

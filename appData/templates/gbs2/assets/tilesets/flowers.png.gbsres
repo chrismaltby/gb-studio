@@ -5,6 +5,8 @@
   "symbol": "tileset_flowers",
   "width": 4,
   "height": 1,
+  "tileColors": "",
+  "tileCollisions": "",
   "imageWidth": 32,
   "imageHeight": 8,
   "filename": "flowers.png"

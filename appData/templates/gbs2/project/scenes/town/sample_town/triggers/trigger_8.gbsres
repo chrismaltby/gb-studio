@@ -1,40 +1,115 @@
 {
   "_resourceType": "trigger",
-  "id": "b8145b02-efce-4214-8be1-3a9f6850a8a1",
-  "_index": 7,
-  "symbol": "trigger_7",
-  "prefabId": "",
+  "id": "a08823ef-bce4-42ea-bc1b-f3df6b0cfdc2",
   "name": "",
-  "x": 16,
-  "y": 40,
-  "width": 2,
+  "prefabId": "",
+  "_index": 7,
+  "symbol": "trigger_54",
+  "x": 47,
+  "y": 20,
+  "width": 6,
   "height": 1,
   "prefabScriptOverrides": {},
   "script": [
     {
-      "id": "c3d7fe25-7111-461e-88c1-ede54ab30c2c",
-      "command": "EVENT_TEXT",
+      "id": "4fb07d86-f4aa-4c71-bbec-5f70b7e745b9",
+      "command": "EVENT_IF",
       "args": {
-        "text": "Locked...",
-        "avatarId": ""
-      }
-    },
-    {
-      "id": "41d62a66-81ce-423b-9a7f-3be48197adcb",
-      "command": "EVENT_ACTOR_MOVE_RELATIVE",
-      "args": {
-        "actorId": "$self$",
-        "x": {
-          "type": "number",
-          "value": 0
-        },
-        "y": {
-          "type": "number",
-          "value": 1
-        },
-        "moveType": "horizontal",
-        "useCollisions": false,
-        "collideWith": []
+        "variable": "10",
+        "__collapseElse": false,
+        "condition": {
+          "type": "eq",
+          "valueA": {
+            "type": "variable",
+            "value": "10"
+          },
+          "valueB": {
+            "type": "false"
+          }
+        }
+      },
+      "children": {
+        "true": [
+          {
+            "id": "121ac5e8-22ac-42ef-a160-a6b7f17aff0f",
+            "command": "EVENT_IF_ACTOR_AT_POSITION",
+            "args": {
+              "actorId": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
+              "x": {
+                "type": "number",
+                "value": 36
+              },
+              "y": {
+                "type": "number",
+                "value": 24
+              },
+              "__collapseElse": false,
+              "__collapse": false
+            },
+            "children": {
+              "true": [],
+              "false": [
+                {
+                  "id": "40ae2cf5-6ffb-442e-aa19-9e8fa649de2d",
+                  "command": "EVENT_ACTOR_SET_DIRECTION",
+                  "args": {
+                    "actorId": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
+                    "direction": {
+                      "type": "direction",
+                      "value": "up"
+                    }
+                  }
+                },
+                {
+                  "id": "03f09b74-8d7b-41b7-9cb6-128ea2e05e46",
+                  "command": "EVENT_ACTOR_EMOTE",
+                  "args": {
+                    "actorId": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
+                    "emoteId": "c8d5eadd-dced-43df-8367-1e4d9bfc7923"
+                  }
+                },
+                {
+                  "id": "a29218b8-f3c4-4826-89e5-f784e4567d45",
+                  "command": "EVENT_ACTOR_MOVE_TO",
+                  "args": {
+                    "actorId": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
+                    "x": {
+                      "type": "number",
+                      "value": 42
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 30
+                    },
+                    "moveType": "vertical",
+                    "useCollisions": false,
+                    "collideWith": []
+                  }
+                },
+                {
+                  "id": "ff737e76-c2a3-436a-998f-f74d3a0dcb0e",
+                  "command": "EVENT_ACTOR_MOVE_TO",
+                  "args": {
+                    "actorId": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
+                    "x": {
+                      "type": "number",
+                      "value": 36
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 24
+                    },
+                    "moveType": "horizontal",
+                    "useCollisions": false,
+                    "__collapse": false,
+                    "collideWith": []
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "false": []
       }
     }
   ],

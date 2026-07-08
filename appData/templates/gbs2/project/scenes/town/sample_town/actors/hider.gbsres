@@ -1,28 +1,28 @@
 {
   "_resourceType": "actor",
-  "id": "8e54ced2-d4e9-4eb9-9dcf-b6122f973ace",
-  "_index": 7,
-  "symbol": "actor_hider",
-  "prefabId": "",
+  "id": "4348bd46-83d5-4efc-8cc5-daf3c40f4552",
   "name": "Hider",
-  "coordinateType": "tiles",
-  "x": 36,
-  "y": 24,
   "frame": 0,
   "animate": false,
   "spriteSheetId": "46a3db76-878e-4896-892b-d1afa7d5e2f0",
-  "paletteId": "",
+  "prefabId": "",
   "direction": "down",
   "moveSpeed": 1,
   "animSpeed": 15,
+  "paletteId": "",
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
   "collisionExtraFlags": [],
   "prefabScriptOverrides": {},
+  "_index": 6,
+  "symbol": "actor_35",
+  "coordinateType": "tiles",
+  "x": 36,
+  "y": 24,
   "script": [
     {
-      "id": "687b8207-3228-4376-8517-bb7327e777fb",
+      "id": "65f0aa0d-ffec-4915-8d93-c9c696828a96",
       "command": "EVENT_ACTOR_EMOTE",
       "args": {
         "actorId": "$self$",
@@ -30,7 +30,7 @@
       }
     },
     {
-      "id": "2c8ba53e-becc-4a5f-8b4f-a34e41ad48f9",
+      "id": "a9ad2df8-a16e-495c-a257-1c4824ed33e8",
       "command": "EVENT_TEXT",
       "args": {
         "text": [
@@ -39,7 +39,7 @@
       }
     },
     {
-      "id": "226d1384-37ce-44f8-a831-aa3f84c9e478",
+      "id": "d9e2f0cd-ed7f-4dca-8a42-97e151efd8ae",
       "command": "EVENT_SET_VALUE",
       "args": {
         "variable": "10",

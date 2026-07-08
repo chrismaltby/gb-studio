@@ -1,28 +1,28 @@
 {
   "_resourceType": "actor",
-  "id": "a85c4ba5-9bc0-4daa-94bc-4ef68a690659",
-  "_index": 4,
-  "symbol": "actor_angry_guy",
-  "prefabId": "",
+  "id": "447d6507-bec0-4698-a915-e85e37d3c412",
   "name": "Angry Guy",
-  "coordinateType": "tiles",
-  "x": 18,
-  "y": 24,
   "frame": 0,
   "animate": false,
   "spriteSheetId": "dfa75239-299d-41fe-a6cd-9e9438da1938",
-  "paletteId": "",
+  "prefabId": "",
   "direction": "up",
   "moveSpeed": 1,
   "animSpeed": 15,
+  "paletteId": "",
   "isPinned": false,
   "persistent": false,
   "collisionGroup": "",
   "collisionExtraFlags": [],
   "prefabScriptOverrides": {},
+  "_index": 2,
+  "symbol": "actor_32",
+  "coordinateType": "tiles",
+  "x": 17,
+  "y": 23,
   "script": [
     {
-      "id": "81f7693e-8544-4bb2-bf47-b8963fe90982",
+      "id": "6dd7a171-3763-4394-98c0-d90ad5f60698",
       "command": "EVENT_IF",
       "args": {
         "variable": "15",
@@ -34,14 +34,14 @@
       "children": {
         "true": [
           {
-            "id": "a991435c-89ad-4303-b6f0-a18054cc0ea7",
+            "id": "d0f2c6ef-5c55-4e19-ae64-d85ccbcce8bc",
             "command": "EVENT_TEXT",
             "args": {
               "text": "I guess it was a\nmisunderstanding."
             }
           },
           {
-            "id": "be420a1a-743e-4afc-a997-daf721708b34",
+            "id": "c31f2eb0-b906-4743-ba3d-c7292e1edd7c",
             "command": "EVENT_SET_VALUE",
             "args": {
               "variable": "4",
@@ -53,17 +53,17 @@
         ],
         "false": [
           {
-            "id": "1063f8a8-90b7-4126-b6e4-1daf7c359c87",
+            "id": "1b772224-ad71-46c8-8d5a-a3b2f6e594b8",
             "command": "EVENT_TEXT",
             "args": {
               "text": "What is that guy\nlooking at?"
             }
           },
           {
-            "id": "7a86534c-dd9f-4005-b2e7-c880ea3f9014",
+            "id": "18a5933f-d24b-4c2b-b415-95b22e0dce28",
             "command": "EVENT_ACTOR_SET_DIRECTION",
             "args": {
-              "actorId": "a85c4ba5-9bc0-4daa-94bc-4ef68a690659",
+              "actorId": "447d6507-bec0-4698-a915-e85e37d3c412",
               "direction": {
                 "type": "direction",
                 "value": "up"

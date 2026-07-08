@@ -1,0 +1,19 @@
+{
+  "_resourceType": "tileset",
+  "id": "023b39d6-1be3-412c-a70a-ea0a9e1e4b59",
+  "name": "terrain",
+  "symbol": "tileset_terrain",
+  "width": 16,
+  "height": 16,
+  "tileColors": "0:3;2;1;2;-1:a;1:4;-1:c;1:4;-1:c;1:4;-1:c;1:4;-1:c;0:8;-1:8;0:8;-1:8;0:8;-1:8;0;2:2;0:5;-1:8;2:a;-1:6;2:a;-1:6;0;2:4;-1:23",
+  "tileCollisions": "-1:g;f:4;-1:c;f:4;-1:c;f:4;-1:d;f:3;-1:c;0;f:2;0;f:4;-1:8;f:8;-1:8;f:8;-1:9;f:2;-1;f:4;-1:8;f:8;-1:8;f:8;-1:9;f;0:2;f;-1:23",
+  "filename": "terrain.png",
+  "imageWidth": 128,
+  "imageHeight": 128,
+  "autotiles": [
+    {
+      "type": "2x2",
+      "startTile": 16
+    }
+  ]
+}
