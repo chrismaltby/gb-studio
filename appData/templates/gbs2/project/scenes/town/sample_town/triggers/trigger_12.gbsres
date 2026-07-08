@@ -30,7 +30,7 @@
             "id": "ec063dd9-15b2-4da2-84bf-f5453be18a76",
             "command": "EVENT_ACTOR_MOVE_RELATIVE",
             "args": {
-              "actorId": "c4058748-207b-4686-9668-bff37e5bceea",
+              "actorId": "d4ff973f-bc1d-4074-bcbd-1901495320cf",
               "x": {
                 "type": "number",
                 "value": 0
@@ -125,7 +125,7 @@
             "id": "dab2bb00-c0bb-4931-ae1e-15ba98cf0d83",
             "command": "EVENT_ACTOR_MOVE_RELATIVE",
             "args": {
-              "actorId": "c4058748-207b-4686-9668-bff37e5bceea",
+              "actorId": "d4ff973f-bc1d-4074-bcbd-1901495320cf",
               "x": {
                 "type": "number",
                 "value": 0
