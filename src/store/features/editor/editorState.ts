@@ -16,6 +16,7 @@ import {
   BRUSH_SLOPE,
   MAX_ZOOM_LEVEL,
   BRUSH_SELECTION,
+  TOOL_TILES,
 } from "consts";
 import { zoomIn, zoomOut } from "shared/lib/helpers/zoom";
 import { ScriptEventParentType } from "shared/lib/entities/entitiesTypes";
@@ -404,6 +405,15 @@ const editorSlice = createSlice({
           action.payload.tool !== "colors")
       ) {
         state.selectedBrush = BRUSH_8PX;
+      }
+      // If switching to tile paint, select scene if possible
+      if (
+        state.tool === TOOL_TILES &&
+        (state.type === "actor" || state.type === "trigger") &&
+        state.scene
+      ) {
+        state.type = "scene";
+        state.entityId = "";
       }
     },
 
