@@ -98,6 +98,44 @@ export const AUTOTILE_VARIANT_MASKS: readonly number[] = [
   8, 6, 13, 12, 5, 14, 15, 11, 2, 3, 7, 9, 0, 4, 10, 1,
 ];
 
+export const autotileGroupSize = (type: AutotileType): number =>
+  type === "9slice" ? 3 : 4;
+
+export const isAutotileDefinitionWithinBounds = (
+  definition: AutotileDefinition,
+  width: number,
+  height: number,
+): boolean => {
+  if (width <= 0 || height <= 0) {
+    return false;
+  }
+  const x = definition.startTile % width;
+  const y = Math.floor(definition.startTile / width);
+  const groupSize = autotileGroupSize(definition.type);
+  return x + groupSize <= width && y + groupSize <= height;
+};
+
+export const isTileWithinAutotileDefinition = (
+  tileIndex: number,
+  tilesetWidth: number,
+  definition: AutotileDefinition,
+): boolean => {
+  if (tilesetWidth <= 0) {
+    return false;
+  }
+  const clickedX = tileIndex % tilesetWidth;
+  const clickedY = Math.floor(tileIndex / tilesetWidth);
+  const groupX = definition.startTile % tilesetWidth;
+  const groupY = Math.floor(definition.startTile / tilesetWidth);
+  const groupSize = autotileGroupSize(definition.type);
+  return (
+    clickedX >= groupX &&
+    clickedX < groupX + groupSize &&
+    clickedY >= groupY &&
+    clickedY < groupY + groupSize
+  );
+};
+
 // Inverse lookup: connectivity mask to tile offset within the variant block.
 const AUTOTILE_MASK_TO_VARIANT: readonly number[] = [
   12, 15, 8, 9, 13, 4, 1, 10, 0, 11, 14, 7, 3, 2, 5, 6,
@@ -441,10 +479,11 @@ export const isSceneAutotileDefinitionValid = (
   const ref = decodeSceneTileRef(definition.startTile, tilesetLookup);
   const entry = ref ? tilesetLookup.entries[ref.tilesetIndex] : undefined;
   if (!ref || !entry || entry.width <= 0) return false;
-  const x = ref.tileIndex % entry.width;
-  const y = Math.floor(ref.tileIndex / entry.width);
-  const groupSize = definition.type === "9slice" ? 3 : 4;
-  return x + groupSize <= entry.width && y + groupSize <= entry.height;
+  return isAutotileDefinitionWithinBounds(
+    { ...definition, startTile: ref.tileIndex },
+    entry.width,
+    entry.height,
+  );
 };
 
 export const remapSceneAutotileDefinitions = (

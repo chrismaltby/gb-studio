@@ -49,6 +49,10 @@ import ScenePriorityMap from "components/world/entities/scenes/ScenePriorityMap"
 import SceneCollisions from "components/world/entities/scenes/SceneCollisions";
 import SceneAutotileSelection from "components/world/inspector/scenes/tilemap/SceneAutotileSelection";
 import TilesetUnsetDefaultsOverlay from "components/world/inspector/scenes/tilemap/TilesetUnsetDefaultsOverlay";
+import {
+  isAutotileDefinitionWithinBounds,
+  isTileWithinAutotileDefinition,
+} from "shared/lib/tiles/sceneTilemapData";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { FormContainer, FormField, FormRow } from "ui/form/layout/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
@@ -408,20 +412,12 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
       e.preventDefault();
 
       const clickedIndex = position.y * selectedTileset.width + position.x;
-      const autotileDefinition = selectedTileset.autotiles?.find(
-        (definition) => {
-          const groupX = definition.startTile % selectedTileset.width;
-          const groupY = Math.floor(
-            definition.startTile / selectedTileset.width,
-          );
-          const groupSize = definition.type === "9slice" ? 3 : 4;
-          return (
-            position.x >= groupX &&
-            position.x < groupX + groupSize &&
-            position.y >= groupY &&
-            position.y < groupY + groupSize
-          );
-        },
+      const autotileDefinition = selectedTileset.autotiles?.find((definition) =>
+        isTileWithinAutotileDefinition(
+          clickedIndex,
+          selectedTileset.width,
+          definition,
+        ),
       );
 
       if (autotileDefinition) {
@@ -458,15 +454,41 @@ const SceneTilemapPalettePane = ({ sceneId }: SceneTilemapPalettePaneProps) => {
   const toggleAutotileGroup = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       const position = getTilePosition(e);
-      if (!selectedTileset || !position) return;
+      if (!selectedTileset || !position) {
+        return;
+      }
       e.preventDefault();
+      const tileIndex = position.y * selectedTileset.width + position.x;
+      const existingDefinition = selectedTileset.autotiles?.find((definition) =>
+        isTileWithinAutotileDefinition(
+          tileIndex,
+          selectedTileset.width,
+          definition,
+        ),
+      );
+      const isValidAutotile = isAutotileDefinitionWithinBounds(
+        { type: autotileType, startTile: tileIndex },
+        selectedTileset.width,
+        selectedTileset.height,
+      );
       dispatch(
         entitiesActions.toggleTilesetAutotileGroup({
           tilesetId: selectedTileset.id,
-          tileIndex: position.y * selectedTileset.width + position.x,
+          tileIndex,
           type: autotileType,
         }),
       );
+      if (!existingDefinition && isValidAutotile) {
+        dispatch(
+          editorActions.selectSceneTileForPainting({
+            tilesetId: selectedTileset.id,
+            tileIndex,
+            tilesetWidth: selectedTileset.width,
+            autotile: true,
+            activateTool: false,
+          }),
+        );
+      }
     },
     [autotileType, dispatch, getTilePosition, selectedTileset],
   );

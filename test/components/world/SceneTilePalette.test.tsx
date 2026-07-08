@@ -501,15 +501,26 @@ test("clicking in autotile defaults mode toggles a tileset group", () => {
   fireEvent.click(screen.getByTestId("defaults-autotiles"));
   mockDispatch.mockClear();
 
-  fireEvent.mouseDown(surface, { clientX: 20, clientY: 20 });
+  fireEvent.mouseDown(surface, { clientX: 8, clientY: 8 });
 
   expect(dispatched("entities/toggleTilesetAutotileGroup")[0]?.payload).toEqual(
     {
       tilesetId: "tileset1",
-      tileIndex: 22,
+      tileIndex: 11,
       type: "2x2",
     },
   );
+  expect(dispatched("editor/setSelectedSceneTile")[0]?.payload).toEqual(
+    expect.objectContaining({
+      tilesetId: "tileset1",
+      tileIndex: 11,
+      tilesetWidth: 10,
+    }),
+  );
+  expect(dispatched("editor/setSelectedSceneTileAutotile")[0]?.payload).toBe(
+    true,
+  );
+  expect(dispatched("editor/setTool")).toHaveLength(0);
 });
 
 test("selecting 9 Slice toggles a generic 9-slice definition", () => {
@@ -530,6 +541,38 @@ test("selecting 9 Slice toggles a generic 9-slice definition", () => {
       type: "9slice",
     },
   );
+  expect(dispatched("editor/setSelectedSceneTile")[0]?.payload).toEqual(
+    expect.objectContaining({
+      tilesetId: "tileset1",
+      tileIndex: 22,
+      tilesetWidth: 10,
+    }),
+  );
+  expect(dispatched("editor/setSelectedSceneTileAutotile")[0]?.payload).toBe(
+    true,
+  );
+  expect(dispatched("editor/setTool")).toHaveLength(0);
+});
+
+test("clicking an existing autotile group removes it without selecting it for painting", () => {
+  mockTilesets[0].autotiles.push({ type: "2x2", startTile: 11 });
+  render(<SceneTilePalette sceneId="scene1" />);
+  const surface = enterDefaultsMode();
+  fireEvent.click(screen.getByTestId("defaults-autotiles"));
+  mockDispatch.mockClear();
+
+  fireEvent.mouseDown(surface, { clientX: 16, clientY: 16 });
+
+  expect(dispatched("entities/toggleTilesetAutotileGroup")[0]?.payload).toEqual(
+    {
+      tilesetId: "tileset1",
+      tileIndex: 22,
+      type: "2x2",
+    },
+  );
+  expect(dispatched("editor/setSelectedSceneTile")).toHaveLength(0);
+  expect(dispatched("editor/setSelectedSceneTileAutotile")).toHaveLength(0);
+  expect(dispatched("editor/setTool")).toHaveLength(0);
 });
 
 test("invalid selections disable autotile painting", () => {

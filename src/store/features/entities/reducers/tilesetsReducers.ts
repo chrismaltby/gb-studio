@@ -8,6 +8,8 @@ import {
   buildSceneTilesetLookup,
   decodeSceneTileRef,
   encodeSceneTileRef,
+  isAutotileDefinitionWithinBounds,
+  isTileWithinAutotileDefinition,
   isSceneAutotileDefinitionValid,
   remapSceneAutotileDefinitions,
 } from "shared/lib/tiles/sceneTilemapData";
@@ -137,8 +139,11 @@ export const updateTilemapReferencesForTilesets = (
             .map((definition) => {
               const x = definition.startTile % oldWidth;
               const y = Math.floor(definition.startTile / oldWidth);
-              const groupSize = definition.type === "9slice" ? 3 : 4;
-              return x + groupSize <= nextWidth && y + groupSize <= nextHeight
+              return isAutotileDefinitionWithinBounds(
+                { ...definition, startTile: y * nextWidth + x },
+                nextWidth,
+                nextHeight,
+              )
                 ? { ...definition, startTile: y * nextWidth + x }
                 : undefined;
             })
@@ -380,26 +385,22 @@ const toggleTilesetAutotileGroup: CaseReducer<
 
   const autotiles = tileset.autotiles ?? [];
   const type = action.payload.type ?? "2x2";
-  const clickedX = action.payload.tileIndex % tileset.width;
-  const clickedY = Math.floor(action.payload.tileIndex / tileset.width);
 
   // Find existing overlapping autotile
-  const existingDefinition = autotiles.find((definition) => {
-    const groupX = definition.startTile % tileset.width;
-    const groupY = Math.floor(definition.startTile / tileset.width);
-    const groupSize = definition.type === "9slice" ? 3 : 4;
-    return (
-      clickedX >= groupX &&
-      clickedX < groupX + groupSize &&
-      clickedY >= groupY &&
-      clickedY < groupY + groupSize
-    );
-  });
+  const existingDefinition = autotiles.find((definition) =>
+    isTileWithinAutotileDefinition(
+      action.payload.tileIndex,
+      tileset.width,
+      definition,
+    ),
+  );
 
-  const groupSize = type === "9slice" ? 3 : 4;
-  const isValidAutotile =
-    clickedX + groupSize <= tileset.width &&
-    clickedY + groupSize <= tileset.height;
+  const nextDefinition = { type, startTile: action.payload.tileIndex };
+  const isValidAutotile = isAutotileDefinitionWithinBounds(
+    nextDefinition,
+    tileset.width,
+    tileset.height,
+  );
 
   let nextAutotiles: AutotileDefinition[] = autotiles;
 
@@ -410,10 +411,7 @@ const toggleTilesetAutotileGroup: CaseReducer<
     );
   } else if (isValidAutotile) {
     // Autotile didn't exist but is valid, add it
-    nextAutotiles = [
-      ...autotiles,
-      { type, startTile: action.payload.tileIndex },
-    ];
+    nextAutotiles = [...autotiles, nextDefinition];
   }
 
   if (nextAutotiles !== autotiles) {
