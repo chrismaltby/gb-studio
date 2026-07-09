@@ -3876,16 +3876,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/notarize@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@electron/notarize@npm:3.1.1"
-  dependencies:
-    debug: "npm:^4.4.0"
-    promise-retry: "npm:^2.0.1"
-  checksum: 10c0/1e9adc0cafc1c2e79c39a41c97de912d6a899d661de506301310e17c569dc2885c9729c21840ceb70871f2e648ab983d3731149c6dc4ea354a001ad463c83e7e
-  languageName: node
-  linkType: hard
-
 "@electron/osx-sign@npm:^1.0.5":
   version: 1.0.5
   resolution: "@electron/osx-sign@npm:1.0.5"
@@ -6741,24 +6731,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/electron-devtools-installer@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "@types/electron-devtools-installer@npm:4.0.0"
-  dependencies:
-    electron-devtools-installer: "npm:*"
-  checksum: 10c0/b695de4c1ba35dc28c3355a6dc18ede03fb687de93711e5028f2cab92738780265addba754bafd6414a79ba542cad3d7340aa2aac20f90a4f491bf05c417ee88
-  languageName: node
-  linkType: hard
-
-"@types/electron-settings@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@types/electron-settings@npm:4.0.2"
-  dependencies:
-    electron-settings: "npm:*"
-  checksum: 10c0/55e0322e2b199c87fd530b84f3f87ad9e4d2b8c4cd5e037c8f1f7e1bbb83eb0946fce22ab5a4a4e419dce65c4aae57557e6db2f2871cec02fd4d76fb243a427e
-  languageName: node
-  linkType: hard
-
 "@types/estree@npm:0.0.39":
   version: 0.0.39
   resolution: "@types/estree@npm:0.0.39"
@@ -8536,16 +8508,6 @@ __metadata:
   bin:
     atob: bin/atob.js
   checksum: 10c0/ada635b519dc0c576bb0b3ca63a73b50eefacf390abb3f062558342a8d68f2db91d0c8db54ce81b0d89de3b0f000de71f3ae7d761fd7d8cc624278fe443d6c7e
-  languageName: node
-  linkType: hard
-
-"atomically@npm:^2.0.1":
-  version: 2.1.1
-  resolution: "atomically@npm:2.1.1"
-  dependencies:
-    stubborn-fs: "npm:^2.0.0"
-    when-exit: "npm:^2.1.4"
-  checksum: 10c0/8813decdea834eab9b95c63ae3762355e9182e718b49be50153539bb52f727851f5096ef180f84901572dac31c51cb113a3bf3dda12fa633a16bc58f49ba003d
   languageName: node
   linkType: hard
 
@@ -10352,7 +10314,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^4.4.0, debug@npm:^4.4.3":
+"debug@npm:^4.4.3":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
   dependencies:
@@ -10632,7 +10594,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dnd-core@npm:^16.0.1":
+"dnd-core@npm:16.0.1, dnd-core@npm:^16.0.1":
   version: 16.0.1
   resolution: "dnd-core@npm:16.0.1"
   dependencies:
@@ -10813,7 +10775,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-devtools-installer@npm:*, electron-devtools-installer@npm:^4.0.0":
+"electron-devtools-installer@npm:^4.0.0":
   version: 4.0.0
   resolution: "electron-devtools-installer@npm:4.0.0"
   dependencies:
@@ -10875,22 +10837,6 @@ __metadata:
   bin:
     electron-installer-redhat: src/cli.js
   conditions: (os=darwin | os=linux)
-  languageName: node
-  linkType: hard
-
-"electron-settings@npm:*":
-  version: 5.0.0
-  resolution: "electron-settings@npm:5.0.0"
-  dependencies:
-    atomically: "npm:^2.0.1"
-    lodash.get: "npm:^4.4.2"
-    lodash.has: "npm:^4.5.2"
-    lodash.set: "npm:^4.3.2"
-    lodash.unset: "npm:^4.5.2"
-    mkdirp: "npm:^1.0.4"
-  peerDependencies:
-    electron: ">= 2"
-  checksum: 10c0/f85cbb8e95091b17cc6a0ef701057d8ad6b520ad06069779c0c2b63f263ad29045b67a132556fec85034fa5a54f2029777e4af00f4b9703a89a77beca4b0a316
   languageName: node
   linkType: hard
 
@@ -12947,7 +12893,6 @@ __metadata:
     "@electron-forge/plugin-fuses": "npm:^7.11.2"
     "@electron-forge/plugin-webpack": "npm:^7.11.2"
     "@electron/fuses": "npm:^1.8.0"
-    "@electron/notarize": "npm:^3.1.1"
     "@jitl/quickjs-singlefile-browser-release-sync": "npm:^0.31.0"
     "@jitl/quickjs-singlefile-cjs-debug-sync": "npm:^0.31.0"
     "@jitl/quickjs-singlefile-cjs-release-sync": "npm:^0.31.0"
@@ -12971,8 +12916,6 @@ __metadata:
     "@testing-library/react": "npm:^16.0.1"
     "@types/adm-zip": "npm:^0.5.5"
     "@types/chroma-js": "npm:^2.4.4"
-    "@types/electron-devtools-installer": "npm:^4.0.0"
-    "@types/electron-settings": "npm:^4.0.2"
     "@types/fs-extra": "npm:^9.0.8"
     "@types/jest": "npm:^29.5.12"
     "@types/lodash": "npm:^4.17.0"
@@ -13003,6 +12946,7 @@ __metadata:
     cross-env: "npm:^7.0.3"
     css-loader: "npm:^6.0.0"
     diff: "npm:^8.0.3"
+    dnd-core: "npm:16.0.1"
     electron: "npm:42.3.3"
     electron-devtools-installer: "npm:^4.0.0"
     electron-settings: "npm:^4.0.4"
@@ -16038,13 +15982,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.has@npm:^4.5.2":
-  version: 4.5.2
-  resolution: "lodash.has@npm:4.5.2"
-  checksum: 10c0/3ffa9e549f321996a5fdf6204494c035ff550b2df703f936a448c553131bbb55492b4e7995bb13500648b50b268ed8afc974a7a0c0a43744d28d61cc95cb1ffe
-  languageName: node
-  linkType: hard
-
 "lodash.memoize@npm:4.x":
   version: 4.1.2
   resolution: "lodash.memoize@npm:4.1.2"
@@ -16077,13 +16014,6 @@ __metadata:
   version: 4.5.0
   resolution: "lodash.uniq@npm:4.5.0"
   checksum: 10c0/262d400bb0952f112162a320cc4a75dea4f66078b9e7e3075ffbc9c6aa30b3e9df3cf20e7da7d566105e1ccf7804e4fbd7d804eee0b53de05d83f16ffbf41c5e
-  languageName: node
-  linkType: hard
-
-"lodash.unset@npm:^4.5.2":
-  version: 4.18.0
-  resolution: "lodash.unset@npm:4.18.0"
-  checksum: 10c0/e724a133a3dc29185198401785f33bfea6f06d5b5274b15f1493811bf19bd554d01d1571c1a1a87a7714545a5af0ddfe9e71adf29231477414d7aa5aaa38877b
   languageName: node
   linkType: hard
 
@@ -20769,22 +20699,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stubborn-fs@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "stubborn-fs@npm:2.0.0"
-  dependencies:
-    stubborn-utils: "npm:^1.0.1"
-  checksum: 10c0/31a60c9b2a61ce380b688f2649acaeff63cb0f2503bb6820c3ccd4f3af584c6310a48efa41b40c16b1717f1728572ed887c2c88650955c776a088228797e8d0e
-  languageName: node
-  linkType: hard
-
-"stubborn-utils@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "stubborn-utils@npm:1.0.2"
-  checksum: 10c0/e65c5820d02c993df55c88e938796c2fb2f3a6d3dc247c961d1e4be4d6d88c355283f4b74157e89d1a1a761d66b5ae79560a416384241a7d3b4e8ba8f1ff5a78
-  languageName: node
-  linkType: hard
-
 "style-loader@npm:^3.0.0, style-loader@npm:^3.3.1":
   version: 3.3.4
   resolution: "style-loader@npm:3.3.4"
@@ -22444,13 +22358,6 @@ __metadata:
     tr46: "npm:^1.0.1"
     webidl-conversions: "npm:^4.0.2"
   checksum: 10c0/2785fe4647690e5a0225a79509ba5e21fdf4a71f9de3eabdba1192483fe006fc79961198e0b99f82751557309f17fc5a07d4d83c251aa5b2f85ba71e674cbee9
-  languageName: node
-  linkType: hard
-
-"when-exit@npm:^2.1.4":
-  version: 2.1.5
-  resolution: "when-exit@npm:2.1.5"
-  checksum: 10c0/7db41b28c98456b784c25780ca327653f233c6eb7b25d4ce251d04519828cbd609fb6d10548caf9031d4d6fab2999d6f6911c32e1731efab24c93a522573470d
   languageName: node
   linkType: hard
 
