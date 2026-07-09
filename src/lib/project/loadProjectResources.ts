@@ -104,7 +104,7 @@ export const loadProjectResources = async (
             path: pathToPosix(path.relative(projectRoot, projectResourcePath)),
             data: resourceData,
           };
-        } catch (e) {
+        } catch {
           console.error("Failed to load resource: " + projectResourcePath);
           return undefined;
         }

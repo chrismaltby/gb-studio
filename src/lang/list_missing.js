@@ -27,7 +27,7 @@ const en = require(`${__dirname}/en.json`);
 let translation = {};
 try {
   translation = require(`${__dirname}/${locale}.json`);
-} catch (e) {
+} catch {
   console.log(`Translation file not found ${locale}.json`);
   console.log("Creating...");
   console.log("");

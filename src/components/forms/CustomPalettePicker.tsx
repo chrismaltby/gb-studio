@@ -504,7 +504,7 @@ const CustomPalettePicker = ({ paletteId }: CustomPalettePickerProps) => {
           updateCurrentColor(rawHexToClosestRepresentableRawHex(hexString));
         }
         initialiseColorValues(hexString, selectedColor);
-      } catch (err) {
+      } catch {
         // Clipboard isn't pastable, just ignore it
       }
     },

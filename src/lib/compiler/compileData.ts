@@ -207,7 +207,7 @@ const ensureProjectAsset = async (
       warnings(
         `${relativePath} was missing, copying default file to project assets`,
       );
-  } catch (e) {
+  } catch {
     // Don't need to catch this, if it failed then the file already exists
     // and we can safely continue.
   }

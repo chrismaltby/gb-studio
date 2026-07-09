@@ -368,7 +368,7 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
     }
 
     return stack.length === 1 ? stack[0] : zero;
-  } catch (e) {
+  } catch {
     return zero;
   }
 };

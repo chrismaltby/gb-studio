@@ -13,8 +13,7 @@ import cloneDeep from "lodash/cloneDeep";
 
 const globAsync = promisify(glob);
 
-const themeIds = ["dark", "light"] as const;
-type ThemeId = (typeof themeIds)[number];
+type ThemeId = "dark" | "light";
 
 const themes: Record<ThemeId, ThemeInterface> = {
   light: lightTheme,

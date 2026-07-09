@@ -26,7 +26,7 @@ export const clearAppCacheOlderThan = async (tmpPath: string, age: number) => {
       if (stats.isFile() && stats.mtimeMs < cutoffTime) {
         await unlink(file);
       }
-    } catch (err) {
+    } catch {
       // Ignore errors (e.g. file not found)
     }
   }

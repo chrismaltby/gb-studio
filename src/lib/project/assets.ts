@@ -124,7 +124,7 @@ export const getAssetResource = async <T extends TSchema>(
     const resourcePath = filename + ".gbsres";
     const resourceData = await readJson(resourcePath);
     return Value.Cast(resourceType, resourceData);
-  } catch (e) {
+  } catch {
     console.log("No .gbsres exists yet for file: " + filename);
   }
   return undefined;

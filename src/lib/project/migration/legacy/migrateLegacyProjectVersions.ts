@@ -69,7 +69,7 @@ const ensureProjectAssetSync = (
       errorOnExist: true,
     });
     chmodSync(projectPath, 0o644);
-  } catch (e) {
+  } catch {
     // Don't need to catch this, if it failed then the file already exists
     // and we can safely continue.
   }
@@ -1571,7 +1571,7 @@ const migrateFrom200r15Tor16Avatars = (
           overwrite: false,
           errorOnExist: true,
         });
-      } catch (e) {}
+      } catch {}
     }
   });
 

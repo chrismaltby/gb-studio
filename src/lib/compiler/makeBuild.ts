@@ -248,11 +248,11 @@ export const cancelBuildCommandsInProgress = async () => {
     for (const childChild of spawnedChildren) {
       try {
         process.kill(Number(childChild.PID));
-      } catch (e) {}
+      } catch {}
     }
     try {
       child.kill();
-    } catch (e) {}
+    } catch {}
   }
 };
 

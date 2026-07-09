@@ -49,7 +49,7 @@ const needsUpdate = (latestVersion: string) => {
       return semverGt(latestVersion, currentVersion);
     }
     return false;
-  } catch (e) {
+  } catch {
     return false;
   }
 };
@@ -68,7 +68,7 @@ export const checkForUpdate = async (force?: boolean) => {
       if (!latestVersion) {
         throw new Error("NO_LATEST");
       }
-    } catch (e) {
+    } catch {
       // If explicitly asked to check latest version and checking failed
       // (no internet connection / github down)
       // Show an error message

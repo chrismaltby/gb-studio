@@ -43,6 +43,7 @@
     "import/prefer-default-export": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-empty-function": 0,
+    "@typescript-eslint/no-require-imports": 0,
     "camelcase": [
       "error",
       {

@@ -31,7 +31,7 @@ const clearAppCache = async () => {
       await Promise.allSettled(keys.map((key) => caches.delete(key)));
     }
     window.location.reload();
-  } catch (e) {
+  } catch {
     // ignore
   }
 

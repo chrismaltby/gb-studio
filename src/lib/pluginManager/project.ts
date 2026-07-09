@@ -20,7 +20,7 @@ export const getPluginsInProject = async (projectPath: string) => {
           version: pluginJSON.version,
         });
       }
-    } catch (e) {
+    } catch {
       console.error("Error: Unable to parse " + pluginPath);
     }
   }

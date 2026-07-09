@@ -172,6 +172,11 @@ export interface ThemeInterface {
 }
 
 declare module "styled-components" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface DefaultTheme extends ThemeInterface {}
+  export interface DefaultTheme {
+    name: ThemeInterface["name"];
+    type: ThemeInterface["type"];
+    typography: ThemeInterface["typography"];
+    colors: ThemeInterface["colors"];
+    borderRadius: ThemeInterface["borderRadius"];
+  }
 }

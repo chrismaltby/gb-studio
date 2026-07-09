@@ -77,7 +77,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
             debugEnabled,
           },
         );
-      } catch (e) {
+      } catch {
         dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
         dispatch(navigationActions.setSection("world"));
         dispatch(debuggerActions.setIsLogOpen(true));
@@ -115,7 +115,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       };
       try {
         await API.project.exportProject(project, engineSchema, exportType);
-      } catch (e) {
+      } catch {
         dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
         dispatch(navigationActions.setSection("world"));
         dispatch(debuggerActions.setIsLogOpen(true));

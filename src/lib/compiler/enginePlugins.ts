@@ -187,7 +187,7 @@ export const applyEnginePlugins = async ({
           })}`,
         );
       }
-    } catch (e) {
+    } catch {
       warnings(
         `${l10n("WARNING_ENGINE_PLUGIN_MISSING_MANIFEST", {
           pluginName,
