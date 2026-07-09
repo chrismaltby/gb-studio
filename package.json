@@ -71,6 +71,7 @@
     "commander": "^6.2.0",
     "copy-webpack-plugin": "^9.0.0",
     "diff": "^8.0.3",
+    "dnd-core": "16.0.1",
     "electron-devtools-installer": "^4.0.0",
     "electron-settings": "^4.0.4",
     "electron-squirrel-startup": "^1.0.1",
