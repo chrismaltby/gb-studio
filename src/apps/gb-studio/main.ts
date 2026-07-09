@@ -407,6 +407,21 @@ export const createProjectWindow = async () => {
     sendToProjectWindow("app:is-full-screen:changed", false);
   });
 
+  projectWindow.webContents.on("before-input-event", (event, input) => {
+    const isSelectAllShortcut =
+      input.type === "keyDown" &&
+      input.key.toLowerCase() === "a" &&
+      input.control &&
+      !input.meta &&
+      !input.alt &&
+      !input.shift;
+
+    if (process.platform !== "darwin" && isSelectAllShortcut) {
+      event.preventDefault();
+      sendToProjectWindow("menu:select-all");
+    }
+  });
+
   projectWindow.on("page-title-updated", (e, title) => {
     documentName = title
       .replace(/^GB Studio -/, "")
