@@ -22,7 +22,7 @@
         },
         "y": {
           "type": "number",
-          "value": 14
+          "value": 15
         },
         "direction": "down",
         "fadeSpeed": "2"
