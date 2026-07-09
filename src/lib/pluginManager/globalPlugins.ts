@@ -40,7 +40,7 @@ export const getPluginsInstalledGlobally = async () => {
           version: pluginJSON.version,
         });
       }
-    } catch (e) {
+    } catch {
       console.error("Error: Unable to parse " + pluginPath);
     }
   }

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
-
 /**
  * Untrusted Script Event Handler Loader (QuickJS)
  *
@@ -32,6 +30,8 @@ import {
 export const QuickJS = newQuickJSWASMModuleFromVariant(quickJSVariant);
 
 const TIMEOUT_MS = 600000; // 10 minutes
+
+type UnknownFunction = (this: unknown, ...args: unknown[]) => unknown;
 
 /**
  * Proxy factory for creating lazy proxies in the VM
@@ -166,11 +166,11 @@ const createOnInvokeHandler = (
       let callResult: unknown;
 
       if (typeof hostObj === "function") {
-        callResult = (hostObj as Function)(...callArgs);
+        callResult = (hostObj as UnknownFunction)(...callArgs);
       } else {
         const prop = (hostObj as Record<string, unknown>)[path];
         if (typeof prop === "function") {
-          callResult = (prop as Function).call(hostObj, ...callArgs);
+          callResult = (prop as UnknownFunction).call(hostObj, ...callArgs);
         } else {
           throw new Error(`Property ${path} is not a function`);
         }
@@ -547,7 +547,7 @@ class PersistentVM {
       case "function":
         return this.vm.newFunction(value.name || "anonymous", (...vmArgs) => {
           const jsArgs = vmArgs.map((arg) => this.handleToJsValue(arg));
-          const result = (value as Function)(...jsArgs);
+          const result = (value as UnknownFunction)(...jsArgs);
           return this.jsValueToHandle(result, useProxies);
         });
       case "object":
@@ -572,7 +572,7 @@ class PersistentVM {
           if (typeof val === "function") {
             const fn = this.vm.newFunction(key, (...vmArgs) => {
               const jsArgs = vmArgs.map((arg) => this.handleToJsValue(arg));
-              const result = (val as Function)(...jsArgs);
+              const result = (val as UnknownFunction)(...jsArgs);
               return this.jsValueToHandle(result, useProxies);
             });
             this.vm.setProp(obj, key, fn);

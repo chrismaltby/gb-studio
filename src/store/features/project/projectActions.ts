@@ -25,17 +25,14 @@ export type ProjectData = ProjectEntitiesData & {
   settings: SettingsState;
 };
 
-const saveSteps = [
-  "saving",
-  "normalizing",
-  "compressing",
-  "checksums",
-  "patching",
-  "writing",
-  "complete",
-] as const;
-
-export type SaveStep = (typeof saveSteps)[number];
+export type SaveStep =
+  | "saving"
+  | "normalizing"
+  | "compressing"
+  | "checksums"
+  | "patching"
+  | "writing"
+  | "complete";
 
 export const denormalizeProject = (project: {
   entities: EntitiesState;

@@ -87,13 +87,13 @@ const ejectBuild = async ({
     let ejectedEngineVersion;
     try {
       ejectedEngineVersion = await readEngineVersion(ejectedEngineMetaPath);
-    } catch (e) {
+    } catch {
       try {
         const ejectedEngineVersionLegacyPath = `${localCorePath}/engine_version`;
         ejectedEngineVersion = await readEngineVersionLegacy(
           ejectedEngineVersionLegacyPath,
         );
-      } catch (e2) {
+      } catch {
         ejectedEngineVersion = "";
       }
     }
@@ -108,7 +108,7 @@ const ejectBuild = async ({
         })}\n\n${ejectEngineChangelog(ejectedEngineVersion)}`,
       );
     }
-  } catch (e) {
+  } catch {
     progress(l10n("COMPILER_LOCAL_ENGINE_NOT_FOUND"));
   }
 

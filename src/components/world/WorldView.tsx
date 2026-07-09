@@ -647,7 +647,7 @@ const WorldView = () => {
           );
         }
         dispatch(clipboardActions.pasteClipboardEntity());
-      } catch (err) {
+      } catch {
         // Clipboard isn't pastable, just ignore it
       }
     },

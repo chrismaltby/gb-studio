@@ -56,7 +56,7 @@ export const loadLanguage = (locale: string) => {
         setL10NData(translation);
         return translation;
       }
-    } catch (e) {
+    } catch {
       console.warn("No language pack for user setting, falling back to en");
       console.warn(
         `Add a language pack by making the file src/lang/${locale}.json`,

@@ -54,7 +54,7 @@ const loadFontData =
             name = metadataFile.name;
           }
         }
-      } catch (e) {}
+      } catch {}
 
       let table = (Array.from(Array(256)) as number[]).fill(-1);
 

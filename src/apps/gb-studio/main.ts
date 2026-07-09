@@ -1237,7 +1237,7 @@ ipcMain.handle(
 
     try {
       await remove(filename);
-    } catch (e) {
+    } catch {
       return false;
     }
 
@@ -1686,7 +1686,7 @@ ipcMain.handle("project:engine-eject", () => {
   try {
     statSync(outputDir);
     ejectedEngineExists = true;
-  } catch (e) {
+  } catch {
     ejectedEngineExists = false;
   }
 
@@ -2131,7 +2131,7 @@ ipcMain.handle(
         action: "load-sound",
         sound: sfx,
       });
-    } catch (e) {
+    } catch {
       console.error("Unable to play FX Hammer SFX", filename, effectIndex);
     }
   },
@@ -2611,7 +2611,7 @@ const openProject = async (newProjectPath: string): Promise<boolean> => {
 
   try {
     await stat(newProjectPath);
-  } catch (e) {
+  } catch {
     dialog.showErrorBox(
       l10n("ERROR_MISSING_PROJECT"),
       l10n("ERROR_MOVED_OR_DELETED"),
@@ -2702,7 +2702,7 @@ const saveAsProject = async (saveAsPath: string) => {
   try {
     await stat(newProjectDir);
     projectExists = true;
-  } catch (e) {
+  } catch {
     projectExists = false;
   }
   if (projectExists) {

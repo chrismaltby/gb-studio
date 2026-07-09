@@ -206,7 +206,7 @@ export const paste = async <T extends ClipboardFormat>(
   let data: unknown;
   try {
     data = JSON.parse(decoder.decode(buffer));
-  } catch (e) {
+  } catch {
     return undefined;
   }
 

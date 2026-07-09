@@ -61,7 +61,7 @@ export const readFileToFontData = async (
         tableMapping = metadataFile.table;
       }
     }
-  } catch (e) {}
+  } catch {}
 
   // Determine if font is only using white & black pixels
   for (let i = 0; i < image.data.length; i++) {
