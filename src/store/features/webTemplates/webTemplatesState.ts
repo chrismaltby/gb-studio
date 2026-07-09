@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { WebTemplateInfo } from "shared/lib/webTemplates/types";
 
-interface WebTemplatesState {
+export interface WebTemplatesState {
   templates: WebTemplateInfo[];
 }
 
