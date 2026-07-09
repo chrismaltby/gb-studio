@@ -7142,15 +7142,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-window@npm:^1.8.8":
-  version: 1.8.8
-  resolution: "@types/react-window@npm:1.8.8"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/2170a3957752603e8b994840c5d31b72ddf94c427c0f42b0175b343cc54f50fe66161d8871e11786ec7a59906bd33861945579a3a8f745455a3744268ec1069f
-  languageName: node
-  linkType: hard
-
 "@types/react@npm:^19.2.0":
   version: 19.2.14
   resolution: "@types/react@npm:19.2.14"
@@ -12994,7 +12985,6 @@ __metadata:
     "@types/react-dom": "npm:^19.2.0"
     "@types/react-mentions": "npm:^4.4.0"
     "@types/react-refresh": "npm:^0.14.6"
-    "@types/react-window": "npm:^1.8.8"
     "@types/spark-md5": "npm:^3.0.4"
     "@types/uuid": "npm:^3.4.6"
     "@types/webpack-env": "npm:^1.14.1"
@@ -13051,7 +13041,6 @@ __metadata:
     pngjs: "npm:^6.0.0"
     prettier: "npm:^3.5.3"
     prismjs: "npm:^1.27.0"
-    prop-types: "npm:^15.7.2"
     ps-tree: "npm:^1.2.0"
     quickjs-emscripten-core: "npm:^0.31.0"
     raw-loader: "npm:^4.0.2"
