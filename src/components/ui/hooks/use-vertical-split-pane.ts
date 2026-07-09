@@ -549,7 +549,7 @@ const resizeVerticalPaneGroups = (
   return nextSizes;
 };
 
-export const useVerticalSplitPane = ({
+const useVerticalSplitPane = ({
   height,
   panelCount,
   minPaneSize = DEFAULT_COLLAPSED_SIZE,
