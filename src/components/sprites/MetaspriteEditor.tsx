@@ -31,7 +31,6 @@ import {
 } from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
 import { useContextMenu } from "ui/hooks/use-context-menu";
-import API from "renderer/lib/api";
 import { useSelectAllShortcut } from "ui/hooks/use-select-all";
 
 interface MetaspriteEditorProps {
