@@ -19,7 +19,7 @@ export interface TrackerSelectionRect {
   height: number;
 }
 
-export const PATTERN_FIELD_COUNT = TRACKER_PATTERN_LENGTH * TRACKER_ROW_SIZE;
+const PATTERN_FIELD_COUNT = TRACKER_PATTERN_LENGTH * TRACKER_ROW_SIZE;
 
 export const getSequenceIdFromGlobalField = (field: number) =>
   Math.floor(field / PATTERN_FIELD_COUNT);
@@ -30,7 +30,7 @@ export const getLocalFieldFromGlobalField = (field: number) =>
 export const getGlobalField = (sequenceId: number, localField: number) =>
   sequenceId * PATTERN_FIELD_COUNT + localField;
 
-export const deriveSelectedTrackerFields = (
+const deriveSelectedTrackerFields = (
   selectionOrigin: TrackerSelectionOrigin | undefined,
   selectionRect: TrackerSelectionRect | undefined,
 ): number[] => {
@@ -61,7 +61,7 @@ export const deriveSelectedTrackerFields = (
   return [selectionOrigin.y * TRACKER_ROW_SIZE + selectionOrigin.x];
 };
 
-export const deriveSelectedPatternCells = (
+const deriveSelectedPatternCells = (
   selectedSequence: number,
   activeField: number | undefined,
   selectedTrackerFields: number[],
@@ -98,7 +98,7 @@ interface TrackerGridState {
   sidebarView: string;
 }
 
-export const applySelectedChannelFromActiveField = (
+const applySelectedChannelFromActiveField = (
   state: TrackerGridState,
   activeField: number | undefined,
 ) => {
