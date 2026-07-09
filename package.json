@@ -166,6 +166,7 @@
     "@types/webpack-env": "^1.14.1",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^10.1.0",
     "babel-plugin-styled-components": "^2.1.4",
@@ -198,13 +199,13 @@
     "ts-loader": "^9.2.2",
     "ts-node": "^10.0.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
-    "typescript": "^6.0.3",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.7.0",
     "workbox-webpack-plugin": "^7.4.0",
     "worker-loader": "^3.0.8"
   },
-  "packageManager": "yarn@4.12.0+sha256.1fe4e1193cbcd13a48d8f436bb17d3c672b049a5e32a758aab9866a073db1702",
+  "packageManager": "yarn@4.17.1",
   "eslintConfig": {
     "extends": [
       "plugin:storybook/recommended"
