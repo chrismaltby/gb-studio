@@ -116,6 +116,7 @@ export const StyledSortableList = styled.div<StyledSortableListProps>`
 
   & > * {
     flex-shrink: 0;
+    scroll-margin: ${(props) => props.$padding}px;
   }
 `;
 
