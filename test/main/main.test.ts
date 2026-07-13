@@ -5,6 +5,13 @@ import { checkForUpdate } from "lib/helpers/updateChecker";
 
 jest.mock("electron");
 jest.mock("fs-extra");
+jest.mock("@octokit/rest", () => ({
+  Octokit: jest.fn().mockImplementation(() => ({
+    repos: {
+      getLatestRelease: jest.fn(),
+    },
+  })),
+}));
 jest.mock("lib/helpers/updateChecker");
 jest.mock("lib/project/createProject");
 jest.mock("../../src/apps/gb-studio/menu");
