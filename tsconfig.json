@@ -8,6 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "rootDir": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
