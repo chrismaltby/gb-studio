@@ -1,4 +1,11 @@
-import React, { JSX, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  JSX,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { SortableItem } from "ui/lists/SortableItem";
 import { StyledSortableList } from "./style";
 import throttle from "lodash/throttle";
@@ -114,6 +121,13 @@ export const SortableList = <T,>({
       window.removeEventListener("keydown", handleKeys);
     };
   });
+
+  useLayoutEffect(() => {
+    const el = listRef.current?.children[selectedIndex] as
+      | HTMLElement
+      | undefined;
+    el?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [selectedIndex]);
 
   return (
     <StyledSortableList
