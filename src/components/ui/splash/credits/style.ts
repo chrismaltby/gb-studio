@@ -32,7 +32,6 @@ export const StyledCredits = styled.div`
   overflow: clip;
   animation: ${fadeIn} 1s linear;
   animation-fill-mode: forwards;
-  -webkit-app-region: drag;
   background: red;
   z-index: 100000;
 
@@ -195,4 +194,13 @@ export const StyledCreditsGrid = styled.div`
       width: 50%;
     }
   }`}
+`;
+
+export const StyledCreditsDragRegion = styled.div`
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 40px;
+  height: 60px;
+  app-region: drag;
 `;
