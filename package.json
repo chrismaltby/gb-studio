@@ -139,6 +139,7 @@
     "@storybook/addon-themes": "^10.4.6",
     "@storybook/react": "^10.4.6",
     "@storybook/react-webpack5": "^10.4.6",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^5.11.5",
     "@testing-library/react": "^16.0.1",
     "@types/adm-zip": "^0.5.5",
