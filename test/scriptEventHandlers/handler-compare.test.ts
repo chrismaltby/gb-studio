@@ -13,8 +13,8 @@ import {
 import { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
 import {
+  getQuickJSInstance,
   loadScriptEventHandlerFromUntrustedString,
-  QuickJS,
 } from "lib/scriptEventsHandlers/untrustedHandler";
 import { loadScriptEventHandlerFromTrustedString } from "lib/scriptEventsHandlers/trustedHandler";
 import { TestQuickJSWASMModule } from "quickjs-emscripten-core";
@@ -54,7 +54,7 @@ describe("Compare output from trusted and untrusted plugin handlers", () => {
   });
 
   afterEach(async () => {
-    const qjs = await QuickJS;
+    const qjs = await getQuickJSInstance();
     const testQJS = new TestQuickJSWASMModule(qjs);
     testQJS.assertNoMemoryAllocated();
   });

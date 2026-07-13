@@ -1,7 +1,7 @@
 import { loadScriptEventHandlerFromTrustedString } from "lib/scriptEventsHandlers/trustedHandler";
 import {
+  getQuickJSInstance,
   loadScriptEventHandlerFromUntrustedString,
-  QuickJS,
 } from "lib/scriptEventsHandlers/untrustedHandler";
 import { join } from "path";
 import { readFile } from "fs-extra";
@@ -25,7 +25,7 @@ describe("script handlers", () => {
   });
 
   afterEach(async () => {
-    const qjs = await QuickJS;
+    const qjs = await getQuickJSInstance();
     const testQJS = new TestQuickJSWASMModule(qjs);
     testQJS.assertNoMemoryAllocated();
   });

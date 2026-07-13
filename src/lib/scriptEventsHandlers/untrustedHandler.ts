@@ -9,6 +9,7 @@ import {
   QuickJSContext,
   QuickJSHandle,
   QuickJSRuntime,
+  QuickJSWASMModule,
   shouldInterruptAfterDeadline,
 } from "quickjs-emscripten-core";
 import quickJSVariant from "#my-quickjs-variant";
@@ -27,11 +28,19 @@ import {
   convertESMToCommonJS,
 } from "./handlerCommon";
 
-export const QuickJS = newQuickJSWASMModuleFromVariant(quickJSVariant);
+let quickJSInstance: QuickJSWASMModule | null;
 
 const TIMEOUT_MS = 600000; // 10 minutes
 
 type UnknownFunction = (this: unknown, ...args: unknown[]) => unknown;
+
+export const getQuickJSInstance = async () => {
+  if (quickJSInstance) {
+    return quickJSInstance;
+  }
+  quickJSInstance = await newQuickJSWASMModuleFromVariant(quickJSVariant);
+  return quickJSInstance;
+};
 
 /**
  * Proxy factory for creating lazy proxies in the VM
@@ -829,7 +838,8 @@ class PersistentVM {
  * Creates a new persistent VM instance
  */
 const createPersistentVM = async (): Promise<PersistentVM> => {
-  const runtime = (await QuickJS).newRuntime();
+  const quickJS = await getQuickJSInstance();
+  const runtime = quickJS.newRuntime();
   const vm = runtime.newContext();
   return new PersistentVM(vm, runtime);
 };
