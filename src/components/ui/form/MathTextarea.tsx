@@ -48,7 +48,7 @@ const functionSearch = (search: string) => {
   return functionSymbols.filter((item) => item.display.indexOf(search) === 0);
 };
 
-const operatorSymbols = [
+export const operatorSymbols = [
   {
     id: "<<",
     display: "<<",
@@ -131,18 +131,11 @@ const operatorSearch = (search: string) => {
   return operatorSymbols.filter((item) => item.display.indexOf(search) === 0);
 };
 
-const operatorRegex = new RegExp(
-  "(" +
-    operatorSymbols
-      .map((op) =>
-        op.id
-          .replace(/\|/g, "\\|")
-          .replace(/\^/g, "\\^")
-          .replace(/\*/g, "\\*")
-          .replace(/\+/g, "\\+"),
-      )
-      .join("|") +
-    ")",
+const escapeRegExp = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+export const operatorRegex = new RegExp(
+  "(" + operatorSymbols.map((op) => escapeRegExp(op.id)).join("|") + ")",
 );
 
 const MathTextareaWrapper = styled.div`
