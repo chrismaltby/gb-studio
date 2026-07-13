@@ -930,7 +930,6 @@ ipcMain.handle("project:open-project-picker", async (_event, _arg) => {
 ipcMain.handle(
   "get-recent-projects",
   async (): Promise<RecentProjectData[]> => {
-    console.log("Getting recent projects");
     const recentProjects = settings.getSync("recentProjects");
     if (!isStringArray(recentProjects)) return [];
     return recentProjects.map((path) => {
