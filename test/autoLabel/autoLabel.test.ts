@@ -36,6 +36,12 @@ describe("autoLabel with engine constants", () => {
     expect(result).toBe("Use PLAYER_MAX_SPEED for speed");
   });
 
+  test("should replace engine constants with dashes", () => {
+    const input = "Use ||constant:engine::PLAYER-MAX-SPEED|| for speed";
+    const result = replaceAutoLabelLocalValues(input, mockLookups);
+    expect(result).toBe("Use PLAYER-MAX-SPEED for speed");
+  });
+
   test("should replace engine constants with numbers", () => {
     const input =
       "Level max is ||constant:engine::LEVEL_1_MAX|| or ||constant:engine::LEVEL_2_MAX||";
@@ -73,5 +79,11 @@ describe("autoLabel with engine constants", () => {
     const input = "Value: ||constant:engine::CONFIG_VALUE_1||";
     const result = replaceAutoLabelLocalValues(input, mockLookups);
     expect(result).toBe("Value: CONFIG_VALUE_1");
+  });
+
+  test("should not replace malformed engine constants containing punctuation", () => {
+    const input = "Use ||constant:engine::PLAYER:MAX:SPEED|| for speed";
+    const result = replaceAutoLabelLocalValues(input, mockLookups);
+    expect(result).toBe(input);
   });
 });
