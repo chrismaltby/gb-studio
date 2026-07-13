@@ -15,9 +15,7 @@ export const acceleratorForPlatform = (accelerator: string) => {
   }
   return accelerator
     .replace(/CommandOrControl\+/g, "Ctrl+")
-    .replace(/Control\+/g, "Ctrl+")
-    .replace(/Shift\+/g, "Shift+")
-    .replace(/Alt\+/g, "Alt+");
+    .replace(/Control\+/g, "Ctrl+");
 };
 
 export const StyledMenuAccelerator = styled.div.attrs<StyledMenuAcceleratorProps>(
