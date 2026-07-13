@@ -180,7 +180,7 @@
     "jest": "^30.4.1",
     "jest-environment-jsdom": "^30.4.1",
     "jest-extended": "^4.0.2",
-    "knip": "^5.62.0",
+    "knip": "^6.25.0",
     "node-loader": "^2.0.0",
     "prettier": "^3.5.3",
     "react-refresh": "^0.14.2",
