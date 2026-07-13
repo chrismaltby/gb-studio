@@ -201,7 +201,7 @@
     "workbox-webpack-plugin": "^7.4.0",
     "worker-loader": "^3.0.8"
   },
-  "packageManager": "yarn@4.12.0+sha256.1fe4e1193cbcd13a48d8f436bb17d3c672b049a5e32a758aab9866a073db1702",
+  "packageManager": "yarn@4.17.1+sha256.471ffb15e0523663865bbf46a69e7d157ecf532412eb436c48dfab6e3f2abe88",
   "eslintConfig": {
     "extends": [
       "plugin:storybook/recommended"
