@@ -1,4 +1,4 @@
-import Octokit from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import inbuiltPatrons from "patrons.json";
 import type { Patrons, PatreonUser } from "scripts/fetchPatrons";
 
@@ -57,14 +57,14 @@ export const getPatronsFromGithub = async () => {
       return cache.latest.value;
     }
 
-    const result = await github.repos.getContents({
+    const result = await github.repos.getContent({
       owner: "chrismaltby",
       repo: "gb-studio",
       path: "patrons.json",
       ref: "develop",
     });
 
-    if (result) {
+    if (result && !Array.isArray(result.data) && "content" in result.data) {
       const content = Buffer.from(result.data.content, "base64").toString();
       const patrons = JSON.parse(content);
       if (isPatrons(patrons)) {

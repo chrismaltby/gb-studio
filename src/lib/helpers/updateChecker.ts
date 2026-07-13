@@ -1,7 +1,7 @@
 import { dialog, shell } from "electron";
 import semverValid from "semver/functions/valid";
 import semverGt from "semver/functions/gt";
-import Octokit from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import settings from "electron-settings";
 import l10n from "shared/lib/lang/l10n";
 

@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import Octokit from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import { writeJSON } from "fs-extra";
 
 console.log("Fetching Github Contributors");
@@ -13,10 +13,20 @@ const ACCESS_TOKEN = process.env.CREDITS_GITHUB_ACCESS_TOKEN;
 
 const octokit = new Octokit({});
 
+type Contributor = Awaited<
+  ReturnType<typeof octokit.rest.repos.listContributors>
+>["data"][number];
+
+const hasLogin = (
+  contributor: Contributor,
+): contributor is Contributor & { login: string } => {
+  return typeof contributor.login === "string";
+};
+
 const main = async () => {
   const contributors = (
-    await octokit.paginate("GET /repos/chrismaltby/gb-studio/contributors", {
-      owner: "octocat",
+    await octokit.paginate(octokit.rest.repos.listContributors, {
+      owner: "chrismaltby",
       repo: "gb-studio",
       per_page: 100,
       headers: {
@@ -25,6 +35,7 @@ const main = async () => {
       },
     })
   )
+    .filter(hasLogin)
     .filter((contributor) => {
       // Filter out bots
       return !contributor.login.includes("[bot]");
