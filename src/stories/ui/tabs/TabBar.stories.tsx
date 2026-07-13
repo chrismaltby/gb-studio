@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+import { fn } from "storybook/test";
 import React, { useContext } from "react";
 import { ThemeContext } from "styled-components";
 import { StickyTabs, TabBar } from "ui/tabs/Tabs";

@@ -1,14 +1,14 @@
 import type { StorybookConfig } from "@storybook/react-webpack5";
-const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+import { createRequire } from "node:module";
+import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+
+const require = createRequire(import.meta.url);
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
-    "@storybook/addon-webpack5-compiler-swc",
     "@storybook/addon-links",
-    "@storybook/addon-essentials",
-    "@chromatic-com/storybook",
-    "@storybook/addon-interactions",
+    "@storybook/addon-docs",
     "@storybook/addon-themes",
   ],
   framework: {
@@ -18,6 +18,32 @@ const config: StorybookConfig = {
   webpackFinal: async (config) => {
     if (config?.resolve) {
       config.resolve.plugins = [new TsconfigPathsPlugin()];
+      config.resolve.extensions = [
+        ...(config.resolve.extensions || []),
+        ".ts",
+        ".tsx",
+      ];
+      config.resolve.fallback = {
+        ...(config.resolve.fallback || {}),
+        path: require.resolve("path-browserify"),
+      };
+    }
+    if (config?.module) {
+      config.module.rules = [
+        ...(config.module.rules || []),
+        {
+          test: /\.tsx?$/,
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: require.resolve("ts-loader"),
+              options: {
+                transpileOnly: true,
+              },
+            },
+          ],
+        },
+      ];
     }
     return config;
   },

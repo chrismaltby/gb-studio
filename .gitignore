@@ -22,6 +22,7 @@ buildTools/*/gbdk
 
 # Storybook
 *storybook.log
+storybook-static
 
 # Performance   
 isolate*-v8.log
