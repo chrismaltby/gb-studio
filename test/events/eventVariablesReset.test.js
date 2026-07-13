@@ -9,5 +9,5 @@ test("Should be able to reset variables", () => {
       variablesReset: mockVariablesReset,
     },
   );
-  expect(mockVariablesReset).toBeCalled();
+  expect(mockVariablesReset).toHaveBeenCalled();
 });

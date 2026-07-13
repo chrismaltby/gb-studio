@@ -13,6 +13,6 @@ test("Should be able to fade in", () => {
       idle: mockIdle,
     },
   );
-  expect(mockIdle).toBeCalled();
-  expect(mockFadeIn).toBeCalledWith(2);
+  expect(mockIdle).toHaveBeenCalled();
+  expect(mockFadeIn).toHaveBeenCalledWith(2);
 });

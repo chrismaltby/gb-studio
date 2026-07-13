@@ -27,7 +27,7 @@ test("Should be able to conditionally execute if actor is within range of actor"
       temporaryEntityVariable: mockTemporaryEntityVariable,
     },
   );
-  expect(mockIfActorDistanceFromActor).toBeCalledWith(
+  expect(mockIfActorDistanceFromActor).toHaveBeenCalledWith(
     "actor1",
     { type: "number", value: 5 },
     ".LTE",
@@ -35,9 +35,9 @@ test("Should be able to conditionally execute if actor is within range of actor"
     truePath,
     falsePath,
   );
-  expect(mockActorSetActive).not.toBeCalled();
-  expect(mockVariableFromUnion).not.toBeCalled();
-  expect(mockTemporaryEntityVariable).not.toBeCalled();
+  expect(mockActorSetActive).not.toHaveBeenCalled();
+  expect(mockVariableFromUnion).not.toHaveBeenCalled();
+  expect(mockTemporaryEntityVariable).not.toHaveBeenCalled();
 
   let variable = {
     type: "variable",
@@ -61,7 +61,7 @@ test("Should be able to conditionally execute if actor is within range of actor"
     },
   );
 
-  expect(mockIfActorDistanceVariableFromActor).toBeCalledWith(
+  expect(mockIfActorDistanceVariableFromActor).toHaveBeenCalledWith(
     "actor1",
     { type: "variable", value: "L0" },
     ".EQ",
@@ -69,7 +69,7 @@ test("Should be able to conditionally execute if actor is within range of actor"
     truePath,
     falsePath,
   );
-  expect(mockActorSetActive).not.toBeCalled();
-  expect(mockVariableFromUnion).not.toBeCalled();
-  expect(mockTemporaryEntityVariable).not.toBeCalled();
+  expect(mockActorSetActive).not.toHaveBeenCalled();
+  expect(mockVariableFromUnion).not.toHaveBeenCalled();
+  expect(mockTemporaryEntityVariable).not.toHaveBeenCalled();
 });

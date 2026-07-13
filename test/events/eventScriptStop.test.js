@@ -8,5 +8,5 @@ test("Should be able to stop script", () => {
       scriptEnd: mockScriptEnd,
     },
   );
-  expect(mockScriptEnd).toBeCalled();
+  expect(mockScriptEnd).toHaveBeenCalled();
 });

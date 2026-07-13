@@ -15,6 +15,6 @@ test("Should be able to set the actor movement speed", () => {
       actorSetMovementSpeed: mockActorSetMovementSpeed,
     },
   );
-  expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockActorSetMovementSpeed).toBeCalledWith(3);
+  expect(mockactorSetActive).toHaveBeenCalledWith("player");
+  expect(mockActorSetMovementSpeed).toHaveBeenCalledWith(3);
 });

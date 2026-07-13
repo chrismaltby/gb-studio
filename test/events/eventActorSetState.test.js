@@ -15,8 +15,8 @@ test("Should be able to set actor state", () => {
       actorSetState: mockActorSetState,
     },
   );
-  expect(mockactorSetActive).toBeCalledWith("abc");
-  expect(mockActorSetState).toBeCalledWith("state1", true);
+  expect(mockactorSetActive).toHaveBeenCalledWith("abc");
+  expect(mockActorSetState).toHaveBeenCalledWith("state1", true);
 });
 
 test("Should be able to prevent actor state animation from looping", () => {
@@ -34,8 +34,8 @@ test("Should be able to prevent actor state animation from looping", () => {
       actorSetState: mockActorSetState,
     },
   );
-  expect(mockactorSetActive).toBeCalledWith("abc");
-  expect(mockActorSetState).toBeCalledWith("state1", false);
+  expect(mockactorSetActive).toHaveBeenCalledWith("abc");
+  expect(mockActorSetState).toHaveBeenCalledWith("state1", false);
 });
 
 test("Should provide undefined loop value if no loop value provided (actorSetState handles this case)", () => {
@@ -52,6 +52,6 @@ test("Should provide undefined loop value if no loop value provided (actorSetSta
       actorSetState: mockActorSetState,
     },
   );
-  expect(mockactorSetActive).toBeCalledWith("abc");
-  expect(mockActorSetState).toBeCalledWith("state1", undefined);
+  expect(mockactorSetActive).toHaveBeenCalledWith("abc");
+  expect(mockActorSetState).toHaveBeenCalledWith("state1", undefined);
 });

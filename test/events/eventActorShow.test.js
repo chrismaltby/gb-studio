@@ -11,5 +11,5 @@ test("Should be able to show actor", () => {
       actorShow: mockActorShow,
     },
   );
-  expect(mockActorShow).toBeCalledWith("abc");
+  expect(mockActorShow).toHaveBeenCalledWith("abc");
 });

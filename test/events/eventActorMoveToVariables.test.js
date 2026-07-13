@@ -17,6 +17,6 @@ test("Should move player position to variables", () => {
       actorMoveToVariables: mockActorMoveToVariables,
     },
   );
-  expect(mockactorSetActive).toBeCalledWith("player");
-  expect(mockActorMoveToVariables).toBeCalledWith("0", "1", "tiles");
+  expect(mockactorSetActive).toHaveBeenCalledWith("player");
+  expect(mockActorMoveToVariables).toHaveBeenCalledWith("0", "1", "tiles");
 });

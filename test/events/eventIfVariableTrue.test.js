@@ -10,5 +10,5 @@ test("Should be able to conditionally execute if variable is true", () => {
       ifVariableTrue: mockIfVariableTrue,
     },
   );
-  expect(mockIfVariableTrue).toBeCalledWith("0", truePath, falsePath);
+  expect(mockIfVariableTrue).toHaveBeenCalledWith("0", truePath, falsePath);
 });

@@ -13,7 +13,7 @@ test("Should set move overlay to position", () => {
       overlayMoveTo: mockOverlayMoveTo,
     },
   );
-  expect(mockOverlayMoveTo).toBeCalledWith(5, 9, 1);
+  expect(mockOverlayMoveTo).toHaveBeenCalledWith(5, 9, 1);
 });
 
 test("Should set move overlay to position with instant speed", () => {
@@ -29,5 +29,5 @@ test("Should set move overlay to position with instant speed", () => {
       overlayMoveTo: mockOverlayMoveTo,
     },
   );
-  expect(mockOverlayMoveTo).toBeCalledWith(5, 9, -3);
+  expect(mockOverlayMoveTo).toHaveBeenCalledWith(5, 9, -3);
 });

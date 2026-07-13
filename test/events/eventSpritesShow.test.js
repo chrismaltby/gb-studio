@@ -9,5 +9,5 @@ test("Should be able to show sprites", () => {
       spritesShow: mockSpritesShow,
     },
   );
-  expect(mockSpritesShow).toBeCalled();
+  expect(mockSpritesShow).toHaveBeenCalled();
 });

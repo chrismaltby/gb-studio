@@ -13,6 +13,6 @@ test("Should be able to pop a scene from the stack", () => {
       scriptEnd: mockScriptEnd,
     },
   );
-  expect(mockScenePopState).toBeCalledWith(2);
+  expect(mockScenePopState).toHaveBeenCalledWith(2);
   expect(mockScriptEnd).toHaveBeenCalledAfter(mockScenePopState);
 });

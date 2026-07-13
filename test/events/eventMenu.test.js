@@ -16,7 +16,7 @@ test("Should be able to display a text menu that cancel on last option", () => {
       textMenu: mockTextMenu,
     },
   );
-  expect(mockTextMenu).toBeCalledWith(
+  expect(mockTextMenu).toHaveBeenCalledWith(
     "5",
     ["Item1", "Item2"],
     "menu",
@@ -41,7 +41,7 @@ test("Should be able to display a text menu that cancel on b", () => {
       textMenu: mockTextMenu,
     },
   );
-  expect(mockTextMenu).toBeCalledWith(
+  expect(mockTextMenu).toHaveBeenCalledWith(
     "5",
     ["Item1", "Item2"],
     "menu",
@@ -66,7 +66,7 @@ test("Should be able to display a text menu with dialogue layout that cancel on 
       textMenu: mockTextMenu,
     },
   );
-  expect(mockTextMenu).toBeCalledWith(
+  expect(mockTextMenu).toHaveBeenCalledWith(
     "5",
     ["Item1", "Item2"],
     "dialogue",
@@ -91,7 +91,7 @@ test("Should be able to display a text menu with dialogue layout that cancel on 
       textMenu: mockTextMenu,
     },
   );
-  expect(mockTextMenu).toBeCalledWith(
+  expect(mockTextMenu).toHaveBeenCalledWith(
     "5",
     ["Item1", "Item2"],
     "dialogue",

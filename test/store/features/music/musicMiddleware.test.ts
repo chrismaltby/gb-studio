@@ -27,5 +27,5 @@ test("Should pause music when switching section", async () => {
 
   middleware(store)(next)(action);
 
-  expect(store.dispatch).toBeCalledWith(actions.pauseMusic());
+  expect(store.dispatch).toHaveBeenCalledWith(actions.pauseMusic());
 });

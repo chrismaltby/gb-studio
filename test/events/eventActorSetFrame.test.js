@@ -18,8 +18,8 @@ test("Should set player frame", () => {
       actorSetFrameToScriptValue: mockActorSetFrame,
     },
   );
-  expect(mockactorSetActive).not.toBeCalled();
-  expect(mockActorSetFrame).toBeCalledWith("player", {
+  expect(mockactorSetActive).not.toHaveBeenCalled();
+  expect(mockActorSetFrame).toHaveBeenCalledWith("player", {
     type: "number",
     value: 4,
   });

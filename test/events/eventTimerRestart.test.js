@@ -9,7 +9,7 @@ test("Should be able to disable timer", () => {
       timerRestart: mockTimerRestart,
     },
   );
-  expect(mockTimerRestart).toBeCalledWith(undefined);
+  expect(mockTimerRestart).toHaveBeenCalledWith(undefined);
 });
 
 test("Should be able to disable numbered timer", () => {
@@ -23,5 +23,5 @@ test("Should be able to disable numbered timer", () => {
       timerRestart: mockTimerRestart,
     },
   );
-  expect(mockTimerRestart).toBeCalledWith(3);
+  expect(mockTimerRestart).toHaveBeenCalledWith(3);
 });

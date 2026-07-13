@@ -13,6 +13,6 @@ test("Should be able to invoke actor script", () => {
       actorInvoke: mockActorInvoke,
     },
   );
-  expect(mockactorSetActive).toBeCalledWith("abc");
-  expect(mockActorInvoke).toBeCalled();
+  expect(mockactorSetActive).toHaveBeenCalledWith("abc");
+  expect(mockActorInvoke).toHaveBeenCalled();
 });

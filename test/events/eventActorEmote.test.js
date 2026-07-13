@@ -14,6 +14,6 @@ test("Should be able to display actor emote", () => {
       actorEmote: mockActorEmote,
     },
   );
-  expect(mockactorSetActive).toBeCalledWith("abc");
-  expect(mockActorEmote).toBeCalledWith(2);
+  expect(mockactorSetActive).toHaveBeenCalledWith("abc");
+  expect(mockActorEmote).toHaveBeenCalledWith(2);
 });

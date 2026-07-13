@@ -30,7 +30,7 @@ test("Should be able to conditionally execute if variable contains a flag", () =
     },
   );
 
-  expect(mockIfVariableBitwiseValue).toBeCalledWith(
+  expect(mockIfVariableBitwiseValue).toHaveBeenCalledWith(
     "2",
     ".B_AND",
     32,

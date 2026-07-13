@@ -10,5 +10,5 @@ test("Should be able to wait for a button press", () => {
       inputAwait: mockInputAwait,
     },
   );
-  expect(mockInputAwait).toBeCalledWith(["a", "b"]);
+  expect(mockInputAwait).toHaveBeenCalledWith(["a", "b"]);
 });

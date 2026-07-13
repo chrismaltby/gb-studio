@@ -10,5 +10,5 @@ test("Should be able to remove an input script", () => {
       inputScriptRemove: mockInputScriptRemove,
     },
   );
-  expect(mockInputScriptRemove).toBeCalledWith(["a", "b"]);
+  expect(mockInputScriptRemove).toHaveBeenCalledWith(["a", "b"]);
 });

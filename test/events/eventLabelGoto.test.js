@@ -10,5 +10,5 @@ test("Should be able to jump to an event label", () => {
     },
   );
 
-  expect(mockLabelGoto).toBeCalledWith("my_label");
+  expect(mockLabelGoto).toHaveBeenCalledWith("my_label");
 });

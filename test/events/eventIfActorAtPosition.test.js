@@ -19,8 +19,8 @@ test("Should be able to conditionally execute if actor is at a position", () => 
       ifActorAtPositionByScriptValues: mockIfActorAtPosition,
     },
   );
-  expect(mockactorSetActive).not.toBeCalled();
-  expect(mockIfActorAtPosition).toBeCalledWith(
+  expect(mockactorSetActive).not.toHaveBeenCalled();
+  expect(mockIfActorAtPosition).toHaveBeenCalledWith(
     "player",
     { type: "number", value: 4 },
     { type: "number", value: 8 },

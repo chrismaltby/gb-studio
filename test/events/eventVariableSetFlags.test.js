@@ -20,5 +20,5 @@ test("Should set the flags on the variable", () => {
     },
   );
 
-  expect(mockVariableSetToValue).toBeCalledWith("2", 129);
+  expect(mockVariableSetToValue).toHaveBeenCalledWith("2", 129);
 });

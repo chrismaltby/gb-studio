@@ -9,5 +9,5 @@ test("Should be able to stop music", () => {
       musicStop: mockMusicStop,
     },
   );
-  expect(mockMusicStop).toBeCalledWith();
+  expect(mockMusicStop).toHaveBeenCalledWith();
 });

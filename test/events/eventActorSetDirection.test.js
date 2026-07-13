@@ -18,11 +18,11 @@ test("Should set player direction", () => {
       actorSetDirectionToScriptValue: mockActorSetDirection,
     },
   );
-  expect(mockActorSetDirection).toBeCalledWith("player", {
+  expect(mockActorSetDirection).toHaveBeenCalledWith("player", {
     type: "direction",
     value: "up",
   });
-  expect(mockactorSetActive).not.toBeCalled();
+  expect(mockactorSetActive).not.toHaveBeenCalled();
 });
 
 test("Should set actor direction", () => {
@@ -47,7 +47,7 @@ test("Should set actor direction", () => {
       actorSetDirectionToScriptValue: mockActorSetDirection,
     },
   );
-  expect(mockActorSetDirection).toBeCalledWith("abc", {
+  expect(mockActorSetDirection).toHaveBeenCalledWith("abc", {
     type: "direction",
     value: "right",
   });
@@ -83,7 +83,7 @@ test("Should set frame of actor using static movement", () => {
       actorSetDirectionToScriptValue: mockActorSetDirection,
     },
   );
-  expect(mockActorSetDirection).toBeCalledWith("abc", {
+  expect(mockActorSetDirection).toHaveBeenCalledWith("abc", {
     type: "direction",
     value: "up",
   });
@@ -119,7 +119,7 @@ test("Should set flip actor using static movement when facing left", () => {
       actorSetDirectionToScriptValue: mockActorSetDirection,
     },
   );
-  expect(mockActorSetDirection).toBeCalledWith("abc", {
+  expect(mockActorSetDirection).toHaveBeenCalledWith("abc", {
     type: "direction",
     value: "left",
   });
@@ -155,7 +155,7 @@ test("Should not set frame if spritesheet has no frames", () => {
     },
   );
 
-  expect(mockActorSetDirection).lastCalledWith("abc", {
+  expect(mockActorSetDirection).toHaveBeenLastCalledWith("abc", {
     type: "direction",
     value: "left",
   });
@@ -183,7 +183,7 @@ test("Should not set frame if spritesheet has no frames", () => {
     },
   );
 
-  expect(mockActorSetDirection).lastCalledWith("abc", {
+  expect(mockActorSetDirection).toHaveBeenLastCalledWith("abc", {
     type: "direction",
     value: "right",
   });

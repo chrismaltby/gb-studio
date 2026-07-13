@@ -11,5 +11,5 @@ test("Should be able to fade out", () => {
       fadeOut: mockFadeOut,
     },
   );
-  expect(mockFadeOut).toBeCalledWith(2);
+  expect(mockFadeOut).toHaveBeenCalledWith(2);
 });

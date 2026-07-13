@@ -9,5 +9,5 @@ test("Should be able to reset the scene stack", () => {
       sceneResetState: mockSceneResetState,
     },
   );
-  expect(mockSceneResetState).toBeCalled();
+  expect(mockSceneResetState).toHaveBeenCalled();
 });

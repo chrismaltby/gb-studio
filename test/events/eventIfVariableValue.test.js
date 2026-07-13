@@ -16,7 +16,7 @@ test("Should be able to conditionally execute if variable matches a value", () =
       ifVariableValue: mockIfVariableValue,
     },
   );
-  expect(mockIfVariableValue).toBeCalledWith(
+  expect(mockIfVariableValue).toHaveBeenCalledWith(
     "0",
     ".EQ",
     5,

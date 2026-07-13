@@ -15,7 +15,7 @@ test("Should be able to switch scene", () => {
       sceneSwitchUsingScriptValues: mockSceneSwitch,
     },
   );
-  expect(mockSceneSwitch).toBeCalledWith(
+  expect(mockSceneSwitch).toHaveBeenCalledWith(
     "2",
     { type: "number", value: 8 },
     { type: "number", value: 4 },

@@ -17,7 +17,7 @@ test("Should be able to set an input script", () => {
       },
     },
   );
-  expect(mockInputScriptSet).toBeCalledWith(
+  expect(mockInputScriptSet).toHaveBeenCalledWith(
     ["a", "b"],
     true,
     truePath,

@@ -10,5 +10,5 @@ test("Should be able to load data", () => {
       dataLoad: mockDataLoad,
     },
   );
-  expect(mockDataLoad).toBeCalledWith(1);
+  expect(mockDataLoad).toHaveBeenCalledWith(1);
 });

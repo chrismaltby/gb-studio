@@ -13,5 +13,5 @@ test("Should set show overlay at position", () => {
       overlayShow: mockOverlayShow,
     },
   );
-  expect(mockOverlayShow).toBeCalledWith("white", 5, 9);
+  expect(mockOverlayShow).toHaveBeenCalledWith("white", 5, 9);
 });

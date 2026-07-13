@@ -112,6 +112,6 @@ test("Should not call deprecated wait function", () => {
       waitScriptValue: mockWaitScriptValue,
     },
   );
-  expect(mockSoundStartTone).toBeCalledWith(1920, 60, "medium");
+  expect(mockSoundStartTone).toHaveBeenCalledWith(1920, 60, "medium");
   expect(mockWait).not.toHaveBeenCalled();
 });

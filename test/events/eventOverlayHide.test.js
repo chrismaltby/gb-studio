@@ -9,5 +9,5 @@ test("Should be able to hide overlay", () => {
       overlayHide: mockOverlayHide,
     },
   );
-  expect(mockOverlayHide).toBeCalled();
+  expect(mockOverlayHide).toHaveBeenCalled();
 });

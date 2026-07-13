@@ -19,9 +19,9 @@ test("Should be able to loop events", () => {
     },
   );
 
-  expect(mockGetNextLabel).toBeCalled();
-  expect(mockLabelDefine).toBeCalledWith("loop_start_xyz");
-  expect(mockCompileEvents).toBeCalledWith(truePath);
+  expect(mockGetNextLabel).toHaveBeenCalled();
+  expect(mockLabelDefine).toHaveBeenCalledWith("loop_start_xyz");
+  expect(mockCompileEvents).toHaveBeenCalledWith(truePath);
   expect(mockCompileEvents).toHaveBeenCalledAfter(mockLabelDefine);
-  expect(mockLabelGoto).toBeCalledWith("loop_start_xyz");
+  expect(mockLabelGoto).toHaveBeenCalledWith("loop_start_xyz");
 });

@@ -13,5 +13,5 @@ test("Should be able to lock camera to player position", () => {
       cameraLock: mockCameraLock,
     },
   );
-  expect(mockCameraLock).toBeCalledWith(1, ["x"], []);
+  expect(mockCameraLock).toHaveBeenCalledWith(1, ["x"], []);
 });

@@ -12,7 +12,7 @@ test("Should be able to display text", () => {
       textDialogue: mockTextDialogue,
     },
   );
-  expect(mockTextDialogue).toBeCalledWith(
+  expect(mockTextDialogue).toHaveBeenCalledWith(
     "Hello World",
     "1",
     4,
@@ -44,7 +44,7 @@ test("Should be able to display multiple text boxes", () => {
     },
   );
   expect(mockTextDialogue.mock.calls.length).toBe(1);
-  expect(mockTextDialogue).toBeCalledWith(
+  expect(mockTextDialogue).toHaveBeenCalledWith(
     ["Hello World", "Goodbye World"],
     "1",
     4,

@@ -23,8 +23,8 @@ test("Should set player position", () => {
       actorSetPositionToScriptValues: mockActorSetPosition,
     },
   );
-  expect(mockactorSetActive).not.toBeCalled();
-  expect(mockActorSetPosition).toBeCalledWith(
+  expect(mockactorSetActive).not.toHaveBeenCalled();
+  expect(mockActorSetPosition).toHaveBeenCalledWith(
     "player",
     { type: "number", value: 5 },
     { type: "number", value: 9 },

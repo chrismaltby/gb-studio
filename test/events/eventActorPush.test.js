@@ -17,8 +17,8 @@ test("Should be able to push actor", () => {
       actorPush: mockActorPush,
     },
   );
-  expect(mockactorSetActive).toBeCalledWith("abc");
-  expect(mockActorPush).toBeCalledWith(false);
+  expect(mockactorSetActive).toHaveBeenCalledWith("abc");
+  expect(mockActorPush).toHaveBeenCalledWith(false);
 });
 
 test("Should not be able to push trigger", () => {
@@ -38,6 +38,6 @@ test("Should not be able to push trigger", () => {
       actorPush: mockActorPush,
     },
   );
-  expect(mockactorSetActive).not.toBeCalled();
-  expect(mockActorPush).not.toBeCalled();
+  expect(mockactorSetActive).not.toHaveBeenCalled();
+  expect(mockActorPush).not.toHaveBeenCalled();
 });

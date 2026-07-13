@@ -14,5 +14,5 @@ test("Should be able to conditionally execute if input is pressed", () => {
       ifInput: mockIfInput,
     },
   );
-  expect(mockIfInput).toBeCalledWith(["a", "b"], truePath, falsePath);
+  expect(mockIfInput).toHaveBeenCalledWith(["a", "b"], truePath, falsePath);
 });

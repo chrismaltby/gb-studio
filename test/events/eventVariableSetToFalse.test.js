@@ -11,5 +11,5 @@ test("Should set variable to true", () => {
       variableSetToFalse: mockVariableSetToFalse,
     },
   );
-  expect(mockVariableSetToFalse).toBeCalledWith("5");
+  expect(mockVariableSetToFalse).toHaveBeenCalledWith("5");
 });

@@ -10,5 +10,5 @@ test("Should be able to clear saved data", () => {
       dataClear: mockDataClear,
     },
   );
-  expect(mockDataClear).toBeCalledWith(1);
+  expect(mockDataClear).toHaveBeenCalledWith(1);
 });

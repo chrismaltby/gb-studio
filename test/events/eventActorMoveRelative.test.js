@@ -20,8 +20,8 @@ test("Should move player relatively", () => {
       actorMoveRelativeByScriptValues: mockActorMoveRelative,
     },
   );
-  expect(mockactorSetActive).not.toBeCalled();
-  expect(mockActorMoveRelative).toBeCalledWith(
+  expect(mockactorSetActive).not.toHaveBeenCalled();
+  expect(mockActorMoveRelative).toHaveBeenCalledWith(
     "player",
     { type: "number", value: 5 },
     { type: "number", value: 9 },

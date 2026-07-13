@@ -11,7 +11,7 @@ test("Should set close the dialogue", () => {
       textCloseNonModal: mockTextCloseNonModal,
     },
   );
-  expect(mockTextCloseNonModal).toBeCalledWith(2);
+  expect(mockTextCloseNonModal).toHaveBeenCalledWith(2);
 });
 
 test("Should set close the dialogue with instant speed", () => {
@@ -25,5 +25,5 @@ test("Should set close the dialogue with instant speed", () => {
       textCloseNonModal: mockTextCloseNonModal,
     },
   );
-  expect(mockTextCloseNonModal).toBeCalledWith(-3);
+  expect(mockTextCloseNonModal).toHaveBeenCalledWith(-3);
 });

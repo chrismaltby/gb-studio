@@ -9,5 +9,5 @@ test("Should be able to hide sprites", () => {
       spritesHide: mockSpritesHide,
     },
   );
-  expect(mockSpritesHide).toBeCalled();
+  expect(mockSpritesHide).toHaveBeenCalled();
 });

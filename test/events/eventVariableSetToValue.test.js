@@ -14,7 +14,7 @@ test("Should set variable to a value", () => {
       variableSetToScriptValue: mockVariableSetToValue,
     },
   );
-  expect(mockVariableSetToValue).toBeCalledWith("2", {
+  expect(mockVariableSetToValue).toHaveBeenCalledWith("2", {
     type: "number",
     value: 9,
   });

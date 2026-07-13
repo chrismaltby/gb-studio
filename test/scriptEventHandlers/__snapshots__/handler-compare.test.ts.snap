@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Compare output from trusted and untrusted plugin handlers Compare output for src/lib/events/eventActorActivate.js 1`] = `
 ".module script

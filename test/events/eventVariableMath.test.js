@@ -14,7 +14,7 @@ test("Should be able to set variable to value", () => {
       variableSetToValue: mockVariableSetToValue,
     },
   );
-  expect(mockVariableSetToValue).toBeCalledWith("2", 5);
+  expect(mockVariableSetToValue).toHaveBeenCalledWith("2", 5);
 });
 
 test("Should be able to set variable to true", () => {
@@ -30,7 +30,7 @@ test("Should be able to set variable to true", () => {
       variableSetToValue: mockVariableSetToValue,
     },
   );
-  expect(mockVariableSetToValue).toBeCalledWith("2", 1);
+  expect(mockVariableSetToValue).toHaveBeenCalledWith("2", 1);
 });
 
 test("Should be able to set variable to false", () => {
@@ -46,7 +46,7 @@ test("Should be able to set variable to false", () => {
       variableSetToValue: mockVariableSetToValue,
     },
   );
-  expect(mockVariableSetToValue).toBeCalledWith("2", 0);
+  expect(mockVariableSetToValue).toHaveBeenCalledWith("2", 0);
 });
 
 test("Should be able to set variable to another variable's value", () => {
@@ -63,7 +63,7 @@ test("Should be able to set variable to another variable's value", () => {
       variableCopy: mockVariableCopy,
     },
   );
-  expect(mockVariableCopy).toBeCalledWith("2", "3");
+  expect(mockVariableCopy).toHaveBeenCalledWith("2", "3");
 });
 
 test("Should be able to set variable to a random value", () => {
@@ -80,7 +80,7 @@ test("Should be able to set variable to a random value", () => {
       variableSetToRandom: mockVariableSetToRandom,
     },
   );
-  expect(mockVariableSetToRandom).toBeCalledWith("2", 0, 51);
+  expect(mockVariableSetToRandom).toHaveBeenCalledWith("2", 0, 51);
 });
 
 test("Should be able to set variable to a random with min value", () => {
@@ -97,7 +97,7 @@ test("Should be able to set variable to a random with min value", () => {
       variableSetToRandom: mockVariableSetToRandom,
     },
   );
-  expect(mockVariableSetToRandom).toBeCalledWith("2", 30, 21);
+  expect(mockVariableSetToRandom).toHaveBeenCalledWith("2", 30, 21);
 });
 
 test("Should be able to add value to variable", () => {
@@ -115,7 +115,7 @@ test("Should be able to add value to variable", () => {
       variableValueOperation: mockVariableValueOperation,
     },
   );
-  expect(mockVariableValueOperation).toBeCalledWith("2", ".ADD", 5, true);
+  expect(mockVariableValueOperation).toHaveBeenCalledWith("2", ".ADD", 5, true);
 });
 
 test("Should be able to subtract value from variable", () => {
@@ -133,7 +133,7 @@ test("Should be able to subtract value from variable", () => {
       variableValueOperation: mockVariableValueOperation,
     },
   );
-  expect(mockVariableValueOperation).toBeCalledWith("2", ".SUB", 5, true);
+  expect(mockVariableValueOperation).toHaveBeenCalledWith("2", ".SUB", 5, true);
 });
 
 test("Should be able to multiply variable by value", () => {
@@ -150,7 +150,7 @@ test("Should be able to multiply variable by value", () => {
       variableValueOperation: mockVariableValueOperation,
     },
   );
-  expect(mockVariableValueOperation).toBeCalledWith("2", ".MUL", 5, undefined);
+  expect(mockVariableValueOperation).toHaveBeenCalledWith("2", ".MUL", 5, undefined);
 });
 
 test("Should be able to divide variable by value", () => {
@@ -167,7 +167,7 @@ test("Should be able to divide variable by value", () => {
       variableValueOperation: mockVariableValueOperation,
     },
   );
-  expect(mockVariableValueOperation).toBeCalledWith("2", ".DIV", 5, undefined);
+  expect(mockVariableValueOperation).toHaveBeenCalledWith("2", ".DIV", 5, undefined);
 });
 
 test("Should be able to modulus variable by value", () => {
@@ -184,5 +184,5 @@ test("Should be able to modulus variable by value", () => {
       variableValueOperation: mockVariableValueOperation,
     },
   );
-  expect(mockVariableValueOperation).toBeCalledWith("2", ".MOD", 5, undefined);
+  expect(mockVariableValueOperation).toHaveBeenCalledWith("2", ".MOD", 5, undefined);
 });

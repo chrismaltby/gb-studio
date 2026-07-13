@@ -20,7 +20,7 @@ test("Should be able to move camera position", () => {
       cameraMoveToScriptValues: mockCameraMoveToScriptValues,
     },
   );
-  expect(mockCameraMoveToScriptValues).toBeCalledWith(
+  expect(mockCameraMoveToScriptValues).toHaveBeenCalledWith(
     { type: "number", value: 5 },
     { type: "number", value: 9 },
     1,

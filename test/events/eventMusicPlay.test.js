@@ -12,5 +12,5 @@ test("Should be able to play music", () => {
       musicPlay: mockMusicPlay,
     },
   );
-  expect(mockMusicPlay).toBeCalledWith("1");
+  expect(mockMusicPlay).toHaveBeenCalledWith("1");
 });

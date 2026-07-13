@@ -16,7 +16,7 @@ test("Should be able to set a timer script", () => {
       },
     },
   );
-  expect(mockTimerScriptSet).toBeCalledWith(
+  expect(mockTimerScriptSet).toHaveBeenCalledWith(
     300,
     timeoutScript,
     "subscript_symbol",
@@ -41,7 +41,7 @@ test("Should be able to set a numbered timer script", () => {
       },
     },
   );
-  expect(mockTimerScriptSet).toBeCalledWith(
+  expect(mockTimerScriptSet).toHaveBeenCalledWith(
     300,
     timeoutScript,
     "subscript_symbol",

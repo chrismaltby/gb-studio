@@ -9,5 +9,5 @@ test("Should be able to group events", () => {
       compileEvents: mockCompileEvents,
     },
   );
-  expect(mockCompileEvents).toBeCalledWith(truePath);
+  expect(mockCompileEvents).toHaveBeenCalledWith(truePath);
 });

@@ -10,5 +10,5 @@ test("Should be able to increment value", () => {
       variableInc: mockVariableInc,
     },
   );
-  expect(mockVariableInc).toBeCalledWith("2");
+  expect(mockVariableInc).toHaveBeenCalledWith("2");
 });

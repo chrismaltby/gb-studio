@@ -10,7 +10,7 @@ test("Should be able to wait for a second", () => {
       waitScriptValue: mockWaitScriptValues,
     },
   );
-  expect(mockWaitScriptValues).toBeCalledWith(1, "time");
+  expect(mockWaitScriptValues).toHaveBeenCalledWith(1, "time");
 });
 
 test("Should wait for half a second if time not set", () => {
@@ -21,7 +21,7 @@ test("Should wait for half a second if time not set", () => {
       waitScriptValue: mockWaitScriptValues,
     },
   );
-  expect(mockWaitScriptValues).toBeCalledWith(0.5, "time");
+  expect(mockWaitScriptValues).toHaveBeenCalledWith(0.5, "time");
 });
 
 test("Should be able to wait for one and a half seconds", () => {
@@ -34,7 +34,7 @@ test("Should be able to wait for one and a half seconds", () => {
       waitScriptValue: mockWaitScriptValues,
     },
   );
-  expect(mockWaitScriptValues).toBeCalledWith(1.5, "time");
+  expect(mockWaitScriptValues).toHaveBeenCalledWith(1.5, "time");
 });
 
 test("Should be able to wait for one frame", () => {
@@ -48,5 +48,5 @@ test("Should be able to wait for one frame", () => {
       waitScriptValue: mockWaitScriptValues,
     },
   );
-  expect(mockWaitScriptValues).toBeCalledWith(1, "frames");
+  expect(mockWaitScriptValues).toHaveBeenCalledWith(1, "frames");
 });

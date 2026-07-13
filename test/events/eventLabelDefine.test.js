@@ -10,5 +10,5 @@ test("Should be able to define an event label", () => {
     },
   );
 
-  expect(mockLabelDefine).toBeCalledWith("my_label");
+  expect(mockLabelDefine).toHaveBeenCalledWith("my_label");
 });

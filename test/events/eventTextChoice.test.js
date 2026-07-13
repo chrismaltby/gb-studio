@@ -12,7 +12,7 @@ test("Should be able to display a multiple choice option", () => {
       textChoice: mockTextChoice,
     },
   );
-  expect(mockTextChoice).toBeCalledWith("5", {
+  expect(mockTextChoice).toHaveBeenCalledWith("5", {
     trueText: "Hello",
     falseText: "Goodbye",
   });

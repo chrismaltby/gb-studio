@@ -10,5 +10,5 @@ test("Should be able to decrement value", () => {
       variableDec: mockVariableDec,
     },
   );
-  expect(mockVariableDec).toBeCalledWith("2");
+  expect(mockVariableDec).toHaveBeenCalledWith("2");
 });
