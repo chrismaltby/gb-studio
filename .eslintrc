@@ -8,6 +8,9 @@
   },
   "settings": {
     "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      },
       "node": {
         "extensions": [".js", ".jsx", ".ts", ".tsx"],
         "moduleDirectory": [
@@ -24,7 +27,7 @@
   "rules": {
     "import/extensions": 0,
     "import/no-extraneous-dependencies": 0,
-    "import/no-unresolved": [2, { "ignore": ["electron", "#my-quickjs-variant", "storybook/test", "knip", "@octokit/rest"] }],
+    "import/no-unresolved": [2, { "ignore": ["electron", "#my-quickjs-variant"] }],
     "linebreak-style": 0,
     "react/prefer-stateless-function": 0,
     "react/jsx-filename-extension": 0,
