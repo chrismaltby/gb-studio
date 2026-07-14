@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { Provider } from "react-redux";
 import AppToolbar from "components/app/AppToolbar";
 import { configureStore, createSlice } from "@reduxjs/toolkit";

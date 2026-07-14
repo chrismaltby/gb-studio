@@ -1,5 +1,10 @@
 {
-  "extends": ["plugin:@typescript-eslint/recommended", "react-app", "prettier"],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "react-app",
+    "prettier",
+    "plugin:storybook/recommended"
+  ],
   "parser": "@typescript-eslint/parser",
   "plugins": ["babel"],
   "parserOptions": {

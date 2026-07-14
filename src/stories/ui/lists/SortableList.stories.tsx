@@ -1,4 +1,4 @@
-import type { Meta } from "@storybook/react";
+import type { Meta } from "@storybook/react-webpack5";
 import React, { useMemo, useState } from "react";
 import { SortableList } from "ui/lists/SortableList";
 import AppContainerDnD from "components/app/AppContainerDnD";
