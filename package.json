@@ -145,6 +145,7 @@
     "@types/adm-zip": "^0.5.5",
     "@types/chroma-js": "^2.4.4",
     "@types/fs-extra": "^9.0.8",
+    "@types/glob": "7.1.1",
     "@types/jest": "^29.5.12",
     "@types/lodash": "^4.17.0",
     "@types/node": "^22.7.9",

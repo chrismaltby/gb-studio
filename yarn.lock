@@ -7619,7 +7619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/glob@npm:^7.1.1":
+"@types/glob@npm:7.1.1, @types/glob@npm:^7.1.1":
   version: 7.1.1
   resolution: "@types/glob@npm:7.1.1"
   dependencies:
@@ -14187,6 +14187,7 @@ __metadata:
     "@types/adm-zip": "npm:^0.5.5"
     "@types/chroma-js": "npm:^2.4.4"
     "@types/fs-extra": "npm:^9.0.8"
+    "@types/glob": "npm:7.1.1"
     "@types/jest": "npm:^29.5.12"
     "@types/lodash": "npm:^4.17.0"
     "@types/node": "npm:^22.7.9"
