@@ -27,7 +27,6 @@ const config: KnipConfig = {
     "@electron-forge/maker-.*",
     "@electron-forge/plugin-.*",
     "@types/webpack-env",
-    "babel-eslint",
     "eslint-plugin-react",
     "eslint-plugin-jsx-a11y",
     "eslint-plugin-import",

@@ -160,7 +160,6 @@
     "@typescript-eslint/eslint-plugin": "8.63.0",
     "@typescript-eslint/parser": "8.63.0",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "babel-eslint": "^10.1.0",
     "babel-loader": "^10.1.0",
     "babel-plugin-styled-components": "^2.1.4",
     "cross-env": "^7.0.3",
