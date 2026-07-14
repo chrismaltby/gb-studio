@@ -213,10 +213,10 @@ export const addPluginToProject = async (
     );
 
     const fileStream = createWriteStream(tmpPluginZipPath);
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       res.body?.pipe(fileStream);
       res.body?.on("error", reject);
-      fileStream.on("finish", resolve);
+      fileStream.on("finish", () => resolve());
     });
 
     // Clean up any existing files from previous version of plugin
