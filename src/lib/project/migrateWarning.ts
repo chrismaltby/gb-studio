@@ -1,10 +1,10 @@
 import fs from "fs-extra";
 import { dialog, shell } from "electron";
-import settings from "electron-settings";
 import semverValid from "semver/functions/valid";
 import semverGt from "semver/functions/gt";
 import l10n from "shared/lib/lang/l10n";
 import { LATEST_PROJECT_VERSION } from "./migration/migrateProjectResources";
+import { settingsSet } from "lib/helpers/appSettings";
 
 const needsUpdate = (currentVersion: string) => {
   if (semverValid(currentVersion) && semverValid(LATEST_PROJECT_VERSION)) {
@@ -80,7 +80,7 @@ const migrateWarning = async (projectPath: string) => {
 
   if (checkboxChecked) {
     // Ignore all updates until manually check for updates
-    settings.setSync("dontCheckForUpdates", true);
+    await settingsSet("dontCheckForUpdates", true);
   }
   if (buttonIndex === 0) {
     return true;

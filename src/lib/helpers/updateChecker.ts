@@ -2,8 +2,8 @@ import { dialog, shell } from "electron";
 import semverValid from "semver/functions/valid";
 import semverGt from "semver/functions/gt";
 import { Octokit } from "@octokit/rest";
-import settings from "electron-settings";
 import l10n from "shared/lib/lang/l10n";
+import { settingsGet, settingsSet } from "lib/helpers/appSettings";
 
 declare const VERSION: string;
 
@@ -57,10 +57,10 @@ const needsUpdate = (latestVersion: string) => {
 export const checkForUpdate = async (force?: boolean) => {
   if (force) {
     // If manually checking for updates using menu, clear previous settings
-    settings.setSync("dontCheckForUpdates", false);
-    settings.setSync("dontNotifyUpdatesForVersion", false);
+    await settingsSet("dontCheckForUpdates", false);
+    await settingsSet("dontNotifyUpdatesForVersion", false);
   }
-  if (!settings.getSync("dontCheckForUpdates")) {
+  if (!(await settingsGet("dontCheckForUpdates"))) {
     let latestVersion = VERSION;
 
     try {
@@ -85,7 +85,9 @@ export const checkForUpdate = async (force?: boolean) => {
     }
 
     if (needsUpdate(latestVersion)) {
-      if (settings.getSync("dontNotifyUpdatesForVersion") === latestVersion) {
+      if (
+        (await settingsGet("dontNotifyUpdatesForVersion")) === latestVersion
+      ) {
         // User has chosen to ignore this version so don't show any details
         return;
       }
@@ -111,13 +113,13 @@ export const checkForUpdate = async (force?: boolean) => {
 
       if (checkboxChecked) {
         // Ignore all updates until manually check for updates
-        settings.setSync("dontCheckForUpdates", true);
+        await settingsSet("dontCheckForUpdates", true);
       }
       if (buttonIndex === 0) {
         shell.openExternal("https://www.gbstudio.dev/download/");
       } else if (buttonIndex === 2) {
         // Ingore this version but notify for next
-        settings.setSync("dontNotifyUpdatesForVersion", latestVersion);
+        await settingsSet("dontNotifyUpdatesForVersion", latestVersion);
       }
     } else if (force) {
       // If specifically asked to check for updates need to show message

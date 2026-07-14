@@ -5,8 +5,12 @@ import { dirname, join } from "path";
 import { rimraf as rmdir } from "rimraf";
 
 describe("createProject", () => {
-  const tmpDir = getTmp();
-  const writePath = join(tmpDir, "test-projects");
+  let writePath: string;
+
+  beforeAll(async () => {
+    const tmpDir = await getTmp();
+    writePath = join(tmpDir, "test-projects");
+  });
 
   afterAll(async () => {
     await rmdir(writePath);

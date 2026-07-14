@@ -2,14 +2,15 @@ import fs from "fs-extra";
 import os from "os";
 import isElectron from "./isElectron";
 
-const getTmp = (create = true) => {
+const getTmp = async (create = true) => {
   let tmpPath = os.tmpdir();
   if (isElectron()) {
     // eslint-disable-next-line global-require
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const settings = require("electron-settings");
-    if (settings.getSync("tmpDir")) {
-      tmpPath = settings.getSync("tmpDir");
+    const { settingsGet } = require("lib/helpers/appSettings");
+    const electronSettingsTmp = await settingsGet("tmpDir");
+    if (electronSettingsTmp) {
+      tmpPath = electronSettingsTmp;
     }
   }
   if (

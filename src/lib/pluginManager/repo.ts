@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import settings from "electron-settings";
 import {
   isPluginRepositoryEntry,
   PluginRepositoryEntry,
@@ -27,6 +26,10 @@ import {
   isGlobalPluginType,
 } from "shared/lib/plugins/pluginHelpers";
 import { ensureGlobalPluginsPath } from "./globalPlugins";
+import {
+  settingsGet,
+  settingsUpdate,
+} from "lib/helpers/appSettings";
 
 declare const VERSION: string;
 
@@ -45,11 +48,10 @@ const cache: {
 };
 const oneHour = 60 * 60 * 1000;
 
-const getUserReposList = (): PluginRepositoryEntry[] => {
+const getValidUserReposList = (
+  storedUserRepositories: unknown,
+): PluginRepositoryEntry[] => {
   const userRepositories: PluginRepositoryEntry[] = [];
-  const storedUserRepositories: unknown = settings.getSync(
-    "plugins:repositories",
-  );
   if (Array.isArray(storedUserRepositories)) {
     for (const entry of storedUserRepositories) {
       if (isPluginRepositoryEntry(entry)) {
@@ -60,38 +62,42 @@ const getUserReposList = (): PluginRepositoryEntry[] => {
   return userRepositories;
 };
 
-export const getReposList = (): PluginRepositoryEntry[] => {
-  const userRepositories = getUserReposList();
+const getUserReposList = async (): Promise<PluginRepositoryEntry[]> =>
+  getValidUserReposList(await settingsGet("plugins:repositories"));
+
+export const getReposList = async (): Promise<PluginRepositoryEntry[]> => {
+  const userRepositories = await getUserReposList();
   return [corePluginRepository, ...userRepositories];
 };
 
 export const addUserRepo = async (url: string) => {
   try {
-    const userRepositories = getUserReposList();
     const data = await (await fetch(url)).json();
     const castData = Value.Cast(PluginRepositoryMetadata, data);
     const name = castData.shortName || castData.name;
     if (!name) {
       throw new Error('Repository "name" is missing');
     }
-    const updated: PluginRepositoryEntry[] = [
-      ...userRepositories.filter((entry) => {
-        return entry.url !== url;
-      }),
-      {
-        id: checksumString(url),
-        name,
-        url,
-      },
-    ];
-    settings.setSync("plugins:repositories", updated);
+    await settingsUpdate("plugins:repositories", (storedUserRepositories) => {
+      const userRepositories = getValidUserReposList(storedUserRepositories);
+      return [
+        ...userRepositories.filter((entry) => {
+          return entry.url !== url;
+        }),
+        {
+          id: checksumString(url),
+          name,
+          url,
+        },
+      ];
+    });
   } catch (e) {
     dialog.showErrorBox(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"), String(e));
   }
 };
 
 export const removeUserRepo = async (url: string) => {
-  const userRepositories = getUserReposList();
+  const userRepositories = await getUserReposList();
   const repo = userRepositories.find((entry) => entry.url === url);
 
   if (!repo) {
@@ -103,10 +109,13 @@ export const removeUserRepo = async (url: string) => {
     return;
   }
 
-  const updated = userRepositories.filter((entry) => {
-    return entry.url !== url;
+  await settingsUpdate("plugins:repositories", (storedUserRepositories) => {
+    const currentUserRepositories =
+      getValidUserReposList(storedUserRepositories);
+    return currentUserRepositories.filter((entry) => {
+      return entry.url !== url;
+    });
   });
-  settings.setSync("plugins:repositories", updated);
 };
 
 export const getGlobalPluginsList = async (force?: boolean) => {
@@ -114,7 +123,7 @@ export const getGlobalPluginsList = async (force?: boolean) => {
   if (!force && cache.timestamp > now) {
     return cache.value;
   }
-  const reposList = getReposList();
+  const reposList = await getReposList();
   const repos: PluginRepositoryMetadata[] = [];
   for (const repo of reposList) {
     try {
@@ -134,8 +143,10 @@ export const getGlobalPluginsList = async (force?: boolean) => {
   return repos;
 };
 
-export const getRepoUrlById = (id: string): string | undefined => {
-  const reposList = getReposList();
+export const getRepoUrlById = async (
+  id: string,
+): Promise<string | undefined> => {
+  const reposList = await getReposList();
   return reposList.find((repo) => repo.id === id)?.url;
 };
 
@@ -145,7 +156,7 @@ export const addPluginToProject = async (
   repoId: string,
 ) => {
   try {
-    const repoURL = getRepoUrlById(repoId);
+    const repoURL = await getRepoUrlById(repoId);
     if (!repoURL) {
       throw new Error(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"));
     }
@@ -200,7 +211,7 @@ export const addPluginToProject = async (
 
     const res = await fetch(pluginURL);
 
-    const tmpDir = getTmp();
+    const tmpDir = await getTmp();
     const tmpPluginZipPath = join(
       tmpDir,
       `${checksumString(`${repoId}::${pluginId}`)}.zip`,

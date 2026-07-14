@@ -9,7 +9,6 @@ import {
   protocol,
 } from "electron";
 import windowStateKeeper from "electron-window-state";
-import settings from "electron-settings";
 import Path, { relative } from "path";
 import {
   copyFile,
@@ -188,6 +187,12 @@ import {
   csvToScriptDataTable,
   scriptDataTableToCSV,
 } from "shared/lib/scriptDataTable/csv";
+import {
+  settingsGet,
+  settingsSet,
+  settingsUnset,
+  settingsUpdate,
+} from "lib/helpers/appSettings";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -208,12 +213,6 @@ type SplashTab = "info" | "new" | "recent";
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-
-// Set electron-settings filename to
-// match previous releases
-settings.configure({
-  fileName: "Settings",
-});
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -395,8 +394,10 @@ export const createProjectWindow = async () => {
   projectWindow.setRepresentedFilename(projectPath);
 
   projectWindow.webContents.on("did-finish-load", () => {
-    refreshSpellCheck();
     sendToProjectWindow("open-project", projectPath);
+    void refreshSpellCheck().catch((error) => {
+      console.error("Unable to refresh spell check settings", error);
+    });
   });
 
   projectWindow.on("enter-full-screen", () => {
@@ -674,6 +675,10 @@ const openHelp = async (helpPage: string) => {
   }
 };
 
+const getIsEmulatorMuted = async (): Promise<boolean> =>
+  (await settingsGet(EMULATOR_MUTED_SETTING_KEY).catch(() => undefined)) ===
+  true;
+
 export const createPlay = async (
   url: string,
   sgb: boolean,
@@ -700,7 +705,7 @@ export const createPlay = async (
       },
     });
     playWindow.setAlwaysOnTop(true);
-    const isMuted = settings.getSync(EMULATOR_MUTED_SETTING_KEY) === true;
+    const isMuted = await getIsEmulatorMuted();
     if (isMuted) {
       playWindow.webContents.setAudioMuted(true);
     }
@@ -717,12 +722,14 @@ export const createPlay = async (
   );
 
   let firstLoad = true;
-  playWindow.webContents.on("did-finish-load", () => {
+  playWindow.webContents.on("did-finish-load", async () => {
     if (firstLoad) {
       playWindowTitle = playWindow?.getTitle() ?? "";
       firstLoad = false;
     }
-    const isMuted = settings.getSync(EMULATOR_MUTED_SETTING_KEY) === true;
+
+    const isMuted = await getIsEmulatorMuted();
+
     playWindow?.setTitle(
       playWindowTitle.replace(/ 🔇/, "") + (isMuted ? ` 🔇` : ""),
     );
@@ -804,7 +811,7 @@ protocol.registerSchemesAsPrivileged([
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
-  initElectronL10N();
+  await initElectronL10N();
 
   await themeManager.loadPluginThemes();
   await l10nManager.loadPlugins();
@@ -843,7 +850,7 @@ app.on("ready", async () => {
           error: 500,
         });
       }
-      const repoUrl = getRepoUrlById(repoId);
+      const repoUrl = await getRepoUrlById(repoId);
       if (repoUrl) {
         const repoRoot = Path.dirname(repoUrl);
         const repoPath = pathParts.join("/");
@@ -930,7 +937,7 @@ ipcMain.handle("project:open-project-picker", async (_event, _arg) => {
 ipcMain.handle(
   "get-recent-projects",
   async (): Promise<RecentProjectData[]> => {
-    const recentProjects = settings.getSync("recentProjects");
+    const recentProjects = await settingsGet("recentProjects");
     if (!isStringArray(recentProjects)) return [];
     return recentProjects.map((path) => {
       return {
@@ -942,12 +949,14 @@ ipcMain.handle(
   },
 );
 
-const removeRecentProject = (removePath: string) => {
-  const recentProjects = settings.getSync("recentProjects");
-  const newRecents = isStringArray(recentProjects)
-    ? recentProjects.filter((path) => path !== removePath)
-    : [];
-  settings.setSync("recentProjects", newRecents);
+const removeRecentProject = async (removePath: string) => {
+  let newRecents: string[] = [];
+  await settingsUpdate("recentProjects", (recentProjects) => {
+    newRecents = isStringArray(recentProjects)
+      ? recentProjects.filter((path) => path !== removePath)
+      : [];
+    return newRecents;
+  });
   // Rebuild OS level recent projects
   app.clearRecentDocuments();
   newRecents
@@ -959,12 +968,12 @@ const removeRecentProject = (removePath: string) => {
 };
 
 ipcMain.handle("clear-recent-projects", async (_event) => {
-  settings.setSync("recentProjects", []);
+  await settingsSet("recentProjects", []);
   app.clearRecentDocuments();
 });
 
 ipcMain.handle("remove-recent-project", async (_event, removePath: string) => {
-  removeRecentProject(removePath);
+  await removeRecentProject(removePath);
 });
 
 ipcMain.handle("open-help", async (_event, helpPage) => {
@@ -992,7 +1001,7 @@ ipcMain.handle("open-image", async (_event, assetPath) => {
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
 
-  const app = String(settings.getSync("imageEditorPath") || "") || undefined;
+  const app = String((await settingsGet("imageEditorPath")) || "") || undefined;
   open(filename, { app });
 });
 
@@ -1005,7 +1014,7 @@ ipcMain.handle("open-mod", async (_event, assetPath) => {
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
 
-  const app = String(settings.getSync("musicEditorPath") || "") || undefined;
+  const app = String((await settingsGet("musicEditorPath")) || "") || undefined;
   open(filename, { app });
 });
 
@@ -1275,7 +1284,7 @@ ipcMain.handle("create-project", async (_event, input: CreateProjectInput) =>
 );
 
 ipcMain.handle("build:delete-cache", async (_event) => {
-  const tmpPath = getTmp();
+  const tmpPath = await getTmp();
   await clearAppCache(tmpPath);
 });
 
@@ -1298,13 +1307,13 @@ ipcMain.handle(
   },
 );
 
-ipcMain.handle("set-ui-scale", (_, scale: number) => {
-  settings.setSync("zoomLevel", scale);
+ipcMain.handle("set-ui-scale", async (_, scale: number) => {
+  await settingsSet("zoomLevel", scale);
   sendToProjectWindow("setting:ui-scale:changed", scale);
 });
 
-ipcMain.handle("set-tracker-keybindings", (_, value: number) => {
-  settings.setSync("trackerKeyBindings", value);
+ipcMain.handle("set-tracker-keybindings", async (_, value: number) => {
+  await settingsSet("trackerKeyBindings", value);
   sendToProjectWindow("setting:tracker-keybindings:changed", value);
 });
 
@@ -1425,17 +1434,17 @@ ipcMain.handle(
 
 ipcMain.handle("get-l10n-strings", () => getL10NData());
 
-ipcMain.handle("get-theme", () => {
-  const themeId = ensureString(settings.getSync(THEME_SETTING_KEY), "");
+ipcMain.handle("get-theme", async () => {
+  const themeId = ensureString(await settingsGet(THEME_SETTING_KEY), "");
   return themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
 });
 
-ipcMain.handle("settings-get", (_, key: string) => settings.get(key));
-ipcMain.handle("settings-set", (_, key: string, value: JsonValue) => {
-  settings.setSync(key, value);
+ipcMain.handle("settings-get", (_, key: string) => settingsGet(key));
+ipcMain.handle("settings-set", async (_, key: string, value: JsonValue) => {
+  await settingsSet(key, value);
 });
 ipcMain.handle("settings-delete", (_, key: string) => {
-  settings.unsetSync(key);
+  return settingsUnset(key);
 });
 
 ipcMain.handle("app:get-is-full-screen", async () => {
@@ -1526,7 +1535,7 @@ ipcMain.handle(
     const { exportBuild, buildType } = options;
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
-    const tmpPath = getTmp();
+    const tmpPath = await getTmp();
     const outputRoot = Path.join(tmpPath, buildUUID);
     const colorMode = project.settings.colorMode;
     const sgbEnabled =
@@ -1601,7 +1610,7 @@ ipcMain.handle(
       const usageData = await romUsage({
         buildRoot: outputRoot,
         romStem,
-        tmpPath: getTmp(),
+        tmpPath: await getTmp(),
         progress,
         warnings,
       });
@@ -1713,7 +1722,8 @@ ipcMain.handle(
 
     try {
       const projectRoot = Path.dirname(projectPath);
-      const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
+      const tmpPath = await getTmp();
+      const outputRoot = Path.normalize(`${tmpPath}/${buildUUID}`);
 
       const progress = (message: string) => {
         if (
@@ -1739,7 +1749,7 @@ ipcMain.handle(
         projectRoot,
         outputRoot,
         romFilename,
-        tmpPath: getTmp(),
+        tmpPath,
         buildType: "rom",
         engineSchema,
         debugEnabled: false,
@@ -2413,16 +2423,16 @@ menu.on("projectPlugins", () => {
   shell.openPath(pluginsPath);
 });
 
-menu.on("updateTheme", (value) => {
+menu.on("updateTheme", async (value) => {
   const pluginThemes = themeManager.getPluginThemes();
-  settings.setSync(THEME_SETTING_KEY, value as JsonValue);
+  await settingsSet(THEME_SETTING_KEY, value as JsonValue);
   setMenuItemChecked("themeDefault", value === undefined);
   setMenuItemChecked("themeLight", value === "light");
   setMenuItemChecked("themeDark", value === "dark");
   for (const pluginTheme of pluginThemes) {
     setMenuItemChecked(`theme-${pluginTheme.id}`, value === pluginTheme.id);
   }
-  refreshTheme();
+  await refreshTheme();
 });
 
 menu.on("toggleMidiInput", () => {
@@ -2435,8 +2445,8 @@ menu.on("selectMidiInput", (value) => {
   }
 });
 
-menu.on("updateLocale", (value) => {
-  settings.setSync(LOCALE_SETTING_KEY, value as JsonValue);
+menu.on("updateLocale", async (value) => {
+  await settingsSet(LOCALE_SETTING_KEY, value as JsonValue);
   setMenuItemChecked("localeDefault", value === undefined);
   for (const lang of l10nManager.getSystemL10Ns()) {
     setMenuItemChecked(`locale-${lang.id}`, value === lang.id);
@@ -2445,41 +2455,41 @@ menu.on("updateLocale", (value) => {
     setMenuItemChecked(`locale-${lang.id}`, value === lang.id);
   }
   switchLanguageDialog();
-  initElectronL10N();
-  refreshSpellCheck();
+  await initElectronL10N();
+  await refreshSpellCheck();
 });
 
-menu.on("updateCheckSpelling", (value) => {
-  settings.setSync("checkSpelling", value as JsonValue);
+menu.on("updateCheckSpelling", async (value) => {
+  await settingsSet("checkSpelling", value as JsonValue);
   setMenuItemChecked("checkSpelling", value !== false);
-  refreshSpellCheck();
+  await refreshSpellCheck();
 });
 
-menu.on("updateShowCollisions", (value) => {
-  settings.setSync("showCollisions", value as JsonValue);
+menu.on("updateShowCollisions", async (value) => {
+  await settingsSet("showCollisions", value as JsonValue);
   sendToProjectWindow("setting:changed", "showCollisions", value);
 });
 
-menu.on("updateShowConnections", (value) => {
-  settings.setSync("showConnections", value as JsonValue);
+menu.on("updateShowConnections", async (value) => {
+  await settingsSet("showConnections", value as JsonValue);
   refreshShowConnectionsMenuItems(value);
   sendToProjectWindow("setting:changed", "showConnections", value);
 });
 
-menu.on("updateShowNavigator", (value) => {
-  settings.setSync("showNavigator", value as JsonValue);
+menu.on("updateShowNavigator", async (value) => {
+  await settingsSet("showNavigator", value as JsonValue);
   sendToProjectWindow("setting:changed", "showNavigator", value);
 });
 
-menu.on("updateShowSceneScreenGrid", (value) => {
-  settings.setSync("showSceneScreenGrid", value as JsonValue);
+menu.on("updateShowSceneScreenGrid", async (value) => {
+  await settingsSet("showSceneScreenGrid", value as JsonValue);
   refreshScreenGridMenuItems(value);
   sendToProjectWindow("setting:changed", "showSceneScreenGrid", value);
 });
 
-menu.on("updateEmulatorMuted", (value) => {
+menu.on("updateEmulatorMuted", async (value) => {
   const isMuted = value === true;
-  settings.setSync(EMULATOR_MUTED_SETTING_KEY, isMuted);
+  await settingsSet(EMULATOR_MUTED_SETTING_KEY, isMuted);
   if (playWindow) {
     playWindow.webContents.setAudioMuted(isMuted);
     playWindow?.setTitle(
@@ -2496,7 +2506,7 @@ watchGlobalPlugins({
   onChangedThemePlugin: async (path: string) => {
     await themeManager.loadPluginTheme(path);
     refreshMenu();
-    refreshTheme();
+    await refreshTheme();
   },
   onChangedLanguagePlugin: async (path: string) => {
     await l10nManager.loadPlugin(path);
@@ -2509,7 +2519,7 @@ watchGlobalPlugins({
   onRemoveThemePlugin: async () => {
     await themeManager.loadPluginThemes();
     refreshMenu();
-    refreshTheme();
+    await refreshTheme();
   },
   onRemoveLanguagePlugin: async () => {
     await l10nManager.loadPlugins();
@@ -2521,8 +2531,8 @@ watchGlobalPlugins({
   },
 });
 
-const refreshTheme = () => {
-  const themeId = ensureString(settings.getSync(THEME_SETTING_KEY), "");
+const refreshTheme = async () => {
+  const themeId = ensureString(await settingsGet(THEME_SETTING_KEY), "");
   const theme = themeManager.getTheme(themeId, nativeTheme.shouldUseDarkColors);
   sendToSplashWindow("update-theme", theme);
   sendToProjectWindow("update-theme", theme);
@@ -2604,7 +2614,7 @@ const openProject = async (newProjectPath: string): Promise<boolean> => {
       l10n("ERROR_INVALID_FILE_TYPE"),
       l10n("ERROR_OPEN_GBSPROJ_FILE"),
     );
-    removeRecentProject(newProjectPath);
+    await removeRecentProject(newProjectPath);
     return false;
   }
 
@@ -2615,12 +2625,12 @@ const openProject = async (newProjectPath: string): Promise<boolean> => {
       l10n("ERROR_MISSING_PROJECT"),
       l10n("ERROR_MOVED_OR_DELETED"),
     );
-    removeRecentProject(newProjectPath);
+    await removeRecentProject(newProjectPath);
     return false;
   }
 
   projectPath = newProjectPath;
-  addRecentProject(projectPath);
+  await addRecentProject(projectPath);
 
   const projectRoot = Path.dirname(projectPath);
   scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
@@ -2641,31 +2651,28 @@ const openProject = async (newProjectPath: string): Promise<boolean> => {
   return true;
 };
 
-const addRecentProject = (projectPath: string) => {
+const addRecentProject = async (projectPath: string) => {
   // Store recent projects
-  settings.setSync(
-    "recentProjects",
-    ([] as string[])
-      .concat(
-        (settings.getSync("recentProjects") || []) as string[],
-        projectPath,
-      )
+  await settingsUpdate("recentProjects", (recentProjects) => {
+    const currentRecents = (recentProjects || []) as string[];
+    return ([] as string[])
+      .concat(currentRecents, projectPath)
       .reverse()
       .filter(
         (filename: string, index: number, arr: string[]) =>
           arr.indexOf(filename) === index,
       ) // Only unique
       .reverse()
-      .slice(-10),
-  );
+      .slice(-10);
+  });
   app.addRecentDocument(projectPath);
 };
 
-const refreshSpellCheck = () => {
-  const spellCheckEnabled = settings.getSync("checkSpelling") !== false;
+const refreshSpellCheck = async () => {
+  const spellCheckEnabled = (await settingsGet("checkSpelling")) !== false;
   if (projectWindow) {
     const session = projectWindow.webContents.session;
-    const appLocale = getAppLocale();
+    const appLocale = await getAppLocale();
     const spellCheckLanguages = session.availableSpellCheckerLanguages.filter(
       (lang) => lang === appLocale,
     );
@@ -2724,7 +2731,7 @@ const saveAsProject = async (saveAsPath: string) => {
   await copy(Path.dirname(originalProjectPath), Path.dirname(newProjectPath));
 
   projectPath = newProjectPath;
-  addRecentProject(projectPath);
+  await addRecentProject(projectPath);
 
   sendToProjectWindow("menu:save-project");
 };

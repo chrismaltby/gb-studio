@@ -31,7 +31,7 @@ const main = async (
   projectFile: string,
   destination: string,
 ) => {
-  initElectronL10N();
+  await initElectronL10N();
 
   // Load project file
   const projectRoot = Path.resolve(Path.dirname(projectFile));

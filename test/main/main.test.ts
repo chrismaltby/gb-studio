@@ -1,9 +1,15 @@
 import electron, { BrowserWindow } from "electron";
+import settings from "electron-settings";
 import { readFile, writeFile } from "fs-extra";
-import { createPreferences, createSplash } from "../../src/apps/gb-studio/main";
+import {
+  createPreferences,
+  createProjectWindow,
+  createSplash,
+} from "../../src/apps/gb-studio/main";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 
 jest.mock("electron");
+jest.mock("electron-settings");
 jest.mock("fs-extra");
 jest.mock("@octokit/rest", () => ({
   Octokit: jest.fn().mockImplementation(() => ({
@@ -17,6 +23,7 @@ jest.mock("lib/project/createProject");
 jest.mock("../../src/apps/gb-studio/menu");
 
 const mockedElectron = jest.mocked(electron);
+const mockedSettings = jest.mocked(settings);
 const mockedCheckForUpdate = jest.mocked(checkForUpdate);
 const mockedReadFile = jest.mocked(readFile);
 const mockedWriteFile = jest.mocked(writeFile);
@@ -38,6 +45,7 @@ describe("Electron Main Process", () => {
     mockedCheckForUpdate.mockClear();
     mockedElectron.dialog.showOpenDialogSync.mockClear();
     mockedElectron.dialog.showSaveDialogSync.mockClear();
+    mockedSettings.get.mockReset();
     mockedReadFile.mockReset();
     mockedWriteFile.mockReset();
   });
@@ -148,6 +156,66 @@ describe("Electron Main Process", () => {
     expect(mockBrowserWindow.loadURL).toHaveBeenCalledWith(
       `PREFERENCES_WINDOW_WEBPACK_ENTRY`,
     );
+  });
+
+  test("project window load still sends open-project when spellcheck refresh fails", async () => {
+    (global as typeof globalThis & {
+      MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+      MAIN_WINDOW_WEBPACK_ENTRY: string;
+    }).MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY = "MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY";
+    (global as typeof globalThis & {
+      MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+      MAIN_WINDOW_WEBPACK_ENTRY: string;
+    }).MAIN_WINDOW_WEBPACK_ENTRY = "MAIN_WINDOW_WEBPACK_ENTRY";
+
+    const didFinishLoadHandlers: Array<() => void> = [];
+    const consoleErrorSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    mockedSettings.get.mockRejectedValueOnce(new Error("settings failed"));
+
+    const mockBrowserWindow = {
+      loadURL: jest.fn(),
+      on: jest.fn(),
+      webContents: {
+        on: jest.fn().mockImplementation((event, handler) => {
+          if (event === "did-finish-load") {
+            didFinishLoadHandlers.push(handler);
+          }
+        }),
+        send: jest.fn(),
+        session: {
+          availableSpellCheckerLanguages: ["en"],
+          setSpellCheckerEnabled: jest.fn(),
+          setSpellCheckerLanguages: jest.fn(),
+        },
+      },
+      setRepresentedFilename: jest.fn(),
+      setMenu: jest.fn(),
+      show: jest.fn(),
+    } as unknown as jest.Mocked<BrowserWindow>;
+
+    mockedElectron.BrowserWindow.mockImplementationOnce(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      () => mockBrowserWindow as any,
+    );
+
+    await createProjectWindow();
+    didFinishLoadHandlers[0]();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockBrowserWindow.webContents.send).toHaveBeenCalledWith(
+      "open-project",
+      "",
+    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Unable to refresh spell check settings",
+      expect.any(Error),
+    );
+
+    consoleErrorSpy.mockRestore();
   });
 
   test("registers a CSV export IPC handler that writes the serialized table", async () => {

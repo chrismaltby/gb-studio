@@ -1,5 +1,4 @@
 import { app } from "electron";
-import settings from "electron-settings";
 import fs from "fs";
 import glob from "glob";
 import Path from "path";
@@ -8,6 +7,7 @@ import { LOCALE_SETTING_KEY, localesRoot } from "consts";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
 import { getGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
 import mapValues from "lodash/mapValues";
+import { settingsGet } from "lib/helpers/appSettings";
 
 const localesPath = `${localesRoot}/*.json`;
 
@@ -15,14 +15,14 @@ export const locales = glob
   .sync(localesPath)
   .map((path) => Path.basename(path, ".json"));
 
-export const getAppLocale = () => {
-  const settingsLocale = app && settings.getSync(LOCALE_SETTING_KEY);
+export const getAppLocale = async () => {
+  const settingsLocale = app && (await settingsGet(LOCALE_SETTING_KEY));
   const systemLocale = app ? app.getLocale() : "en";
   return String(settingsLocale || systemLocale);
 };
 
-const initElectronL10N = () => {
-  const appLocale = getAppLocale();
+const initElectronL10N = async () => {
+  const appLocale = await getAppLocale();
   loadLanguage(appLocale);
 };
 
