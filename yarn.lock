@@ -11118,7 +11118,7 @@ __metadata:
   resolution: "copy-webpack-plugin@npm:9.0.0"
   dependencies:
     fast-glob: "npm:^3.2.5"
-    glob-parent: "npm:^6.0.0"
+    glob-parent: "npm:^6.0.2"
     globby: "npm:^11.0.3"
     normalize-path: "npm:^3.0.0"
     p-limit: "npm:^3.1.0"
@@ -14519,15 +14519,6 @@ __metadata:
   dependencies:
     is-glob: "npm:^4.0.1"
   checksum: 10c0/cab87638e2112bee3f839ef5f6e0765057163d39c66be8ec1602f3823da4692297ad4e972de876ea17c44d652978638d2fd583c6713d0eb6591706825020c9ee
-  languageName: node
-  linkType: hard
-
-"glob-parent@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "glob-parent@npm:6.0.0"
-  dependencies:
-    is-glob: "npm:^4.0.1"
-  checksum: 10c0/ba042f0b2fc8a23c4a44912e8bc1832a1884d9090e0e2686c34304cee9e22aa86323794f5ba1e6d0060e365d0134c02bd8d9d4a36433e4c4f7839caaf68f7669
   languageName: node
   linkType: hard
 
