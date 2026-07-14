@@ -13,7 +13,7 @@ import {
   shouldInterruptAfterDeadline,
 } from "quickjs-emscripten-core";
 import quickJSVariant from "#my-quickjs-variant";
-import uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 import type {
   FileReaderFn,
   ScriptEventHandlerWithCleanup,

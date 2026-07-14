@@ -1,6 +1,6 @@
 import { glob } from "lib/helpers/glob";
 import { promisify } from "util";
-import uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 import sizeOf from "image-size";
 import { stat } from "fs";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";

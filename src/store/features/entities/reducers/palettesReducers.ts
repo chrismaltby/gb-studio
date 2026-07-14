@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import l10n from "shared/lib/lang/l10n";
 import { DMG_PALETTE } from "consts";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import { EntitiesState } from "shared/lib/entities/entitiesTypes";
 import {
   nextIndexedName,

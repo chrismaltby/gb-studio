@@ -1,5 +1,5 @@
 import path from "path";
-import uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 import loadAllBackgroundData from "./loadBackgroundData";
 import loadAllSpriteData from "./loadSpriteData";
 import loadAllMusicData from "./loadMusicData";

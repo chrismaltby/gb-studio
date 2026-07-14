@@ -4,7 +4,7 @@ import {
   SliceCaseReducers,
 } from "@reduxjs/toolkit";
 import clamp from "shared/lib/helpers/clamp";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import {
   EntitiesState,
   TriggerNormalized,

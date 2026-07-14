@@ -13,7 +13,7 @@ import { v4 as uuid } from "uuid";
 
 jest.mock("uuid");
 
-const mockUuid = uuid as jest.MockedFunction<typeof uuid>;
+const mockUuid = uuid as unknown as jest.MockedFunction<() => string>;
 
 beforeEach(() => {
   let id = 0;

@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { EVENT_CALL_CUSTOM_EVENT } from "consts";
 import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import {
   EntitiesState,
   ScriptNormalized,

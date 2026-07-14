@@ -8106,13 +8106,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:^3.4.6":
-  version: 3.4.9
-  resolution: "@types/uuid@npm:3.4.9"
-  checksum: 10c0/e66f167efeef28c65544f8c76353b81d2d0fbb0cbc2a5262bf8b365b8ef52b35d84c34c9bf7651aff2ab54d8c4c47e9c3846030d18c2170ff55be73d1dd9c278
-  languageName: node
-  linkType: hard
-
 "@types/webpack-env@npm:^1.14.1":
   version: 1.18.8
   resolution: "@types/webpack-env@npm:1.18.8"
@@ -14127,7 +14120,6 @@ __metadata:
     "@types/react-mentions": "npm:^4.4.0"
     "@types/react-refresh": "npm:^0.14.6"
     "@types/spark-md5": "npm:^3.0.4"
-    "@types/uuid": "npm:^3.4.6"
     "@types/webpack-env": "npm:^1.14.1"
     "@typescript-eslint/eslint-plugin": "npm:8.63.0"
     "@typescript-eslint/parser": "npm:8.63.0"
@@ -14218,7 +14210,7 @@ __metadata:
     ts-node: "npm:^10.0.0"
     tsconfig-paths-webpack-plugin: "npm:^4.1.0"
     typescript: "npm:@typescript/typescript6@^6.0.2"
-    uuid: "npm:^3.3.2"
+    uuid: "npm:^14.0.1"
     wavefile: "npm:^11.0.0"
     webpack: "npm:^5.108.4"
     webpack-bundle-analyzer: "npm:^4.4.2"
@@ -23659,12 +23651,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^3.3.2":
-  version: 3.3.2
-  resolution: "uuid@npm:3.3.2"
+"uuid@npm:^14.0.1":
+  version: 14.0.1
+  resolution: "uuid@npm:14.0.1"
   bin:
-    uuid: ./bin/uuid
-  checksum: 10c0/847bd7b389f44d05cf5341134d52803116b616c7344f12c74040effd75280b58273ea3a2bee6ba6e5405688c5edbb0696f4adcbc89e1206dc1d8650bdaece7a6
+    uuid: dist-node/bin/uuid
+  checksum: 10c0/2d961289097cb68c37d93d1da0b5c3aafc1eb9948a455cca8d0ae53a099b2fe583b8933254a84097f700e6bac2e23033364904df0467c22551d5d9611febcaf6
   languageName: node
   linkType: hard
 

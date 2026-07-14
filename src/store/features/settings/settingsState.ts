@@ -4,7 +4,7 @@ import { RootState } from "store/storeTypes";
 import projectActions from "store/features/project/projectActions";
 import type { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { ScriptEventArgs } from "shared/lib/resources/types";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import { isResizeTilemapLayersAction } from "store/features/entities/entitiesActionMatchers";
 import { normalizeTilemapLayersSize } from "shared/lib/tiles/sceneTilemapData";
 

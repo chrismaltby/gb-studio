@@ -1,6 +1,6 @@
 import { glob } from "lib/helpers/glob";
 import { promisify } from "util";
-import uuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 import { stat } from "fs";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";

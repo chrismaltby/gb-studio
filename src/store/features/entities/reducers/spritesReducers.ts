@@ -4,7 +4,7 @@ import {
   SliceCaseReducers,
 } from "@reduxjs/toolkit";
 import l10n from "shared/lib/lang/l10n";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import {
   EntitiesState,
   SpriteSheetNormalized,

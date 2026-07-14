@@ -17,6 +17,7 @@ module.exports = {
     // Mocks
     "^!!raw-loader!(.*)\\.css$": "<rootDir>/test/__mocks__/styleMock.js",
     "^renderer/lib/api": "<rootDir>/test/__mocks__/apiMock.ts",
+    "^uuid$": "<rootDir>/test/__mocks__/uuid.ts",
     // Event imports
     "^../helpers/l10n$": "<rootDir>/src/shared/lib/lang/l10n.ts",
     // Path aliases

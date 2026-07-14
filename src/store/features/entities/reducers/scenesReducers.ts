@@ -20,7 +20,7 @@ import {
   SliceCaseReducers,
   original,
 } from "@reduxjs/toolkit";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import {
   EntitiesState,
   SceneNormalized,

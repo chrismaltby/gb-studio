@@ -2,7 +2,7 @@
 import reducer, { initialState } from "store/features/entities/entitiesState";
 import { EntitiesState } from "shared/lib/entities/entitiesTypes";
 import actions from "store/features/entities/entitiesActions";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import {
   dummySceneNormalized,
   dummyBackground,
@@ -26,7 +26,7 @@ import {
 import { SceneTilemapData } from "shared/lib/resources/types";
 
 jest.mock("uuid");
-const mockUuid = uuid as jest.MockedFunction<typeof uuid>;
+const mockUuid = uuid as unknown as jest.MockedFunction<() => string>;
 
 beforeEach(() => {
   let id = 0;

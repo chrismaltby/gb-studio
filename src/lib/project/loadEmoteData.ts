@@ -1,6 +1,6 @@
 import { glob } from "lib/helpers/glob";
 import { promisify } from "util";
-import uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 import { createReadStream } from "fs-extra";
 import { stat } from "fs";
 import { PNG } from "pngjs";
