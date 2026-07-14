@@ -26,10 +26,7 @@ import {
   isGlobalPluginType,
 } from "shared/lib/plugins/pluginHelpers";
 import { ensureGlobalPluginsPath } from "./globalPlugins";
-import {
-  settingsGet,
-  settingsUpdate,
-} from "lib/helpers/appSettings";
+import { settingsGet, settingsUpdate } from "lib/helpers/appSettings";
 
 declare const VERSION: string;
 
@@ -110,8 +107,9 @@ export const removeUserRepo = async (url: string) => {
   }
 
   await settingsUpdate("plugins:repositories", (storedUserRepositories) => {
-    const currentUserRepositories =
-      getValidUserReposList(storedUserRepositories);
+    const currentUserRepositories = getValidUserReposList(
+      storedUserRepositories,
+    );
     return currentUserRepositories.filter((entry) => {
       return entry.url !== url;
     });
@@ -160,22 +158,19 @@ export const addPluginToProject = async (
     if (!repoURL) {
       throw new Error(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"));
     }
-    const repoRoot = dirname(repoURL);
+
     const repos = await getGlobalPluginsList();
     const repo = repos?.find((r) => r.id === repoId);
     if (!repo) {
       throw new Error(l10n("ERROR_PLUGIN_REPOSITORY_NOT_FOUND"));
     }
+
     const plugin = repo.plugins.find((p) => p.id === pluginId);
     if (!plugin) {
       throw new Error(l10n("ERROR_PLUGIN_NOT_FOUND"));
     }
 
-    const pluginURL =
-      plugin.filename.startsWith("http:") ||
-      plugin.filename.startsWith("https:")
-        ? plugin.filename
-        : join(repoRoot, plugin.filename);
+    const pluginURL = new URL(plugin.filename, repoURL).toString();
 
     let outputPath = "";
 
