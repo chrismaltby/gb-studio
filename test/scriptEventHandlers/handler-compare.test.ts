@@ -1,5 +1,4 @@
-import glob from "glob";
-import { promisify } from "util";
+import { glob } from "lib/helpers/glob";
 import { readFile, remove, writeFile } from "fs-extra";
 import { PrecompiledScene } from "lib/compiler/generateGBVMData";
 import ScriptBuilder from "lib/compiler/scriptBuilder/scriptBuilder";
@@ -26,8 +25,6 @@ import { compileEventsWithScriptBuilder } from "lib/compiler/compileEntityEvents
 import { stripCommentsFromGBVMScript } from "lib/compiler/gbvm/buildHelpers";
 import { ScriptEvent } from "shared/lib/resources/types";
 
-const globAsync = promisify(glob);
-
 const matchIncludes = (substring: string): RegExp => {
   return new RegExp(substring, "s");
 };
@@ -45,7 +42,10 @@ describe("Compare output from trusted and untrusted plugin handlers", () => {
   beforeAll(async () => {
     scriptEventHandlers = await getTestScriptHandlers();
     setL10NData(en);
-    const exportPaths = await globAsync(join(__dirname, "_tmp/*.s"));
+    const exportPaths = await glob("_tmp/*.s", {
+      cwd: __dirname,
+      absolute: true,
+    });
     for (const exportPath of exportPaths) {
       await remove(exportPath);
     }

@@ -1,11 +1,8 @@
-import glob from "glob";
+import { glob } from "lib/helpers/glob";
 import Path from "path";
-import { promisify } from "util";
 import { ensureDir, copyFile, readFile, pathExists } from "fs-extra";
 import { checksumString } from "lib/helpers/checksum";
 import { getCacheRoot } from "lib/helpers/cache";
-
-const globAsync = promisify(glob);
 
 interface ParsedInclude {
   contents: string;
@@ -63,7 +60,10 @@ const fileChecksum = async (
 };
 
 const generateIncludesLookup = async (buildIncludeRoot: string) => {
-  const allIncludeFiles = await globAsync(`${buildIncludeRoot}/**/*.{h,i}`);
+  const allIncludeFiles = await glob("**/*.{h,i}", {
+    cwd: buildIncludeRoot,
+    absolute: true,
+  });
   const includesLookup: IncludesLookup = {};
   for (const filePath of allIncludeFiles) {
     const fileContents = await readFile(filePath, "utf8");
@@ -107,8 +107,14 @@ export const cacheObjData = async (
     includesLookup[GAME_GLOBALS_FILE]?.contents,
   );
 
-  const objFiles = await globAsync(`${buildObjRoot}/*.o`);
-  const srcFiles = await globAsync(`${buildSrcRoot}/**/*.{c,s}`);
+  const objFiles = await glob("*.o", {
+    cwd: buildObjRoot,
+    absolute: true,
+  });
+  const srcFiles = await glob("**/*.{c,s}", {
+    cwd: buildSrcRoot,
+    absolute: true,
+  });
 
   const envChecksum = checksumString(JSON.stringify(env));
 
@@ -155,7 +161,10 @@ export const fetchCachedObjData = async (
     includesLookup[GAME_GLOBALS_FILE]?.contents,
   );
 
-  const srcFiles = await globAsync(`${buildSrcRoot}/**/*.{c,s}`);
+  const srcFiles = await glob("**/*.{c,s}", {
+    cwd: buildSrcRoot,
+    absolute: true,
+  });
 
   for (let i = 0; i < srcFiles.length; i++) {
     const srcFilePath = srcFiles[i];

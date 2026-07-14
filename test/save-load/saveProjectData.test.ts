@@ -1,13 +1,13 @@
 // saveProjectData.test.ts
 import { ensureDir, remove } from "fs-extra";
-import glob from "glob";
+import { glob } from "lib/helpers/glob";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import Path from "path";
 import { WriteResourcesPatch } from "shared/lib/resources/types";
 import saveProjectData from "lib/project/saveProjectData";
 
 jest.mock("fs-extra");
-jest.mock("glob");
+jest.mock("lib/helpers/glob");
 jest.mock("lib/helpers/fs/writeFileWithBackup");
 
 describe("saveProjectData", () => {
@@ -53,9 +53,7 @@ describe("saveProjectData", () => {
       "project/oldfile.gbsres",
     ].map((path) => Path.join(mockProjectFolder, path));
 
-    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
-      callback(null, mockExistingPaths);
-    });
+    (glob as unknown as jest.Mock).mockResolvedValue(mockExistingPaths);
 
     await saveProjectData(mockProjectPath, mockPatch);
 
@@ -101,9 +99,7 @@ describe("saveProjectData", () => {
       "project/actor1__0.gbsres",
     ].map((path) => Path.join(mockProjectFolder, path));
 
-    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
-      callback(null, mockExistingPaths);
-    });
+    (glob as unknown as jest.Mock).mockResolvedValue(mockExistingPaths);
 
     await saveProjectData(mockProjectPath, mockPatchWithNoUpdates);
 
@@ -120,9 +116,7 @@ describe("saveProjectData", () => {
     (ensureDir as jest.Mock).mockRejectedValueOnce(mockError);
     (ensureDir as jest.Mock).mockReturnValue(Promise.resolve());
 
-    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
-      callback(null, []);
-    });
+    (glob as unknown as jest.Mock).mockResolvedValue([]);
 
     await expect(saveProjectData(mockProjectPath, mockPatch)).rejects.toThrow(
       "Failed to create directory",
@@ -136,9 +130,7 @@ describe("saveProjectData", () => {
     (writeFileWithBackupAsync as jest.Mock).mockRejectedValueOnce(mockError);
     (writeFileWithBackupAsync as jest.Mock).mockReturnValue(Promise.resolve());
 
-    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
-      callback(null, []);
-    });
+    (glob as unknown as jest.Mock).mockResolvedValue([]);
 
     await expect(saveProjectData(mockProjectPath, mockPatch)).rejects.toThrow(
       "Failed to write file",
@@ -149,16 +141,13 @@ describe("saveProjectData", () => {
 
   it("should handle errors during file removal", async () => {
     const mockError = new Error("Failed to remove file");
-    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
-      callback(
-        null,
-        [
-          "project/scene1__0/scene.gbsres",
-          "project/actor1__0.gbsres",
-          "project/oldfile.gbsres",
-        ].map((path) => Path.join(mockProjectFolder, path)),
-      );
-    });
+    (glob as unknown as jest.Mock).mockResolvedValue(
+      [
+        "project/scene1__0/scene.gbsres",
+        "project/actor1__0.gbsres",
+        "project/oldfile.gbsres",
+      ].map((path) => Path.join(mockProjectFolder, path)),
+    );
     (remove as jest.Mock).mockRejectedValueOnce(mockError);
 
     await expect(saveProjectData(mockProjectPath, mockPatch)).rejects.toThrow(
@@ -174,9 +163,7 @@ describe("saveProjectData", () => {
       "project/actor1__0.gbsres",
     ].map((path) => Path.join(mockProjectFolder, path));
 
-    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
-      callback(null, mockExistingPaths);
-    });
+    (glob as unknown as jest.Mock).mockResolvedValue(mockExistingPaths);
 
     await saveProjectData(mockProjectPath, mockPatch);
 
@@ -190,9 +177,7 @@ describe("saveProjectData", () => {
       metadata: mockPatch.metadata,
     };
 
-    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
-      callback(null, []);
-    });
+    (glob as unknown as jest.Mock).mockResolvedValue([]);
 
     await saveProjectData(mockProjectPath, emptyPatch);
 
@@ -223,9 +208,7 @@ describe("saveProjectData", () => {
       Path.join(mockProjectFolder, path),
     );
 
-    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
-      callback(null, mockExistingPaths);
-    });
+    (glob as unknown as jest.Mock).mockResolvedValue(mockExistingPaths);
 
     const unicodePatch: WriteResourcesPatch = {
       data: [
@@ -257,9 +240,7 @@ describe("saveProjectData", () => {
       Path.join(mockProjectFolder, path),
     );
 
-    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
-      callback(null, mockExistingPaths);
-    });
+    (glob as unknown as jest.Mock).mockResolvedValue(mockExistingPaths);
 
     const unicodePatch: WriteResourcesPatch = {
       data: [
@@ -282,9 +263,7 @@ describe("saveProjectData", () => {
     const nfdName = "project/Cafe\u0301__0.gbsres";
     const nfcName = "project/Café__0.gbsres";
 
-    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
-      callback(null, []);
-    });
+    (glob as unknown as jest.Mock).mockResolvedValue([]);
 
     const unicodePatch: WriteResourcesPatch = {
       data: [
@@ -307,9 +286,7 @@ describe("saveProjectData", () => {
   });
 
   it("should throw if a patch contains absolute resource paths", async () => {
-    (glob as unknown as jest.Mock).mockImplementation((pattern, callback) => {
-      callback(null, []);
-    });
+    (glob as unknown as jest.Mock).mockResolvedValue([]);
 
     const badPatch: WriteResourcesPatch = {
       data: [],

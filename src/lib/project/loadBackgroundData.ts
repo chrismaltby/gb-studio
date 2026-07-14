@@ -1,4 +1,4 @@
-import glob from "glob";
+import { glob } from "lib/helpers/glob";
 import { promisify } from "util";
 import uuid from "uuid/v4";
 import sizeOf from "image-size";
@@ -11,8 +11,6 @@ import {
   CompressedBackgroundResourceAsset,
 } from "shared/lib/resources/types";
 import { getAssetResource } from "./assets";
-
-const globAsync = promisify(glob);
 const sizeOfAsync = promisify(sizeOf);
 const statAsync = promisify(stat);
 
@@ -64,12 +62,14 @@ const loadBackgroundData =
   };
 
 const loadAllBackgroundData = async (projectRoot: string) => {
-  const imagePaths = await globAsync(
-    `${projectRoot}/assets/backgrounds/**/@(*.png|*.PNG)`,
-  );
-  const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/backgrounds/**/@(*.png|*.PNG)`,
-  );
+  const imagePaths = await glob("assets/backgrounds/**/@(*.png|*.PNG)", {
+    cwd: projectRoot,
+    absolute: true,
+  });
+  const pluginPaths = await glob("plugins/*/**/backgrounds/**/@(*.png|*.PNG)", {
+    cwd: projectRoot,
+    absolute: true,
+  });
   const imageData = (
     await Promise.all(
       ([] as Array<Promise<CompressedBackgroundResourceAsset | null>>).concat(

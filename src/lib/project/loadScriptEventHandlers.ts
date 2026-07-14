@@ -1,5 +1,4 @@
-import glob from "glob";
-import { promisify } from "util";
+import { glob } from "lib/helpers/glob";
 import { eventsRoot } from "consts";
 import {
   FileReaderFn,
@@ -11,8 +10,6 @@ import { loadScriptEventHandlerFromTrustedString } from "lib/scriptEventsHandler
 import { dirname, join } from "path";
 import { isAssetWithinProject } from "lib/helpers/assets";
 import l10n from "shared/lib/lang/l10n";
-
-const globAsync = promisify(glob);
 
 const eventHandlers: Record<string, ScriptEventHandlerWithCleanup> = {};
 
@@ -99,11 +96,15 @@ const loadAllScriptEventHandlers = async (projectRoot: string) => {
 
   const forceUntrusted = process.env.FORCE_QUICKJS_PLUGINS === "true";
 
-  const corePaths = await globAsync(`${eventsRoot}/event*.js`);
+  const corePaths = await glob("event*.js", {
+    cwd: eventsRoot,
+    absolute: true,
+  });
 
-  const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/events/event*.js`,
-  );
+  const pluginPaths = await glob("plugins/*/**/events/event*.js", {
+    cwd: projectRoot,
+    absolute: true,
+  });
 
   const trustedHandler = forceUntrusted
     ? loadUntrustedScriptEventHandler

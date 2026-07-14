@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require("fs");
 const path = require("path");
-const glob = require("glob");
+const { globSync } = require("glob");
 
 const repoRoot = path.resolve(__dirname, "../../../..");
 const defaultManifestPath = path.join(__dirname, "musicWebL10NManifest.json");
@@ -27,9 +27,10 @@ const removeGeneratedMusicWebLocales = (outputDir = defaultOutputDir) => {
 };
 
 const listLocaleFiles = (localeDir = defaultLocaleDir) =>
-  glob
-    .sync(path.join(localeDir, "*.json"))
-    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  globSync("*.json", {
+    cwd: localeDir,
+    absolute: true,
+  }).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
 const readManifestKeys = (manifestPath = defaultManifestPath) => {
   const manifest = readJson(manifestPath);
@@ -51,7 +52,7 @@ const extractStaticMusicWebL10NKeys = ({
   const keys = new Set();
 
   for (const pattern of scanGlobs) {
-    const files = glob.sync(pattern, {
+    const files = globSync(pattern, {
       cwd: rootDir,
       nodir: true,
     });

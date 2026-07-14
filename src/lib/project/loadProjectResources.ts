@@ -24,8 +24,7 @@ import {
   TriggerResource,
   VariablesResource,
 } from "shared/lib/resources/types";
-import glob from "glob";
-import { promisify } from "util";
+import { glob } from "lib/helpers/glob";
 import promiseLimit from "lib/helpers/promiseLimit";
 import groupBy from "lodash/groupBy";
 import identity from "lodash/identity";
@@ -34,8 +33,6 @@ import { readJson } from "lib/helpers/fs/readJson";
 import { Value } from "@sinclair/typebox/value";
 import type { Static, TSchema } from "@sinclair/typebox";
 import { naturalSortPaths, pathToPosix } from "shared/lib/helpers/path";
-
-const globAsync = promisify(glob);
 
 const CONCURRENT_RESOURCE_LOAD_COUNT = 8;
 
@@ -89,9 +86,10 @@ export const loadProjectResources = async (
   metadataResource: ProjectMetadataResource,
 ): Promise<CompressedProjectResources> => {
   const projectResources = naturalSortPaths(
-    await globAsync(
-      path.join(projectRoot, "{project,assets,plugins}", "**/*.gbsres"),
-    ),
+    await glob("{project,assets,plugins}/**/*.gbsres", {
+      cwd: projectRoot,
+      absolute: true,
+    }),
   );
 
   const resources = (

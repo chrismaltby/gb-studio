@@ -1,10 +1,7 @@
 import { getGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
-import glob from "glob";
-import { promisify } from "util";
-import { join, relative, dirname } from "path";
+import { glob } from "lib/helpers/glob";
+import { relative, dirname } from "path";
 import { readJSON } from "fs-extra";
-
-const globAsync = promisify(glob);
 
 export interface TemplatePlugin {
   id: string;
@@ -43,9 +40,10 @@ export class TemplateManager {
   async loadPlugins() {
     this.pluginTemplates = {};
     const globalPluginsPath = getGlobalPluginsPath();
-    const pluginPaths = await globAsync(
-      join(globalPluginsPath, "**/project.gbsproj"),
-    );
+    const pluginPaths = await glob("**/project.gbsproj", {
+      cwd: globalPluginsPath,
+      absolute: true,
+    });
     for (const path of pluginPaths) {
       const template = await loadPlugin(path);
       if (template) {

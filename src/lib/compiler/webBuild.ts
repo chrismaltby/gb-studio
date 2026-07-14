@@ -1,7 +1,6 @@
 import fs from "fs-extra";
 import Path from "path";
-import glob from "glob";
-import { promisify } from "util";
+import { glob } from "lib/helpers/glob";
 import { binjgbWasmRoot, defaultWebTemplateRoot } from "consts";
 import copy from "lib/helpers/fsCopy";
 import { pathToPosix } from "shared/lib/helpers/path";
@@ -17,8 +16,6 @@ type WebTemplateManifest = {
   romPath: string;
   configPath: string;
 };
-
-const globAsync = promisify(glob);
 const manifestFilename = "gbstudio.web-template.json";
 const defaultManifestPaths = {
   romPath: "rom/{{romFilename}}",
@@ -190,9 +187,10 @@ export const listProjectWebTemplates = async (
       ).filter((template): template is WebTemplateInfo => Boolean(template))
     : [];
 
-  const pluginTemplatePaths = await globAsync(
-    Path.join(projectRoot, "plugins", "**", "assets", "web", "*"),
-  );
+  const pluginTemplatePaths = await glob("plugins/**/assets/web/*", {
+    cwd: projectRoot,
+    absolute: true,
+  });
   const pluginTemplates = (
     await Promise.all(
       pluginTemplatePaths.map(async (templatePath) => {

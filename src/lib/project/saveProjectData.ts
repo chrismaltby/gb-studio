@@ -1,6 +1,5 @@
 import { ensureDir, remove } from "fs-extra";
-import glob from "glob";
-import { promisify } from "util";
+import { glob } from "lib/helpers/glob";
 import { writeFileWithBackupAsync } from "lib/helpers/fs/writeFileWithBackup";
 import Path from "path";
 import { WriteResourcesPatch } from "shared/lib/resources/types";
@@ -11,8 +10,6 @@ import { pathToPosix } from "shared/lib/helpers/path";
 import { encodeResource } from "shared/lib/resources/save";
 
 const CONCURRENT_RESOURCE_SAVE_COUNT = 8;
-
-const globAsync = promisify(glob);
 
 // Normalize paths to ensure consistent comparison and file operations with unicode across different OSes
 // Note: Only use on relative paths (never full OS paths)
@@ -47,9 +44,10 @@ const saveProjectData = async (
 
   const existingResourcePaths = new Set(
     (
-      await globAsync(
-        Path.join(projectFolder, "{project,assets,plugins}", "**/*.gbsres"),
-      )
+      await glob("{project,assets,plugins}/**/*.gbsres", {
+        cwd: projectFolder,
+        absolute: true,
+      })
     ).map((absolutePath) =>
       normalizeResourcePath(Path.relative(projectFolder, absolutePath)),
     ),

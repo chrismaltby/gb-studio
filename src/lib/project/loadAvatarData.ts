@@ -1,4 +1,4 @@
-import glob from "glob";
+import { glob } from "lib/helpers/glob";
 import { promisify } from "util";
 import uuid from "uuid/v4";
 import { createReadStream } from "fs-extra";
@@ -11,8 +11,6 @@ import {
   AvatarResourceAsset,
 } from "shared/lib/resources/types";
 import { getAssetResource } from "./assets";
-
-const globAsync = promisify(glob);
 const statAsync = promisify(stat);
 
 const sizeOfAsync = (
@@ -56,12 +54,14 @@ const loadAvatarData =
 const loadAllAvatarData = async (
   projectRoot: string,
 ): Promise<AvatarResourceAsset[]> => {
-  const imagePaths = await globAsync(
-    `${projectRoot}/assets/avatars/**/@(*.png|*.PNG)`,
-  );
-  const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/avatars/**/@(*.png|*.PNG)`,
-  );
+  const imagePaths = await glob("assets/avatars/**/@(*.png|*.PNG)", {
+    cwd: projectRoot,
+    absolute: true,
+  });
+  const pluginPaths = await glob("plugins/*/**/avatars/**/@(*.png|*.PNG)", {
+    cwd: projectRoot,
+    absolute: true,
+  });
   const imageData = (
     await Promise.all(
       ([] as Promise<AvatarResourceAsset | null>[]).concat(

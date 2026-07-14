@@ -1,4 +1,4 @@
-import glob from "glob";
+import { glob } from "lib/helpers/glob";
 import { promisify } from "util";
 import uuid from "uuid/v4";
 import { createReadStream } from "fs-extra";
@@ -8,8 +8,6 @@ import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
 import { EmoteResource, EmoteResourceAsset } from "shared/lib/resources/types";
 import { getAssetResource } from "./assets";
-
-const globAsync = promisify(glob);
 const statAsync = promisify(stat);
 
 const sizeOfAsync = (
@@ -55,12 +53,14 @@ const loadEmoteData =
 const loadAllEmoteData = async (
   projectRoot: string,
 ): Promise<EmoteResourceAsset[]> => {
-  const imagePaths = await globAsync(
-    `${projectRoot}/assets/emotes/**/@(*.png|*.PNG)`,
-  );
-  const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/emotes/**/@(*.png|*.PNG)`,
-  );
+  const imagePaths = await glob("assets/emotes/**/@(*.png|*.PNG)", {
+    cwd: projectRoot,
+    absolute: true,
+  });
+  const pluginPaths = await glob("plugins/*/**/emotes/**/@(*.png|*.PNG)", {
+    cwd: projectRoot,
+    absolute: true,
+  });
   const imageData = (
     await Promise.all(
       ([] as Promise<EmoteResourceAsset | null>[]).concat(

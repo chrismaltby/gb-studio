@@ -7,13 +7,10 @@ import { applyPatch } from "diff";
 import { PluginMetadata } from "lib/pluginManager/types";
 import { satisfies } from "semver";
 import { pathToPosix } from "shared/lib/helpers/path";
-import glob from "glob";
-import { promisify } from "util";
+import { glob } from "lib/helpers/glob";
 import { Value } from "@sinclair/typebox/value";
 import { readEngineVersion } from "lib/project/engine";
 import { isKnownEngineVersion } from "lib/project/ejectEngineChangelog";
-
-const globAsync = promisify(glob);
 
 declare const RELEASE_VERSION: string;
 
@@ -42,7 +39,7 @@ export const warnOnPluginFileCollisions = async (
   writtenByPlugin: Map<string, string>,
   warnings: (msg: string) => void,
 ): Promise<void> => {
-  const pluginFiles = await globAsync("**/*", {
+  const pluginFiles = await glob("**/*", {
     cwd: usedEnginePluginPath,
     nodir: true,
   });
@@ -69,7 +66,10 @@ export const warnOnPluginFileCollisions = async (
 export const buildSortedEnginePluginList = async (
   pluginsPath: string,
 ): Promise<EnginePluginEntry[]> => {
-  const enginePluginPaths = await globAsync(`${pluginsPath}/**/engine`);
+  const enginePluginPaths = await glob("**/engine", {
+    cwd: pluginsPath,
+    absolute: true,
+  });
   const enginePlugins: EnginePluginEntry[] = [];
 
   for (const enginePluginPath of enginePluginPaths) {
@@ -95,7 +95,10 @@ export const buildSortedEnginePluginList = async (
   }
 
   // Sort so lower order runs first, higher order runs last
-  enginePlugins.sort((a, b) => a.order - b.order);
+  enginePlugins.sort(
+    (a, b) =>
+      a.order - b.order || a.pluginName.localeCompare(b.pluginName, "en"),
+  );
 
   return enginePlugins;
 };
@@ -114,7 +117,10 @@ export const applyEnginePlugins = async ({
     l10n("COMPILER_LOOKING_FOR_ENGINE_PLUGINS", { path: "plugins/*/engine" }),
   );
 
-  const pluginPaths = await globAsync(`${pluginsPath}/**/plugin.json`);
+  const pluginPaths = await glob("**/plugin.json", {
+    cwd: pluginsPath,
+    absolute: true,
+  });
   const posixRelativePluginPaths = pluginPaths.map((p) =>
     pathToPosix(Path.relative(pluginsPath, Path.dirname(p))),
   );
@@ -342,7 +348,7 @@ export const collectPatchFiles = async (
   usedEnginePluginPath: string,
   unusedFiles: string[],
 ): Promise<PatchInfo[]> => {
-  const patchFiles = await globAsync("**/*.patch", {
+  const patchFiles = await glob("**/*.patch", {
     cwd: usedEnginePluginPath,
     absolute: true,
   });

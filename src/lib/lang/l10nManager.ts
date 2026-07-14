@@ -1,11 +1,8 @@
 import { getGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
-import glob from "glob";
-import { promisify } from "util";
-import { join, relative } from "path";
+import { glob } from "lib/helpers/glob";
+import { relative } from "path";
 import { readJSON } from "fs-extra";
 import { locales } from "./initElectronL10N";
-
-const globAsync = promisify(glob);
 
 interface L10NInterface {
   id: string;
@@ -48,9 +45,10 @@ export class L10nManager {
   async loadPlugins() {
     this.pluginL10Ns = {};
     const globalPluginsPath = getGlobalPluginsPath();
-    const pluginPaths = await globAsync(
-      join(globalPluginsPath, "**/lang.json"),
-    );
+    const pluginPaths = await glob("**/lang.json", {
+      cwd: globalPluginsPath,
+      absolute: true,
+    });
 
     for (const path of pluginPaths) {
       const l10n = await loadL10NPlugin(path);

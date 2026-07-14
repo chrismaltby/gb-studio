@@ -1,7 +1,7 @@
 import l10n, { L10NKey, replaceParams } from "../../src/shared/lib/lang/l10n";
 import { loadLanguage } from "../../src/lib/lang/initElectronL10N";
 
-import glob from "glob";
+import { globSync } from "lib/helpers/glob";
 import { readFile } from "fs-extra";
 
 jest.mock("../../src/consts");
@@ -61,7 +61,10 @@ test("should trace to console if locale is empty", () => {
 });
 
 test("should be able to parse all language files", async () => {
-  const languagePackPaths = glob.sync(`${__dirname}/../../src/lang/*.json`);
+  const languagePackPaths = globSync("*.json", {
+    cwd: `${__dirname}/../../src/lang`,
+    absolute: true,
+  });
   for (const languagePackPath of languagePackPaths) {
     const rawFile = await readFile(languagePackPath, "utf8");
     try {

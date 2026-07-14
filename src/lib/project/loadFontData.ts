@@ -1,4 +1,4 @@
-import glob from "glob";
+import { glob } from "lib/helpers/glob";
 import { promisify } from "util";
 import uuid from "uuid/v4";
 import { createReadStream, readJson } from "fs-extra";
@@ -9,8 +9,6 @@ import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
 import { FontResource, FontResourceAsset } from "shared/lib/resources/types";
 import { getAssetResource } from "./assets";
-
-const globAsync = promisify(glob);
 const statAsync = promisify(stat);
 
 const sizeOfAsync = (
@@ -107,12 +105,14 @@ const loadFontData =
 const loadAllFontData = async (
   projectRoot: string,
 ): Promise<FontResourceAsset[]> => {
-  const imagePaths = await globAsync(
-    `${projectRoot}/assets/fonts/**/@(*.png|*.PNG)`,
-  );
-  const pluginPaths = await globAsync(
-    `${projectRoot}/plugins/*/**/fonts/**/@(*.png|*.PNG)`,
-  );
+  const imagePaths = await glob("assets/fonts/**/@(*.png|*.PNG)", {
+    cwd: projectRoot,
+    absolute: true,
+  });
+  const pluginPaths = await glob("plugins/*/**/fonts/**/@(*.png|*.PNG)", {
+    cwd: projectRoot,
+    absolute: true,
+  });
   const imageData = (
     await Promise.all(
       ([] as Promise<FontResourceAsset | null>[]).concat(

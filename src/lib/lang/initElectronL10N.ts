@@ -1,6 +1,6 @@
 import { app } from "electron";
 import fs from "fs";
-import glob from "glob";
+import { globSync } from "lib/helpers/glob";
 import Path from "path";
 import en from "lang/en.json";
 import { LOCALE_SETTING_KEY, localesRoot } from "consts";
@@ -9,11 +9,10 @@ import { getGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
 import mapValues from "lodash/mapValues";
 import { settingsGet } from "lib/helpers/appSettings";
 
-const localesPath = `${localesRoot}/*.json`;
-
-export const locales = glob
-  .sync(localesPath)
-  .map((path) => Path.basename(path, ".json"));
+export const locales = globSync("*.json", {
+  cwd: localesRoot,
+  absolute: true,
+}).map((path) => Path.basename(path, ".json"));
 
 export const getAppLocale = async () => {
   const settingsLocale = app && (await settingsGet(LOCALE_SETTING_KEY));

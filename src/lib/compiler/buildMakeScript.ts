@@ -1,10 +1,7 @@
-import glob from "glob";
-import { promisify } from "util";
+import { glob } from "lib/helpers/glob";
 import { pathExists, readFile, writeFile } from "fs-extra";
 import Path from "path";
 import l10n from "shared/lib/lang/l10n";
-
-const globAsync = promisify(glob);
 
 type BuildOptions = {
   colorEnabled: boolean;
@@ -16,6 +13,13 @@ type BuildOptions = {
   cartType: "mbc3" | "mbc5";
   compilerPreset: number;
 };
+
+export const objectPathForSource = (buildRoot: string, filename: string) =>
+  Path.join(
+    buildRoot,
+    "obj",
+    `${Path.basename(filename, Path.extname(filename))}.o`,
+  );
 
 export const getBuildCommands = async (
   buildRoot: string,
@@ -30,8 +34,10 @@ export const getBuildCommands = async (
     compilerPreset,
   }: BuildOptions,
 ) => {
-  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
-  const buildFiles = await globAsync(srcRoot);
+  const buildFiles = await glob("src/**/*.@(c|s)", {
+    cwd: buildRoot,
+    absolute: true,
+  });
   const output = [];
 
   const CC =
@@ -44,9 +50,7 @@ export const getBuildCommands = async (
       continue;
     }
 
-    const objFile = `${file
-      .replace(/src.*\//, "obj/")
-      .replace(/\.[cs]$/, "")}.o`;
+    const objFile = objectPathForSource(buildRoot, file);
 
     if (!(await pathExists(objFile))) {
       const buildArgs = [
@@ -114,12 +118,12 @@ export const getBuildCommands = async (
 
 export const buildLinkFile = async (buildRoot: string) => {
   const output = [];
-  const srcRoot = `${buildRoot}/src/**/*.@(c|s)`;
-  const buildFiles = await globAsync(srcRoot);
+  const buildFiles = await glob("src/**/*.@(c|s)", {
+    cwd: buildRoot,
+    absolute: true,
+  });
   for (const file of buildFiles) {
-    const objFile = `${file
-      .replace(/src.*\//, "obj/")
-      .replace(/\.[cs]$/, "")}.o`;
+    const objFile = objectPathForSource(buildRoot, file);
 
     output.push(objFile);
   }

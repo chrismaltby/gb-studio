@@ -4,14 +4,11 @@ import darkThemeWin from "ui/theme/darkThemeWin";
 import lightTheme from "ui/theme/lightTheme";
 import lightThemeWin from "ui/theme/lightThemeWin";
 import { ThemeInterface } from "ui/theme/ThemeInterface";
-import glob from "glob";
-import { promisify } from "util";
-import { join, relative } from "path";
+import { glob } from "lib/helpers/glob";
+import { relative } from "path";
 import { readJSON } from "fs-extra";
 import merge from "lodash/merge";
 import cloneDeep from "lodash/cloneDeep";
-
-const globAsync = promisify(glob);
 
 type ThemeId = "dark" | "light";
 
@@ -52,9 +49,10 @@ export class ThemeManager {
   async loadPluginThemes() {
     this.pluginThemes = {};
     const globalPluginsPath = getGlobalPluginsPath();
-    const pluginPaths = await globAsync(
-      join(globalPluginsPath, "**/theme.json"),
-    );
+    const pluginPaths = await glob("**/theme.json", {
+      cwd: globalPluginsPath,
+      absolute: true,
+    });
     for (const path of pluginPaths) {
       const theme = await loadThemePlugin(path);
       if (theme) {

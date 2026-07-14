@@ -12,7 +12,7 @@ export const naturalSortPaths = (filepaths: string[]): string[] => {
       const aPart = splitA[i].replace(/\.[^.]*/, "");
       const bPart = splitB[i].replace(/\.[^.]*/, "");
       if (aPart !== bPart) {
-        return aPart.localeCompare(bPart, undefined, {
+        return aPart.localeCompare(bPart, "en", {
           numeric: true,
           sensitivity: "base",
         });

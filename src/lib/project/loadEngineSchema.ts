@@ -1,6 +1,6 @@
 import Path from "path";
 import { readJSON, pathExists } from "fs-extra";
-import glob from "glob";
+import { globSync } from "lib/helpers/glob";
 import { defaultEngineMetaPath } from "consts";
 import type {
   SceneTypeSchema,
@@ -76,7 +76,10 @@ export const loadEngineSchema = async (
   let consts = localEngine.consts || defaultEngine.consts || {};
   let extraSceneTypes: Partial<SceneTypeSchema>[] = [];
 
-  const enginePlugins = glob.sync(`${pluginsPath}/**/engine`);
+  const enginePlugins = globSync("**/engine", {
+    cwd: pluginsPath,
+    absolute: true,
+  });
   for (const enginePluginPath of enginePlugins) {
     const enginePluginJsonPath = Path.join(enginePluginPath, "engine.json");
     if (await pathExists(enginePluginJsonPath)) {

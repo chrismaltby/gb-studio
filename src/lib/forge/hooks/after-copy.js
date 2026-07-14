@@ -1,6 +1,6 @@
 const fs = require("fs-extra");
 const Path = require("path");
-const glob = require("glob").sync;
+const { globSync } = require("glob");
 
 const disallowedFiles = [".DS_Store"];
 
@@ -44,7 +44,10 @@ function afterCopy(buildPath, electronVersion, platform, arch, callback) {
     }),
   )
     .then(() => {
-      const dynamicChunks = glob(__dirname + "/.webpack/renderer/[0-9]");
+      const dynamicChunks = globSync(".webpack/renderer/[0-9]", {
+        cwd: __dirname,
+        absolute: true,
+      }).sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
       return Promise.all(
         dynamicChunks.map((dynamicChunk) => {
           const outputPath =
