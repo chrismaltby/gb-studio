@@ -17861,11 +17861,11 @@ __metadata:
   linkType: hard
 
 "minimatch@npm:^5.0.1":
-  version: 5.1.6
-  resolution: "minimatch@npm:5.1.6"
+  version: 5.1.8
+  resolution: "minimatch@npm:5.1.8"
   dependencies:
     brace-expansion: "npm:^2.0.1"
-  checksum: 10c0/3defdfd230914f22a8da203747c42ee3c405c39d4d37ffda284dac5e45b7e1f6c49aa8be606509002898e73091ff2a3bbfc59c2c6c71d4660609f63aa92f98e3
+  checksum: 10c0/2df2d2e8e4cce248fbfb2d0869b6a27afa85e77e7da1f593ad1b80612667968a1e915c1820ecc0edbc63aa851c710a749a043d4efc590d23aabf61e38983209c
   languageName: node
   linkType: hard
 
