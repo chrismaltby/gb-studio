@@ -150,7 +150,12 @@ test("Should be able to multiply variable by value", () => {
       variableValueOperation: mockVariableValueOperation,
     },
   );
-  expect(mockVariableValueOperation).toHaveBeenCalledWith("2", ".MUL", 5, undefined);
+  expect(mockVariableValueOperation).toHaveBeenCalledWith(
+    "2",
+    ".MUL",
+    5,
+    undefined,
+  );
 });
 
 test("Should be able to divide variable by value", () => {
@@ -167,7 +172,12 @@ test("Should be able to divide variable by value", () => {
       variableValueOperation: mockVariableValueOperation,
     },
   );
-  expect(mockVariableValueOperation).toHaveBeenCalledWith("2", ".DIV", 5, undefined);
+  expect(mockVariableValueOperation).toHaveBeenCalledWith(
+    "2",
+    ".DIV",
+    5,
+    undefined,
+  );
 });
 
 test("Should be able to modulus variable by value", () => {
@@ -184,5 +194,10 @@ test("Should be able to modulus variable by value", () => {
       variableValueOperation: mockVariableValueOperation,
     },
   );
-  expect(mockVariableValueOperation).toHaveBeenCalledWith("2", ".MOD", 5, undefined);
+  expect(mockVariableValueOperation).toHaveBeenCalledWith(
+    "2",
+    ".MOD",
+    5,
+    undefined,
+  );
 });

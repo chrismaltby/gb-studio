@@ -2109,7 +2109,7 @@
   "WARNING_PLUGIN_OVERWROTE_FILE": "Wtyczka \"{pluginName}\" nadpisała plik \"{filename}\", który został już wcześniej zapisany przez \"{previousPlugin}\"",
   "WARNING_PLUGIN_PATCH_CONFLICT_OVERWRITTEN": "Wtyczka \"{pluginName}\" nie mogła zastosować poprawki do \"{filename}\", ponieważ plik został wcześniej nadpisany przez \"{previousPlugin}\"",
   "WARNING_TILEMAP_TOO_MANY_TILES": "Tilemapa zawiera zbyt wiele unikalnych kafelków 8×8 px ({tilesetLength}, limit wynosi {maxTilesetLength}), dlatego może nie wyświetlać się poprawnie.",
-  
+
   "// 12": "Errors -------------------------------------------------------",
 
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Wprowadź nazwę projektu",
