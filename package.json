@@ -69,7 +69,7 @@
     "chokidar": "^5.0.0",
     "chroma-js": "^2.4.2",
     "commander": "^6.2.0",
-    "copy-webpack-plugin": "^9.0.0",
+    "copy-webpack-plugin": "^14.0.0",
     "diff": "^8.0.3",
     "dnd-core": "16.0.1",
     "electron-devtools-installer": "^4.0.0",
