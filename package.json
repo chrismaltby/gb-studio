@@ -6,6 +6,9 @@
     "url": "https://github.com/chrismaltby/gb-studio/issues"
   },
   "version": "4.3.2",
+  "engines": {
+    "node": ">=24.16.0 <25"
+  },
   "description": "Visual retro game maker",
   "main": ".webpack/main",
   "private": true,
