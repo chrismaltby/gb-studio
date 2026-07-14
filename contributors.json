@@ -70,8 +70,8 @@
     "group": "gold"
   },
   {
-    "login": "Italo-Soares-Tradutor",
-    "html_url": "https://github.com/Italo-Soares-Tradutor",
+    "login": "crutchcorn",
+    "html_url": "https://github.com/crutchcorn",
     "group": "gold"
   },
   {
@@ -80,8 +80,8 @@
     "group": "gold"
   },
   {
-    "login": "crutchcorn",
-    "html_url": "https://github.com/crutchcorn",
+    "login": "Italo-Soares-Tradutor",
+    "html_url": "https://github.com/Italo-Soares-Tradutor",
     "group": "gold"
   },
   {
@@ -205,63 +205,8 @@
     "group": "silver"
   },
   {
-    "login": "r3vit",
-    "html_url": "https://github.com/r3vit",
-    "group": "silver"
-  },
-  {
-    "login": "npckc",
-    "html_url": "https://github.com/npckc",
-    "group": "silver"
-  },
-  {
-    "login": "john-lay",
-    "html_url": "https://github.com/john-lay",
-    "group": "silver"
-  },
-  {
-    "login": "pblca",
-    "html_url": "https://github.com/pblca",
-    "group": "silver"
-  },
-  {
-    "login": "bbbbbr",
-    "html_url": "https://github.com/bbbbbr",
-    "group": "silver"
-  },
-  {
-    "login": "asiekierka",
-    "html_url": "https://github.com/asiekierka",
-    "group": "silver"
-  },
-  {
-    "login": "wbrawner",
-    "html_url": "https://github.com/wbrawner",
-    "group": "silver"
-  },
-  {
-    "login": "takutok",
-    "html_url": "https://github.com/takutok",
-    "group": "silver"
-  },
-  {
-    "login": "spenserblack",
-    "html_url": "https://github.com/spenserblack",
-    "group": "silver"
-  },
-  {
-    "login": "kresp0",
-    "html_url": "https://github.com/kresp0",
-    "group": "silver"
-  },
-  {
-    "login": "SalvatoreTosti",
-    "html_url": "https://github.com/SalvatoreTosti",
-    "group": "silver"
-  },
-  {
-    "login": "rik-smeets",
-    "html_url": "https://github.com/rik-smeets",
+    "login": "Phidias618",
+    "html_url": "https://github.com/Phidias618",
     "group": "silver"
   },
   {
@@ -270,8 +215,63 @@
     "group": "silver"
   },
   {
-    "login": "Phidias618",
-    "html_url": "https://github.com/Phidias618",
+    "login": "rik-smeets",
+    "html_url": "https://github.com/rik-smeets",
+    "group": "silver"
+  },
+  {
+    "login": "SalvatoreTosti",
+    "html_url": "https://github.com/SalvatoreTosti",
+    "group": "silver"
+  },
+  {
+    "login": "kresp0",
+    "html_url": "https://github.com/kresp0",
+    "group": "silver"
+  },
+  {
+    "login": "spenserblack",
+    "html_url": "https://github.com/spenserblack",
+    "group": "silver"
+  },
+  {
+    "login": "takutok",
+    "html_url": "https://github.com/takutok",
+    "group": "silver"
+  },
+  {
+    "login": "wbrawner",
+    "html_url": "https://github.com/wbrawner",
+    "group": "silver"
+  },
+  {
+    "login": "asiekierka",
+    "html_url": "https://github.com/asiekierka",
+    "group": "silver"
+  },
+  {
+    "login": "bbbbbr",
+    "html_url": "https://github.com/bbbbbr",
+    "group": "silver"
+  },
+  {
+    "login": "pblca",
+    "html_url": "https://github.com/pblca",
+    "group": "silver"
+  },
+  {
+    "login": "john-lay",
+    "html_url": "https://github.com/john-lay",
+    "group": "silver"
+  },
+  {
+    "login": "npckc",
+    "html_url": "https://github.com/npckc",
+    "group": "silver"
+  },
+  {
+    "login": "r3vit",
+    "html_url": "https://github.com/r3vit",
     "group": "silver"
   },
   {
@@ -282,6 +282,11 @@
   {
     "login": "MOL-IS-MOL",
     "html_url": "https://github.com/MOL-IS-MOL",
+    "group": "silver"
+  },
+  {
+    "login": "lkcampbell",
+    "html_url": "https://github.com/lkcampbell",
     "group": "silver"
   },
   {
