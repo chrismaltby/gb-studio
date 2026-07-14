@@ -9330,13 +9330,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ansi-regex@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "ansi-regex@npm:5.0.0"
-  checksum: 10c0/4c711eeec7ab00c1869e926ae78758abd10137047cbb08b6fda499be2dc39c2d5f21e15c7279dbb222de523b53834b54043d4997191f62372d5e2250edcbc83a
-  languageName: node
-  linkType: hard
-
 "ansi-regex@npm:^5.0.1":
   version: 5.0.1
   resolution: "ansi-regex@npm:5.0.1"
@@ -19750,7 +19743,7 @@ __metadata:
   resolution: "pretty-format@npm:26.6.1"
   dependencies:
     "@jest/types": "npm:^26.6.1"
-    ansi-regex: "npm:^5.0.0"
+    ansi-regex: "npm:^5.0.1"
     ansi-styles: "npm:^4.0.0"
     react-is: "npm:^17.0.1"
   checksum: 10c0/7cd659eea8709212d475a22c3ecd8a3bd9de4635559c93084415640c8382dbe878813f7e3d26ad65be2dcbe6d0c5d0b47d8a9815f79e3337984190fa3b9651c1
@@ -22354,7 +22347,7 @@ __metadata:
   version: 6.0.0
   resolution: "strip-ansi@npm:6.0.0"
   dependencies:
-    ansi-regex: "npm:^5.0.0"
+    ansi-regex: "npm:^5.0.1"
   checksum: 10c0/85257c80250541cc0e65088c7dc768563bdbd1bf7120471d6d3a73cdc60e8149a50038c12a6fd4a30b674587f306ae42e2cc73ac3095daf193633daa0bd8f928
   languageName: node
   linkType: hard
