@@ -8,6 +8,7 @@
   "version": "4.3.2",
   "description": "Visual retro game maker",
   "main": ".webpack/main",
+  "private": true,
   "scripts": {
     "start": "electron-forge start",
     "package": "cross-env NODE_ENV=production electron-forge package",
