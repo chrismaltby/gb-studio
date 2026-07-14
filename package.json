@@ -22,7 +22,7 @@
     "lint": "eslint --cache --color src",
     "prettier": "prettier --write src test",
     "test": "jest --maxWorkers=2",
-    "coverage": "jest --coverage --runInBand || true",
+    "coverage": "jest --coverage --runInBand",
     "missing-translations": "node src/lang/list_missing.js",
     "audit:music-web-l10n": "node src/apps/gbs-music-web/lang/auditMusicWebL10N.js",
     "make:cli": "webpack --config ./src/apps/gb-studio-cli/webpack.cli.config.js",
