@@ -232,9 +232,3 @@ workerCtx.onmessage = async (evt: MessageEvent<TilemapLayersCanvasData>) => {
     workerCtx.postMessage(result, [result.canvasImage]);
   }
 };
-
-export default class W extends Worker {
-  constructor() {
-    super("");
-  }
-}

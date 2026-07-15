@@ -10,28 +10,7 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 
 const rendererRules = [
   {
-    test: /\.worker\.(ts|js)$/,
-    exclude: /(node_modules|.webpack)/,
-    rules: [
-      {
-        loader: "worker-loader",
-        options: { publicPath: "../" },
-      },
-      {
-        loader: "ts-loader",
-        options: {
-          getCustomTransformers: isDevelopment
-            ? () => ({
-                before: [ReactRefreshTypeScript()],
-              })
-            : undefined,
-          transpileOnly: true,
-        },
-      },
-    ],
-  },
-  {
-    test: /^(?!.*\.worker\.ts$).*\.(ts|tsx|js|jsx)$/,
+    test: /\.(ts|tsx|js|jsx)$/,
     exclude: /(node_modules|.webpack)/,
     use: [
       {
@@ -68,6 +47,9 @@ if (isDevelopment) {
 module.exports = {
   // Put your normal webpack config below here
   target: "web",
+  output: {
+    workerPublicPath: "../",
+  },
   node: {
     __dirname: true,
     __filename: true,

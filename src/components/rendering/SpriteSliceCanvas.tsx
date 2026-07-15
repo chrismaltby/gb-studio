@@ -2,9 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { DMG_PALETTE } from "consts";
 import { spriteSheetSelectors } from "store/features/entities/entitiesSelectors";
-import SpriteSliceCanvasWorker, {
-  SpriteSliceCanvasResult,
-} from "./SpriteSliceCanvas.worker";
+import type { SpriteSliceCanvasResult } from "./SpriteSliceCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 import { getSettings } from "store/features/settings/settingsState";
 import { MonoOBJPalette, Palette } from "shared/lib/resources/types";
@@ -21,7 +19,9 @@ interface SpriteSliceCanvasProps {
   palette?: Palette;
 }
 
-const worker = new SpriteSliceCanvasWorker();
+const worker = new Worker(
+  new URL("./SpriteSliceCanvas.worker.ts", import.meta.url),
+);
 
 export const SpriteSliceCanvas = ({
   spriteSheetId,

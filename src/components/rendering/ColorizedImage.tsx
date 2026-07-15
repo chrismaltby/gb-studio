@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import ColorizedImageWorker, {
-  ColorizedImageResult,
-} from "./ColorizedImage.worker";
+import type { ColorizedImageResult } from "./ColorizedImage.worker";
 import { getSettings } from "store/features/settings/settingsState";
 import { useAppSelector } from "store/hooks";
 import { MonoBGPPalette, Palette } from "shared/lib/resources/types";
 
-const workerPool: ColorizedImageWorker[] = [];
+const workerPool: Worker[] = [];
 for (let i = 0; i < navigator.hardwareConcurrency; i++) {
-  workerPool.push(new ColorizedImageWorker());
+  workerPool.push(
+    new Worker(new URL("./ColorizedImage.worker.ts", import.meta.url)),
+  );
 }
 
 interface ColorizedImageProps {

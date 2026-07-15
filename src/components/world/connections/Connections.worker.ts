@@ -223,10 +223,3 @@ workerCtx.onmessage = (evt) => {
   } satisfies ConnectionsWorkerResult);
 };
 
-// -----------------------------------------------------------------
-
-export default class W extends Worker {
-  constructor() {
-    super("");
-  }
-}

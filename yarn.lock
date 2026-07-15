@@ -7503,13 +7503,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/json-schema@npm:^7.0.6":
-  version: 7.0.6
-  resolution: "@types/json-schema@npm:7.0.6"
-  checksum: 10c0/1618936b2272711956ac7cf27c3642290ecd2c78890ee02fab9941905944baffa49ce1e4a0b1a555bcf31347223a7b5af9c49500957fd77fb45e992f687d885e
-  languageName: node
-  linkType: hard
-
 "@types/json5@npm:^0.0.29":
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
@@ -13782,7 +13775,6 @@ __metadata:
     webpack-cli: "npm:^7.2.1"
     webpack-dev-server: "npm:5.2.5"
     workbox-webpack-plugin: "npm:^7.4.0"
-    worker-loader: "npm:^3.0.8"
   bin:
     gb-studio-cli: ./out/cli/gb-studio-cli.js
   languageName: unknown
@@ -20413,17 +20405,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"schema-utils@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "schema-utils@npm:3.0.0"
-  dependencies:
-    "@types/json-schema": "npm:^7.0.6"
-    ajv: "npm:^6.12.5"
-    ajv-keywords: "npm:^3.5.2"
-  checksum: 10c0/6590ce7cf328c5313866f9f4757e4a9aeaf5b1277b66467ae92a2538ef9268cfe79dfbfcf0be0eef3ccffa0a221c91224b687eab0a40352286f70f55bde10c82
-  languageName: node
-  linkType: hard
-
 "schema-utils@npm:^3.1.1":
   version: 3.3.0
   resolution: "schema-utils@npm:3.3.0"
@@ -23856,18 +23837,6 @@ __metadata:
     "@types/trusted-types": "npm:^2.0.2"
     workbox-core: "npm:7.4.0"
   checksum: 10c0/6013d1019fe3bbb06d8e572b6a4ccfec6fc0879448337997c193fde08738c2fa420a4dca385b00220ef1feac3539e82b01896c85f77cd8c45cff379e7a6cb1d5
-  languageName: node
-  linkType: hard
-
-"worker-loader@npm:^3.0.8":
-  version: 3.0.8
-  resolution: "worker-loader@npm:3.0.8"
-  dependencies:
-    loader-utils: "npm:^2.0.0"
-    schema-utils: "npm:^3.0.0"
-  peerDependencies:
-    webpack: ^4.0.0 || ^5.0.0
-  checksum: 10c0/a81218a21efa05ab75265e9f6af9c2e27774aa8ca10737f849a094fa2b422ec14df82c35cbb285edb9f2d128b8038ae7dba6183c2f4fbdce20f216662df28244
   languageName: node
   linkType: hard
 

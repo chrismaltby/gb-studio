@@ -25,7 +25,7 @@ import {
   useAppSelectorPick,
   useAppStore,
 } from "store/hooks";
-import ConnectionsWorker, {
+import type {
   ConnectionScene,
   ConnectionScriptEvent,
   ConnectionScriptSource,
@@ -42,7 +42,7 @@ import {
   triggerScriptKeys,
 } from "shared/lib/entities/entitiesTypes";
 
-const worker = new ConnectionsWorker();
+const worker = new Worker(new URL("./Connections.worker.ts", import.meta.url));
 
 interface ConnectionsProps {
   width: number;

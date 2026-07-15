@@ -14,17 +14,14 @@ import { EntityListItem } from "ui/lists/EntityListItem";
 import useDimensions from "react-cool-dimensions";
 import styled from "styled-components";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
-import ScriptUsesWorker, {
-  ScriptUse,
-  ScriptUseResult,
-} from "./ScriptUses.worker";
+import type { ScriptUse, ScriptUseResult } from "./ScriptUses.worker";
 import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { CodeIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 
-const worker = new ScriptUsesWorker();
+const worker = new Worker(new URL("./ScriptUses.worker.ts", import.meta.url));
 
 interface ScriptUsesListProps {
   id: string;

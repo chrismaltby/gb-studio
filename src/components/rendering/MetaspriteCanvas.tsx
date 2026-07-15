@@ -6,9 +6,7 @@ import {
   metaspriteTileSelectors,
   spriteSheetSelectors,
 } from "store/features/entities/entitiesSelectors";
-import MetaspriteCanvasWorker, {
-  MetaspriteCanvasResult,
-} from "./MetaspriteCanvas.worker";
+import type { MetaspriteCanvasResult } from "./MetaspriteCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 import { getSettings } from "store/features/settings/settingsState";
 import {
@@ -28,7 +26,9 @@ interface MetaspriteCanvasProps {
   spriteMode?: SpriteModeSetting;
 }
 
-const worker = new MetaspriteCanvasWorker();
+const worker = new Worker(
+  new URL("./MetaspriteCanvas.worker.ts", import.meta.url),
+);
 
 export const MetaspriteCanvas = memo(
   ({

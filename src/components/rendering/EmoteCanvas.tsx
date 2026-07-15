@@ -2,9 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "store/hooks";
 import { defaultProjectSettings, DMG_PALETTE } from "consts";
 import { emoteSelectors } from "store/features/entities/entitiesSelectors";
-import SpriteSliceCanvasWorker, {
-  SpriteSliceCanvasResult,
-} from "components/rendering/SpriteSliceCanvas.worker";
+import type { SpriteSliceCanvasResult } from "components/rendering/SpriteSliceCanvas.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 
 interface EmoteCanvasProps {
@@ -13,7 +11,9 @@ interface EmoteCanvasProps {
 
 const objPalette = defaultProjectSettings.defaultMonoOBP0;
 
-const worker = new SpriteSliceCanvasWorker();
+const worker = new Worker(
+  new URL("./SpriteSliceCanvas.worker.ts", import.meta.url),
+);
 
 export const EmoteCanvas = ({ emoteId }: EmoteCanvasProps) => {
   const width = 16;

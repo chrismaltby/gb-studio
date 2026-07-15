@@ -1,4 +1,4 @@
-import TilemapLayersCanvasWorker, {
+import type {
   TilemapLayersCanvasData,
   TilemapLayersCanvasResult,
 } from "./TilemapLayersCanvas.worker";
@@ -11,7 +11,7 @@ interface PendingRequest {
 }
 
 interface WorkerSlot {
-  worker: TilemapLayersCanvasWorker;
+  worker: Worker;
   busy: boolean;
   listeners: Map<string, Listener>;
   pending: Map<string, PendingRequest>;
@@ -42,7 +42,9 @@ const dispatchNext = (slot: WorkerSlot) => {
 };
 
 for (let index = 0; index < workerCount; index++) {
-  const worker = new TilemapLayersCanvasWorker();
+  const worker = new Worker(
+    new URL("./TilemapLayersCanvas.worker.ts", import.meta.url),
+  );
   const slot: WorkerSlot = {
     worker,
     busy: false,

@@ -28,10 +28,7 @@ import styled from "styled-components";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { VariableReference } from "components/forms/ReferencesSelect";
-import VariableUsesWorker, {
-  VariableUse,
-  VariableUseResult,
-} from "./VariableUses.worker";
+import type { VariableUse, VariableUseResult } from "./VariableUses.worker";
 import {
   globalVariableCode,
   globalVariableDefaultName,
@@ -41,7 +38,7 @@ import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEven
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { CodeIcon } from "ui/icons/Icons";
 
-const worker = new VariableUsesWorker();
+const worker = new Worker(new URL("./VariableUses.worker.ts", import.meta.url));
 
 interface VariableInspectorProps {
   id: string;

@@ -188,8 +188,7 @@
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^7.2.1",
     "webpack-dev-server": "5.2.5",
-    "workbox-webpack-plugin": "^7.4.0",
-    "worker-loader": "^3.0.8"
+    "workbox-webpack-plugin": "^7.4.0"
   },
   "packageManager": "yarn@4.17.1+sha256.471ffb15e0523663865bbf46a69e7d157ecf532412eb436c48dfab6e3f2abe88",
   "resolutions": {

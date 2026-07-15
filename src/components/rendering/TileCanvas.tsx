@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { useAppSelector, useAppSelectorPick } from "store/hooks";
 import { DMG_PALETTE, TILE_SIZE } from "consts";
 import { tilesetSelectors } from "store/features/entities/entitiesSelectors";
-import TilePreviewWorker, { TilePreviewResult } from "./TilePreview.worker";
+import type { TilePreviewResult } from "./TilePreview.worker";
 import { assetURL } from "shared/lib/helpers/assets";
 import { GridUnitType } from "shared/lib/entities/entitiesTypes";
 import { getSettings } from "store/features/settings/settingsState";
@@ -13,7 +13,7 @@ interface TileCanvasProps {
   tileSize?: GridUnitType;
 }
 
-const worker = new TilePreviewWorker();
+const worker = new Worker(new URL("./TilePreview.worker.ts", import.meta.url));
 
 export const TileCanvas = ({
   tilesetId,

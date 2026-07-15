@@ -270,10 +270,3 @@ workerCtx.onmessage = async (evt) => {
   workerCtx.postMessage({ id, uses } as VariableUseResult);
 };
 
-// -----------------------------------------------------------------
-
-export default class W extends Worker {
-  constructor() {
-    super("");
-  }
-}

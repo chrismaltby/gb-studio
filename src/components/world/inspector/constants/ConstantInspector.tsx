@@ -28,7 +28,7 @@ import styled from "styled-components";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ConstantReference } from "components/forms/ReferencesSelect";
-import ConstantUsesWorker, {
+import type {
   ConstantUse,
   ConstantUseResult,
 } from "components/world/inspector/constants/ConstantUses.worker";
@@ -47,7 +47,9 @@ import {
 import { WorldInspector } from "components/world/inspector/WorldInspector";
 import useWindowSize from "ui/hooks/use-window-size";
 
-export const worker = new ConstantUsesWorker();
+export const worker = new Worker(
+  new URL("./ConstantUses.worker.ts", import.meta.url),
+);
 
 interface ConstantInspectorProps {
   id: string;

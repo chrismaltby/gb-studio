@@ -32,7 +32,7 @@ import {
 import type { DeleteScriptConfirmButton } from "lib/electron/dialog/confirmDeleteCustomEvent";
 import { worker } from "components/world/inspector/constants/ConstantInspector";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
-import { ConstantUseResult } from "components/world/inspector/constants/ConstantUses.worker";
+import type { ConstantUseResult } from "components/world/inspector/constants/ConstantUses.worker";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => async (action) => {
