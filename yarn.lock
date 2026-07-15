@@ -7387,10 +7387,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chroma-js@npm:^2.4.4":
-  version: 2.4.4
-  resolution: "@types/chroma-js@npm:2.4.4"
-  checksum: 10c0/8acd341c523fc960686ed9e60f23ae643da35bddf012b4b18cb0d941ee3bf82087262245ffa8c886ea31571cd5dc6eb553e849fab3c0509ea2c3a045a246178c
+"@types/chroma-js@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "@types/chroma-js@npm:3.1.2"
+  checksum: 10c0/d2a7d9612c5abe3733a113d339eb8158cb36aeeeb571a3c371e81e8f3a682cd70f1649cea521716fbb5d79eb96f585a539b304be44e3fa818bd56b2a05f29f73
   languageName: node
   linkType: hard
 
@@ -10568,10 +10568,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chroma-js@npm:^2.4.2":
-  version: 2.4.2
-  resolution: "chroma-js@npm:2.4.2"
-  checksum: 10c0/5657cd10892538c4a41e8bd95524d018c3a43318b26dfb20d572b2084bc6d5af742457a6d5701ddecb4d4eceb99995873b22293c1b396ab0b35ef55a264550c8
+"chroma-js@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "chroma-js@npm:3.2.0"
+  checksum: 10c0/6ff6213d234e096ad3536291b1e1f11a506ea0fccfe163dd8eff69afa5f4f8a905b31a4a7ebc22b7eb722590887fed77073805ce89485f6d563edd1ea2d0a1db
   languageName: node
   linkType: hard
 
@@ -14019,7 +14019,7 @@ __metadata:
     "@testing-library/jest-dom": "npm:^5.11.5"
     "@testing-library/react": "npm:^16.3.2"
     "@types/adm-zip": "npm:^0.5.5"
-    "@types/chroma-js": "npm:^2.4.4"
+    "@types/chroma-js": "npm:^3.1.2"
     "@types/fs-extra": "npm:^9.0.8"
     "@types/jest": "npm:^30.0.0"
     "@types/lodash": "npm:^4.17.0"
@@ -14043,7 +14043,7 @@ __metadata:
     babel-loader: "npm:^10.1.0"
     babel-plugin-styled-components: "npm:^2.1.4"
     chokidar: "npm:^5.0.0"
-    chroma-js: "npm:^2.4.2"
+    chroma-js: "npm:^3.2.0"
     commander: "npm:^6.2.0"
     copy-webpack-plugin: "npm:^14.0.0"
     cross-env: "npm:^7.0.3"
