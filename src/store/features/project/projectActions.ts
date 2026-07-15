@@ -83,8 +83,6 @@ const reloadAssets = createAction("project/reloadAssets");
  * Asset Files
  */
 
-const addFileToProject = createAction<string>("project/addFile");
-
 const removeAsset = createAsyncThunk<
   {
     assetType: AssetType;
@@ -231,7 +229,6 @@ const projectActions = {
   closeProject,
   loadProject,
   loadUI,
-  addFileToProject,
   reloadAssets,
   saveProject,
   setSaveStep,

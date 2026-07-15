@@ -1,4 +1,4 @@
-import { ipcRenderer, IpcRendererEvent, webFrame } from "electron";
+import { ipcRenderer, IpcRendererEvent, webFrame, webUtils } from "electron";
 import type { CreateProjectInput } from "lib/project/createProject";
 import type {
   MusicDataPacket,
@@ -328,8 +328,8 @@ const APISetup = {
         uiPalette,
         colorCorrection,
       ),
-    addFile: (filename: string): Promise<void> =>
-      ipcRenderer.invoke("project:add-file", filename),
+    addFile: (file: File): Promise<void> =>
+      ipcRenderer.invoke("project:add-file", webUtils.getPathForFile(file)),
     loadProject: (): Promise<LoadProjectResult> =>
       ipcRenderer.invoke("project:load"),
     saveProject: (data: WriteResourcesPatch): Promise<void> =>
