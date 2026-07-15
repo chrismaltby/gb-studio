@@ -7620,12 +7620,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pngjs@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@types/pngjs@npm:6.0.0"
+"@types/pngjs@npm:^6.0.5":
+  version: 6.0.5
+  resolution: "@types/pngjs@npm:6.0.5"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10c0/be5501c09b117911c6c5b110755c062d107c6c97f0b4475462b342163f918e6381a11ad93ee93dfd548f029a33bd3fe1b7f22c683d02dbfece94db8d0d869bf0
+  checksum: 10c0/11979d0690e774046d3a1e8cfc613a6b53a613909d81c93831cf253800e93ba1a2d47950979b523aebd4fc023351b644d7f4aa2dfcc027c70816a2968420e7da
   languageName: node
   linkType: hard
 
@@ -13687,7 +13687,7 @@ __metadata:
     "@types/jest": "npm:^30.0.0"
     "@types/lodash": "npm:^4.17.0"
     "@types/node": "npm:^24"
-    "@types/pngjs": "npm:^6.0.0"
+    "@types/pngjs": "npm:^6.0.5"
     "@types/prismjs": "npm:^1.26.0"
     "@types/ps-tree": "npm:^1.1.6"
     "@types/react": "npm:^19.2.17"
@@ -13745,7 +13745,7 @@ __metadata:
     normalizr: "npm:^3.6.2"
     open: "npm:^11.0.0"
     path-browserify: "npm:^1.0.1"
-    pngjs: "npm:^6.0.0"
+    pngjs: "npm:^7.0.0"
     prettier: "npm:^3.9.5"
     prismjs: "npm:^1.30.0"
     ps-tree: "npm:^1.2.0"
@@ -18851,10 +18851,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pngjs@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "pngjs@npm:6.0.0"
-  checksum: 10c0/ac23ea329b1881d1a10575aff58116dc27b894ec3f5b84ba15c7f527d21e609fbce7ba16d48f8ccb86c7ce45ceed622472765476ab2875949d4bec55e153f87a
+"pngjs@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "pngjs@npm:7.0.0"
+  checksum: 10c0/0d4c7a0fd476a9c33df7d0a2a73e1d56537628a668841f6995c2bca070cf30819f9254a64363266bc14ef2fee47659dd3b4f2b18eec7ab65143015139f497b38
   languageName: node
   linkType: hard
 
