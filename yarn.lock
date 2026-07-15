@@ -7271,15 +7271,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/adm-zip@npm:^0.5.5":
-  version: 0.5.5
-  resolution: "@types/adm-zip@npm:0.5.5"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/4976dc61e33534ecfb7eee87e8a587db06420a4eb9f34eee9425aece82e9fdd01ddd22677ff6430c582f4d9735c7d714c71adb8f149e3511bc189501b4113631
-  languageName: node
-  linkType: hard
-
 "@types/aria-query@npm:^5.0.1":
   version: 5.0.4
   resolution: "@types/aria-query@npm:5.0.4"
@@ -9038,10 +9029,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"adm-zip@npm:^0.5.16":
-  version: 0.5.16
-  resolution: "adm-zip@npm:0.5.16"
-  checksum: 10c0/6f10119d4570c7ba76dcf428abb8d3f69e63f92e51f700a542b43d4c0130373dd2ddfc8f85059f12d4a843703a90c3970cfd17876844b4f3f48bf042bfa6b49f
+"adm-zip@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "adm-zip@npm:0.6.0"
+  checksum: 10c0/440f37590c62255226f1db4cb1a5a618879347f5106ad5b9a24c67c20f9a54bd5b4efcd2b35af858e39c7885d05f4bd35f4c2f42378c98d13f779be380bc9ae4
   languageName: node
   linkType: hard
 
@@ -13971,7 +13962,6 @@ __metadata:
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^5.11.5"
     "@testing-library/react": "npm:^16.3.2"
-    "@types/adm-zip": "npm:^0.5.5"
     "@types/chroma-js": "npm:^3.1.2"
     "@types/fs-extra": "npm:^9.0.8"
     "@types/jest": "npm:^30.0.0"
@@ -13991,7 +13981,7 @@ __metadata:
     "@typescript/native": "npm:typescript@^7.0.2"
     "@vercel/webpack-asset-relocator-loader": "npm:1.7.3"
     about-window: "npm:^1.15.2"
-    adm-zip: "npm:^0.5.16"
+    adm-zip: "npm:^0.6.0"
     babel-loader: "npm:^10.1.0"
     babel-plugin-styled-components: "npm:^2.1.4"
     chokidar: "npm:^5.0.0"
