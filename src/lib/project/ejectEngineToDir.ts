@@ -1,23 +1,28 @@
 import fs from "fs-extra";
 import { rimraf as rmdir } from "rimraf";
+import Path from "path";
 import { defaultEngineMetaPath, defaultEngineRoot } from "consts";
 
-const ejectEngineToDir = async (ejectPath: string) => {
-  const engineSrcPath = `${defaultEngineRoot}/src`;
-  const engineIncludePath = `${defaultEngineRoot}/include`;
-  const ejectSrcPath = `${ejectPath}/src`;
-  const ejectIncludePath = `${ejectPath}/include`;
-  const ejectMetaPath = `${ejectPath}/engine.json`;
+const engineItems = [
+  "src",
+  "include",
+  "lib",
+  "Makefile",
+  "Makefile.common",
+] as const;
 
+const ejectEngineToDir = async (ejectPath: string): Promise<void> => {
   await rmdir(ejectPath);
-
   await fs.ensureDir(ejectPath);
-  await fs.ensureDir(ejectSrcPath);
-  await fs.ensureDir(ejectIncludePath);
 
-  await fs.copy(engineSrcPath, ejectSrcPath);
-  await fs.copy(engineIncludePath, ejectIncludePath);
-  await fs.copy(defaultEngineMetaPath, ejectMetaPath);
+  for (const item of engineItems) {
+    await fs.copy(
+      Path.join(defaultEngineRoot, item),
+      Path.join(ejectPath, item),
+    );
+  }
+
+  await fs.copy(defaultEngineMetaPath, Path.join(ejectPath, "engine.json"));
 };
 
 export default ejectEngineToDir;

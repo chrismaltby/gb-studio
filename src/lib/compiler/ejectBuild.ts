@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import { rimraf as rmdir } from "rimraf";
 import Path from "path";
-import { defaultEngineMetaPath, defaultEngineRoot } from "consts";
+import { defaultEngineMetaPath } from "consts";
 import ejectEngineChangelog from "lib/project/ejectEngineChangelog";
 import {
   buildMakeDotBuildFile,
@@ -16,19 +16,7 @@ import { isFilePathWithinFolder } from "lib/helpers/path";
 import { EngineSchema } from "lib/project/loadEngineSchema";
 import { pathToPosix } from "shared/lib/helpers/path";
 import { applyEnginePlugins } from "lib/compiler/enginePlugins";
-
-const engineIgnore = [
-  ".git",
-  "examples",
-  "test",
-  "obj",
-  "build",
-  "third-party",
-  "unused",
-  "readme.md",
-  "scheme.png",
-  "scheme2.png",
-];
+import ejectEngineToDir from "lib/project/ejectEngineToDir";
 
 type EjectOptions = {
   engineSchema: EngineSchema;
@@ -63,23 +51,9 @@ const ejectBuild = async ({
   progress(`${l10n("COMPILER_REMOVING_FOLDER")} ${Path.basename(outputRoot)}`);
   await rmdir(outputRoot);
   await fs.ensureDir(outputRoot);
+
   progress(l10n("COMPILER_COPY_DEFAULT_ENGINE"));
-
-  const ignoredEnginePaths = engineIgnore.map((ignoreDir) =>
-    Path.resolve(defaultEngineRoot, ignoreDir),
-  );
-
-  await fs.copy(defaultEngineRoot, outputRoot, {
-    filter: (sourcePath) => {
-      const resolvedSourcePath = Path.resolve(sourcePath);
-
-      return !ignoredEnginePaths.some(
-        (ignoredPath) =>
-          resolvedSourcePath === ignoredPath ||
-          resolvedSourcePath.startsWith(`${ignoredPath}${Path.sep}`),
-      );
-    },
-  });
+  await ejectEngineToDir(outputRoot);
 
   const expectedEngineVersion = await readEngineVersion(defaultEngineMetaPath);
 
