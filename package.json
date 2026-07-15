@@ -55,9 +55,9 @@
     "gb-studio-cli": "./out/cli/gb-studio-cli.js"
   },
   "dependencies": {
-    "@jitl/quickjs-singlefile-browser-release-sync": "^0.31.0",
-    "@jitl/quickjs-singlefile-cjs-debug-sync": "^0.31.0",
-    "@jitl/quickjs-singlefile-cjs-release-sync": "^0.31.0",
+    "@jitl/quickjs-singlefile-browser-release-sync": "^0.32.0",
+    "@jitl/quickjs-singlefile-cjs-debug-sync": "^0.32.0",
+    "@jitl/quickjs-singlefile-cjs-release-sync": "^0.32.0",
     "@mediabunny/flac-encoder": "^1.39.2",
     "@mediabunny/mp3-encoder": "^1.39.2",
     "@octokit/rest": "^22.0.1",
@@ -88,7 +88,7 @@
     "pngjs": "^6.0.0",
     "prismjs": "^1.30.0",
     "ps-tree": "^1.2.0",
-    "quickjs-emscripten-core": "^0.31.0",
+    "quickjs-emscripten-core": "^0.32.0",
     "react": "^19.2.7",
     "react-cool-dimensions": "^3.0.1",
     "react-dnd": "16.0.1",

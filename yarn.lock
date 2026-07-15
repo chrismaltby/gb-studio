@@ -5034,37 +5034,37 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jitl/quickjs-ffi-types@npm:0.31.0":
-  version: 0.31.0
-  resolution: "@jitl/quickjs-ffi-types@npm:0.31.0"
-  checksum: 10c0/0684b2ea64c0975778ea4836f80fd527ea643b668bbe66c6a3caf2aecf2c4a332afcf27e7f8dbe187b848b056a48b8f26d4e3ae32964a4856c05808a00a27fb5
+"@jitl/quickjs-ffi-types@npm:0.32.0":
+  version: 0.32.0
+  resolution: "@jitl/quickjs-ffi-types@npm:0.32.0"
+  checksum: 10c0/80a35558d1d466115366999cebde2aa5aa3f78297d69db1d3c662f021e39ec3b2d89b6b8b85d4defa41a4ea24b94a6fd528ddc227cd2e67fb16edb3b43a9e84f
   languageName: node
   linkType: hard
 
-"@jitl/quickjs-singlefile-browser-release-sync@npm:^0.31.0":
-  version: 0.31.0
-  resolution: "@jitl/quickjs-singlefile-browser-release-sync@npm:0.31.0"
+"@jitl/quickjs-singlefile-browser-release-sync@npm:^0.32.0":
+  version: 0.32.0
+  resolution: "@jitl/quickjs-singlefile-browser-release-sync@npm:0.32.0"
   dependencies:
-    "@jitl/quickjs-ffi-types": "npm:0.31.0"
-  checksum: 10c0/8f8fc648ba78c5771989873a43b49b0bf9eea114ae6d639bd29ba69be2fbdd2e9bf70b6b5d53fe3d86de3fa48813272c325c3c8f004d49c9c5aa90e9ab449141
+    "@jitl/quickjs-ffi-types": "npm:0.32.0"
+  checksum: 10c0/c0401a4cdbfbc77eb4e1b1a7b8f8e39e57aab3fb7aedf9f95d35deac7dc31b7bf9b499bc768b3d0997d9885e1b2c248e0f811ce0b0214b89dcc4a4faf613ba8a
   languageName: node
   linkType: hard
 
-"@jitl/quickjs-singlefile-cjs-debug-sync@npm:^0.31.0":
-  version: 0.31.0
-  resolution: "@jitl/quickjs-singlefile-cjs-debug-sync@npm:0.31.0"
+"@jitl/quickjs-singlefile-cjs-debug-sync@npm:^0.32.0":
+  version: 0.32.0
+  resolution: "@jitl/quickjs-singlefile-cjs-debug-sync@npm:0.32.0"
   dependencies:
-    "@jitl/quickjs-ffi-types": "npm:0.31.0"
-  checksum: 10c0/fb4db2b19d3376622b9b925d420f492228e983c94bac1338d9c235397e8375d798faf9872e89cd7e6dfdcf812b4526d846ba5fa0a1a527adcf492da5a79e1580
+    "@jitl/quickjs-ffi-types": "npm:0.32.0"
+  checksum: 10c0/2dde8c0b131d3ee715c576de94cb639b00f3880d9ec3f5edeba850315613e5bd12d1ba531ce0497bc26ecb4f088b41e19202388c3a11201c23d2c5cacd31e819
   languageName: node
   linkType: hard
 
-"@jitl/quickjs-singlefile-cjs-release-sync@npm:^0.31.0":
-  version: 0.31.0
-  resolution: "@jitl/quickjs-singlefile-cjs-release-sync@npm:0.31.0"
+"@jitl/quickjs-singlefile-cjs-release-sync@npm:^0.32.0":
+  version: 0.32.0
+  resolution: "@jitl/quickjs-singlefile-cjs-release-sync@npm:0.32.0"
   dependencies:
-    "@jitl/quickjs-ffi-types": "npm:0.31.0"
-  checksum: 10c0/28dee50630a685b3ac8d0705fe8f5d9aa0ca5b19e66829e5733af23c9e2d0a6874b3b36da6b5e1b92f737ea9f441917df5e3bd3bf65bebb34a2686ec7268406a
+    "@jitl/quickjs-ffi-types": "npm:0.32.0"
+  checksum: 10c0/433d506e92947076772b9a3651de9f668c43a0b80b1327541e0d3610052a70be30a804315bb307797caa0483400bc4682287d6d59376bd034ea3f4ec336d2835
   languageName: node
   linkType: hard
 
@@ -13665,9 +13665,9 @@ __metadata:
     "@electron-forge/plugin-fuses": "npm:^7.11.2"
     "@electron-forge/plugin-webpack": "npm:^7.11.2"
     "@electron/fuses": "npm:^1.8.0"
-    "@jitl/quickjs-singlefile-browser-release-sync": "npm:^0.31.0"
-    "@jitl/quickjs-singlefile-cjs-debug-sync": "npm:^0.31.0"
-    "@jitl/quickjs-singlefile-cjs-release-sync": "npm:^0.31.0"
+    "@jitl/quickjs-singlefile-browser-release-sync": "npm:^0.32.0"
+    "@jitl/quickjs-singlefile-cjs-debug-sync": "npm:^0.32.0"
+    "@jitl/quickjs-singlefile-cjs-release-sync": "npm:^0.32.0"
     "@mediabunny/flac-encoder": "npm:^1.39.2"
     "@mediabunny/mp3-encoder": "npm:^1.39.2"
     "@octokit/rest": "npm:^22.0.1"
@@ -13749,7 +13749,7 @@ __metadata:
     prettier: "npm:^3.9.5"
     prismjs: "npm:^1.30.0"
     ps-tree: "npm:^1.2.0"
-    quickjs-emscripten-core: "npm:^0.31.0"
+    quickjs-emscripten-core: "npm:^0.32.0"
     raw-loader: "npm:^4.0.2"
     react: "npm:^19.2.7"
     react-cool-dimensions: "npm:^3.0.1"
@@ -19286,12 +19286,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quickjs-emscripten-core@npm:^0.31.0":
-  version: 0.31.0
-  resolution: "quickjs-emscripten-core@npm:0.31.0"
+"quickjs-emscripten-core@npm:^0.32.0":
+  version: 0.32.0
+  resolution: "quickjs-emscripten-core@npm:0.32.0"
   dependencies:
-    "@jitl/quickjs-ffi-types": "npm:0.31.0"
-  checksum: 10c0/f212754ada4bbcf0bbf43f7128c7ba1890a1071bb2e633767cc1dc5d25035ab88a4010d0db071dbd4a41c254bba57cbb8b1407b99bbe98419e706a3b1192ce48
+    "@jitl/quickjs-ffi-types": "npm:0.32.0"
+  checksum: 10c0/3d38df2cc6408b4bd343a955b5f435f0b26b5ed2692f0f878d5dbe1fa5bcc7e9ae0e914ea2cea04e4abd3a03691d3e4ee0e6244b9ce761374c73bf132b2c3958
   languageName: node
   linkType: hard
 
