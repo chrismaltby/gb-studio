@@ -64,7 +64,7 @@
     "@reduxjs/toolkit": "^2.11.2",
     "@sinclair/typebox": "^0.32.35",
     "about-window": "^1.15.2",
-    "adm-zip": "^0.5.16",
+    "adm-zip": "^0.6.0",
     "chokidar": "^5.0.0",
     "chroma-js": "^3.2.0",
     "commander": "^6.2.0",
