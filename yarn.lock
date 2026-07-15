@@ -6936,14 +6936,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-themes@npm:^10.4.6":
-  version: 10.4.6
-  resolution: "@storybook/addon-themes@npm:10.4.6"
+"@storybook/addon-themes@npm:^10.5.0":
+  version: 10.5.0
+  resolution: "@storybook/addon-themes@npm:10.5.0"
   dependencies:
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^10.4.6
-  checksum: 10c0/1121f6d8de9ce016052ffdb7d4f3d73cc4f2088b56be34976dd77ba56891d487cc2b20aba2a31ac238654d82cfe5682c25c86740e3d80d6103ee16f887711379
+    storybook: ^10.5.0
+  checksum: 10c0/6ca1751a9fc21bbc07ad71dbb58b7e58bab3c284319cae889a09f0db1e15c0ce98ec64449c8044d62622a62cb2bc2d838033b50702a12d988215887c895b91a1
   languageName: node
   linkType: hard
 
@@ -14012,7 +14012,7 @@ __metadata:
     "@sinclair/typebox": "npm:^0.32.35"
     "@storybook/addon-docs": "npm:^10.4.6"
     "@storybook/addon-links": "npm:^10.4.6"
-    "@storybook/addon-themes": "npm:^10.4.6"
+    "@storybook/addon-themes": "npm:^10.5.0"
     "@storybook/react": "npm:^10.4.6"
     "@storybook/react-webpack5": "npm:^10.4.6"
     "@testing-library/dom": "npm:^10.0.0"

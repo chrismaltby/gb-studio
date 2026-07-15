@@ -132,7 +132,7 @@
     "@reforged/maker-appimage": "^5.2.0",
     "@storybook/addon-docs": "^10.4.6",
     "@storybook/addon-links": "^10.4.6",
-    "@storybook/addon-themes": "^10.4.6",
+    "@storybook/addon-themes": "^10.5.0",
     "@storybook/react": "^10.4.6",
     "@storybook/react-webpack5": "^10.4.6",
     "@testing-library/dom": "^10.0.0",
