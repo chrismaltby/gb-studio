@@ -13743,7 +13743,6 @@ __metadata:
     prismjs: "npm:^1.30.0"
     ps-tree: "npm:^1.2.0"
     quickjs-emscripten-core: "npm:^0.32.0"
-    raw-loader: "npm:^4.0.2"
     react: "npm:^19.2.7"
     react-cool-dimensions: "npm:^3.0.1"
     react-dnd: "npm:16.0.1"
@@ -19305,18 +19304,6 @@ __metadata:
     iconv-lite: "npm:~0.4.24"
     unpipe: "npm:~1.0.0"
   checksum: 10c0/449844344fc90547fb994383a494b83300e4f22199f146a79f68d78a199a8f2a923ea9fd29c3be979bfd50291a3884733619ffc15ba02a32e703b612f8d3f74a
-  languageName: node
-  linkType: hard
-
-"raw-loader@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "raw-loader@npm:4.0.2"
-  dependencies:
-    loader-utils: "npm:^2.0.0"
-    schema-utils: "npm:^3.0.0"
-  peerDependencies:
-    webpack: ^4.0.0 || ^5.0.0
-  checksum: 10c0/981ebe65e1cee7230300d21ba6dcd8bd23ea81ef4ad2b167c0f62d93deba347f27921d330be848634baab3831cf9f38900af6082d6416c2e937fe612fa6a74ff
   languageName: node
   linkType: hard
 

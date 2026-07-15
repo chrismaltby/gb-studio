@@ -175,7 +175,6 @@
     "knip": "^6.26.0",
     "node-loader": "^2.0.0",
     "prettier": "^3.9.5",
-    "raw-loader": "^4.0.2",
     "react-refresh": "^0.14.2",
     "react-refresh-typescript": "^2.0.12",
     "storybook": "^10.5.0",

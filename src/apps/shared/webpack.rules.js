@@ -20,6 +20,11 @@ module.exports = [
     },
   },
   {
+    test: /\.(asm|inc)$/i,
+    exclude: /(node_modules|.webpack)/,
+    type: "asset/source",
+  },
+  {
     test: /[\\/]appData[\\/]wasm[\\/](.*)[\\/](.*).wasm$/,
     type: "asset/resource",
     generator: {
