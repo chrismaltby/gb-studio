@@ -1,6 +1,9 @@
 import { readFile } from "fs-extra";
 import { decBin, decHexVal } from "shared/lib/helpers/8bit";
-import { ungzip } from "node-gzip";
+import { gunzip as gunzipCallback } from "node:zlib";
+import { promisify } from "node:util";
+
+const gunzip = promisify(gunzipCallback);
 
 const MIN_VGM_VERSION = 0x161;
 
@@ -50,7 +53,7 @@ export const compileVGM = async (
   let file = await readFile(filename);
 
   if (filename.toLowerCase().endsWith(".vgz")) {
-    file = await ungzip(file);
+    file = await gunzip(file);
   }
 
   let ptr = 0;

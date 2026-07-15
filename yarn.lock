@@ -7754,15 +7754,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-gzip@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@types/node-gzip@npm:1.1.0"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/e8a9174f0ebc96eafdb64ec40ad66fe750605160f08c29ca4dc1f003f23787d0a87d9fe252cef082b74679799aaeb38f6f535169c684714151f5cedd8e6a8a5b
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:*":
   version: 13.13.4
   resolution: "@types/node@npm:13.13.4"
@@ -13986,7 +13977,6 @@ __metadata:
     "@types/jest": "npm:^30.0.0"
     "@types/lodash": "npm:^4.17.0"
     "@types/node": "npm:^24"
-    "@types/node-gzip": "npm:^1.1.0"
     "@types/pngjs": "npm:^6.0.0"
     "@types/prismjs": "npm:^1.26.0"
     "@types/ps-tree": "npm:^1.1.6"
@@ -14042,7 +14032,6 @@ __metadata:
     lodash: "npm:^4.18.1"
     mediabunny: "npm:^1.39.2"
     node-fetch: "npm:^3.3.2"
-    node-gzip: "npm:^1.1.2"
     node-loader: "npm:^2.0.0"
     normalizr: "npm:^3.6.2"
     open: "npm:^7.3.0"
@@ -18006,13 +17995,6 @@ __metadata:
   bin:
     node-gyp: bin/node-gyp.js
   checksum: 10c0/00630d67dbd09a45aee0a5d55c05e3916ca9e6d427ee4f7bc392d2d3dc5fad7449b21fc098dd38260a53d9dcc9c879b36704a1994235d4707e7271af7e9a835b
-  languageName: node
-  linkType: hard
-
-"node-gzip@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "node-gzip@npm:1.1.2"
-  checksum: 10c0/c7aec81659bf69065bcfecb596293aaa3bd115ba328a2188a257f3640799f5ae8157ce82d93c17500494c695ff16e718308353ac628a9353679b2353f9e93402
   languageName: node
   linkType: hard
 
