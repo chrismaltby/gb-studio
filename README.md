@@ -9,12 +9,12 @@ Twitter: [@maltby](https://www.twitter.com/maltby)
 Reddit: [/r/gbstudio](https://www.reddit.com/r/gbstudio)  
 Discord: [Join Chat](https://discord.gg/bxerKnc)
 
-GB Studio is a quick and easy to use retro adventure game creator for Game Boy available for Mac, Linux and Windows.
+GB Studio is a quick and easy to use retro game creator for Game Boy available for Mac, Linux and Windows.
 For more information see the [GB Studio](https://www.gbstudio.dev) site
 
 ![GB Studio](gbstudio.gif)
 
-GB Studio consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/).
+GB Studio consists of an [Electron](https://electronjs.org/) game builder application and [GBVM](https://github.com/chrismaltby/gbvm), a C-based game engine using [GBDK](https://gbdk.org/).
 
 ## Installation
 
@@ -39,7 +39,7 @@ After checking out a new version you may also need to fetch dependencies again t
 > npm run fetch-deps
 ```
 
-GB Studio currently uses Node 21.7.1. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version.
+GB Studio currently uses Node 24 LTS. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version.
 
 ```bash
 > cd gb-studio
@@ -55,7 +55,6 @@ Install GB Studio from source as above then
 > yarn link
 # From any folder you can now run gb-studio-cli
 > $(yarn bin gb-studio-cli) -V
-4.1.2
 > $(yarn bin gb-studio-cli) --help
 ```
 
@@ -103,6 +102,24 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
   > $(yarn bin gb-studio-cli) make:web path/to/project.gbsproj out/
   ```
   Make a Web build from gbsproj
+
+## GBS Music
+
+A standalone web application of the music editor is available at https://music.gbstudio.dev/
+
+To run this application locally
+
+```bash
+> npm run start:music-web
+```
+
+or to generate the assets for self hosting
+
+```bash
+> npm run build:music-web
+```
+
+which will output build files to `out/music-web`.
 
 ## Documentation
 
