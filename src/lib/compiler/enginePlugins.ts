@@ -1,7 +1,6 @@
 import fs, { readJSON } from "fs-extra";
 import Path from "path";
 import l10n from "shared/lib/lang/l10n";
-import copy from "lib/helpers/fsCopy";
 import { isFilePathWithinFolder } from "lib/helpers/path";
 import { applyPatch } from "diff";
 import { PluginMetadata } from "lib/pluginManager/types";
@@ -216,8 +215,8 @@ export const applyEnginePlugins = async ({
       warnings,
     );
 
-    await copy(usedEnginePluginPath, outputRoot, {
-      ignore: isPatchFile,
+    await fs.copy(usedEnginePluginPath, outputRoot, {
+      filter: (sourcePath) => !isPatchFile(sourcePath),
     });
   }
 

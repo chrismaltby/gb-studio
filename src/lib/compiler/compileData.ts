@@ -95,8 +95,7 @@ import {
   calculateAutoFadeEventId,
   isEmptyScript,
 } from "shared/lib/scripts/eventHelpers";
-import copy from "lib/helpers/fsCopy";
-import { ensureDir } from "fs-extra";
+import fs, { ensureDir } from "fs-extra";
 import Path from "path";
 import {
   ReferencedBackground,
@@ -199,7 +198,7 @@ const ensureProjectAsset = async (
   const defaultPath = `${projectTemplatesRoot}/gbhtml/${relativePath}`;
   try {
     await ensureDir(Path.dirname(projectPath));
-    await copy(defaultPath, projectPath, {
+    await fs.copy(defaultPath, projectPath, {
       overwrite: false,
       errorOnExist: true,
     });

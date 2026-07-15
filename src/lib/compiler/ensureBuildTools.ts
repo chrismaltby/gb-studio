@@ -1,7 +1,6 @@
 import fs from "fs-extra";
 import { rimraf as rmdir } from "rimraf";
 import { buildToolsRoot } from "consts";
-import copy from "lib/helpers/fsCopy";
 
 let inFlightPromise: Promise<string> | null = null;
 let cachedPath: string | null = null;
@@ -61,9 +60,8 @@ const ensureBuildToolsInner = async (tmpPath: string): Promise<string> => {
 
   if (needsCopy) {
     await rmdir(tmpBuildToolsPath);
-    await copy(buildToolsPath, tmpBuildToolsPath, {
+    await fs.copy(buildToolsPath, tmpBuildToolsPath, {
       overwrite: true,
-      mode: 0o755,
     });
   }
 

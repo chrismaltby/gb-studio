@@ -1,7 +1,6 @@
 import fs from "fs-extra";
 import { rimraf as rmdir } from "rimraf";
 import { defaultEngineMetaPath, defaultEngineRoot } from "consts";
-import copy from "lib/helpers/fsCopy";
 
 const ejectEngineToDir = async (ejectPath: string) => {
   const engineSrcPath = `${defaultEngineRoot}/src`;
@@ -16,9 +15,9 @@ const ejectEngineToDir = async (ejectPath: string) => {
   await fs.ensureDir(ejectSrcPath);
   await fs.ensureDir(ejectIncludePath);
 
-  await copy(engineSrcPath, ejectSrcPath);
-  await copy(engineIncludePath, ejectIncludePath);
-  await copy(defaultEngineMetaPath, ejectMetaPath);
+  await fs.copy(engineSrcPath, ejectSrcPath);
+  await fs.copy(engineIncludePath, ejectIncludePath);
+  await fs.copy(defaultEngineMetaPath, ejectMetaPath);
 };
 
 export default ejectEngineToDir;

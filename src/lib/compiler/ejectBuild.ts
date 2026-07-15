@@ -2,7 +2,6 @@ import fs from "fs-extra";
 import { rimraf as rmdir } from "rimraf";
 import Path from "path";
 import { defaultEngineMetaPath, defaultEngineRoot } from "consts";
-import copy from "lib/helpers/fsCopy";
 import ejectEngineChangelog from "lib/project/ejectEngineChangelog";
 import {
   buildMakeDotBuildFile,
@@ -66,10 +65,18 @@ const ejectBuild = async ({
   await fs.ensureDir(outputRoot);
   progress(l10n("COMPILER_COPY_DEFAULT_ENGINE"));
 
-  await copy(defaultEngineRoot, outputRoot, {
-    ignore: (path) => {
-      return engineIgnore.some((ignoreDir) =>
-        path.startsWith(Path.join(defaultEngineRoot, ignoreDir)),
+  const ignoredEnginePaths = engineIgnore.map((ignoreDir) =>
+    Path.resolve(defaultEngineRoot, ignoreDir),
+  );
+
+  await fs.copy(defaultEngineRoot, outputRoot, {
+    filter: (sourcePath) => {
+      const resolvedSourcePath = Path.resolve(sourcePath);
+
+      return !ignoredEnginePaths.some(
+        (ignoredPath) =>
+          resolvedSourcePath === ignoredPath ||
+          resolvedSourcePath.startsWith(`${ignoredPath}${Path.sep}`),
       );
     },
   });
@@ -80,7 +87,7 @@ const ejectBuild = async ({
     progress(
       l10n("COMPILER_LOOKING_FOR_LOCAL_ENGINE", { path: "assets/engine" }),
     );
-    await copy(localCorePath, outputRoot);
+    await fs.copy(localCorePath, outputRoot);
     progress(l10n("COMPILER_COPY_LOCAL_ENGINE"));
 
     const ejectedEngineMetaPath = `${localCorePath}/engine.json`;

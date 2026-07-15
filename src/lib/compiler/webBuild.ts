@@ -2,7 +2,6 @@ import fs from "fs-extra";
 import Path from "path";
 import { glob } from "lib/helpers/glob";
 import { binjgbWasmRoot, defaultWebTemplateRoot } from "consts";
-import copy from "lib/helpers/fsCopy";
 import { pathToPosix } from "shared/lib/helpers/path";
 import type { ProjectResources } from "shared/lib/resources/types";
 import type { WebTemplateInfo } from "shared/lib/webTemplates/types";
@@ -29,7 +28,7 @@ const isDefaultWebTemplate = (templateRoot: string): boolean =>
   Path.resolve(templateRoot) === Path.resolve(defaultWebTemplateRoot);
 
 const copyBinjgbRuntime = async (destination: string): Promise<void> =>
-  copy(binjgbWasmRoot, Path.join(destination, "js"));
+  fs.copy(binjgbWasmRoot, Path.join(destination, "js"));
 
 const resolveProjectWebTemplate = (
   projectRoot: string,
@@ -224,7 +223,7 @@ export const ejectDefaultWebTemplate = async (
   const templateName = "binjgb";
   const outputPath = Path.join(webTemplatesRoot(projectRoot), templateName);
   await fs.remove(outputPath);
-  await copy(defaultWebTemplateRoot, outputPath);
+  await fs.copy(defaultWebTemplateRoot, outputPath);
   await copyBinjgbRuntime(outputPath);
   return templateName;
 };
@@ -322,14 +321,17 @@ export const exportWebBuild = async ({
   }
 
   const templateManifestPath = Path.join(templateRoot, manifestFilename);
-  await copy(templateRoot, destination, {
-    ignore: (sourcePath) =>
-      Path.resolve(sourcePath) === Path.resolve(templateManifestPath),
+  const resolvedManifestPath = Path.resolve(templateManifestPath);
+
+  await fs.copy(templateRoot, destination, {
+    filter: (sourcePath) => Path.resolve(sourcePath) !== resolvedManifestPath,
   });
+
   if (isDefaultWebTemplate(templateRoot)) {
     await copyBinjgbRuntime(destination);
   }
-  await copy(romPath, romOutputPath);
+
+  await fs.copy(romPath, romOutputPath);
 
   const sanitize = (s: string) => String(s || "").replace(/["<>]/g, "");
   const projectName = sanitize(project.metadata.name);

@@ -3,7 +3,6 @@ import path from "path";
 import os from "os";
 import stripInvalidFilenameCharacters from "shared/lib/helpers/stripInvalidFilenameCharacters";
 import { ERR_PROJECT_EXISTS, projectTemplatesRoot } from "consts";
-import copy from "lib/helpers/fsCopy";
 import { getGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
 
 export interface CreateProjectInput {
@@ -29,7 +28,7 @@ const createProject = async (options: CreateProjectInput) => {
   }
 
   await fs.ensureDir(projectPath);
-  await copy(templatePath, projectPath);
+  await fs.copy(templatePath, projectPath);
 
   // Replace placeholders in data file
   const dataFile = (await fs.readFile(projectTmpDataPath, "utf8"))

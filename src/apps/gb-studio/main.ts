@@ -10,7 +10,7 @@ import {
 } from "electron";
 import windowStateKeeper from "electron-window-state";
 import Path, { relative } from "path";
-import {
+import fs, {
   copyFile,
   pathExists,
   readFile,
@@ -50,7 +50,6 @@ import {
   listProjectWebTemplates,
 } from "lib/compiler/webBuild";
 import type { WebTemplateInfo } from "shared/lib/webTemplates/types";
-import copy from "lib/helpers/fsCopy";
 import confirmEjectEngineDialog from "lib/electron/dialog/confirmEjectEngineDialog";
 import confirmEjectEngineReplaceDialog from "lib/electron/dialog/confirmEjectEngineReplaceDialog";
 import confirmEjectWebTemplateDialog from "lib/electron/dialog/confirmEjectWebTemplateDialog";
@@ -1586,7 +1585,7 @@ ipcMain.handle(
       });
 
       if (exportBuild) {
-        await copy(
+        await fs.copy(
           `${outputRoot}/build/${buildType}`,
           `${projectRoot}/build/${buildType}`,
         );
@@ -1767,10 +1766,10 @@ ipcMain.handle(
         const dataIncludeOutPath = Path.join(exportRoot, "include", "data");
         await remove(dataSrcOutPath);
         await remove(dataIncludeOutPath);
-        await copy(dataSrcTmpPath, dataSrcOutPath);
-        await copy(dataIncludeTmpPath, dataIncludeOutPath);
+        await fs.copy(dataSrcTmpPath, dataSrcOutPath);
+        await fs.copy(dataIncludeTmpPath, dataIncludeOutPath);
       } else {
-        await copy(outputRoot, exportRoot);
+        await fs.copy(outputRoot, exportRoot);
       }
 
       const buildTime = Date.now() - buildStartTime;
@@ -1950,7 +1949,7 @@ ipcMain.handle(
       try {
         const exists = await pathExists(path);
         if (!exists) {
-          await copy(oPath, path, {
+          await fs.copy(oPath, path, {
             overwrite: false,
             errorOnExist: true,
           });
@@ -2728,7 +2727,10 @@ const saveAsProject = async (saveAsPath: string) => {
     return;
   }
 
-  await copy(Path.dirname(originalProjectPath), Path.dirname(newProjectPath));
+  await fs.copy(
+    Path.dirname(originalProjectPath),
+    Path.dirname(newProjectPath),
+  );
 
   projectPath = newProjectPath;
   await addRecentProject(projectPath);

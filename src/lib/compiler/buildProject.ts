@@ -1,5 +1,4 @@
 import fs from "fs-extra";
-import copy from "lib/helpers/fsCopy";
 import { ProjectResources } from "shared/lib/resources/types";
 import { buildRunner } from "./buildRunner";
 import { EngineSchema } from "lib/project/loadEngineSchema";
@@ -73,7 +72,7 @@ const buildProject = async (
     });
   } else if (buildType === "pocket") {
     await fs.mkdir(`${outputRoot}/build/pocket`);
-    await copy(
+    await fs.copy(
       `${outputRoot}/build/rom/${romFilename}`,
       `${outputRoot}/build/pocket/${romFilename}`,
     );
