@@ -1,9 +1,9 @@
 import { glob } from "lib/helpers/glob";
 import { promisify } from "util";
 import { v4 as uuid } from "uuid";
-import { createReadStream, readJson } from "fs-extra";
+import { readJson } from "fs-extra";
 import { stat } from "fs";
-import { PNG } from "pngjs";
+import pngSize from "lib/helpers/pngSize";
 
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
@@ -11,24 +11,13 @@ import { FontResource, FontResourceAsset } from "shared/lib/resources/types";
 import { getAssetResource } from "./assets";
 const statAsync = promisify(stat);
 
-const sizeOfAsync = (
-  filename: string,
-): Promise<{ width: number; height: number }> => {
-  return new Promise((resolve, reject) => {
-    createReadStream(filename)
-      .pipe(new PNG())
-      .on("metadata", resolve)
-      .on("error", reject);
-  });
-};
-
 const loadFontData =
   (projectRoot: string) =>
   async (filename: string): Promise<FontResourceAsset | null> => {
     const { file, plugin } = parseAssetPath(filename, projectRoot, "fonts");
     const resource = await getAssetResource(FontResource, filename);
     try {
-      const size = await sizeOfAsync(filename);
+      const size = await pngSize(filename);
       const fileStat = await statAsync(filename, { bigint: true });
       const inode = fileStat.ino.toString();
 

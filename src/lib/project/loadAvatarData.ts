@@ -1,9 +1,8 @@
 import { glob } from "lib/helpers/glob";
 import { promisify } from "util";
 import { v4 as uuid } from "uuid";
-import { createReadStream } from "fs-extra";
 import { stat } from "fs";
-import { PNG } from "pngjs";
+import pngSize from "lib/helpers/pngSize";
 
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import {
@@ -13,24 +12,13 @@ import {
 import { getAssetResource } from "./assets";
 const statAsync = promisify(stat);
 
-const sizeOfAsync = (
-  filename: string,
-): Promise<{ width: number; height: number }> => {
-  return new Promise((resolve, reject) => {
-    createReadStream(filename)
-      .pipe(new PNG())
-      .on("metadata", resolve)
-      .on("error", reject);
-  });
-};
-
 const loadAvatarData =
   (projectRoot: string) =>
   async (filename: string): Promise<AvatarResourceAsset | null> => {
     const { file, plugin } = parseAssetPath(filename, projectRoot, "avatars");
     const resource = await getAssetResource(AvatarResource, filename);
     try {
-      const size = await sizeOfAsync(filename);
+      const size = await pngSize(filename);
       const fileStat = await statAsync(filename, { bigint: true });
       const inode = fileStat.ino.toString();
       return {

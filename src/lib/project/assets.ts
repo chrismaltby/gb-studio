@@ -1,6 +1,5 @@
 import Path from "path";
-import sizeOf from "image-size";
-import { promisify } from "util";
+import pngSize from "lib/helpers/pngSize";
 import { sliceIndexedImage, toIndex } from "shared/lib/tiles/indexedImage";
 import { readFileToIndexedImage } from "lib/tiles/readFileToTiles";
 import { Static, TSchema } from "@sinclair/typebox";
@@ -9,8 +8,6 @@ import { readJson } from "lib/helpers/fs/readJson";
 
 export type AssetFolder =
   "backgrounds" | "fonts" | "music" | "sprites" | "sounds";
-
-const sizeOfAsync = promisify(sizeOf);
 
 export const potentialAssetFolders = async (
   filename: string,
@@ -31,7 +28,7 @@ export const potentialAssetFolders = async (
 
   const folders: AssetFolder[] = [];
 
-  const size = await sizeOfAsync(filename);
+  const size = await pngSize(filename);
   if (!size || !size.width || !size.height) {
     return [];
   }

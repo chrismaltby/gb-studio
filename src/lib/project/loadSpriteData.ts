@@ -1,8 +1,8 @@
 import { glob } from "lib/helpers/glob";
 import { promisify } from "util";
 import { v4 as uuidv4 } from "uuid";
-import sizeOf from "image-size";
 import { stat } from "fs";
+import pngSize from "lib/helpers/pngSize";
 import parseAssetPath from "shared/lib/assets/parseAssetPath";
 import { checksumFile } from "lib/helpers/checksum";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
@@ -11,7 +11,6 @@ import {
   SpriteResourceAsset,
 } from "shared/lib/resources/types";
 import { getAssetResource } from "./assets";
-const sizeOfAsync = promisify(sizeOf);
 const statAsync = promisify(stat);
 
 const loadSpriteData =
@@ -22,7 +21,7 @@ const loadSpriteData =
     const resource = await getAssetResource(SpriteResource, filename);
 
     try {
-      const size = await sizeOfAsync(filename);
+      const size = await pngSize(filename);
       if (!size || !size.width || !size.height) {
         return null;
       }
