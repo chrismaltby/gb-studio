@@ -34,7 +34,7 @@ import installExtension, {
 import { ensureString, isString, isStringArray, JsonValue } from "shared/types";
 import getTmp from "lib/helpers/getTmp";
 import createProject, { CreateProjectInput } from "lib/project/createProject";
-import open from "open";
+import { open } from "lib/helpers/open";
 import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDialog";
 import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
 import type {
@@ -1002,7 +1002,7 @@ ipcMain.handle("open-image", async (_event, assetPath) => {
   guardAssetWithinProject(filename, projectRoot);
 
   const app = String((await settingsGet("imageEditorPath")) || "") || undefined;
-  open(filename, { app });
+  open(filename, app);
 });
 
 ipcMain.handle("open-mod", async (_event, assetPath) => {
@@ -1015,7 +1015,7 @@ ipcMain.handle("open-mod", async (_event, assetPath) => {
   guardAssetWithinProject(filename, projectRoot);
 
   const app = String((await settingsGet("musicEditorPath")) || "") || undefined;
-  open(filename, { app });
+  open(filename, app);
 });
 
 ipcMain.handle("open-file", async (_event, assetPath) => {
