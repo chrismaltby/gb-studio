@@ -30,8 +30,7 @@ const dispatchNext = (slot: WorkerSlot) => {
     return;
   }
   const next = slot.pending.entries().next().value as
-    | [string, PendingRequest]
-    | undefined;
+    [string, PendingRequest] | undefined;
   if (!next) {
     return;
   }

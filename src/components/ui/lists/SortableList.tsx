@@ -124,8 +124,7 @@ export const SortableList = <T,>({
 
   useLayoutEffect(() => {
     const el = listRef.current?.children[selectedIndex] as
-      | HTMLElement
-      | undefined;
+      HTMLElement | undefined;
     el?.scrollIntoView({ block: "nearest", inline: "nearest" });
   }, [selectedIndex]);
 

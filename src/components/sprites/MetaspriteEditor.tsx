@@ -369,8 +369,7 @@ const MetaspriteEditor = ({
 
       // Clear focus from animation timeline
       const el = document.querySelector(":focus") as unknown as
-        | BlurableDOMElement
-        | undefined;
+        BlurableDOMElement | undefined;
       if (el && el.blur) el.blur();
 
       const newActions: PayloadAction<{
@@ -434,8 +433,7 @@ const MetaspriteEditor = ({
 
         // Clear focus from animation timeline
         const el = document.querySelector(":focus") as unknown as
-          | BlurableDOMElement
-          | undefined;
+          BlurableDOMElement | undefined;
         if (el && el.blur) el.blur();
 
         if (e.shiftKey) {

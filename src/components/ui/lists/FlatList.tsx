@@ -103,8 +103,7 @@ export const FlatList = <T extends FlatListItem>({
   children,
 }: FlatListProps<T>) => {
   const typedSetSelectedId = setSelectedId as
-    | ((id: string, item: FlatListItem) => void)
-    | undefined;
+    ((id: string, item: FlatListItem) => void) | undefined;
 
   const ref = useRef<HTMLDivElement>(null);
   const [hasFocus, setHasFocus] = useState(false);

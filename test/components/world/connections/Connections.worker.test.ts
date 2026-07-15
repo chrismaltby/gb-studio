@@ -9,9 +9,8 @@ beforeAll(async () => {
     configurable: true,
     value: class {},
   });
-  ({ calculateConnections } = await import(
-    "components/world/connections/Connections.worker"
-  ));
+  ({ calculateConnections } =
+    await import("components/world/connections/Connections.worker"));
 });
 
 const request = (): ConnectionsWorkerRequest => ({

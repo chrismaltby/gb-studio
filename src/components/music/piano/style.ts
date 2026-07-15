@@ -374,17 +374,17 @@ export const StyledPianoRollNote = styled.div<StyledPianoRollNoteProps>`
     `}    
 
     ${(props) =>
-    props.$isSelected &&
-    props.$isDragging &&
-    css`
-      opacity: 0.6;
-    `}
+      props.$isSelected &&
+      props.$isDragging &&
+      css`
+        opacity: 0.6;
+      `}
 
     ${(props) =>
-    props.$isVirtual &&
-    css`
-      opacity: 0.4;
-    `}
+      props.$isVirtual &&
+      css`
+        opacity: 0.4;
+      `}
 
     border-radius: 2px;
 

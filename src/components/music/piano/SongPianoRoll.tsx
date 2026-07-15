@@ -986,8 +986,7 @@ export const SongPianoRoll = () => {
     }
 
     const el = document.querySelector(":focus") as unknown as
-      | BlurableDOMElement
-      | undefined;
+      BlurableDOMElement | undefined;
     if (el && el.blur) {
       el.blur();
     }

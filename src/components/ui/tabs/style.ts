@@ -186,42 +186,44 @@ export const StyledTab = styled.button<StyledTabProps>`
       : ""}
 
 ${(props) =>
-    props.$variant === "secondary"
-      ? css`
-          padding-right: 5px;
-          height: 36px;
-        `
-      : ""}
+  props.$variant === "secondary"
+    ? css`
+        padding-right: 5px;
+        height: 36px;
+      `
+    : ""}
 
       ${(props) =>
-    props.$selected && props.$variant === "eventSection"
-      ? css`
-          background: ${(props) =>
+        props.$selected && props.$variant === "eventSection"
+          ? css`
+              background: ${(props) =>
             props.theme.colors.scripting.form.background};
-          overflow: visible;
-          &:focus {
-            z-index: auto;
-          }
-        `
-      : ""}
+              overflow: visible;
+              &:focus {
+                z-index: auto;
+              }
+            `
+          : ""}
 
 
       ${(props) =>
-    props.$variant === "scriptEvent"
-      ? css`
-          padding: 0 10px;
-          margin-top: 0px;
-        `
-      : ""}
+        props.$variant === "scriptEvent"
+          ? css`
+              padding: 0 10px;
+              margin-top: 0px;
+            `
+          : ""}
 
       ${(props) =>
-    props.$selected && props.$variant === "scriptEvent"
-      ? css`
-          border-left: 1px solid ${(props) => props.theme.colors.tabs.border};
-          border-right: 1px solid ${(props) => props.theme.colors.tabs.border};
-          border-top: 1px solid ${(props) => props.theme.colors.tabs.border};
-        `
-      : ""}
+        props.$selected && props.$variant === "scriptEvent"
+          ? css`
+              border-left: 1px solid
+                ${(props) => props.theme.colors.tabs.border};
+              border-right: 1px solid
+                ${(props) => props.theme.colors.tabs.border};
+              border-top: 1px solid ${(props) => props.theme.colors.tabs.border};
+            `
+          : ""}
 
   ${StyledTabs}:hover > &:not(:hover) {
     overflow: hidden;

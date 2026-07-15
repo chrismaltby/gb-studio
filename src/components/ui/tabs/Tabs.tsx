@@ -9,10 +9,7 @@ import {
 } from "ui/tabs/style";
 
 export type TabBarVariant =
-  | "normal"
-  | "secondary"
-  | "eventSection"
-  | "scriptEvent";
+  "normal" | "secondary" | "eventSection" | "scriptEvent";
 
 interface TabBarProps<T extends string> {
   value?: T;

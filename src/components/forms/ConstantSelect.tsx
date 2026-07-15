@@ -159,12 +159,10 @@ const ConstantSelectComponent = ({
     const engineOptions: Option[] = engineConstantsLookup
       ? Object.keys(engineConstantsLookup)
           .sort()
-          .map(
-            (name): Option => ({
-              value: `engine::${name}`,
-              label: name,
-            }),
-          )
+          .map((name): Option => ({
+            value: `engine::${name}`,
+            label: name,
+          }))
       : [];
 
     const groupedOptions: OptGroup[] = [

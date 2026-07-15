@@ -97,11 +97,7 @@ export type Token =
   | TokenSeperator;
 
 export type RPNToken =
-  | TokenVal
-  | TokenVar
-  | TokenConst
-  | TokenFunction
-  | TokenOperator;
+  TokenVal | TokenVar | TokenConst | TokenFunction | TokenOperator;
 
 const rpnTokenTypes = ["VAL", "VAR", "FUN", "OP"] as const;
 

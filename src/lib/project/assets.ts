@@ -8,11 +8,7 @@ import { Value } from "@sinclair/typebox/value";
 import { readJson } from "lib/helpers/fs/readJson";
 
 export type AssetFolder =
-  | "backgrounds"
-  | "fonts"
-  | "music"
-  | "sprites"
-  | "sounds";
+  "backgrounds" | "fonts" | "music" | "sprites" | "sounds";
 
 const sizeOfAsync = promisify(sizeOf);
 

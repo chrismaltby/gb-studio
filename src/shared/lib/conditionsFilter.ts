@@ -12,8 +12,9 @@ export interface BaseConditionShape {
   falsy?: boolean;
 }
 
-export interface BaseCondition<T extends BaseCondition<T>>
-  extends BaseConditionShape {
+export interface BaseCondition<
+  T extends BaseCondition<T>,
+> extends BaseConditionShape {
   or?: T[][];
 }
 

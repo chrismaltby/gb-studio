@@ -1585,10 +1585,10 @@ const paintSceneTile: CaseReducer<
   const stamp = action.payload.stamp;
   const isStamp = Boolean(
     !isErasing &&
-      brush !== "magic" &&
-      stamp &&
-      stamp.tilesetWidth > 0 &&
-      (stamp.width > 1 || stamp.height > 1),
+    brush !== "magic" &&
+    stamp &&
+    stamp.tilesetWidth > 0 &&
+    (stamp.width > 1 || stamp.height > 1),
   );
 
   const paintStamp = (originX: number, originY: number) => {

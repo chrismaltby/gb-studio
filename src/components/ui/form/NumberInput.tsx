@@ -4,11 +4,10 @@ import { UnitType } from "shared/lib/entities/entitiesTypes";
 import styled from "styled-components";
 import { StyledInput } from "./style";
 
-interface NumberInputProps
-  extends React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  > {
+interface NumberInputProps extends React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+> {
   units?: UnitType;
   unitsAllowed?: UnitType[];
   onChangeUnits?: (newUnits: UnitType) => void;

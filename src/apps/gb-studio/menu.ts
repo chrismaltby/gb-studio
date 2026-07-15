@@ -117,16 +117,14 @@ const buildMidiInputSubmenu = (
 
   const deviceItems =
     midiInputState.inputs.length > 0
-      ? midiInputState.inputs.map(
-          (input): MenuItemConstructorOptions => ({
-            label: input.name,
-            type: "checkbox",
-            checked: midiInputState.selectedInputId === input.id,
-            click: () => {
-              notifyListeners("selectMidiInput", input.id);
-            },
-          }),
-        )
+      ? midiInputState.inputs.map((input): MenuItemConstructorOptions => ({
+          label: input.name,
+          type: "checkbox",
+          checked: midiInputState.selectedInputId === input.id,
+          click: () => {
+            notifyListeners("selectMidiInput", input.id);
+          },
+        }))
       : [
           {
             label: l10n("FIELD_NO_DEVICES_FOUND"),
@@ -447,17 +445,15 @@ const buildMenu = async ({
             ...(pluginThemes.length > 0
               ? ([{ type: "separator" }] as MenuItemConstructorOptions[])
               : []),
-            ...pluginThemes.map(
-              (theme): MenuItemConstructorOptions => ({
-                id: `theme-${theme.id}`,
-                label: theme.name,
-                type: "checkbox",
-                checked: settings[THEME_SETTING_KEY] === theme.id,
-                click() {
-                  notifyListeners("updateTheme", theme.id);
-                },
-              }),
-            ),
+            ...pluginThemes.map((theme): MenuItemConstructorOptions => ({
+              id: `theme-${theme.id}`,
+              label: theme.name,
+              type: "checkbox",
+              checked: settings[THEME_SETTING_KEY] === theme.id,
+              click() {
+                notifyListeners("updateTheme", theme.id);
+              },
+            })),
           ],
         },
         {
@@ -489,17 +485,15 @@ const buildMenu = async ({
             ...(pluginLangs.length > 0
               ? ([{ type: "separator" }] as MenuItemConstructorOptions[])
               : []),
-            ...pluginLangs.map(
-              (language): MenuItemConstructorOptions => ({
-                id: `locale-${language.id}`,
-                label: language.name,
-                type: "checkbox",
-                checked: settings[LOCALE_SETTING_KEY] === language.id,
-                click() {
-                  notifyListeners("updateLocale", language.id);
-                },
-              }),
-            ),
+            ...pluginLangs.map((language): MenuItemConstructorOptions => ({
+              id: `locale-${language.id}`,
+              label: language.name,
+              type: "checkbox",
+              checked: settings[LOCALE_SETTING_KEY] === language.id,
+              click() {
+                notifyListeners("updateLocale", language.id);
+              },
+            })),
           ),
         },
         { type: "separator" },

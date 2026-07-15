@@ -6,11 +6,7 @@ import styled, { css } from "styled-components";
 interface StyledButtonProps {
   readonly $size?: "small" | "medium" | "large";
   readonly $variant?:
-    | "normal"
-    | "primary"
-    | "transparent"
-    | "underlined"
-    | "anchor";
+    "normal" | "primary" | "transparent" | "underlined" | "anchor";
   readonly $active?: boolean;
   readonly disabled?: boolean;
   readonly "data-variant"?: StyledButtonProps["$variant"];

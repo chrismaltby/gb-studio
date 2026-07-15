@@ -69,9 +69,8 @@ beforeAll(async () => {
     configurable: true,
     value: jest.fn(),
   });
-  ({ renderTilemapLayers } = await import(
-    "components/rendering/TilemapLayersCanvas.worker"
-  ));
+  ({ renderTilemapLayers } =
+    await import("components/rendering/TilemapLayersCanvas.worker"));
 });
 
 beforeEach(() => {

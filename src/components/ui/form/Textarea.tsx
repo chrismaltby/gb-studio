@@ -1,8 +1,7 @@
 import React from "react";
 import { StyledTextarea } from "ui/form/style";
 
-interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   readonly displaySize?: "small" | "medium" | "large";
 }
 

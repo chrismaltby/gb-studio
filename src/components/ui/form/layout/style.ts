@@ -54,11 +54,11 @@ export const StyledFormField = styled.div<StyledFormFieldProps>`
         `
       : ""}
       ${(props) =>
-    props.$hasOverride
-      ? css`
-          font-weight: bold;
-        `
-      : ""}
+        props.$hasOverride
+          ? css`
+              font-weight: bold;
+            `
+          : ""}
 `;
 
 // #endregion FormField

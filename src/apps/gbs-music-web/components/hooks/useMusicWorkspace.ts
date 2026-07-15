@@ -173,9 +173,8 @@ export const useMusicWorkspace = (): UseMusicWorkspaceResult => {
 
       // Stamp the template UGE data with the requested name and artist before
       // writing it to disk / the in-memory store.
-      const { loadUGESong, saveUGESong } = await import(
-        "shared/lib/uge/ugeHelper"
-      );
+      const { loadUGESong, saveUGESong } =
+        await import("shared/lib/uge/ugeHelper");
       const song = loadUGESong(Buffer.from(templateSongData));
       song.name = songName;
       song.artist = songArtist;

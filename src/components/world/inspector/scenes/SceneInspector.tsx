@@ -200,10 +200,7 @@ interface ScriptHandlers {
 }
 
 type SceneScriptKey =
-  | "script"
-  | "playerHit1Script"
-  | "playerHit2Script"
-  | "playerHit3Script";
+  "script" | "playerHit1Script" | "playerHit2Script" | "playerHit3Script";
 
 const PaletteButtons = styled.div`
   display: flex;

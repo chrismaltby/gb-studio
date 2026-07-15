@@ -54,8 +54,7 @@ import {
 } from "store/features/tracker/trackerHelpers";
 
 type TrackerInput =
-  | { type: "keyboard"; code: string }
-  | { type: "hex"; value: number | null };
+  { type: "keyboard"; code: string } | { type: "hex"; value: number | null };
 
 const getTrackerSequenceId = ({
   trackerSelectionOrigin,

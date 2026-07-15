@@ -11,10 +11,7 @@ import { Portal } from "./Portal";
 import styled from "styled-components";
 
 export type PinDirection =
-  | "top-left"
-  | "bottom-left"
-  | "top-right"
-  | "bottom-right";
+  "top-left" | "bottom-left" | "top-right" | "bottom-right";
 
 type RelativePortalProps = {
   children: ReactNode;

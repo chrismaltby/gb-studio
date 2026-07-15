@@ -46,9 +46,8 @@ module.exports = {
       ui: srcPath("components", "ui"),
       shared: srcPath("shared"),
       consts: srcPath("consts.ts"),
-      "#my-quickjs-variant": require.resolve(
-        "@jitl/quickjs-singlefile-cjs-release-sync",
-      ),
+      "#my-quickjs-variant":
+        require.resolve("@jitl/quickjs-singlefile-cjs-release-sync"),
     },
   },
 };

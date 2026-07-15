@@ -57,9 +57,7 @@ export const valueUnaryOperatorTypes = [
 export type ValueUnaryOperatorType = (typeof valueUnaryOperatorTypes)[number];
 
 export type ValueType =
-  | ValueAtomType
-  | ValueOperatorType
-  | ValueUnaryOperatorType;
+  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType;
 
 export const isValueAtomType = (type: unknown): type is ValueAtomType =>
   valueAtomTypes.includes(type as ValueAtomType);

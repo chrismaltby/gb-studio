@@ -193,16 +193,13 @@ export const createHandlerBase = (
     isConditional: false,
     editableSymbol: metadata.editableSymbol as boolean | undefined,
     allowChildrenBeforeInitFade: metadata.allowChildrenBeforeInitFade as
-      | boolean
-      | undefined,
+      boolean | undefined,
     waitUntilAfterInitFade: metadata.waitUntilAfterInitFade as
-      | boolean
-      | undefined,
+      boolean | undefined,
     helper: metadata.helper as ScriptEventHelperDef | undefined,
     presets: metadata.presets as ScriptEventPresetValue[] | undefined,
     userPresetsGroups: metadata.userPresetsGroups as
-      | UserPresetsGroup[]
-      | undefined,
+      UserPresetsGroup[] | undefined,
     userPresetsIgnore: metadata.userPresetsIgnore as string[] | undefined,
   };
 

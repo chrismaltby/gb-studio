@@ -33,8 +33,7 @@ const getIpcHandler = (channel: string) => {
     ([registeredChannel]) => registeredChannel === channel,
   );
   return handlerCall?.[1] as
-    | ((...args: unknown[]) => Promise<unknown>)
-    | undefined;
+    ((...args: unknown[]) => Promise<unknown>) | undefined;
 };
 
 describe("Electron Main Process", () => {

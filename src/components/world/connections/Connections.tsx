@@ -203,8 +203,9 @@ const buildConnectionsWorkerRequest = (
     };
   };
 
-  const scenes = sceneSelectors.selectAll(state).map(
-    (scene): ConnectionScene => ({
+  const scenes = sceneSelectors
+    .selectAll(state)
+    .map((scene): ConnectionScene => ({
       id: scene.id,
       scripts: sceneScriptKeys.map((key) => scene[key]),
       actors: scene.actors
@@ -213,8 +214,7 @@ const buildConnectionsWorkerRequest = (
       triggers: scene.triggers
         .map(toTrigger)
         .filter((trigger): trigger is ConnectionScriptSource => !!trigger),
-    }),
-  );
+    }));
 
   const events = Object.fromEntries(
     scriptEventSelectors.selectAll(state).map((event) => {

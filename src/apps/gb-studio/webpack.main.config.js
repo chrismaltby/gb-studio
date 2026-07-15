@@ -70,9 +70,8 @@ module.exports = {
       shared: srcPath("shared"),
       consts: srcPath("consts.ts"),
       "patrons.json": repoPath("patrons.json"),
-      "#my-quickjs-variant": require.resolve(
-        "@jitl/quickjs-singlefile-cjs-release-sync",
-      ),
+      "#my-quickjs-variant":
+        require.resolve("@jitl/quickjs-singlefile-cjs-release-sync"),
     },
   },
   externals: {

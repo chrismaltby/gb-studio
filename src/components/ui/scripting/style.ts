@@ -152,17 +152,17 @@ export const StyledScriptEventHeader = styled.div<StyledScriptEventHeaderProps>`
         `
       : ""}
     ${(props) =>
-    props.$isConditional && props.$nestLevel % 4 === 2
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest3Background};
-        `
-      : ""}
+      props.$isConditional && props.$nestLevel % 4 === 2
+        ? css`
+            background: ${props.theme.colors.scripting.header.nest3Background};
+          `
+        : ""}
     ${(props) =>
-    props.$isConditional && props.$nestLevel % 4 === 3
-      ? css`
-          background: ${props.theme.colors.scripting.header.nest4Background};
-        `
-      : ""}
+      props.$isConditional && props.$nestLevel % 4 === 3
+        ? css`
+            background: ${props.theme.colors.scripting.header.nest4Background};
+          `
+        : ""}
 
   ${(props) =>
     props.$isComment
@@ -238,11 +238,11 @@ export const StyledScriptEventHeader = styled.div<StyledScriptEventHeaderProps>`
       : ""}
     
     ${(props) =>
-    !props.$isMoveable
-      ? css`
-          cursor: not-allowed;
-        `
-      : ""}
+      !props.$isMoveable
+        ? css`
+            cursor: not-allowed;
+          `
+        : ""}
 
 
   ${() =>
@@ -394,17 +394,17 @@ export const StyledScriptEditorChildrenLabel = styled.span<StyledScriptEditorChi
         `
       : ""}
            ${(props) =>
-    props.$nestLevel % 4 === 2
-      ? css`
-          color: ${props.theme.colors.scripting.children.nest3Text};
-        `
-      : ""}
+             props.$nestLevel % 4 === 2
+               ? css`
+                   color: ${props.theme.colors.scripting.children.nest3Text};
+                 `
+               : ""}
                ${(props) =>
-    props.$nestLevel % 4 === 3
-      ? css`
-          color: ${props.theme.colors.scripting.children.nest4Text};
-        `
-      : ""}
+                 props.$nestLevel % 4 === 3
+                   ? css`
+                       color: ${props.theme.colors.scripting.children.nest4Text};
+                     `
+                   : ""}
 `;
 
 export const StyledScriptEditorChildrenWrapper = styled.div`
@@ -534,17 +534,17 @@ export const StyledScriptEventBranchHeader = styled.div<StyledScriptEventBranchH
         `
       : ""}
     ${(props) =>
-    props.$nestLevel % 4 === 2
-      ? css`
-          background: ${props.theme.colors.scripting.branch.nest3Background};
-        `
-      : ""}
+      props.$nestLevel % 4 === 2
+        ? css`
+            background: ${props.theme.colors.scripting.branch.nest3Background};
+          `
+        : ""}
     ${(props) =>
-    props.$nestLevel % 4 === 3
-      ? css`
-          background: ${props.theme.colors.scripting.branch.nest4Background};
-        `
-      : ""}
+      props.$nestLevel % 4 === 3
+        ? css`
+            background: ${props.theme.colors.scripting.branch.nest4Background};
+          `
+        : ""}
 
 
   ${(props) =>

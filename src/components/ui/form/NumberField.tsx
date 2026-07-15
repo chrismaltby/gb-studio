@@ -3,11 +3,10 @@ import styled from "styled-components";
 import { NumberInput } from "./NumberInput";
 import { Label } from "./Label";
 
-interface NumberFieldProps
-  extends React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  > {
+interface NumberFieldProps extends React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+> {
   name: string;
   label?: string;
   value?: number;
