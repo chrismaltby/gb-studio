@@ -14,18 +14,17 @@ module.exports = [
   {
     test: /\.(png|jpe?g|gif|mp4|woff2)$/i,
     exclude: /(node_modules|.webpack)/,
-    loader: "file-loader",
-    options: {
-      publicPath: "..", // move up from 'main_window'
+    type: "asset/resource",
+    generator: {
+      publicPath: "../", // move up from 'main_window'
     },
   },
   {
     test: /[\\/]appData[\\/]wasm[\\/](.*)[\\/](.*).wasm$/,
-    type: "javascript/auto",
-    loader: "file-loader",
-    options: {
-      name: "[name].[contenthash].[ext]",
-      publicPath: "../wasm",
+    type: "asset/resource",
+    generator: {
+      filename: "[name].[contenthash][ext]",
+      publicPath: "../wasm/",
       outputPath: "wasm",
     },
   },

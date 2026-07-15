@@ -167,7 +167,6 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-storybook": "^10.5.0",
-    "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "git-revision-webpack-plugin": "^5.0.0",
     "jest": "^30.4.2",
