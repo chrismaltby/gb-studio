@@ -27,10 +27,6 @@ const rendererRules = [
     ],
   },
   ...rules.slice(1), // Remove global ts-loader rule replaced with ReactRefreshTypeScript version defined above
-  {
-    test: /\.css$/,
-    use: [{ loader: "style-loader" }, { loader: "css-loader" }],
-  },
 ];
 
 const rendererPlugins = [
@@ -99,8 +95,9 @@ module.exports = {
       "contributors.json": repoPath("contributors.json"),
       "contributors-external.json": repoPath("contributors-external.json"),
       "patrons.json": repoPath("patrons.json"),
-      "#my-quickjs-variant":
-        require.resolve("@jitl/quickjs-singlefile-browser-release-sync"),
+      "#my-quickjs-variant": require.resolve(
+        "@jitl/quickjs-singlefile-browser-release-sync",
+      ),
     },
     fallback: {
       path: require.resolve("path-browserify"),
