@@ -7998,10 +7998,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/spark-md5@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "@types/spark-md5@npm:3.0.4"
-  checksum: 10c0/0a08b94b2387f7720c15915c54cff8bbd8a05298a280f32d7fc28f6e5b159b4354358ccaa2767e8c9ec4ae035ac1a6f58c5e5386d56ae2ab3fde73852cdc16de
+"@types/spark-md5@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "@types/spark-md5@npm:3.0.5"
+  checksum: 10c0/501b6aa80fc6d8504fb0ad961c28b2f99d7fc3d7769059f113b4060334623b6c8da7f21dac984211d7d819ac7170ee3ce47dba682453b6baff79052fe382d810
   languageName: node
   linkType: hard
 
@@ -14032,7 +14032,7 @@ __metadata:
     "@types/react-dom": "npm:^19.2.3"
     "@types/react-mentions": "npm:^4.4.0"
     "@types/react-refresh": "npm:^0.14.6"
-    "@types/spark-md5": "npm:^3.0.4"
+    "@types/spark-md5": "npm:^3.0.5"
     "@types/webpack-env": "npm:^1.14.1"
     "@typescript-eslint/eslint-plugin": "npm:8.63.0"
     "@typescript-eslint/parser": "npm:8.63.0"
