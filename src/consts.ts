@@ -1,12 +1,12 @@
-import { normalize } from "path";
+import { basename, dirname, join, normalize } from "path";
 import {
   CollisionTileDef,
   Palette,
   Settings,
 } from "shared/lib/resources/types";
 
-const isDist = __dirname.indexOf(".webpack") > -1;
-const isCli = __dirname.indexOf("out/cli") > -1;
+const isDist = __dirname.includes(".webpack");
+const isCli = __dirname.includes("out/cli");
 
 let rootDir = __dirname.substring(0, __dirname.lastIndexOf("node_modules"));
 if (isDist) {
@@ -14,24 +14,32 @@ if (isDist) {
 } else if (isCli) {
   rootDir = __dirname.substring(0, __dirname.lastIndexOf("out/cli"));
 } else if (process.env.NODE_ENV === "test") {
-  rootDir = normalize(`${__dirname}/../`);
+  rootDir = normalize(join(__dirname, ".."));
 }
+
+const isPackagedAsar = basename(rootDir) === "app.asar";
+
+const unpackedRoot = isPackagedAsar
+  ? join(dirname(rootDir), `${basename(rootDir)}.unpacked`)
+  : rootDir;
+
+const appDataRoot = join(unpackedRoot, "appData");
+const webTemplatesRoot = join(appDataRoot, "webTemplates");
 
 // Paths
 export const buildUUID = "_gbsbuild";
-export const enginesRoot = normalize(`${rootDir}/appData/engine`);
-export const defaultEngineRoot = normalize(`${enginesRoot}/gbvm`);
-export const defaultEngineMetaPath = normalize(`${enginesRoot}/engine.json`);
-export const buildToolsRoot = normalize(`${rootDir}/buildTools`);
-export const binjgbWasmRoot = normalize(`${rootDir}/appData/wasm/binjgb`);
-export const defaultWebTemplateRoot = normalize(
-  `${rootDir}/appData/webTemplates/binjgb`,
-);
-export const projectTemplatesRoot = normalize(`${rootDir}/appData/templates`);
-export const musicTemplatesRoot = normalize(`${rootDir}/appData/music`);
-export const localesRoot = normalize(`${rootDir}/src/lang`);
-export const eventsRoot = normalize(`${rootDir}/src/lib/events`);
-export const assetsRoot = normalize(`${rootDir}/src/assets`);
+export const enginesRoot = join(appDataRoot, "engine");
+export const defaultEngineRoot = join(enginesRoot, "gbvm");
+export const defaultEngineMetaPath = join(enginesRoot, "engine.json");
+export const buildToolsRoot = join(unpackedRoot, "buildTools");
+export const binjgbWasmRoot = join(appDataRoot, "wasm", "binjgb");
+export const defaultWebTemplateRoot = join(webTemplatesRoot, "binjgb");
+export const projectTemplatesRoot = join(appDataRoot, "templates");
+export const musicTemplatesRoot = join(appDataRoot, "music");
+
+export const localesRoot = join(rootDir, "src", "lang");
+export const eventsRoot = join(rootDir, "src", "lib", "events");
+export const assetsRoot = join(rootDir, "src", "assets");
 
 // Plugin Manager
 export const OFFICIAL_REPO_URL = "https://plugins.gbstudio.dev/repository.json";

@@ -76,7 +76,9 @@ module.exports = async () => {
         "src/assets/app/icon/Assets.car",
       ],
       afterCopy: ["./src/lib/forge/hooks/after-copy"],
-      asar: true,
+      asar: {
+        unpackDir: "{appData,buildTools}",
+      },
       appBundleId: "dev.gbstudio.gbstudio",
       osxSign: {
         "hardened-runtime": true,
