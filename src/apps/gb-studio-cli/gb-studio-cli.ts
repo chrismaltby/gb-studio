@@ -16,6 +16,11 @@ declare const VERSION: string;
 
 type Command = "export" | "make:rom" | "make:pocket" | "make:web";
 
+type CLIOptions = {
+  onlyData?: boolean;
+  verbose?: boolean;
+};
+
 const buildTypeForCommand = (command: Command): BuildType => {
   if (command === "make:web") {
     return "web";
@@ -47,14 +52,16 @@ const main = async (
   const tmpBuildDir = Path.join(tmpPath, "_gbsbuild");
   const outputRoot = tmpBuildDir;
 
+  const { onlyData, verbose } = program.opts<CLIOptions>();
+
   const progress = (message: string) => {
-    if (program.verbose) {
+    if (verbose) {
       console.log(message);
     }
   };
 
   const warnings = (message: string) => {
-    if (program.verbose) {
+    if (verbose) {
       console.warn(message);
     }
   };
@@ -85,7 +92,7 @@ const main = async (
   await result;
 
   if (command === "export") {
-    if (program.onlyData) {
+    if (onlyData) {
       // Export src/data and include/data to destination
       const dataSrcTmpPath = Path.join(tmpBuildDir, "src", "data");
       const dataSrcOutPath = Path.join(destination, "src", "data");

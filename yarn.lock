@@ -10508,6 +10508,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "commander@npm:15.0.0"
+  checksum: 10c0/539229c171914ea1ccd45ee5f10d924289a12a684ea3a7a44147abe54003c35ed6de9ae4ad198d88c29fdf403dca0428451a388234e6dc01b6faa978fb207206
+  languageName: node
+  linkType: hard
+
 "commander@npm:^2.20.0":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
@@ -13706,7 +13713,7 @@ __metadata:
     babel-plugin-styled-components: "npm:^2.1.4"
     chokidar: "npm:^5.0.0"
     chroma-js: "npm:^3.2.0"
-    commander: "npm:^6.2.0"
+    commander: "npm:^15.0.0"
     copy-webpack-plugin: "npm:^14.0.0"
     cross-env: "npm:^7.0.3"
     css-loader: "npm:^6.0.0"
@@ -19255,15 +19262,6 @@ __metadata:
   version: 1.2.2
   resolution: "queue-microtask@npm:1.2.2"
   checksum: 10c0/0127fc3553a51d43a853bcf4c9998e3a2ffc882fd121d774c6aeffe9945ca9f51ec5271e3cbb0e0e865f55d6f2aa680650c829815cf4692e9c53d45b70ca34ed
-  languageName: node
-  linkType: hard
-
-"queue@npm:6.0.2":
-  version: 6.0.2
-  resolution: "queue@npm:6.0.2"
-  dependencies:
-    inherits: "npm:~2.0.3"
-  checksum: 10c0/cf987476cc72e7d3aaabe23ccefaab1cd757a2b5e0c8d80b67c9575a6b5e1198807ffd4f0948a3f118b149d1111d810ee773473530b77a5c606673cac2c9c996
   languageName: node
   linkType: hard
 
