@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import "jest-extended";
 import middleware from "../../../../src/store/features/undo/undoMiddleware";
 import { RootState } from "store/storeTypes";
 import { dummyCompressedProjectResources } from "../../../dummydata";

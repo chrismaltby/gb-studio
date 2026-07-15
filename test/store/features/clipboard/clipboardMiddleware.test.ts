@@ -1,4 +1,3 @@
-import "jest-extended";
 import middleware from "../../../../src/store/features/clipboard/clipboardMiddleware";
 import actions from "../../../../src/store/features/clipboard/clipboardActions";
 import { RootState } from "store/storeTypes";
