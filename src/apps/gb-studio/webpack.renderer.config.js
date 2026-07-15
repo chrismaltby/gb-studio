@@ -104,9 +104,6 @@ module.exports = {
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".wasm", ".css"],
     alias: {
-      mediabunny$: require.resolve("mediabunny"),
-      "@mediabunny/mp3-encoder$": require.resolve("@mediabunny/mp3-encoder"),
-      "@mediabunny/flac-encoder$": require.resolve("@mediabunny/flac-encoder"),
       store: srcPath("store"),
       components: srcPath("components"),
       lang: srcPath("lang"),

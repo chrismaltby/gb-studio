@@ -668,6 +668,7 @@ const encodeAudio = async (
       : new mediabunny.AudioSampleSource({
           codec,
           bitrate: mediabunny.QUALITY_HIGH,
+          transform: format === "flac" ? { sampleFormat: "s16" } : undefined,
         });
 
   output.addAudioTrack(source);
