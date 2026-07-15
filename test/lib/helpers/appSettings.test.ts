@@ -1,8 +1,5 @@
 import settings from "electron-settings";
-import {
-  settingsSet,
-  settingsUpdate,
-} from "lib/helpers/appSettings";
+import { settingsSet, settingsUpdate } from "lib/helpers/appSettings";
 
 jest.mock("electron-settings");
 
@@ -114,9 +111,7 @@ describe("appSettings", () => {
     const store = { count: 0 };
     const firstSet = deferred();
 
-    mockedSettings.get.mockImplementation(
-      async () => store.count as never,
-    );
+    mockedSettings.get.mockImplementation(async () => store.count as never);
     mockedSettings.set.mockImplementation(async (_key, value) => {
       if (mockedSettings.set.mock.calls.length === 1) {
         await firstSet.promise;

@@ -159,14 +159,18 @@ describe("Electron Main Process", () => {
   });
 
   test("project window load still sends open-project when spellcheck refresh fails", async () => {
-    (global as typeof globalThis & {
-      MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
-      MAIN_WINDOW_WEBPACK_ENTRY: string;
-    }).MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY = "MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY";
-    (global as typeof globalThis & {
-      MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
-      MAIN_WINDOW_WEBPACK_ENTRY: string;
-    }).MAIN_WINDOW_WEBPACK_ENTRY = "MAIN_WINDOW_WEBPACK_ENTRY";
+    (
+      global as typeof globalThis & {
+        MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+        MAIN_WINDOW_WEBPACK_ENTRY: string;
+      }
+    ).MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY = "MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY";
+    (
+      global as typeof globalThis & {
+        MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+        MAIN_WINDOW_WEBPACK_ENTRY: string;
+      }
+    ).MAIN_WINDOW_WEBPACK_ENTRY = "MAIN_WINDOW_WEBPACK_ENTRY";
 
     const didFinishLoadHandlers: Array<() => void> = [];
     const consoleErrorSpy = jest
