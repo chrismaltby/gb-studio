@@ -345,6 +345,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-annotate-as-pure@npm:^7.25.9":
+  version: 7.29.7
+  resolution: "@babel/helper-annotate-as-pure@npm:7.29.7"
+  dependencies:
+    "@babel/types": "npm:^7.29.7"
+  checksum: 10c0/c56536b52d17632d89d49db2063ed6102f0e3bbadf6a0ccb74e6599d6a77173b644c7fe8c3ef17c7a162709d55b75ee5145ef6db917d16ba7f375fbffcf2e942
+  languageName: node
+  linkType: hard
+
 "@babel/helper-annotate-as-pure@npm:^7.27.1, @babel/helper-annotate-as-pure@npm:^7.27.3":
   version: 7.27.3
   resolution: "@babel/helper-annotate-as-pure@npm:7.27.3"
@@ -580,7 +589,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-module-imports@npm:^7.10.4, @babel/helper-module-imports@npm:^7.22.5, @babel/helper-module-imports@npm:^7.28.6":
+"@babel/helper-module-imports@npm:^7.10.4, @babel/helper-module-imports@npm:^7.28.6":
   version: 7.28.6
   resolution: "@babel/helper-module-imports@npm:7.28.6"
   dependencies:
@@ -618,7 +627,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-module-imports@npm:^7.29.7":
+"@babel/helper-module-imports@npm:^7.25.9, @babel/helper-module-imports@npm:^7.29.7":
   version: 7.29.7
   resolution: "@babel/helper-module-imports@npm:7.29.7"
   dependencies:
@@ -1501,17 +1510,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-syntax-jsx@npm:^7.22.5":
-  version: 7.28.6
-  resolution: "@babel/plugin-syntax-jsx@npm:7.28.6"
-  dependencies:
-    "@babel/helper-plugin-utils": "npm:^7.28.6"
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 10c0/b98fc3cd75e4ca3d5ca1162f610c286e14ede1486e0d297c13a5eb0ac85680ac9656d17d348bddd9160a54d797a08cea5eaac02b9330ddebb7b26732b7b99fb5
-  languageName: node
-  linkType: hard
-
 "@babel/plugin-syntax-jsx@npm:^7.23.3":
   version: 7.23.3
   resolution: "@babel/plugin-syntax-jsx@npm:7.23.3"
@@ -1523,7 +1521,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-syntax-jsx@npm:^7.27.1":
+"@babel/plugin-syntax-jsx@npm:^7.25.9, @babel/plugin-syntax-jsx@npm:^7.27.1":
   version: 7.29.7
   resolution: "@babel/plugin-syntax-jsx@npm:7.29.7"
   dependencies:
@@ -4122,19 +4120,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/is-prop-valid@npm:1.2.2":
-  version: 1.2.2
-  resolution: "@emotion/is-prop-valid@npm:1.2.2"
+"@emotion/is-prop-valid@npm:1.4.0":
+  version: 1.4.0
+  resolution: "@emotion/is-prop-valid@npm:1.4.0"
   dependencies:
-    "@emotion/memoize": "npm:^0.8.1"
-  checksum: 10c0/bb1530dcb4e0e5a4fabb219279f2d0bc35796baf66f6241f98b0d03db1985c890a8cafbea268e0edefd5eeda143dbd5c09a54b5fba74cee8c69b98b13194af50
-  languageName: node
-  linkType: hard
-
-"@emotion/memoize@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "@emotion/memoize@npm:0.8.1"
-  checksum: 10c0/dffed372fc3b9fa2ba411e76af22b6bb686fb0cb07694fdfaa6dd2baeb0d5e4968c1a7caa472bfcf06a5997d5e7c7d16b90e993f9a6ffae79a2c3dbdc76dfe78
+    "@emotion/memoize": "npm:^0.9.0"
+  checksum: 10c0/5f857814ec7d8c7e727727346dfb001af6b1fb31d621a3ce9c3edf944a484d8b0d619546c30899ae3ade2f317c76390ba4394449728e9bf628312defc2c41ac3
   languageName: node
   linkType: hard
 
@@ -4183,13 +4174,6 @@ __metadata:
   version: 1.4.0
   resolution: "@emotion/sheet@npm:1.4.0"
   checksum: 10c0/3ca72d1650a07d2fbb7e382761b130b4a887dcd04e6574b2d51ce578791240150d7072a9bcb4161933abbcd1e38b243a6fb4464a7fe991d700c17aa66bb5acc7
-  languageName: node
-  linkType: hard
-
-"@emotion/unitless@npm:0.8.1":
-  version: 0.8.1
-  resolution: "@emotion/unitless@npm:0.8.1"
-  checksum: 10c0/a1ed508628288f40bfe6dd17d431ed899c067a899fa293a13afe3aed1d70fac0412b8a215fafab0b42829360db687fecd763e5f01a64ddc4a4b58ec3112ff548
   languageName: node
   linkType: hard
 
@@ -7821,13 +7805,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/stylis@npm:4.2.5":
-  version: 4.2.5
-  resolution: "@types/stylis@npm:4.2.5"
-  checksum: 10c0/23f5b35a3a04f6bb31a29d404fa1bc8e0035fcaff2356b4047743a057e0c37b2eba7efe14d57dd2b95b398cea3bac294d9c6cd93ed307d8c0b7f5d282224b469
-  languageName: node
-  linkType: hard
-
 "@types/tough-cookie@npm:*":
   version: 4.0.5
   resolution: "@types/tough-cookie@npm:4.0.5"
@@ -9591,18 +9568,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-styled-components@npm:^2.1.4":
-  version: 2.1.4
-  resolution: "babel-plugin-styled-components@npm:2.1.4"
+"babel-plugin-styled-components@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "babel-plugin-styled-components@npm:2.3.0"
   dependencies:
-    "@babel/helper-annotate-as-pure": "npm:^7.22.5"
-    "@babel/helper-module-imports": "npm:^7.22.5"
-    "@babel/plugin-syntax-jsx": "npm:^7.22.5"
-    lodash: "npm:^4.17.21"
-    picomatch: "npm:^2.3.1"
+    "@babel/helper-annotate-as-pure": "npm:^7.25.9"
+    "@babel/helper-module-imports": "npm:^7.25.9"
+    "@babel/plugin-syntax-jsx": "npm:^7.25.9"
+    picomatch: "npm:^4.0.2"
   peerDependencies:
+    "@babel/core": ^7.0.0
     styled-components: ">= 2"
-  checksum: 10c0/553f35f5feb4b51fda9c9aeef8a31c1b66f430687ab17830b7cdacfe7e93f912aef55bf59e402f4e0a1fa7ad039768ab3626512bbb9bf1f76fcc67ba47e7a56e
+  checksum: 10c0/b14c06b15be18ce71ddbdf3c0ad073997d62233e21e1224bde2254b6ed4fee41c0e9458479016c066a2dea1aa88d4da225e84ec9f6e7056f47232ae151297fb4
   languageName: node
   linkType: hard
 
@@ -10938,10 +10915,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:3.1.3":
-  version: 3.1.3
-  resolution: "csstype@npm:3.1.3"
-  checksum: 10c0/80c089d6f7e0c5b2bd83cf0539ab41474198579584fa10d86d0cafe0642202343cbc119e076a0b1aece191989477081415d66c9fefbf3c957fc2fc4b7009f248
+"csstype@npm:3.2.3, csstype@npm:^3.2.2":
+  version: 3.2.3
+  resolution: "csstype@npm:3.2.3"
+  checksum: 10c0/cd29c51e70fa822f1cecd8641a1445bed7063697469d35633b516e60fe8c1bde04b08f6c5b6022136bb669b64c63d4173af54864510fbb4ee23281801841a3ce
   languageName: node
   linkType: hard
 
@@ -10956,13 +10933,6 @@ __metadata:
   version: 3.0.3
   resolution: "csstype@npm:3.0.3"
   checksum: 10c0/20f2e9f5cc3c419a9f110f45a8e1e8c653159cb8b403715bbbab7bd113b3f7d519d3c8efc587221d02900d76b7dc3c8c3110d4c7bd84a9e0b2bd421488ca6bdb
-  languageName: node
-  linkType: hard
-
-"csstype@npm:^3.2.2":
-  version: 3.2.3
-  resolution: "csstype@npm:3.2.3"
-  checksum: 10c0/cd29c51e70fa822f1cecd8641a1445bed7063697469d35633b516e60fe8c1bde04b08f6c5b6022136bb669b64c63d4173af54864510fbb4ee23281801841a3ce
   languageName: node
   linkType: hard
 
@@ -13667,7 +13637,7 @@ __metadata:
     about-window: "npm:^1.15.2"
     adm-zip: "npm:^0.6.0"
     babel-loader: "npm:^10.1.0"
-    babel-plugin-styled-components: "npm:^2.1.4"
+    babel-plugin-styled-components: "npm:^2.3.0"
     chokidar: "npm:^5.0.0"
     chroma-js: "npm:^3.2.0"
     commander: "npm:^15.0.0"
@@ -13734,7 +13704,7 @@ __metadata:
     semver: "npm:7"
     spark-md5: "npm:^3.0.2"
     storybook: "npm:^10.5.0"
-    styled-components: "npm:^6.1.13"
+    styled-components: "npm:^6.4.3"
     substyle: "npm:9.3.0"
     ts-flood-fill: "npm:^1.0.2"
     ts-jest: "npm:^29.4.11"
@@ -17450,15 +17420,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.3.7":
-  version: 3.3.8
-  resolution: "nanoid@npm:3.3.8"
-  bin:
-    nanoid: bin/nanoid.cjs
-  checksum: 10c0/4b1bb29f6cfebf3be3bc4ad1f1296fb0a10a3043a79f34fbffe75d1621b4318319211cd420549459018ea3592f0d2f159247a6f874911d6d26eaaadda2478120
-  languageName: node
-  linkType: hard
-
 "napi-postinstall@npm:^0.3.4":
   version: 0.3.4
   resolution: "napi-postinstall@npm:0.3.4"
@@ -18879,17 +18840,6 @@ __metadata:
   version: 4.2.0
   resolution: "postcss-value-parser@npm:4.2.0"
   checksum: 10c0/f4142a4f56565f77c1831168e04e3effd9ffcc5aebaf0f538eee4b2d465adfd4b85a44257bb48418202a63806a7da7fe9f56c330aebb3cac898e46b4cbf49161
-  languageName: node
-  linkType: hard
-
-"postcss@npm:8.4.38":
-  version: 8.4.38
-  resolution: "postcss@npm:8.4.38"
-  dependencies:
-    nanoid: "npm:^3.3.7"
-    picocolors: "npm:^1.0.0"
-    source-map-js: "npm:^1.2.0"
-  checksum: 10c0/955407b8f70cf0c14acf35dab3615899a2a60a26718a63c848cf3c29f2467b0533991b985a2b994430d890bd7ec2b1963e36352b0774a19143b5f591540f7c06
   languageName: node
   linkType: hard
 
@@ -20658,13 +20608,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shallowequal@npm:1.1.0":
-  version: 1.1.0
-  resolution: "shallowequal@npm:1.1.0"
-  checksum: 10c0/b926efb51cd0f47aa9bc061add788a4a650550bbe50647962113a4579b60af2abe7b62f9b02314acc6f97151d4cf87033a2b15fc20852fae306d1a095215396c
-  languageName: node
-  linkType: hard
-
 "shebang-command@npm:^1.2.0":
   version: 1.2.0
   resolution: "shebang-command@npm:1.2.0"
@@ -20908,13 +20851,6 @@ __metadata:
   version: 2.0.1
   resolution: "source-list-map@npm:2.0.1"
   checksum: 10c0/2e5e421b185dcd857f46c3c70e2e711a65d717b78c5f795e2e248c9d67757882ea989b80ebc08cf164eeeda5f4be8aa95d3b990225070b2daaaf3257c5958149
-  languageName: node
-  linkType: hard
-
-"source-map-js@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "source-map-js@npm:1.2.0"
-  checksum: 10c0/7e5f896ac10a3a50fe2898e5009c58ff0dc102dcb056ed27a354623a0ece8954d4b2649e1a1b2b52ef2e161d26f8859c7710350930751640e71e374fe2d321a4
   languageName: node
   linkType: hard
 
@@ -21565,23 +21501,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"styled-components@npm:^6.1.13":
-  version: 6.1.13
-  resolution: "styled-components@npm:6.1.13"
+"styled-components@npm:^6.4.3":
+  version: 6.4.3
+  resolution: "styled-components@npm:6.4.3"
   dependencies:
-    "@emotion/is-prop-valid": "npm:1.2.2"
-    "@emotion/unitless": "npm:0.8.1"
-    "@types/stylis": "npm:4.2.5"
+    "@emotion/is-prop-valid": "npm:1.4.0"
     css-to-react-native: "npm:3.2.0"
-    csstype: "npm:3.1.3"
-    postcss: "npm:8.4.38"
-    shallowequal: "npm:1.1.0"
-    stylis: "npm:4.3.2"
-    tslib: "npm:2.6.2"
+    csstype: "npm:3.2.3"
+    stylis: "npm:4.3.6"
   peerDependencies:
+    css-to-react-native: ">= 3.2.0"
     react: ">= 16.8.0"
     react-dom: ">= 16.8.0"
-  checksum: 10c0/dd0379179c6ce9655c97285e9f6475b533d4cc4cad72e8f16824c5454803a9d12126877d8b2837cd5b54520250c55cde97a183e813eed720d2575362d9646663
+    react-native: ">= 0.68.0"
+  peerDependenciesMeta:
+    css-to-react-native:
+      optional: true
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 10c0/158514feb0a502dfa7f95610a8270faa56be2572c12902b7bf5c2855bf9fdd5d76a5909d67dcbecf627ee40511f4161f8016b23f9fef22c14f7911337359647c
   languageName: node
   linkType: hard
 
@@ -21592,10 +21532,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylis@npm:4.3.2":
-  version: 4.3.2
-  resolution: "stylis@npm:4.3.2"
-  checksum: 10c0/0410e1404cbeee3388a9e17587875211ce2f014c8379af0d1e24ca55878867c9f1ccc7b0ce9a156ca53f5d6e301391a82b0645522a604674a378b3189a4a1994
+"stylis@npm:4.3.6":
+  version: 4.3.6
+  resolution: "stylis@npm:4.3.6"
+  checksum: 10c0/e736d484983a34f7c65d362c67dc79b7bce388054b261c2b7b23d02eaaf280617033f65d44b1ea341854f4331a5074b885668ac8741f98c13a6cfd6443ae85d0
   languageName: node
   linkType: hard
 
@@ -22162,13 +22102,6 @@ __metadata:
     minimist: "npm:^1.2.6"
     strip-bom: "npm:^3.0.0"
   checksum: 10c0/09a5877402d082bb1134930c10249edeebc0211f36150c35e1c542e5b91f1047b1ccf7da1e59babca1ef1f014c525510f4f870de7c9bda470c73bb4e2721b3ea
-  languageName: node
-  linkType: hard
-
-"tslib@npm:2.6.2":
-  version: 2.6.2
-  resolution: "tslib@npm:2.6.2"
-  checksum: 10c0/e03a8a4271152c8b26604ed45535954c0a45296e32445b4b87f8a5abdb2421f40b59b4ca437c4346af0f28179780d604094eb64546bee2019d903d01c6c19bdb
   languageName: node
   linkType: hard
 
