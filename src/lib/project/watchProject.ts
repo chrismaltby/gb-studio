@@ -70,6 +70,34 @@ const watchProject = (
     };
   };
 
+  const ignoreUnlessPluginEvent = (path: string, stats: Stats | undefined) => {
+    if (stats?.isFile()) {
+      return !Path.relative(pluginsRoot, path)
+        .split(Path.sep)
+        .includes("events");
+    }
+    return false;
+  };
+
+  const isPluginEngineSchema = (path: string) => {
+    const parts = Path.relative(pluginsRoot, path).split(Path.sep);
+    return (
+      parts.length >= 3 &&
+      parts.at(-2) === "engine" &&
+      parts.at(-1) === "engine.json"
+    );
+  };
+
+  const ignoreUnlessPluginEngineSchema = (
+    path: string,
+    stats: Stats | undefined,
+  ) => {
+    if (stats?.isFile()) {
+      return !isPluginEngineSchema(path);
+    }
+    return false;
+  };
+
   const getPluginType = (filename: string) => {
     const folderParts = Path.relative(pluginsRoot, filename).split(Path.sep);
     for (let i = 1; i < folderParts.length; i++) {
@@ -211,21 +239,29 @@ const watchProject = (
     .on("change", callbacks.onChangedTileset)
     .on("unlink", callbacks.onRemoveTileset);
 
-  const engineSchemaWatcher = watch(
-    [engineSchema, `${pluginsRoot}/**/engine/engine.json`],
-    {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-    },
-  )
+  const engineSchemaWatcher = watch(engineSchema, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+  })
     .on("add", callbacks.onChangedEngineSchema)
     .on("change", callbacks.onChangedEngineSchema)
     .on("unlink", callbacks.onChangedEngineSchema);
 
-  const pluginEventsWatcher = watch(`${pluginsRoot}/**/events/**`, {
+  const pluginEngineSchemaWatcher = watch(pluginsRoot, {
     ignoreInitial: true,
     persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessPluginEngineSchema,
+  })
+    .on("add", callbacks.onChangedEngineSchema)
+    .on("change", callbacks.onChangedEngineSchema)
+    .on("unlink", callbacks.onChangedEngineSchema);
+
+  const pluginEventsWatcher = watch(pluginsRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    ignored: ignoreUnlessPluginEvent,
   })
     .on("add", callbacks.onChangedEventPlugin)
     .on("change", callbacks.onChangedEventPlugin)
@@ -253,7 +289,6 @@ const watchProject = (
       ".vgm",
       ".vgz",
       ".sav",
-      "engine.json",
       webTemplateManifest,
     ]),
   })
@@ -345,6 +380,7 @@ const watchProject = (
     emotesWatcher.close();
     tilesetsWatcher.close();
     engineSchemaWatcher.close();
+    pluginEngineSchemaWatcher.close();
     pluginEventsWatcher.close();
     webTemplatesWatcher.close();
     pluginAssetsWatcher.close();
