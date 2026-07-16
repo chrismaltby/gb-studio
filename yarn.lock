@@ -6698,17 +6698,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinclair/typebox@npm:^0.32.35":
-  version: 0.32.35
-  resolution: "@sinclair/typebox@npm:0.32.35"
-  checksum: 10c0/601b9e7e7bdf67f7b79be95c4eeb97ceace0e1429dd9ce9a78213d61a65b50c14caa46ba0aeed77cd8cfaf61ba13874b69af467ac14d7352844e5cceba1b718d
-  languageName: node
-  linkType: hard
-
 "@sinclair/typebox@npm:^0.34.0":
   version: 0.34.50
   resolution: "@sinclair/typebox@npm:0.34.50"
   checksum: 10c0/e0ceda245b9b1ba2431df4f77d48a01bc291374411a98a6a6b2d8635204eec2bef986d09353eeb82e20229762123820d443239592087221984ddf75c842bfc83
+  languageName: node
+  linkType: hard
+
+"@sinclair/typebox@npm:^0.34.52":
+  version: 0.34.52
+  resolution: "@sinclair/typebox@npm:0.34.52"
+  checksum: 10c0/03e9be17ffb536ddd6dc35b6131c88eb113b2ce6cbec4fa60b1d5219de99e59b2649fc40ad70a85db561104395faa3406608971dc7b0abef529b80fb001dc821
   languageName: node
   linkType: hard
 
@@ -13619,7 +13619,7 @@ __metadata:
     "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.5.15"
     "@reduxjs/toolkit": "npm:^2.12.0"
     "@reforged/maker-appimage": "npm:^5.2.0"
-    "@sinclair/typebox": "npm:^0.32.35"
+    "@sinclair/typebox": "npm:^0.34.52"
     "@storybook/addon-docs": "npm:^10.5.0"
     "@storybook/addon-links": "npm:^10.5.0"
     "@storybook/addon-themes": "npm:^10.5.0"
