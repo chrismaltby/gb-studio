@@ -12060,7 +12060,6 @@ __metadata:
     spark-md5: "npm:^3.0.2"
     storybook: "npm:^10.5.0"
     styled-components: "npm:^6.4.3"
-    substyle: "npm:9.3.0"
     ts-flood-fill: "npm:^1.0.2"
     ts-jest: "npm:^29.4.11"
     ts-loader: "npm:^9.6.2"
@@ -19712,7 +19711,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"substyle@npm:9.3.0, substyle@npm:^9.1.0":
+"substyle@npm:^9.1.0":
   version: 9.3.0
   resolution: "substyle@npm:9.3.0"
   dependencies:

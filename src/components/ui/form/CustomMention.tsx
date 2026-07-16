@@ -1,5 +1,4 @@
 import React from "react";
-import useStyles from "substyle";
 import { MentionProps } from "react-mentions";
 
 interface CustomMentionProps extends MentionProps {
@@ -15,7 +14,7 @@ interface CustomMentionProps extends MentionProps {
 
 const defaultStyle = {
   fontWeight: "inherit",
-};
+} satisfies React.CSSProperties;
 
 const CustomMention = ({
   display,
@@ -25,13 +24,13 @@ const CustomMention = ({
   id,
   onClick,
 }: CustomMentionProps) => {
-  const styles = useStyles(defaultStyle, { style, className });
   if (!id) {
     return null;
   }
   return (
     <strong
-      {...styles}
+      className={className}
+      style={{ ...defaultStyle, ...style }}
       title={hoverTransform ? hoverTransform(id) : id}
       onClick={(e) => {
         if (!onClick) {
