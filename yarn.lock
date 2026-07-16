@@ -7361,21 +7361,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/fs-extra@npm:^11.0.4":
+  version: 11.0.4
+  resolution: "@types/fs-extra@npm:11.0.4"
+  dependencies:
+    "@types/jsonfile": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10c0/9e34f9b24ea464f3c0b18c3f8a82aefc36dc524cc720fc2b886e5465abc66486ff4e439ea3fb2c0acebf91f6d3f74e514f9983b1f02d4243706bdbb7511796ad
+  languageName: node
+  linkType: hard
+
 "@types/fs-extra@npm:^9.0.1":
   version: 9.0.11
   resolution: "@types/fs-extra@npm:9.0.11"
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/bff56adb1d958ac66cc44a6bd18f7a2d0793aaeba3ec16f75dd2030f44ba45d1e749e80a2054398d9b5ade2aa41ab22fd5034ff171db8ac9f7704a7ced45d355
-  languageName: node
-  linkType: hard
-
-"@types/fs-extra@npm:^9.0.8":
-  version: 9.0.8
-  resolution: "@types/fs-extra@npm:9.0.8"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/45225e8cdc481d177af6804d80e4282eee715dfab28afe62fb6d3c95d4e7a39d6d9cce687a9b90d881b4d792a1e145cc8543933131686e4a53ff3cd9f774ce27
   languageName: node
   linkType: hard
 
@@ -7491,6 +7492,15 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 10c0/6bf5337bc447b706bb5b4431d37686aa2ea6d07cfd6f79cc31de80170d6ff9b1c7384a9c0ccbc45b3f512bae9e9f75c2e12109806a15331dc94e8a8db6dbb4ac
+  languageName: node
+  linkType: hard
+
+"@types/jsonfile@npm:*":
+  version: 6.1.4
+  resolution: "@types/jsonfile@npm:6.1.4"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/b12d068b021e4078f6ac4441353965769be87acf15326173e2aea9f3bf8ead41bd0ad29421df5bbeb0123ec3fc02eb0a734481d52903704a1454a1845896b9eb
   languageName: node
   linkType: hard
 
@@ -13418,6 +13428,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fs-extra@npm:^11.3.6":
+  version: 11.3.6
+  resolution: "fs-extra@npm:11.3.6"
+  dependencies:
+    graceful-fs: "npm:^4.2.0"
+    jsonfile: "npm:^6.0.1"
+    universalify: "npm:^2.0.0"
+  checksum: 10c0/191c96bf71519fe08595f7920b6e568f6e44b48ed968624f35cb3bb7f4f9b05718b99cd6bf81938c0f7b1daa6d151383c33e0cbfdfe4d95419d7ea121de8e91a
+  languageName: node
+  linkType: hard
+
 "fs-extra@npm:^7.0.1":
   version: 7.0.1
   resolution: "fs-extra@npm:7.0.1"
@@ -13607,7 +13628,7 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.9.1"
     "@testing-library/react": "npm:^16.3.2"
     "@types/chroma-js": "npm:^3.1.2"
-    "@types/fs-extra": "npm:^9.0.8"
+    "@types/fs-extra": "npm:^11.0.4"
     "@types/jest": "npm:^30.0.0"
     "@types/lodash": "npm:^4.17.0"
     "@types/node": "npm:^24"
@@ -13651,7 +13672,7 @@ __metadata:
     eslint-plugin-storybook: "npm:^10.5.0"
     focus-visible: "npm:^5.2.1"
     fork-ts-checker-webpack-plugin: "npm:^7.2.13"
-    fs-extra: "npm:^7.0.1"
+    fs-extra: "npm:^11.3.6"
     fuse.js: "npm:^6.4.6"
     git-revision-webpack-plugin: "npm:^5.0.0"
     glob: "npm:^13.0.6"
