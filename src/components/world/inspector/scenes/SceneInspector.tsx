@@ -90,12 +90,12 @@ import {
   MonoOBJPalette,
   SceneBoundsRect,
   SceneParallaxLayer,
+  SpriteModeSetting,
 } from "shared/lib/resources/types";
 import SettingsSectionEngineFields from "components/settings/section/SettingsSectionEngineFields";
 import { useGroupedEngineFields } from "store/features/engine/hooks/useGroupedEngineFields";
 import ScrollBoundsInput from "components/forms/ScrollBoundsInput";
 import { SpriteModeSelect } from "components/forms/SpriteModeSelect";
-import { SpriteModeSetting } from "shared/lib/resources/types";
 import { AutoPaletteSwatch } from "components/forms/AutoPaletteSwatch";
 import navigationActions from "store/features/navigation/navigationActions";
 import { useEnabledSceneTypeIds } from "store/features/engine/hooks/useEnabledSceneTypeIds";

@@ -1,5 +1,4 @@
-import React from "react";
-import { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   ParsedResourceTextSegment,
   parseLinkedText,

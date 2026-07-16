@@ -20,10 +20,12 @@ import {
   TrashIcon,
 } from "ui/icons/Icons";
 import trackerActions from "store/features/tracker/trackerActions";
-import { channelIdToInstrumentType } from "shared/lib/uge/display";
+import {
+  channelIdToInstrumentType,
+  transposeNoteValue,
+} from "shared/lib/uge/display";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
 import { useMusicNotePreview } from "components/music/hooks/useMusicNotePreview";
-import { transposeNoteValue } from "shared/lib/uge/display";
 import { OCTAVE_SIZE } from "consts";
 import { useDebouncedValue } from "ui/hooks/use-debounced-value";
 

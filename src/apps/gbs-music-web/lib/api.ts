@@ -175,6 +175,7 @@ const saveSongToFilename = async (song: Song) => {
     });
   } catch (e) {
     console.error(e);
+    // eslint-disable-next-line no-alert
     alert(e);
   }
 };

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-nested-ternary */
 import keyBy from "lodash/keyBy";
 import { filterScenesEvents, filterEvents } from "lib/helpers/eventSystem";
 import generateRandomWalkScript from "lib/movement/generateRandomWalkScript";

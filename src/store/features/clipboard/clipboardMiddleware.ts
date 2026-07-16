@@ -28,7 +28,6 @@ import {
   TriggerNormalized,
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
-import actions from "./clipboardActions";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import { copy as rawCopy, pasteAny } from "./clipboardHelpers";
@@ -481,9 +480,9 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
       }
     };
 
-    if (actions.copyText.match(action)) {
+    if (clipboardActions.copyText.match(action)) {
       API.clipboard.writeText(action.payload);
-    } else if (actions.copySceneGridSelection.match(action)) {
+    } else if (clipboardActions.copySceneGridSelection.match(action)) {
       const state = store.getState();
       const selection = state.editor.scenePaintSelection;
       if (!selection) return;
@@ -597,7 +596,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           autotileDefinitions,
         },
       });
-    } else if (actions.copySpriteState.match(action)) {
+    } else if (clipboardActions.copySpriteState.match(action)) {
       const state = store.getState();
       const spriteStateLookup = spriteStateSelectors.selectEntities(state);
       const animationsLookup = spriteAnimationSelectors.selectEntities(state);
@@ -649,7 +648,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           metaspriteTiles,
         },
       });
-    } else if (actions.copyMetasprites.match(action)) {
+    } else if (clipboardActions.copyMetasprites.match(action)) {
       const state = store.getState();
       const metaspritesLookup = metaspriteSelectors.selectEntities(state);
       const metaspriteTilesLookup =
@@ -694,7 +693,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           metaspriteTiles,
         },
       });
-    } else if (actions.copyMetaspriteTiles.match(action)) {
+    } else if (clipboardActions.copyMetaspriteTiles.match(action)) {
       const state = store.getState();
       const metaspriteTilesLookup =
         metaspriteTileSelectors.selectEntities(state);
@@ -709,7 +708,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           metaspriteTiles,
         },
       });
-    } else if (actions.copyScriptEvents.match(action)) {
+    } else if (clipboardActions.copyScriptEvents.match(action)) {
       const state = store.getState();
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
       const customEventsLookup = customEventSelectors.selectEntities(state);
@@ -757,7 +756,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           script: action.payload.scriptEventIds,
         },
       });
-    } else if (actions.copyTriggers.match(action)) {
+    } else if (clipboardActions.copyTriggers.match(action)) {
       const state = store.getState();
       const triggersLookup = triggerSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
@@ -835,7 +834,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           triggerPrefabs,
         },
       });
-    } else if (actions.copyActors.match(action)) {
+    } else if (clipboardActions.copyActors.match(action)) {
       const state = store.getState();
       const actorsLookup = actorSelectors.selectEntities(state);
       const scriptEventsLookup = scriptEventSelectors.selectEntities(state);
@@ -911,7 +910,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           actorPrefabs,
         },
       });
-    } else if (actions.copyScenes.match(action)) {
+    } else if (clipboardActions.copyScenes.match(action)) {
       const state = store.getState();
       const scenesLookup = sceneSelectors.selectEntities(state);
       const actorsLookup = actorSelectors.selectEntities(state);
@@ -1040,7 +1039,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           triggerPrefabs,
         },
       });
-    } else if (actions.pasteScriptEvents.match(action)) {
+    } else if (clipboardActions.pasteScriptEvents.match(action)) {
       const clipboard = await pasteAny();
       if (!clipboard) {
         return next(action);
@@ -1079,7 +1078,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           });
         }
       }
-    } else if (actions.pasteScriptEventValues.match(action)) {
+    } else if (clipboardActions.pasteScriptEventValues.match(action)) {
       const clipboard = await pasteAny();
       if (!clipboard) {
         return next(action);
@@ -1105,7 +1104,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           );
         }
       }
-    } else if (actions.pasteTriggerAt.match(action)) {
+    } else if (clipboardActions.pasteTriggerAt.match(action)) {
       const clipboard = await pasteAny();
       if (clipboard && clipboard.format === ClipboardTypeTriggers) {
         const state = store.getState();
@@ -1158,7 +1157,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           });
         }
       }
-    } else if (actions.pasteActorAt.match(action)) {
+    } else if (clipboardActions.pasteActorAt.match(action)) {
       const clipboard = await pasteAny();
       if (clipboard && clipboard.format === ClipboardTypeActors) {
         const state = store.getState();
@@ -1210,7 +1209,7 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           });
         }
       }
-    } else if (actions.pasteSceneAt.match(action)) {
+    } else if (clipboardActions.pasteSceneAt.match(action)) {
       const clipboard = await pasteAny();
       if (clipboard && clipboard.format === ClipboardTypeScenes) {
         const state = store.getState();
@@ -1283,14 +1282,14 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
           });
         }
       }
-    } else if (actions.fetchClipboard.match(action)) {
+    } else if (clipboardActions.fetchClipboard.match(action)) {
       const clipboard = await pasteAny();
       if (clipboard) {
         store.dispatch(clipboardActions.setClipboardData(clipboard));
       } else {
         store.dispatch(clipboardActions.clearClipboardData());
       }
-    } else if (actions.pasteSprite.match(action)) {
+    } else if (clipboardActions.pasteSprite.match(action)) {
       const clipboard = await pasteAny();
 
       if (!clipboard) {
@@ -1486,14 +1485,14 @@ const clipboardMiddleware: Middleware<Dispatch, RootState> =
 
         store.dispatch(editorActions.setSelectedMetaspriteTileIds(newIds));
       }
-    } else if (actions.copyPaletteIds.match(action)) {
+    } else if (clipboardActions.copyPaletteIds.match(action)) {
       copy({
         format: ClipboardTypePaletteIds,
         data: {
           paletteIds: action.payload.paletteIds,
         },
       });
-    } else if (actions.pastePaletteIds.match(action)) {
+    } else if (clipboardActions.pastePaletteIds.match(action)) {
       const clipboard = await pasteAny();
 
       if (!clipboard) {

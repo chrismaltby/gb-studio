@@ -1,6 +1,5 @@
 import InputPicker from "components/forms/InputPicker";
-import React, { useEffect, useRef } from "react";
-import { useCallback } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 import { FormField, FormRow } from "ui/form/layout/FormLayout";

@@ -165,6 +165,7 @@ export const useTilePaintCursorMode = (): SceneCursorMode => {
       }
 
       if (!layer.visible) {
+        // eslint-disable-next-line no-alert
         window.alert(l10n("ERROR_SCENE_TARGET_LAYER_HIDDEN"));
         return true;
       }

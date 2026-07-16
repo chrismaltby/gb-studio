@@ -828,6 +828,7 @@ app.on("ready", async () => {
 
   const lastArg = process.argv[process.argv.length - 1];
 
+  // eslint-disable-next-line global-require
   if (require("electron-squirrel-startup")) {
     app.quit();
   } else if (

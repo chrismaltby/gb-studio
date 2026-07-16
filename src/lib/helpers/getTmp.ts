@@ -5,8 +5,7 @@ import isElectron from "./isElectron";
 const getTmp = async (create = true) => {
   let tmpPath = os.tmpdir();
   if (isElectron()) {
-    // eslint-disable-next-line global-require
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
     const { settingsGet } = require("lib/helpers/appSettings");
     const electronSettingsTmp = await settingsGet("tmpDir");
     if (electronSettingsTmp) {

@@ -41,22 +41,16 @@ test("should be able to read language overrides", () => {
 });
 
 test("should warn if locale has no translation", () => {
-  // eslint-disable-next-line no-console
   console.warn = jest.fn();
   loadLanguage("NEW-LANG");
-  // eslint-disable-next-line no-console
   expect(console.warn).toHaveBeenCalled();
 });
 
 test("should trace to console if locale is empty", () => {
-  // eslint-disable-next-line no-console
   console.warn = jest.fn();
-  // eslint-disable-next-line no-console
   console.trace = jest.fn();
   loadLanguage("");
-  // eslint-disable-next-line no-console
   expect(console.warn).toHaveBeenCalled();
-  // eslint-disable-next-line no-console
   expect(console.trace).toHaveBeenCalled();
 });
 

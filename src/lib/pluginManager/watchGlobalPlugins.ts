@@ -1,4 +1,4 @@
-import chokidar from "chokidar";
+import { watch } from "chokidar";
 import { ensureGlobalPluginsPath } from "./globalPlugins";
 
 type WatchCallback = (path: string) => void;
@@ -18,32 +18,38 @@ const watchGlobalPlugins = async (callbacks: {
     pollInterval: 100,
   };
 
-  const themePluginWatcher = chokidar
-    .watch([`${globalPluginsPath}/**/theme.{json,JSON}`], {
+  const themePluginWatcher = watch(
+    [`${globalPluginsPath}/**/theme.{json,JSON}`],
+    {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
-    })
+    },
+  )
     .on("add", callbacks.onChangedThemePlugin)
     .on("change", callbacks.onChangedThemePlugin)
     .on("unlink", callbacks.onRemoveThemePlugin);
 
-  const languagePluginWatcher = chokidar
-    .watch([`${globalPluginsPath}/**/lang.{json,JSON}`], {
+  const languagePluginWatcher = watch(
+    [`${globalPluginsPath}/**/lang.{json,JSON}`],
+    {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
-    })
+    },
+  )
     .on("add", callbacks.onChangedLanguagePlugin)
     .on("change", callbacks.onChangedLanguagePlugin)
     .on("unlink", callbacks.onRemoveLanguagePlugin);
 
-  const templatePluginWatcher = chokidar
-    .watch([`${globalPluginsPath}/**/project.gbsproj`], {
+  const templatePluginWatcher = watch(
+    [`${globalPluginsPath}/**/project.gbsproj`],
+    {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
-    })
+    },
+  )
     .on("add", callbacks.onChangedTemplatePlugin)
     .on("change", callbacks.onChangedTemplatePlugin)
     .on("unlink", callbacks.onRemoveTemplatePlugin);

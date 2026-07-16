@@ -89,7 +89,6 @@ const toSplashTab = (tab: string): SplashTabSection => {
 
 const goldContributors = contributors.filter((user) => user.group === "gold");
 const silverContributors = [...contributorsExternal]
-  // eslint-disable-next-line camelcase
   .map((contributor) => ({
     ...contributor,
     // eslint-disable-next-line camelcase

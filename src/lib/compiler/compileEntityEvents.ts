@@ -131,7 +131,6 @@ export const compileEventsWithScriptBuilder = (
     const command = subInput[i].command;
     if (subInput[i].args?.__comment) {
       // Skip commented events
-      // eslint-disable-next-line no-continue
       continue;
     }
     if (scriptEventHandlers[command]) {

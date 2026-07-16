@@ -38,7 +38,6 @@ window.addEventListener("error", (error) => {
   }
   error.stopPropagation();
   error.preventDefault();
-  // eslint-disable-next-line no-console
   console.error(error);
   store.dispatch(
     errorActions.setGlobalError({
@@ -55,7 +54,6 @@ window.addEventListener("error", (error) => {
 window.addEventListener("unhandledrejection", (error) => {
   error.stopPropagation();
   error.preventDefault();
-  // eslint-disable-next-line no-console
   console.error(error);
   store.dispatch(
     errorActions.setGlobalError({

@@ -6,6 +6,7 @@ interface MusicExample {
 }
 
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable global-require */
 export const musicExamples: MusicExample[] = [
   {
     filename: "Rulz_BattleTheme.uge",

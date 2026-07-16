@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
-/* eslint-disable no-console */
 const fs = require("fs");
 const locale = process.argv[2];
 

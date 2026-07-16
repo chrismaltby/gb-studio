@@ -349,7 +349,6 @@ export const InstrumentProperties = ({
         editInstrument({
           instrumentId: resolvedInstrument.instrument.index,
           changes: {
-            // eslint-disable-next-line camelcase
             subpatternEnabled: enabled,
           },
         }),

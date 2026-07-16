@@ -1,4 +1,4 @@
-import chokidar from "chokidar";
+import { watch } from "chokidar";
 import Path from "path";
 import type { Stats } from "fs";
 
@@ -111,163 +111,152 @@ const watchProject = (
     return null;
   };
 
-  const spriteWatcher = chokidar
-    .watch(spritesRoot, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-      ignored: ignoreUnlessExt([".png"]),
-    })
+  const spriteWatcher = watch(spritesRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessExt([".png"]),
+  })
     .on("add", callbacks.onChangedSprite)
     .on("change", callbacks.onChangedSprite)
     .on("unlink", callbacks.onRemoveSprite);
 
-  const backgroundWatcher = chokidar
-    .watch(backgroundsRoot, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-      ignored: ignoreUnlessExt([".png"]),
-    })
+  const backgroundWatcher = watch(backgroundsRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessExt([".png"]),
+  })
     .on("add", callbacks.onChangedBackground)
     .on("change", callbacks.onChangedBackground)
     .on("unlink", callbacks.onRemoveBackground);
 
-  const uiWatcher = chokidar
-    .watch(uiRoot, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-      ignored: ignoreUnlessExt([".png"]),
-    })
+  const uiWatcher = watch(uiRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessExt([".png"]),
+  })
     .on("add", callbacks.onChangedUI)
     .on("change", callbacks.onChangedUI)
     .on("unlink", callbacks.onRemoveUI);
 
-  const sgbWatcher = chokidar
-    .watch(sgbRoot, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-      ignored: ignoreUnlessExt([".png"]),
-    })
+  const sgbWatcher = watch(sgbRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessExt([".png"]),
+  })
     .on("add", callbacks.onChangedUI)
     .on("change", callbacks.onChangedUI)
     .on("unlink", callbacks.onRemoveUI);
 
-  const musicWatcher = chokidar
-    .watch(musicRoot, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish: musicAwaitWriteFinish,
-      ignored: ignoreUnlessExt([".uge", ".mod"]),
-    })
+  const musicWatcher = watch(musicRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish: musicAwaitWriteFinish,
+    ignored: ignoreUnlessExt([".uge", ".mod"]),
+  })
     .on("add", callbacks.onChangedMusic)
     .on("change", callbacks.onChangedMusic)
     .on("unlink", callbacks.onRemoveMusic);
 
-  const soundsWatcher = chokidar
-    .watch(soundsRoot, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-      ignored: ignoreUnlessExt([".wav", ".vgm", ".vgz", ".sav"]),
-    })
+  const soundsWatcher = watch(soundsRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessExt([".wav", ".vgm", ".vgz", ".sav"]),
+  })
     .on("add", callbacks.onChangedSound)
     .on("change", callbacks.onChangedSound)
     .on("unlink", callbacks.onRemoveSound);
 
-  const fontsWatcher = chokidar
-    .watch(fontsRoot, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-      ignored: ignoreUnlessExt([".png"]),
-    })
+  const fontsWatcher = watch(fontsRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessExt([".png"]),
+  })
     .on("add", callbacks.onChangedFont)
     .on("change", callbacks.onChangedFont)
     .on("unlink", callbacks.onRemoveFont);
 
-  const avatarsWatcher = chokidar
-    .watch(avatarsRoot, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-      ignored: ignoreUnlessExt([".png"]),
-    })
+  const avatarsWatcher = watch(avatarsRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessExt([".png"]),
+  })
     .on("add", callbacks.onChangedAvatar)
     .on("change", callbacks.onChangedAvatar)
     .on("unlink", callbacks.onRemoveAvatar);
 
-  const emotesWatcher = chokidar
-    .watch(emotesRoot, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-      ignored: ignoreUnlessExt([".png"]),
-    })
+  const emotesWatcher = watch(emotesRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessExt([".png"]),
+  })
     .on("add", callbacks.onChangedEmote)
     .on("change", callbacks.onChangedEmote)
     .on("unlink", callbacks.onRemoveEmote);
 
-  const tilesetsWatcher = chokidar
-    .watch(tilesetsRoot, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-      ignored: ignoreUnlessExt([".png"]),
-    })
+  const tilesetsWatcher = watch(tilesetsRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessExt([".png"]),
+  })
     .on("add", callbacks.onChangedTileset)
     .on("change", callbacks.onChangedTileset)
     .on("unlink", callbacks.onRemoveTileset);
 
-  const engineSchemaWatcher = chokidar
-    .watch([engineSchema, `${pluginsRoot}/**/engine/engine.json`], {
+  const engineSchemaWatcher = watch(
+    [engineSchema, `${pluginsRoot}/**/engine/engine.json`],
+    {
       ignoreInitial: true,
       persistent: true,
       awaitWriteFinish,
-    })
+    },
+  )
     .on("add", callbacks.onChangedEngineSchema)
     .on("change", callbacks.onChangedEngineSchema)
     .on("unlink", callbacks.onChangedEngineSchema);
 
-  const pluginEventsWatcher = chokidar
-    .watch(`${pluginsRoot}/**/events/**`, {
-      ignoreInitial: true,
-      persistent: true,
-    })
+  const pluginEventsWatcher = watch(`${pluginsRoot}/**/events/**`, {
+    ignoreInitial: true,
+    persistent: true,
+  })
     .on("add", callbacks.onChangedEventPlugin)
     .on("change", callbacks.onChangedEventPlugin)
     .on("unlink", callbacks.onChangedEventPlugin);
 
-  const webTemplatesWatcher = chokidar
-    .watch(`${projectRoot}/assets/web`, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-      ignored: ignoreUnlessExt([webTemplateManifest]),
-    })
+  const webTemplatesWatcher = watch(`${projectRoot}/assets/web`, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessExt([webTemplateManifest]),
+  })
     .on("add", callbacks.onChangedWebTemplates)
     .on("change", callbacks.onChangedWebTemplates)
     .on("unlink", callbacks.onChangedWebTemplates);
 
-  const pluginAssetsWatcher = chokidar
-    .watch(pluginsRoot, {
-      ignoreInitial: true,
-      persistent: true,
-      awaitWriteFinish,
-      ignored: ignoreUnlessExt([
-        ".png",
-        ".uge",
-        ".mod",
-        ".wav",
-        ".vgm",
-        ".vgz",
-        ".sav",
-        "engine.json",
-        webTemplateManifest,
-      ]),
-    })
+  const pluginAssetsWatcher = watch(pluginsRoot, {
+    ignoreInitial: true,
+    persistent: true,
+    awaitWriteFinish,
+    ignored: ignoreUnlessExt([
+      ".png",
+      ".uge",
+      ".mod",
+      ".wav",
+      ".vgm",
+      ".vgz",
+      ".sav",
+      "engine.json",
+      webTemplateManifest,
+    ]),
+  })
     .on("add", (filename) => {
       const pluginType = getPluginType(filename);
       if (pluginType === "backgrounds") {

@@ -4,8 +4,8 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useLayoutEffect,
 } from "react";
-import { useLayoutEffect } from "react";
 import { AutoFocusInside } from "react-focus-lock";
 import { Button } from "ui/buttons/Button";
 import useResizeObserver from "ui/hooks/use-resize-observer";

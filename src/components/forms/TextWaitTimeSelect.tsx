@@ -1,6 +1,5 @@
 import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
-import React, { useEffect, useRef } from "react";
-import { useCallback } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { TimeUnitType } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import { ensureNumber } from "shared/types";
