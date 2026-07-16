@@ -1,6 +1,6 @@
 import EventEmitter from "events";
 import Path from "path";
-import chokidar from "chokidar";
+import { watch } from "chokidar";
 import watchProject from "lib/project/watchProject";
 
 describe("watchProject web templates", () => {
@@ -35,7 +35,7 @@ describe("watchProject web templates", () => {
       },
     );
 
-    const watchMock = chokidar.watch as jest.Mock;
+    const watchMock = watch as jest.Mock;
     const localWatcherIndex = watchMock.mock.calls.findIndex(
       ([path]) => path === Path.join(projectRoot, "assets", "web"),
     );

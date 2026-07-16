@@ -72,4 +72,3 @@ workerCtx.onmessage = async (evt) => {
   const res: SpriteSliceCanvasResult = { id, canvasImage };
   workerCtx.postMessage(res, [canvasImage]);
 };
-

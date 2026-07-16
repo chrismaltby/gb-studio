@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import reducer, { initialState } from "store/features/entities/entitiesState";
 import { EntitiesState } from "shared/lib/entities/entitiesTypes";
 import { dummyMusic, dummyMusicResource } from "../../../../dummydata";

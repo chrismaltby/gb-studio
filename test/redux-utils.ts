@@ -1,5 +1,4 @@
-import { RootState } from "store/configureStore";
-import { AppDispatch } from "store/configureStore";
+import { RootState, AppDispatch } from "store/configureStore";
 import { Action } from "redux";
 
 interface Store {

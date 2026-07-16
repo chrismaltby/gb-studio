@@ -63,7 +63,7 @@ test("should be able to parse all language files", async () => {
     const rawFile = await readFile(languagePackPath, "utf8");
     try {
       JSON.parse(rawFile);
-    } catch (e) {
+    } catch {
       throw new Error(`Error parsing language file ${languagePackPath}`);
     }
   }

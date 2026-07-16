@@ -1,6 +1,6 @@
 import { projectTemplatesRoot } from "consts";
 import { globSync } from "lib/helpers/glob";
-import { join, normalize, sep } from "path";
+import { normalize, sep } from "path";
 import { PNG } from "pngjs";
 import { readFileSync } from "fs";
 import { rgb2hex } from "shared/lib/helpers/color";

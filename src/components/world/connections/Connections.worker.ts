@@ -222,4 +222,3 @@ workerCtx.onmessage = (evt) => {
     connections: calculateConnections(request),
   } satisfies ConnectionsWorkerResult);
 };
-

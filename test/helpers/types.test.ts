@@ -359,7 +359,8 @@ describe("omit", () => {
 
   test("should handle omitting non-existent keys", () => {
     const obj = { a: 1, b: 2 };
-    expect(omit(obj, "c" as any)).toEqual({ a: 1, b: 2 });
+    // @ts-expect-error Intentionally testing runtime handling of an invalid key
+    expect(omit(obj, "c")).toEqual({ a: 1, b: 2 });
   });
 
   test("should work with different value types", () => {

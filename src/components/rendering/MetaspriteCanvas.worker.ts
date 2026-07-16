@@ -183,4 +183,3 @@ workerCtx.onmessage = async (evt) => {
   const canvasImage = canvas.transferToImageBitmap();
   workerCtx.postMessage({ id, canvasImage }, [canvasImage]);
 };
-

@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {
   is16BitCType,
   minForCType,

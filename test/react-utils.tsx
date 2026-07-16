@@ -1,3 +1,4 @@
+/* eslint-disable import/export */
 import { render, RenderOptions } from "@testing-library/react";
 import React, { ReactNode, ReactElement } from "react";
 import ThemeProvider from "../src/components/ui/theme/ThemeProvider";

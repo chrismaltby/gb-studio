@@ -22,7 +22,7 @@
     "make:linux": "cross-env NODE_ENV=production electron-forge make --arch=x64 --platform=linux",
     "make:linux-arm64": "cross-env NODE_ENV=production electron-forge make --arch=arm64 --platform=linux",
     "make": "cross-env NODE_ENV=production electron-forge make",
-    "lint": "eslint --cache --color src",
+    "lint": "eslint --cache --color src test",
     "prettier": "prettier --write src test",
     "test": "jest --maxWorkers=2",
     "coverage": "jest --coverage --runInBand",

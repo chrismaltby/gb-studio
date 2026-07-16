@@ -7,6 +7,7 @@ import type {
 } from "components/world/entities/scenes/cursor/modes/SceneCursorMode";
 import { useTilePaintCursorMode } from "components/world/entities/scenes/cursor/modes/useTilePaintCursorMode";
 import { BRUSH_8PX, BRUSH_FILL, TOOL_TILES } from "consts";
+import type { SceneTilemapData } from "shared/lib/resources/types";
 import { dummySceneNormalized } from "../../../../../../dummydata";
 
 const mockDispatch = jest.fn();
@@ -24,24 +25,25 @@ const mockEditor = {
     autotile: false,
   },
 };
-const mockScene: typeof dummySceneNormalized & { tilemap?: any } = {
-  ...dummySceneNormalized,
-  id: "scene1",
-  width: 8,
-  height: 8,
-  tilemap: {
-    tilesets: [],
-    tileColors: new Array(64).fill(0),
-    layers: [
-      {
-        id: "layer1",
-        name: "Layer 1",
-        visible: true,
-        tiles: new Array(64).fill(0),
-      },
-    ],
-  },
-};
+const mockScene: typeof dummySceneNormalized & { tilemap?: SceneTilemapData } =
+  {
+    ...dummySceneNormalized,
+    id: "scene1",
+    width: 8,
+    height: 8,
+    tilemap: {
+      tilesets: [],
+      tileColors: new Array(64).fill(0),
+      layers: [
+        {
+          id: "layer1",
+          name: "Layer 1",
+          visible: true,
+          tiles: new Array(64).fill(0),
+        },
+      ],
+    },
+  };
 const mockState = { editor: mockEditor };
 const mockStore = { getState: () => mockState };
 
@@ -144,6 +146,9 @@ test("normal mouse down paints the selected tile", () => {
 });
 
 test("hidden target layers alert and are not painted", () => {
+  if (!mockScene.tilemap) {
+    throw new Error("Expected tilemap");
+  }
   mockScene.tilemap.layers[0].visible = false;
   const alert = jest.spyOn(window, "alert").mockImplementation(() => undefined);
   const { result } = renderHook(() => useTilePaintCursorMode());

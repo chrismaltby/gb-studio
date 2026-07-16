@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ACTOR_MOVE_TO";

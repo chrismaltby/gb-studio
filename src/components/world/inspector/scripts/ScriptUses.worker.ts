@@ -182,4 +182,3 @@ workerCtx.onmessage = async (evt) => {
 
   workerCtx.postMessage({ id, uses } as ScriptUseResult);
 };
-

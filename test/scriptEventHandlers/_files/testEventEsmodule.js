@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import l10n from "../helpers/l10n";
 
 export const id = "EVENT_ACTOR_MOVE_TO";
@@ -12,4 +13,4 @@ export const autoLabel = (fetchArg, input) => {
   });
 };
 
-export const compile = (input, helpers) => {};
+export const compile = (_input, _helpers) => {};

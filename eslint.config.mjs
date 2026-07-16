@@ -109,7 +109,7 @@ export default [
   ...fixupConfigRules(jsxA11y.flatConfigs.recommended),
   ...storybook.configs["flat/recommended"],
   {
-    files: ["src/**/*.{js,jsx,ts,tsx}"],
+    files: ["{src,test}/**/*.{js,jsx,ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: "module",
@@ -267,6 +267,38 @@ export default [
     files: ["src/lib/events/**/*.{js,jsx,ts,tsx}"],
     rules: {
       "@typescript-eslint/no-var-requires": "off",
+    },
+  },
+  {
+    files: ["test/**/*.{js,jsx,ts,tsx}"],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
+  },
+  {
+    files: ["eslint.config.mjs"],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
+      "import/resolver": {
+        typescript: {
+          alwaysTryTypes: true,
+        },
+        node: {
+          extensions: [".js", ".mjs"],
+        },
+      },
+    },
+    rules: {
+      "import/no-named-as-default-member": "off",
     },
   },
   {
