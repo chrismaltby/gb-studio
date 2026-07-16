@@ -190,7 +190,7 @@
   },
   "packageManager": "yarn@4.17.1+sha256.471ffb15e0523663865bbf46a69e7d157ecf532412eb436c48dfab6e3f2abe88",
   "resolutions": {
-    "@types/react": "^19.2.0",
+    "@types/react": "^19.2.7",
     "yauzl": "^3.3.1",
     "tar": "^7.5.19",
     "tmp": "^0.2.7",
