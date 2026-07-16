@@ -16,30 +16,33 @@ interface MockWorkerInstance {
 // eslint-disable-next-line no-var
 var mockWorkers: MockWorkerInstance[];
 
-jest.mock("components/rendering/TilemapLayersCanvas.worker", () => ({
+jest.mock("components/rendering/tilemapLayersWorkerPool", () => ({
   __esModule: true,
-  default: class MockWorker implements MockWorkerInstance {
-    listeners: Array<(event: MessageEvent) => void> = [];
-    postMessage = jest.fn();
+  createTilemapLayersWorkerHandle: () => {
+    const worker: MockWorkerInstance = {
+      listeners: [],
+      postMessage: jest.fn(),
+      emit(data: unknown) {
+        this.listeners.forEach((listener) =>
+          listener({ data } as MessageEvent),
+        );
+      },
+    };
+    (mockWorkers ??= []).push(worker);
 
-    constructor() {
-      (mockWorkers ??= []).push(this);
-    }
-
-    addEventListener(_type: string, listener: (event: MessageEvent) => void) {
-      this.listeners.push(listener);
-    }
-
-    removeEventListener(
-      _type: string,
-      listener: (event: MessageEvent) => void,
-    ) {
-      this.listeners = this.listeners.filter((item) => item !== listener);
-    }
-
-    emit(data: unknown) {
-      this.listeners.forEach((listener) => listener({ data } as MessageEvent));
-    }
+    return {
+      subscribe: (listener: (event: MessageEvent) => void) => {
+        worker.listeners.push(listener);
+        return () => {
+          worker.listeners = worker.listeners.filter(
+            (item) => item !== listener,
+          );
+        };
+      },
+      request: (data: unknown, transfer: Transferable[]) => {
+        worker.postMessage(data, transfer);
+      },
+    };
   },
 }));
 
