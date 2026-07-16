@@ -6405,12 +6405,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-mentions@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "@types/react-mentions@npm:4.4.0"
+"@types/react-mentions@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "@types/react-mentions@npm:4.4.1"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 10c0/f7157ef10b1e4fa5d18dc73e9db3deeab00d993d0f657fe369fccaa73ce300b4d0908d65cbac5e3b3a2b56c90e8351b051b9972041439fadfc84a46d244410bb
+  checksum: 10c0/88890be5ee0dd5eb558b1affb65e23c720afb48f5efbfe2144828b1c6023df7be6a3e81b933497db87b142a120d73bb3bfa6ae4f92ec598622878cbf87beb9d0
   languageName: node
   linkType: hard
 
@@ -11980,7 +11980,7 @@ __metadata:
     "@types/ps-tree": "npm:^1.1.6"
     "@types/react": "npm:^19.2.17"
     "@types/react-dom": "npm:^19.2.3"
-    "@types/react-mentions": "npm:^4.4.0"
+    "@types/react-mentions": "npm:^4.4.1"
     "@types/react-refresh": "npm:^0.14.7"
     "@types/spark-md5": "npm:^3.0.5"
     "@types/webpack-env": "npm:^1.14.1"
