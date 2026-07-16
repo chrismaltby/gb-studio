@@ -11,10 +11,6 @@ import { checkForUpdate } from "lib/helpers/updateChecker";
 jest.mock("electron");
 jest.mock("electron-settings");
 jest.mock("fs-extra");
-jest.mock("open", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
 jest.mock("@octokit/rest", () => ({
   Octokit: jest.fn().mockImplementation(() => ({
     repos: {
