@@ -2,9 +2,11 @@ import electron, { BrowserWindow } from "electron";
 import settings from "electron-settings";
 import { readFile, writeFile } from "fs-extra";
 import {
+  appendSearchParamsToURL,
   createPreferences,
   createProjectWindow,
   createSplash,
+  normalizeFileURL,
 } from "../../src/apps/gb-studio/main";
 import { checkForUpdate } from "lib/helpers/updateChecker";
 
@@ -55,6 +57,38 @@ describe("Electron Main Process", () => {
 
   afterEach(() => {
     jest.useRealTimers();
+  });
+
+  test("normalizes packaged Windows file URLs", () => {
+    expect(
+      normalizeFileURL(
+        "file://C:\\Users\\runneradmin\\AppData\\Local\\gb_studio\\app-4.4.0\\.webpack\\renderer\\splash_window\\index.html",
+        "win32",
+      ),
+    ).toBe(
+      "file:///C:/Users/runneradmin/AppData/Local/gb_studio/app-4.4.0/.webpack/renderer/splash_window/index.html",
+    );
+
+    expect(
+      normalizeFileURL(
+        "file://C:/Users/runneradmin/AppData/Local/gb_studio/app-4.4.0/.webpack/renderer/splash_window/index.html",
+        "win32",
+      ),
+    ).toBe(
+      "file:///C:/Users/runneradmin/AppData/Local/gb_studio/app-4.4.0/.webpack/renderer/splash_window/index.html",
+    );
+  });
+
+  test("appends query params after normalizing packaged Windows file URLs", () => {
+    expect(
+      appendSearchParamsToURL(
+        "file://C:\\Users\\runneradmin\\AppData\\Local\\gb_studio\\app-4.4.0\\.webpack\\renderer\\main_window\\index.html",
+        { path: "C:\\Projects\\Game\\project.gbsproj" },
+        "win32",
+      ),
+    ).toBe(
+      "file:///C:/Users/runneradmin/AppData/Local/gb_studio/app-4.4.0/.webpack/renderer/main_window/index.html?path=C%3A%5CProjects%5CGame%5Cproject.gbsproj",
+    );
   });
 
   test("createSplash creates a BrowserWindow", async () => {

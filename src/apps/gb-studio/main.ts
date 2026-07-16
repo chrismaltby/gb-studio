@@ -10,6 +10,7 @@ import {
 } from "electron";
 import windowStateKeeper from "electron-window-state";
 import Path, { relative } from "path";
+import { pathToFileURL } from "url";
 import {
   copyFile,
   pathExists,
@@ -248,6 +249,32 @@ const isDevMode = !!process.execPath.match(/[\\/]electron/);
 
 const validProjectExt = [".json", ".gbsproj"];
 
+export const normalizeFileURL = (
+  url: string,
+  platform: NodeJS.Platform = process.platform,
+) => {
+  if (platform !== "win32" || !url.startsWith("file://")) {
+    return url;
+  }
+
+  return url
+    .replace(/^file:\/\/([a-zA-Z]:[\\/])/, "file:///$1")
+    .replace(/\\/g, "/");
+};
+
+export const appendSearchParamsToURL = (
+  url: string,
+  params: Record<string, string>,
+  platform: NodeJS.Platform = process.platform,
+) => {
+  const searchParams = new URLSearchParams(params).toString();
+  if (!searchParams) {
+    return normalizeFileURL(url, platform);
+  }
+  const separator = url.includes("?") ? "&" : "?";
+  return `${normalizeFileURL(url, platform)}${separator}${searchParams}`;
+};
+
 if (isDevMode) {
   app.whenReady().then(() => {
     installExtension([REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS])
@@ -278,7 +305,11 @@ export const createSplash = async (forceTab?: SplashTab) => {
   if (!splashWindow) return;
 
   splashWindow.setMenu(null);
-  splashWindow.loadURL(`${SPLASH_WINDOW_WEBPACK_ENTRY}?tab=${forceTab || ""}`);
+  splashWindow.loadURL(
+    appendSearchParamsToURL(SPLASH_WINDOW_WEBPACK_ENTRY, {
+      tab: forceTab || "",
+    }),
+  );
 
   splashWindow.webContents.on("did-finish-load", () => {
     setTimeout(() => {
@@ -314,7 +345,7 @@ export const createPreferences = async () => {
   });
 
   preferencesWindow.setMenu(null);
-  preferencesWindow.loadURL(PREFERENCES_WINDOW_WEBPACK_ENTRY);
+  preferencesWindow.loadURL(normalizeFileURL(PREFERENCES_WINDOW_WEBPACK_ENTRY));
 
   preferencesWindow.webContents.on("did-finish-load", () => {
     setTimeout(() => {
@@ -344,7 +375,7 @@ export const createPluginsWindow = async () => {
     },
   });
   pluginsWindow.setMenu(null);
-  pluginsWindow.loadURL(PLUGINS_WINDOW_WEBPACK_ENTRY);
+  pluginsWindow.loadURL(normalizeFileURL(PLUGINS_WINDOW_WEBPACK_ENTRY));
 
   pluginsWindow.webContents.on("did-finish-load", () => {
     setTimeout(() => {
@@ -388,7 +419,9 @@ export const createProjectWindow = async () => {
   projectWindowState.manage(projectWindow);
 
   projectWindow.loadURL(
-    `${MAIN_WINDOW_WEBPACK_ENTRY}?path=${encodeURIComponent(projectPath)}`,
+    appendSearchParamsToURL(MAIN_WINDOW_WEBPACK_ENTRY, {
+      path: projectPath,
+    }),
   );
 
   projectWindow.setRepresentedFilename(projectPath);
@@ -716,9 +749,11 @@ export const createPlay = async (
 
   playWindow.setMenu(null);
   playWindow.loadURL(
-    `${url}?audio=true&sgb=${sgb ? "true" : "false"}&debug=${
-      !!debugEnabled && !!debuggerInitData ? "true" : "false"
-    }`,
+    appendSearchParamsToURL(url, {
+      audio: "true",
+      sgb: sgb ? "true" : "false",
+      debug: !!debugEnabled && !!debuggerInitData ? "true" : "false",
+    }),
   );
 
   let firstLoad = true;
@@ -765,7 +800,7 @@ export const createMusic = async (
   }
 
   musicWindow.setMenu(null);
-  musicWindow.loadURL(MUSIC_WINDOW_WEBPACK_ENTRY);
+  musicWindow.loadURL(normalizeFileURL(MUSIC_WINDOW_WEBPACK_ENTRY));
 
   musicWindow.on("closed", () => {
     musicWindow = null;
@@ -1652,7 +1687,9 @@ ipcMain.handle(
           });
         }
         createPlay(
-          `file://${outputRoot}/build/web/index.html`,
+          pathToFileURL(
+            Path.join(outputRoot, "build", "web", "index.html"),
+          ).toString(),
           sgbEnabled && colorMode === "mono",
           debuggerEnabled,
         );
