@@ -197,7 +197,7 @@ ${(props) =>
         props.$selected && props.$variant === "eventSection"
           ? css`
               background: ${(props) =>
-            props.theme.colors.scripting.form.background};
+                props.theme.colors.scripting.form.background};
               overflow: visible;
               &:focus {
                 z-index: auto;
