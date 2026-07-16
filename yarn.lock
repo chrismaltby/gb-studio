@@ -11295,10 +11295,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"diff@npm:^8.0.3":
-  version: 8.0.3
-  resolution: "diff@npm:8.0.3"
-  checksum: 10c0/d29321c70d3545fdcb56c5fdd76028c3f04c012462779e062303d4c3c531af80d2c360c26b871e6e2b9a971d2422d47e1779a859106c4cac4b5d2d143df70e20
+"diff@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "diff@npm:9.0.0"
+  checksum: 10c0/a971cc88f66071a33bd3942db2f51b57d484e9856265ae45cf44fb28ab2fde91f132d9c26d8be0fb6082d2be94d29e1295c1adb251b7461935d6a2dd304cd161
   languageName: node
   linkType: hard
 
@@ -13659,7 +13659,7 @@ __metadata:
     commander: "npm:^15.0.0"
     copy-webpack-plugin: "npm:^14.0.0"
     cross-env: "npm:^10.1.0"
-    diff: "npm:^8.0.3"
+    diff: "npm:^9.0.0"
     dnd-core: "npm:16.0.1"
     electron: "npm:42.3.3"
     electron-devtools-installer: "npm:^4.0.0"
