@@ -12068,7 +12068,7 @@ __metadata:
     ts-flood-fill: "npm:^1.0.2"
     ts-jest: "npm:^29.4.11"
     ts-loader: "npm:^9.6.2"
-    ts-node: "npm:^10.0.0"
+    ts-node: "npm:^10.9.2"
     tsconfig-paths-webpack-plugin: "npm:^4.1.0"
     typescript: "npm:@typescript/typescript6@^6.0.2"
     uuid: "npm:^14.0.1"
@@ -20206,7 +20206,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.0.0":
+"ts-node@npm:^10.9.2":
   version: 10.9.2
   resolution: "ts-node@npm:10.9.2"
   dependencies:
