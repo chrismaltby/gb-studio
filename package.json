@@ -61,7 +61,7 @@
     "@mediabunny/mp3-encoder": "^1.50.8",
     "@octokit/rest": "^22.0.1",
     "@reduxjs/toolkit": "^2.12.0",
-    "@sinclair/typebox": "^0.32.35",
+    "@sinclair/typebox": "^0.34.52",
     "about-window": "^1.15.2",
     "adm-zip": "^0.6.0",
     "chokidar": "^5.0.0",
