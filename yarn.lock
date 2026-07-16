@@ -9445,7 +9445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-loader@npm:^10.1.0":
+"babel-loader@npm:^10.1.1":
   version: 10.1.1
   resolution: "babel-loader@npm:10.1.1"
   dependencies:
@@ -11681,16 +11681,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^5.0.0":
-  version: 5.8.2
-  resolution: "enhanced-resolve@npm:5.8.2"
-  dependencies:
-    graceful-fs: "npm:^4.2.4"
-    tapable: "npm:^2.2.0"
-  checksum: 10c0/08612893157753824920db12c8b6a89c8ed3e9435c93c57751880ea72946c9cbc8a0ef9a68d829d6a1a9fc431ba8fe08637806a9855ac56595bac43ef79ab433
-  languageName: node
-  linkType: hard
-
 "enhanced-resolve@npm:^5.22.2":
   version: 5.24.2
   resolution: "enhanced-resolve@npm:5.24.2"
@@ -13636,7 +13626,7 @@ __metadata:
     "@vercel/webpack-asset-relocator-loader": "npm:1.7.3"
     about-window: "npm:^1.15.2"
     adm-zip: "npm:^0.6.0"
-    babel-loader: "npm:^10.1.0"
+    babel-loader: "npm:^10.1.1"
     babel-plugin-styled-components: "npm:^2.3.0"
     chokidar: "npm:^5.0.0"
     chroma-js: "npm:^3.2.0"
@@ -13672,7 +13662,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     mediabunny: "npm:^1.50.8"
     node-fetch: "npm:^3.3.2"
-    node-loader: "npm:^2.0.0"
+    node-loader: "npm:^2.1.0"
     normalizr: "npm:^3.6.2"
     open: "npm:^11.0.0"
     path-browserify: "npm:^1.0.1"
@@ -13708,7 +13698,7 @@ __metadata:
     substyle: "npm:9.3.0"
     ts-flood-fill: "npm:^1.0.2"
     ts-jest: "npm:^29.4.11"
-    ts-loader: "npm:^9.2.2"
+    ts-loader: "npm:^9.6.2"
     ts-node: "npm:^10.0.0"
     tsconfig-paths-webpack-plugin: "npm:^4.1.0"
     typescript: "npm:@typescript/typescript6@^6.0.2"
@@ -16592,7 +16582,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loader-utils@npm:^2.0.0, loader-utils@npm:^2.0.4":
+"loader-utils@npm:^2.0.3, loader-utils@npm:^2.0.4":
   version: 2.0.4
   resolution: "loader-utils@npm:2.0.4"
   dependencies:
@@ -17000,7 +16990,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:^4.0.0, micromatch@npm:^4.0.2, micromatch@npm:^4.0.4":
+"micromatch@npm:^4.0.2, micromatch@npm:^4.0.4":
   version: 4.0.8
   resolution: "micromatch@npm:4.0.8"
   dependencies:
@@ -17584,14 +17574,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-loader@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "node-loader@npm:2.0.0"
+"node-loader@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "node-loader@npm:2.1.0"
   dependencies:
-    loader-utils: "npm:^2.0.0"
+    loader-utils: "npm:^2.0.3"
   peerDependencies:
     webpack: ^5.0.0
-  checksum: 10c0/ceacf34ccb05c5efe7fbed2224dfa42ec9dd8e5bd70e9dc90bb618ee6372cc1ff54edc60d1d71f4ff52c4b4db0ac410caa6ae74d90bbc68b88a70bba5f75c727
+  checksum: 10c0/9f641336a0f22ca9b239c101e0343c4111ece400bb40bcbbf92f48e062c5ba4cc657d0c321b8806d1d79edd0910b17507af84c6b0a7d00735f808263b262876b
   languageName: node
   linkType: hard
 
@@ -18678,17 +18668,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"picomatch@npm:^4.0.0, picomatch@npm:^4.0.3, picomatch@npm:^4.0.4":
+  version: 4.0.5
+  resolution: "picomatch@npm:4.0.5"
+  checksum: 10c0/947bc6b6e1ff1e6c5aaf95b107a0839d12802f4f7b867663f67d47accba939ca1cb582cf99dfc30438efa1c4648ac5990967e783e8929c36b03e8440704ef1bd
+  languageName: node
+  linkType: hard
+
 "picomatch@npm:^4.0.2":
   version: 4.0.4
   resolution: "picomatch@npm:4.0.4"
   checksum: 10c0/e2c6023372cc7b5764719a5ffb9da0f8e781212fa7ca4bd0562db929df8e117460f00dff3cb7509dacfc06b86de924b247f504d0ce1806a37fac4633081466b0
-  languageName: node
-  linkType: hard
-
-"picomatch@npm:^4.0.3, picomatch@npm:^4.0.4":
-  version: 4.0.5
-  resolution: "picomatch@npm:4.0.5"
-  checksum: 10c0/947bc6b6e1ff1e6c5aaf95b107a0839d12802f4f7b867663f67d47accba939ca1cb582cf99dfc30438efa1c4648ac5990967e783e8929c36b03e8440704ef1bd
   languageName: node
   linkType: hard
 
@@ -20354,7 +20344,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7, semver@npm:^7.1.1, semver@npm:^7.1.3, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.4":
+"semver@npm:7, semver@npm:^7.1.1, semver@npm:^7.1.3, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.4":
   version: 7.6.2
   resolution: "semver@npm:7.6.2"
   bin:
@@ -20909,6 +20899,13 @@ __metadata:
   version: 0.7.3
   resolution: "source-map@npm:0.7.3"
   checksum: 10c0/7d2ddb51f3d2451847692a9ac7808da2b2b3bf7aef92ece33128919040a7e74d9a5edfde7a781f035c974deff876afaf83f2e30484faffffb86484e7408f5d7c
+  languageName: node
+  linkType: hard
+
+"source-map@npm:^0.7.4":
+  version: 0.7.6
+  resolution: "source-map@npm:0.7.6"
+  checksum: 10c0/59f6f05538539b274ba771d2e9e32f6c65451982510564438e048bc1352f019c6efcdc6dd07909b1968144941c14015c2c7d4369fb7c4d7d53ae769716dcc16c
   languageName: node
   linkType: hard
 
@@ -22018,18 +22015,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-loader@npm:^9.2.2":
-  version: 9.2.2
-  resolution: "ts-loader@npm:9.2.2"
+"ts-loader@npm:^9.6.2":
+  version: 9.6.2
+  resolution: "ts-loader@npm:9.6.2"
   dependencies:
     chalk: "npm:^4.1.0"
-    enhanced-resolve: "npm:^5.0.0"
-    micromatch: "npm:^4.0.0"
-    semver: "npm:^7.3.4"
+    picomatch: "npm:^4.0.0"
+    source-map: "npm:^0.7.4"
   peerDependencies:
+    loader-utils: "*"
     typescript: "*"
-    webpack: ^5.0.0
-  checksum: 10c0/ce97a207711147d64658e831b8ff6c614472f178ff7a78395285f7f9c5f7fe3b6bd2ce95fc03c0e87936b38ce29bac677b7c69608ef37a9451b38caa18a6e650
+    webpack: ^4.0.0 || ^5.0.0
+  peerDependenciesMeta:
+    loader-utils:
+      optional: true
+  checksum: 10c0/6102336ee598124249e07cce6bb3d4ee0586f962697b7388d1957296a2c7d5164b95757797db237bdb7b8f0c5a52d2f22ca5013d3337823d8e9e0e731ce03c67
   languageName: node
   linkType: hard
 
