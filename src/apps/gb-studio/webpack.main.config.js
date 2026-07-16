@@ -36,6 +36,10 @@ const mainPlugins = [
         from: "node_modules/acorn-walk",
         to: "node_modules/acorn-walk",
       },
+      {
+        from: "node_modules/open",
+        to: "node_modules/open",
+      },
     ],
   }),
 ];
