@@ -708,13 +708,15 @@ export const isUnionVariableValue = (
 export const isUnionPropertyValue = (
   input: unknown,
 ): input is UnionPropertyValue => {
-  if (!isUnionValue(input)) {
+  if (!isUnionValue(input) || input.type !== "property") {
     return false;
   }
-  if (input.type !== "property") {
-    return false;
-  }
-  return true;
+
+  return (
+    !("value" in input) ||
+    input.value === undefined ||
+    typeof input.value === "string"
+  );
 };
 
 export const toVariableNumber = (variable: string) => {

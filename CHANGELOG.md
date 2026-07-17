@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where deprecated events could still be used if they had previously been favourited in an older version of the application
 - Fix issue where using spaces in ROM filename would cause build to fail on Windows
 - Fix issue where newly added event plugins wouldn't appear until project was reloaded
+- Fix issue where copy/paste of scenes could cause actor references to become disconnected
 
 ## [4.3.2] - 2026-06-22
 

@@ -1,5 +1,6 @@
 import { EVENT_FADE_IN } from "consts";
 import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
+import { isUnionPropertyValue } from "shared/lib/entities/entitiesHelpers";
 import type {
   ScriptEventNormalized,
   ScriptNormalized,
@@ -9,42 +10,42 @@ import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
 
 export type ScriptEventDefs = Record<string, ScriptEventDef>;
 
-export const patchEventArgs = (
+export const remapActorReferencesInEventArgs = (
   command: string,
-  type: string,
   args: Record<string, unknown>,
-  replacements: Record<string, unknown>,
+  actorMapping: Record<string, string>,
   scriptEventDefs: ScriptEventDefs,
 ) => {
-  const events = scriptEventDefs;
-  const eventSchema = events[command];
+  const eventSchema = scriptEventDefs[command];
 
   if (!eventSchema) {
     return args;
   }
 
-  const patchArgs: Record<string, unknown> = {};
-  eventSchema.fields.forEach((field) => {
-    const key = field.key ?? "";
-    if (field.type === type) {
-      if (replacements[args[key] as string]) {
-        patchArgs[key] = replacements[args[key] as string];
+  const patchArgs = Object.keys(args).reduce(
+    (memo, key) => {
+      const field = eventSchema.fieldsLookup[key];
+      const arg = args[key];
+
+      if (field?.type === "actor" && typeof arg === "string") {
+        const replacement = actorMapping[arg];
+        if (replacement !== undefined) {
+          memo[key] = replacement;
+        }
+      } else if (field && isUnionPropertyValue(arg)) {
+        const propertyParts = (arg.value ?? "").split(":");
+        const replacement = actorMapping[propertyParts[0]];
+        if (propertyParts.length === 2 && replacement !== undefined) {
+          memo[key] = {
+            type: "property",
+            value: `${replacement}:${propertyParts[1]}`,
+          };
+        }
       }
-    } else if (
-      type === "actor" &&
-      (args[key] as { type?: string })?.type === "property"
-    ) {
-      const propertyParts = (
-        (args[key] as { value?: string })?.value || ""
-      ).split(":");
-      if (propertyParts.length === 2) {
-        patchArgs[key] = {
-          type: "property",
-          value: `${replacements[propertyParts[0]]}:${propertyParts[1]}`,
-        };
-      }
-    }
-  });
+      return memo;
+    },
+    {} as Record<string, unknown>,
+  );
 
   return {
     ...args,

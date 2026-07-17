@@ -56,7 +56,7 @@ import {
 import keyBy from "lodash/keyBy";
 import {
   ScriptEventDefs,
-  patchEventArgs,
+  remapActorReferencesInEventArgs,
 } from "shared/lib/scripts/eventHelpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "consts";
 import API from "renderer/lib/api";
@@ -452,9 +452,8 @@ const generateSceneInsertActions = (
         data: action.payload.data.map((eventData) => {
           return {
             ...eventData,
-            args: patchEventArgs(
+            args: remapActorReferencesInEventArgs(
               eventData.command,
-              "actor",
               eventData.args || {},
               actorMapping,
               scriptEventDefs,
