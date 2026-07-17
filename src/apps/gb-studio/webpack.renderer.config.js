@@ -95,9 +95,8 @@ module.exports = {
       "contributors.json": repoPath("contributors.json"),
       "contributors-external.json": repoPath("contributors-external.json"),
       "patrons.json": repoPath("patrons.json"),
-      "#my-quickjs-variant": require.resolve(
-        "@jitl/quickjs-singlefile-browser-release-sync",
-      ),
+      "#my-quickjs-variant":
+        require.resolve("@jitl/quickjs-singlefile-browser-release-sync"),
     },
     fallback: {
       path: require.resolve("path-browserify"),
