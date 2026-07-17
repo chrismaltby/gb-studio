@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, original, PayloadAction } from "@reduxjs/toolkit";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
 import type { UsageData } from "lib/compiler/romUsage";
 import isEqual from "lodash/isEqual";
@@ -79,7 +79,9 @@ const debuggerSlice = createSlice({
       if (!isEqual(state.variablesData, action.payload.variablesData)) {
         state.variablesData = action.payload.variablesData;
       }
-      if (!isEqual(state.scriptContexts, action.payload.scriptContexts)) {
+      if (
+        !isEqual(original(state.scriptContexts), action.payload.scriptContexts)
+      ) {
         state.scriptContexts = action.payload.scriptContexts;
       }
       state.currentSceneSymbol = action.payload.currentSceneSymbol;
