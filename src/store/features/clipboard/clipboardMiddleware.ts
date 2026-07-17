@@ -57,6 +57,7 @@ import keyBy from "lodash/keyBy";
 import {
   ScriptEventDefs,
   remapActorReferencesInEventArgs,
+  remapActorReferencesInEventOverrides,
 } from "shared/lib/scripts/eventHelpers";
 import { EVENT_CALL_CUSTOM_EVENT } from "consts";
 import API from "renderer/lib/api";
@@ -442,26 +443,60 @@ const generateSceneInsertActions = (
     );
 
   const remappedActions = actions.map((action) => {
-    if (!entitiesActions.addScriptEvents.match(action)) {
-      return action;
-    }
-    return {
-      ...action,
-      payload: {
-        ...action.payload,
-        data: action.payload.data.map((eventData) => {
-          return {
-            ...eventData,
-            args: remapActorReferencesInEventArgs(
-              eventData.command,
-              eventData.args || {},
+    if (entitiesActions.addActor.match(action)) {
+      return {
+        ...action,
+        payload: {
+          ...action.payload,
+          defaults: {
+            ...action.payload.defaults,
+            prefabScriptOverrides: remapActorReferencesInEventOverrides(
+              action.payload.defaults?.prefabScriptOverrides,
+              scriptEventsLookup,
               actorMapping,
               scriptEventDefs,
             ),
-          };
-        }),
-      },
-    };
+          },
+        },
+      };
+    }
+    if (entitiesActions.addTrigger.match(action)) {
+      return {
+        ...action,
+        payload: {
+          ...action.payload,
+          defaults: {
+            ...action.payload.defaults,
+            prefabScriptOverrides: remapActorReferencesInEventOverrides(
+              action.payload.defaults?.prefabScriptOverrides,
+              scriptEventsLookup,
+              actorMapping,
+              scriptEventDefs,
+            ),
+          },
+        },
+      };
+    }
+    if (entitiesActions.addScriptEvents.match(action)) {
+      return {
+        ...action,
+        payload: {
+          ...action.payload,
+          data: action.payload.data.map((eventData) => {
+            return {
+              ...eventData,
+              args: remapActorReferencesInEventArgs(
+                eventData.command,
+                eventData.args || {},
+                actorMapping,
+                scriptEventDefs,
+              ),
+            };
+          }),
+        },
+      };
+    }
+    return action;
   });
 
   return remappedActions;

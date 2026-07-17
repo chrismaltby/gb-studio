@@ -5,7 +5,11 @@ import type {
   ScriptEventNormalized,
   ScriptNormalized,
 } from "shared/lib/entities/entitiesTypes";
-import { Script, ScriptEvent } from "shared/lib/resources/types";
+import {
+  Script,
+  ScriptEvent,
+  ScriptEventArgsOverride,
+} from "shared/lib/resources/types";
 import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
 
 export type ScriptEventDefs = Record<string, ScriptEventDef>;
@@ -51,6 +55,38 @@ export const remapActorReferencesInEventArgs = (
     ...args,
     ...patchArgs,
   };
+};
+
+export const remapActorReferencesInEventOverrides = (
+  eventOverrides: Record<string, ScriptEventArgsOverride> | null | undefined,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
+  actorMapping: Record<string, string>,
+  scriptEventDefs: ScriptEventDefs,
+) => {
+  if (!eventOverrides) {
+    return eventOverrides;
+  }
+
+  return Object.fromEntries(
+    Object.entries(eventOverrides).map(([scriptEventId, override]) => {
+      const command = scriptEventsLookup[scriptEventId]?.command;
+
+      return [
+        scriptEventId,
+        {
+          ...override,
+          args: command
+            ? remapActorReferencesInEventArgs(
+                command,
+                override.args,
+                actorMapping,
+                scriptEventDefs,
+              )
+            : override.args,
+        },
+      ];
+    }),
+  );
 };
 
 export const calculateAutoFadeEventIdNormalized = (
