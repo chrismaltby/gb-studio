@@ -1,6 +1,5 @@
-import { EVENT_FADE_IN } from "consts";
+import { EVENT_CALL_CUSTOM_EVENT, EVENT_FADE_IN } from "consts";
 import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
-import { isUnionPropertyValue } from "shared/lib/entities/entitiesHelpers";
 import type {
   ScriptEventNormalized,
   ScriptNormalized,
@@ -11,8 +10,32 @@ import {
   ScriptEventArgsOverride,
 } from "shared/lib/resources/types";
 import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
+import { mapScriptValueLeafNodes } from "shared/lib/scriptValue/helpers";
+import { isScriptValue } from "shared/lib/scriptValue/types";
+import type { ScriptValue } from "shared/lib/scriptValue/types";
 
 export type ScriptEventDefs = Record<string, ScriptEventDef>;
+
+const remapActorReferencesInScriptValue = (
+  scriptValue: ScriptValue,
+  actorMapping: Record<string, string>,
+) => {
+  return mapScriptValueLeafNodes(scriptValue, (value) => {
+    if (value.type !== "property") {
+      return value;
+    }
+
+    const replacement = actorMapping[value.target];
+    if (replacement === undefined) {
+      return value;
+    }
+
+    return {
+      ...value,
+      target: replacement,
+    };
+  }) as ScriptValue;
+};
 
 export const remapActorReferencesInEventArgs = (
   command: string,
@@ -20,6 +43,10 @@ export const remapActorReferencesInEventArgs = (
   actorMapping: Record<string, string>,
   scriptEventDefs: ScriptEventDefs,
 ) => {
+  if (command === EVENT_CALL_CUSTOM_EVENT) {
+    return remapActorReferencesInCallScriptEventArgs(args, actorMapping);
+  }
+
   const eventSchema = scriptEventDefs[command];
 
   if (!eventSchema) {
@@ -36,16 +63,36 @@ export const remapActorReferencesInEventArgs = (
         if (replacement !== undefined) {
           memo[key] = replacement;
         }
-      } else if (field && isUnionPropertyValue(arg)) {
-        const propertyParts = (arg.value ?? "").split(":");
-        const replacement = actorMapping[propertyParts[0]];
-        if (propertyParts.length === 2 && replacement !== undefined) {
-          memo[key] = {
-            type: "property",
-            value: `${replacement}:${propertyParts[1]}`,
-          };
-        }
+      } else if (field && isScriptValue(arg)) {
+        memo[key] = remapActorReferencesInScriptValue(arg, actorMapping);
       }
+      return memo;
+    },
+    {} as Record<string, unknown>,
+  );
+
+  return {
+    ...args,
+    ...patchArgs,
+  };
+};
+
+export const remapActorReferencesInCallScriptEventArgs = (
+  args: Record<string, unknown>,
+  actorMapping: Record<string, string>,
+) => {
+  const patchArgs = Object.keys(args).reduce(
+    (memo, key) => {
+      const arg = args[key];
+      if (key.startsWith("$actor") && typeof arg === "string") {
+        const replacement = actorMapping[arg];
+        if (replacement !== undefined) {
+          memo[key] = replacement;
+        }
+      } else if (key.startsWith("$variable") && isScriptValue(arg)) {
+        memo[key] = remapActorReferencesInScriptValue(arg, actorMapping);
+      }
+
       return memo;
     },
     {} as Record<string, unknown>,

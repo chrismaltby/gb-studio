@@ -96,7 +96,8 @@ module.exports = {
       {
         property: {
           type: "property",
-          value: "actor1:xpos",
+          target: "actor1",
+          property: "xpos",
         },
       },
       { actor1: "actor2" },
@@ -106,7 +107,65 @@ module.exports = {
     expect(args).toEqual({
       property: {
         type: "property",
-        value: "actor2:xpos",
+        target: "actor2",
+        property: "xpos",
+      },
+    });
+  });
+
+  test("should replace actor ids in nested property script value arguments", async () => {
+    const scriptEventHandler = await loadScriptEventHandlerFromTrustedString(
+      `
+const id = "EVENT_TEST";
+
+const fields = [{
+  key: "value",
+  type: "value",
+}];
+
+module.exports = {
+  id,
+  fields,
+};
+`,
+      "",
+      noOpFileReader,
+    );
+
+    const args = remapActorReferencesInEventArgs(
+      "EVENT_TEST",
+      {
+        value: {
+          type: "add",
+          valueA: {
+            type: "property",
+            target: "actor1",
+            property: "direction",
+          },
+          valueB: {
+            type: "property",
+            target: "actor2",
+            property: "direction",
+          },
+        },
+      },
+      { actor1: "actor3", actor2: "actor4" },
+      { EVENT_TEST: scriptEventHandler },
+    );
+
+    expect(args).toEqual({
+      value: {
+        type: "add",
+        valueA: {
+          type: "property",
+          target: "actor3",
+          property: "direction",
+        },
+        valueB: {
+          type: "property",
+          target: "actor4",
+          property: "direction",
+        },
       },
     });
   });
@@ -135,7 +194,8 @@ module.exports = {
       {
         property: {
           type: "property",
-          value: "actor1:xpos",
+          target: "actor1",
+          property: "xpos",
         },
       },
       {},
@@ -145,7 +205,8 @@ module.exports = {
     expect(args).toEqual({
       property: {
         type: "property",
-        value: "actor1:xpos",
+        target: "actor1",
+        property: "xpos",
       },
     });
   });
@@ -307,7 +368,7 @@ module.exports = {
           id: "event1",
           command: "EVENT_TEST",
           args: {},
-        } as any,
+        },
       },
       { actor1: "actor2" },
       { EVENT_TEST: scriptEventHandler },
@@ -363,7 +424,7 @@ module.exports = {
           id: "event1",
           command: "EVENT_TEST",
           args: {},
-        } as any,
+        },
       },
       { actor1: "actor2" },
       { EVENT_TEST: scriptEventHandler },
@@ -405,7 +466,8 @@ module.exports = {
           args: {
             property: {
               type: "property",
-              value: "actor1:xpos",
+              target: "actor1",
+              property: "xpos",
             },
           },
         },
@@ -415,7 +477,7 @@ module.exports = {
           id: "event1",
           command: "EVENT_TEST",
           args: {},
-        } as any,
+        },
       },
       { actor1: "actor2" },
       { EVENT_TEST: scriptEventHandler },
@@ -427,7 +489,8 @@ module.exports = {
         args: {
           property: {
             type: "property",
-            value: "actor2:xpos",
+            target: "actor2",
+            property: "xpos",
           },
         },
       },
@@ -475,7 +538,7 @@ module.exports = {
           id: "event1",
           command: "EVENT_TEST",
           args: {},
-        } as any,
+        },
       },
       { actor1: "actor2" },
       { EVENT_TEST: scriptEventHandler },
@@ -532,12 +595,12 @@ module.exports = {
           id: "event1",
           command: "EVENT_TEST",
           args: {},
-        } as any,
+        },
         event2: {
           id: "event2",
           command: "EVENT_TEST",
           args: {},
-        } as any,
+        },
       },
       {
         actor1: "actor2",
@@ -599,7 +662,7 @@ module.exports = {
           id: "event1",
           command: "EVENT_UNKNOWN",
           args: {},
-        } as any,
+        },
       },
       { actor1: "actor2" },
       {},
@@ -620,5 +683,115 @@ module.exports = {
         {},
       ),
     ).toBeUndefined();
+  });
+});
+
+describe("remapActorReferencesInEventArgs for custom event calls", () => {
+  test("should replace actor ids referenced by custom event actor arguments", () => {
+    const args = remapActorReferencesInEventArgs(
+      "EVENT_CALL_CUSTOM_EVENT",
+      {
+        customEventId: "customEvent1",
+        "$actor[0]$": "actor1",
+      },
+      { actor1: "actor2" },
+      {},
+    );
+
+    expect(args).toEqual({
+      customEventId: "customEvent1",
+      "$actor[0]$": "actor2",
+    });
+  });
+
+  test("should replace actor ids referenced by custom event property arguments", () => {
+    const args = remapActorReferencesInEventArgs(
+      "EVENT_CALL_CUSTOM_EVENT",
+      {
+        customEventId: "customEvent1",
+        "$variable[V0]$": {
+          type: "property",
+          target: "actor1",
+          property: "xpos",
+        },
+      },
+      { actor1: "actor2" },
+      {},
+    );
+
+    expect(args).toEqual({
+      customEventId: "customEvent1",
+      "$variable[V0]$": {
+        type: "property",
+        target: "actor2",
+        property: "xpos",
+      },
+    });
+  });
+
+  test("should replace actor ids in nested custom event property arguments", () => {
+    const args = remapActorReferencesInEventArgs(
+      "EVENT_CALL_CUSTOM_EVENT",
+      {
+        customEventId: "customEvent1",
+        "$variable[V0]$": {
+          type: "add",
+          valueA: {
+            type: "property",
+            target: "actor1",
+            property: "direction",
+          },
+          valueB: {
+            type: "property",
+            target: "actor2",
+            property: "direction",
+          },
+        },
+      },
+      { actor1: "actor3", actor2: "actor4" },
+      {},
+    );
+
+    expect(args).toEqual({
+      customEventId: "customEvent1",
+      "$variable[V0]$": {
+        type: "add",
+        valueA: {
+          type: "property",
+          target: "actor3",
+          property: "direction",
+        },
+        valueB: {
+          type: "property",
+          target: "actor4",
+          property: "direction",
+        },
+      },
+    });
+  });
+
+  test("should preserve custom event property arguments without an actor mapping", () => {
+    const args = remapActorReferencesInEventArgs(
+      "EVENT_CALL_CUSTOM_EVENT",
+      {
+        customEventId: "customEvent1",
+        "$variable[V0]$": {
+          type: "property",
+          target: "actor1",
+          property: "xpos",
+        },
+      },
+      {},
+      {},
+    );
+
+    expect(args).toEqual({
+      customEventId: "customEvent1",
+      "$variable[V0]$": {
+        type: "property",
+        target: "actor1",
+        property: "xpos",
+      },
+    });
   });
 });

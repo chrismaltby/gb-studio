@@ -3,6 +3,7 @@ import actions from "../../../../src/store/features/clipboard/clipboardActions";
 import { RootState } from "store/storeTypes";
 import {
   dummyActorNormalized,
+  dummyCustomEventNormalized,
   dummySceneNormalized,
   dummyTriggerNormalized,
 } from "../../../dummydata";
@@ -47,6 +48,18 @@ const fields = [
     ],
   }
 ];
+
+module.exports = {
+  id,
+  fields,
+};`;
+
+const propertyFieldEvent = `const id = "EVENT_PROPERTY_FIELD";
+
+const fields = [{
+    key: "value",
+    type: "value",
+}];
 
 module.exports = {
   id,
@@ -297,6 +310,145 @@ test("Should remap actor references in scene init script when pasting scene", as
   expect(addScriptEventAction?.payload.data[0].args?.actorId).toBe(
     pastedTargetActorId,
   );
+});
+
+test("Should remap actor property references in scene init script when pasting scene", async () => {
+  mockedClipboard.readBuffer.mockReset();
+
+  const scriptEventHandler = await loadScriptEventHandlerFromTrustedString(
+    propertyFieldEvent,
+    "eventPropertyTest.js",
+    noOpFileReader,
+  );
+  const scriptEventDefs = { [scriptEventHandler.id]: scriptEventHandler };
+
+  const scene = {
+    ...dummySceneNormalized,
+    id: "scene1",
+    script: ["event1"],
+    actors: ["sourceActor", "targetActor"],
+  };
+
+  const sourceActor = {
+    ...dummyActorNormalized,
+    id: "sourceActor",
+  };
+
+  const targetActor = {
+    ...dummyActorNormalized,
+    id: "targetActor",
+  };
+
+  const scriptEvent = {
+    id: "event1",
+    command: "EVENT_PROPERTY_FIELD",
+    args: {
+      value: {
+        type: "add",
+        valueA: {
+          type: "property",
+          target: "sourceActor",
+          property: "direction",
+        },
+        valueB: {
+          type: "property",
+          target: "targetActor",
+          property: "direction",
+        },
+      },
+    },
+  };
+
+  mockedClipboard.readBuffer.mockImplementation((format) =>
+    Promise.resolve(
+      format === ClipboardTypeScenes
+        ? Buffer.from(
+            JSON.stringify({
+              scenes: [scene],
+              actors: [sourceActor, targetActor],
+              triggers: [],
+              scriptEvents: [scriptEvent],
+              variables: [],
+              customEvents: [],
+            }),
+            "utf8",
+          )
+        : Buffer.from(""),
+    ),
+  );
+
+  const dispatch = jest.fn();
+
+  const store = {
+    getState: () => ({
+      project: {
+        present: {
+          entities: {
+            customEvents: {
+              entities: {},
+              ids: [],
+            },
+            actorPrefabs: {
+              entities: {},
+              ids: [],
+            },
+            triggerPrefabs: {
+              entities: {},
+              ids: [],
+            },
+            scriptEvents: {
+              entities: {},
+              ids: [],
+            },
+          },
+        },
+      },
+      scriptEventDefs: {
+        lookup: scriptEventDefs,
+      },
+    }),
+    dispatch,
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
+
+  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+
+  expect(dispatch.mock.calls.length).toBeGreaterThan(0);
+
+  const pasteActions = dispatch.mock.calls.map(([action]) => action);
+
+  const pastedTargetActorAction = pasteActions.find(
+    (action) =>
+      entitiesActions.addActor.match(action) &&
+      action.payload.defaults?.id === "targetActor",
+  );
+  const pastedSourceActorAction = pasteActions.find(
+    (action) =>
+      entitiesActions.addActor.match(action) &&
+      action.payload.defaults?.id === "sourceActor",
+  );
+  const addScriptEventAction = pasteActions.find(
+    entitiesActions.addScriptEvents.match,
+  );
+  const pastedSourceActorId = pastedSourceActorAction?.payload.actorId;
+  const pastedTargetActorId = pastedTargetActorAction?.payload.actorId;
+
+  expect(pastedSourceActorId).toBeTruthy();
+  expect(pastedSourceActorId).not.toBe("sourceActor");
+  expect(pastedTargetActorId).toBeTruthy();
+  expect(pastedTargetActorId).not.toBe("targetActor");
+  expect(addScriptEventAction?.payload.data[0].args?.value).toEqual({
+    type: "add",
+    valueA: {
+      type: "property",
+      target: pastedSourceActorId,
+      property: "direction",
+    },
+    valueB: {
+      type: "property",
+      target: pastedTargetActorId,
+      property: "direction",
+    },
+  });
 });
 
 test("Should remap actor references in actor script when pasting scene", async () => {
@@ -779,6 +931,134 @@ test("Should remap actor references in actor prefab overrides when pasting scene
   ).toBe(pastedTargetActorId);
 });
 
+test("Should remap actor property references in actor prefab overrides when pasting scene", async () => {
+  mockedClipboard.readBuffer.mockReset();
+
+  const scene = {
+    ...dummySceneNormalized,
+    id: "scene1",
+    actors: ["sourceActor", "targetActor"],
+  };
+  const sourceActor = {
+    ...dummyActorNormalized,
+    id: "sourceActor",
+    prefabScriptOverrides: {
+      prefabEvent1: {
+        id: "prefabEvent1",
+        args: {
+          value: {
+            type: "property",
+            target: "targetActor",
+            property: "xpos",
+          },
+        },
+      },
+    },
+  };
+  const targetActor = {
+    ...dummyActorNormalized,
+    id: "targetActor",
+  };
+  const prefabScriptEvent = {
+    id: "prefabEvent1",
+    command: "EVENT_PROPERTY_FIELD",
+    args: {
+      value: {
+        type: "property",
+        target: "sourceActor",
+        property: "xpos",
+      },
+    },
+  };
+  mockedClipboard.readBuffer.mockImplementation((format) =>
+    Promise.resolve(
+      format === ClipboardTypeScenes
+        ? Buffer.from(
+            JSON.stringify({
+              scenes: [scene],
+              actors: [sourceActor, targetActor],
+              triggers: [],
+              scriptEvents: [prefabScriptEvent],
+              variables: [],
+              customEvents: [],
+            }),
+            "utf8",
+          )
+        : Buffer.from(""),
+    ),
+  );
+  const propertyScriptEventHandler =
+    await loadScriptEventHandlerFromTrustedString(
+      propertyFieldEvent,
+      "eventPropertyTest.js",
+      noOpFileReader,
+    );
+  const scriptEventDefs = {
+    [propertyScriptEventHandler.id]: propertyScriptEventHandler,
+  };
+
+  const dispatch = jest.fn();
+  const store = {
+    getState: () => ({
+      project: {
+        present: {
+          entities: {
+            customEvents: {
+              entities: {},
+              ids: [],
+            },
+            actorPrefabs: {
+              entities: {},
+              ids: [],
+            },
+            triggerPrefabs: {
+              entities: {},
+              ids: [],
+            },
+            scriptEvents: {
+              entities: {},
+              ids: [],
+            },
+          },
+        },
+      },
+      scriptEventDefs: {
+        lookup: scriptEventDefs,
+      },
+    }),
+    dispatch,
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
+
+  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+
+  expect(dispatch.mock.calls.length).toBeGreaterThan(0);
+
+  const pasteActions = dispatch.mock.calls.map(([action]) => action);
+
+  const pastedTargetActorAction = pasteActions.find(
+    (action) =>
+      entitiesActions.addActor.match(action) &&
+      action.payload.defaults?.id === "targetActor",
+  );
+  const pastedTargetActorId = pastedTargetActorAction?.payload.actorId;
+  const addActorAction = pasteActions.find(
+    (action) =>
+      entitiesActions.addActor.match(action) &&
+      action.payload.defaults?.id === "sourceActor",
+  );
+
+  expect(pastedTargetActorId).toBeTruthy();
+  expect(pastedTargetActorId).not.toBe("targetActor");
+  expect(
+    addActorAction?.payload.defaults?.prefabScriptOverrides?.prefabEvent1.args
+      ?.value,
+  ).toEqual({
+    type: "property",
+    target: pastedTargetActorId,
+    property: "xpos",
+  });
+});
+
 test("Should remap actor references in trigger prefab overrides when pasting scene", async () => {
   mockedClipboard.readBuffer.mockReset();
 
@@ -901,4 +1181,180 @@ test("Should remap actor references in trigger prefab overrides when pasting sce
     addTriggerAction?.payload.defaults?.prefabScriptOverrides?.prefabEvent1.args
       ?.actorId,
   ).toBe(pastedTargetActorId);
+});
+
+test("Should remap actor references in call script events when pasting scene", async () => {
+  mockedClipboard.readBuffer.mockReset();
+
+  const scriptEventHandler = await loadScriptEventHandlerFromTrustedString(
+    actorFieldEvent,
+    "eventTest.js",
+    noOpFileReader,
+  );
+  const scriptEventDefs = { [scriptEventHandler.id]: scriptEventHandler };
+
+  const scene = {
+    ...dummySceneNormalized,
+    id: "scene1",
+    script: ["event1"],
+    actors: ["sourceActor", "targetActor"],
+  };
+
+  const customEvent = {
+    ...dummyCustomEventNormalized,
+    id: "customEvent1",
+    actors: {
+      "0": {
+        id: "0",
+        name: "Actor A",
+      },
+    },
+    variables: {
+      V0: {
+        id: "V0",
+        name: "Variable A",
+      },
+    },
+    script: ["event2"],
+  };
+
+  const sourceActor = {
+    ...dummyActorNormalized,
+    id: "sourceActor",
+  };
+
+  const targetActor = {
+    ...dummyActorNormalized,
+    id: "targetActor",
+  };
+
+  const scriptEvent = {
+    id: "event1",
+    command: "EVENT_CALL_CUSTOM_EVENT",
+    args: {
+      customEventId: "customEvent1",
+      "$actor[0]$": "targetActor",
+      "$variable[V0]$": {
+        type: "add",
+        valueA: {
+          type: "property",
+          target: "sourceActor",
+          property: "direction",
+        },
+        valueB: {
+          type: "property",
+          target: "targetActor",
+          property: "direction",
+        },
+      },
+    },
+  };
+
+  const scriptEvent2 = {
+    id: "event2",
+    command: "EVENT_ACTOR_FIELD",
+    args: {
+      actorId: "0",
+    },
+  };
+
+  mockedClipboard.readBuffer.mockImplementation((format) =>
+    Promise.resolve(
+      format === ClipboardTypeScenes
+        ? Buffer.from(
+            JSON.stringify({
+              scenes: [scene],
+              actors: [sourceActor, targetActor],
+              triggers: [],
+              scriptEvents: [scriptEvent, scriptEvent2],
+              variables: [],
+              customEvents: [customEvent],
+            }),
+            "utf8",
+          )
+        : Buffer.from(""),
+    ),
+  );
+
+  const dispatch = jest.fn();
+
+  const store = {
+    getState: () => ({
+      project: {
+        present: {
+          entities: {
+            customEvents: {
+              entities: {},
+              ids: [],
+            },
+            actorPrefabs: {
+              entities: {},
+              ids: [],
+            },
+            triggerPrefabs: {
+              entities: {},
+              ids: [],
+            },
+            scriptEvents: {
+              entities: {},
+              ids: [],
+            },
+          },
+        },
+      },
+      scriptEventDefs: {
+        lookup: scriptEventDefs,
+      },
+    }),
+    dispatch,
+  } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
+
+  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+
+  expect(dispatch.mock.calls.length).toBeGreaterThan(0);
+
+  const pasteActions = dispatch.mock.calls.map(([action]) => action);
+
+  const pastedTargetActorAction = pasteActions.find(
+    (action) =>
+      entitiesActions.addActor.match(action) &&
+      action.payload.defaults?.id === "targetActor",
+  );
+  const pastedSourceActorAction = pasteActions.find(
+    (action) =>
+      entitiesActions.addActor.match(action) &&
+      action.payload.defaults?.id === "sourceActor",
+  );
+
+  const addScriptEventActions = pasteActions.filter(
+    entitiesActions.addScriptEvents.match,
+  );
+  const addScriptEventActionsData = addScriptEventActions.flatMap(
+    (action) => action.payload.data,
+  );
+  const addCallScriptData = addScriptEventActionsData.find(
+    (event) => event.command === "EVENT_CALL_CUSTOM_EVENT",
+  );
+
+  const pastedSourceActorId = pastedSourceActorAction?.payload.actorId;
+  const pastedTargetActorId = pastedTargetActorAction?.payload.actorId;
+
+  expect(pastedSourceActorId).toBeTruthy();
+  expect(pastedSourceActorId).not.toBe("sourceActor");
+  expect(pastedTargetActorId).toBeTruthy();
+  expect(pastedTargetActorId).not.toBe("targetActor");
+  expect(addCallScriptData?.args?.["$actor[0]$"]).toBe(pastedTargetActorId);
+  expect(addCallScriptData?.args?.["$variable[V0]$"]).toEqual({
+    type: "add",
+    valueA: {
+      type: "property",
+      target: pastedSourceActorId,
+      property: "direction",
+    },
+    valueB: {
+      type: "property",
+      target: pastedTargetActorId,
+      property: "direction",
+    },
+  });
 });

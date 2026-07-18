@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where newly added event plugins wouldn't appear until project was reloaded
 - Fix issue where copy/paste of scenes could cause actor references to become disconnected
 - Fix issue where copy/paste of scenes would not transfer actor references used in prefab overrides
+- Fix issue where copy/paste of scenes would not transfer actor references used when calling scripts
+- Fix issue where copy/paste of scenes would not transfer actor references in properties used in values
 
 ## [4.3.2] - 2026-06-22
 
