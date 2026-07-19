@@ -29,13 +29,6 @@
       }
     },
     {
-      "id": "214014802",
-      "type": "user",
-      "attributes": {
-        "full_name": "MICHAEL FLIPPEN"
-      }
-    },
-    {
       "id": "6588868",
       "type": "user",
       "attributes": {
@@ -212,6 +205,13 @@
       "type": "user",
       "attributes": {
         "full_name": "Martin Cremerius-Gauer"
+      }
+    },
+    {
+      "id": "214014802",
+      "type": "user",
+      "attributes": {
+        "full_name": "MICHAEL FLIPPEN"
       }
     },
     {
