@@ -1,7 +1,9 @@
 import { existsSync } from "fs";
 import getTmp from "lib/helpers/getTmp";
-import createProject from "lib/project/createProject";
-import { dirname, join } from "path";
+import createProject, {
+  shouldIgnoreTemplatePath,
+} from "lib/project/createProject";
+import path, { dirname, join } from "path";
 import { rimraf as rmdir } from "rimraf";
 
 describe("createProject", () => {
@@ -27,5 +29,39 @@ describe("createProject", () => {
     expect(existsSync(projectPath)).toEqual(true);
     await rmdir(projectRoot);
     expect(existsSync(projectPath)).toEqual(false);
+  });
+});
+
+describe("shouldIgnoreTemplatePath", () => {
+  const templatePath = path.join(
+    path.parse(process.cwd()).root,
+    "templates",
+    "example",
+  );
+  const shouldIgnore = shouldIgnoreTemplatePath(templatePath);
+
+  test.each([
+    ["root thumbnail", "thumbnail.png", true],
+    ["uppercase root thumbnail", "THUMBNAIL.PNG", true],
+    ["mixed-case root thumbnail", "Thumbnail.Png", true],
+
+    ["nested thumbnail", "assets/backgrounds/thumbnail.png", false],
+    ["nested uppercase thumbnail", "assets/THUMBNAIL.PNG", false],
+    ["similar thumbnail filename", "project-thumbnail.png", false],
+    ["different thumbnail extension", "thumbnail.jpg", false],
+
+    ["root backup", "project.gbsproj.bak", true],
+    ["uppercase backup extension", "project.gbsproj.BAK", true],
+    ["nested backup", "assets/backgrounds/map.png.bak", true],
+    ["backup directory", "assets-old.bak", true],
+
+    ["bak before another extension", "project.gbsproj.bak.tmp", false],
+    ["bak within filename", "project.bak.json", false],
+    ["normal project file", "project.gbsproj", false],
+    ["template directory itself", ".", false],
+  ])("%s", (_description, relativePath, expected) => {
+    expect(shouldIgnore(path.resolve(templatePath, relativePath))).toBe(
+      expected,
+    );
   });
 });

@@ -12,6 +12,16 @@ export interface CreateProjectInput {
   path: string;
 }
 
+export const shouldIgnoreTemplatePath =
+  (templatePath: string) =>
+  (filepath: string): boolean => {
+    const relativePath = path.relative(templatePath, filepath);
+    const normalizedRelativePath = relativePath.toLowerCase();
+    const isRootThumbnail = normalizedRelativePath === "thumbnail.png";
+    const isBackupPath = path.basename(normalizedRelativePath).endsWith(".bak");
+    return isRootThumbnail || isBackupPath;
+  };
+
 const createProject = async (options: CreateProjectInput) => {
   const projectFolderName = stripInvalidFilenameCharacters(options.name);
   const projectPath = path.join(options.path, projectFolderName);
@@ -29,7 +39,9 @@ const createProject = async (options: CreateProjectInput) => {
   }
 
   await fs.ensureDir(projectPath);
-  await copy(templatePath, projectPath);
+  await copy(templatePath, projectPath, {
+    ignore: shouldIgnoreTemplatePath(templatePath),
+  });
 
   // Replace placeholders in data file
   const dataFile = (await fs.readFile(projectTmpDataPath, "utf8"))
