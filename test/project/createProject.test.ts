@@ -144,6 +144,16 @@ describe("shouldIgnoreTemplatePath", () => {
     ["similar thumbnail filename", "project-thumbnail.png", false],
     ["different thumbnail extension", "thumbnail.jpg", false],
 
+    ["root plugin metadata", "plugin.json", true],
+    ["uppercase root plugin metadata", "PLUGIN.JSON", true],
+    ["mixed-case root plugin metadata", "Plugin.Json", true],
+
+    ["nested plugin metadata", "assets/plugin.json", false],
+    ["nested uppercase plugin metadata", "assets/PLUGIN.JSON", false],
+    ["similar plugin metadata filename", "my-plugin.json", false],
+    ["plugin metadata with backup extension", "plugin.json.bak", true],
+    ["different plugin metadata extension", "plugin.js", false],
+
     ["root backup", "project.gbsproj.bak", true],
     ["uppercase backup extension", "project.gbsproj.BAK", true],
     ["nested backup", "assets/backgrounds/map.png.bak", true],

@@ -19,9 +19,10 @@ export const shouldIgnoreTemplatePath =
   (filepath: string): boolean => {
     const relativePath = path.relative(templatePath, filepath);
     const normalizedRelativePath = relativePath.toLowerCase();
-    const isRootThumbnail = normalizedRelativePath === "thumbnail.png";
+    const isRootPluginThumbnail = normalizedRelativePath === "thumbnail.png";
+    const isRootPluginMetadata = normalizedRelativePath === "plugin.json";
     const isBackupPath = path.basename(normalizedRelativePath).endsWith(".bak");
-    return isRootThumbnail || isBackupPath;
+    return isRootPluginThumbnail || isRootPluginMetadata || isBackupPath;
   };
 
 const createProject = async (options: CreateProjectInput) => {
