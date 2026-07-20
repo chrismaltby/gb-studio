@@ -119,17 +119,6 @@ export const SpriteModeSetting = Type.Union([
 
 export type SpriteModeSetting = Static<typeof SpriteModeSetting>;
 
-const MetadataResource = Type.Object({
-  _resourceType: Type.Literal("project"),
-  name: Type.String(),
-  author: Type.String(),
-  notes: Type.String(),
-  _version: Type.String(),
-  _release: Type.String(),
-});
-
-export type MetadataResource = Static<typeof MetadataResource>;
-
 export const ScriptEventArgs = Type.Record(Type.String(), Type.Unknown());
 
 export type ScriptEventArgs = Static<typeof ScriptEventArgs>;
