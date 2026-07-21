@@ -49,7 +49,7 @@ export const ImageNavigator = ({ height, selectedId }: ImageNavigatorProps) => {
     toggle: toggleFolderOpen,
     set: openFolder,
     unset: closeFolder,
-  } = useToggleableList<string>([]);
+  } = useToggleableList<string>([], "imageNavigator");
 
   const dispatch = useAppDispatch();
 
@@ -249,6 +249,7 @@ export const ImageNavigator = ({ height, selectedId }: ImageNavigatorProps) => {
           selectedId={selectedId}
           items={nestedBackgroundItems}
           setSelectedId={setSelectedId}
+          cacheKey="imageNavigatorBackgrounds"
           height={splitSizes[0] - (showBackgroundsSearch ? 60 : 30)}
           onKeyDown={(e: KeyboardEvent, item) => {
             listenForRenameStart(e);
@@ -316,6 +317,7 @@ export const ImageNavigator = ({ height, selectedId }: ImageNavigatorProps) => {
           selectedId={selectedId}
           items={nestedTilesetItems}
           setSelectedId={setSelectedId}
+          cacheKey="imageNavigatorTilesets"
           height={splitSizes[1] - (showTilesetsSearch ? 60 : 30)}
           onKeyDown={(e: KeyboardEvent, item) => {
             listenForRenameStart(e);

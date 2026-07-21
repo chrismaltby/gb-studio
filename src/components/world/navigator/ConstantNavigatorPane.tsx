@@ -56,7 +56,7 @@ export const ConstantNavigatorPane = ({
     values: manuallyOpenedFolders,
     isSet: isFolderOpen,
     toggle: toggleFolderOpen,
-  } = useToggleableList<string>([]);
+  } = useToggleableList<string>([], "constantNavigator");
 
   const openFolders = useMemo(() => {
     return [...manuallyOpenedFolders];
@@ -271,6 +271,7 @@ export const ConstantNavigatorPane = ({
       selectedId={selectedId}
       items={nestedConstantItems}
       setSelectedId={setSelectedId}
+      cacheKey="constantNavigator"
       height={height}
       onKeyDown={(e: KeyboardEvent, item) => {
         listenForRenameStart(e);

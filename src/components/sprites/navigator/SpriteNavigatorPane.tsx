@@ -63,7 +63,7 @@ export const SpriteNavigatorPane = ({
     toggle: toggleFolderOpen,
     set: openFolder,
     unset: closeFolder,
-  } = useToggleableList<string>([]);
+  } = useToggleableList<string>([], "spriteNavigator");
 
   const [spritesSearchTerm, setSpritesSearchTerm] = useState("");
   const [spritesSearchEnabled, setSpritesSearchEnabled] = useState(false);
@@ -246,6 +246,7 @@ export const SpriteNavigatorPane = ({
         selectedId={highlightedSpriteId}
         items={nestedSpriteItems}
         setSelectedId={setSelectedId}
+        cacheKey="spriteNavigator"
         height={listHeight}
         onKeyDown={onKeyDown}
       >

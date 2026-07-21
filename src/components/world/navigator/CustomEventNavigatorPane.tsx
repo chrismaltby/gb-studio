@@ -53,7 +53,7 @@ export const CustomEventNavigatorPane = ({
     toggle: toggleFolderOpen,
     set: openFolder,
     unset: closeFolder,
-  } = useToggleableList<string>([]);
+  } = useToggleableList<string>([], "customEventNavigator");
 
   const openFolders = useMemo(() => {
     return [
@@ -224,6 +224,7 @@ export const CustomEventNavigatorPane = ({
         selectedId={selectedId}
         items={nestedCustomEventItems}
         setSelectedId={setSelectedId}
+        cacheKey="customEventNavigator"
         height={height}
         onKeyDown={onKeyDown}
         outerElementType={FlatListOuterDropTarget}

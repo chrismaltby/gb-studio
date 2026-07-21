@@ -61,7 +61,7 @@ export const SongNavigatorPane = ({
     toggle: toggleFolderOpen,
     set: openFolder,
     unset: closeFolder,
-  } = useToggleableList<string>([]);
+  } = useToggleableList<string>([], "songNavigator");
 
   const [songsSearchTerm, setSongsSearchTerm] = useState("");
   const [songsSearchEnabled, setSongsSearchEnabled] = useState(false);
@@ -277,6 +277,7 @@ export const SongNavigatorPane = ({
         selectedId={selectedNavigatorId}
         items={nestedSongItems}
         setSelectedId={setSelectedId}
+        cacheKey="songNavigator"
         height={(height ?? 0) - (showSongsSearch ? 60 : 30)}
         onKeyDown={(e: KeyboardEvent, item) => {
           if (e.key === "Enter" && item?.type === "file") {

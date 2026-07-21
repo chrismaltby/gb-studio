@@ -142,7 +142,7 @@ export const SceneNavigatorPane = ({
     toggle: toggleFolderOpen,
     set: openFolder,
     unset: closeFolder,
-  } = useToggleableList<string>([]);
+  } = useToggleableList<string>([], "sceneNavigator");
 
   const sceneName = useAppSelector(
     (state) => sceneSelectors.selectById(state, sceneId)?.name,
@@ -431,6 +431,7 @@ export const SceneNavigatorPane = ({
         highlightIds={folderId ? [] : sceneSelectionIds}
         items={nestedSceneItems}
         setSelectedId={setSelectedId}
+        cacheKey="sceneNavigator"
         height={height}
         onKeyDown={(e: KeyboardEvent) => {
           listenForRenameStart(e);

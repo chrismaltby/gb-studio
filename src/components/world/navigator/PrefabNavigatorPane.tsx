@@ -96,7 +96,7 @@ export const PrefabNavigatorPane = ({
     toggle: toggleFolderOpen,
     set: openFolder,
     unset: closeFolder,
-  } = useToggleableList<string>([]);
+  } = useToggleableList<string>([], "prefabNavigator");
 
   const openFolders = useMemo(() => {
     return [
@@ -362,6 +362,7 @@ export const PrefabNavigatorPane = ({
       selectedId={selectedId}
       items={nestedPrefabItems}
       setSelectedId={setSelectedId}
+      cacheKey="prefabNavigator"
       height={height}
       onKeyDown={(e: KeyboardEvent, item) => {
         listenForRenameStart(e);

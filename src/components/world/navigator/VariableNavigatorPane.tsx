@@ -114,6 +114,7 @@ export const VariableNavigatorPane = ({
       selectedId={selectedId}
       items={items}
       setSelectedId={setSelectedId}
+      cacheKey="variableNavigator"
       height={height}
       onKeyDown={listenForRenameStart}
       children={({ item }) => (

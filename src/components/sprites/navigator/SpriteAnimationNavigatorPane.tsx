@@ -115,7 +115,7 @@ export const SpriteAnimationNavigatorPane = ({
     toggle: toggleStateOpen,
     unset: openState,
     set: closeState,
-  } = useToggleableList<string>([]);
+  } = useToggleableList<string>([], "spriteAnimationNavigator");
 
   const dispatch = useAppDispatch();
 
@@ -334,6 +334,7 @@ export const SpriteAnimationNavigatorPane = ({
         selectedId={highlightedNavigationId}
         items={spriteAnimations}
         setSelectedId={setSelectAnimationId}
+        cacheKey="spriteAnimationNavigator"
         height={(height ?? 0) - 30}
         onKeyDown={onKeyDown}
       >

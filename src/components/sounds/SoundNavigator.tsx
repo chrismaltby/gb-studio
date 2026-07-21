@@ -38,7 +38,7 @@ export const SoundNavigator = ({ height, selectedId }: SoundNavigatorProps) => {
     toggle: toggleFolderOpen,
     set: openFolder,
     unset: closeFolder,
-  } = useToggleableList<string>([]);
+  } = useToggleableList<string>([], "soundNavigator");
 
   const [soundsSearchTerm, setSoundsSearchTerm] = useState("");
   const [soundsSearchEnabled, setSoundsSearchEnabled] = useState(false);
@@ -158,6 +158,7 @@ export const SoundNavigator = ({ height, selectedId }: SoundNavigatorProps) => {
         selectedId={selectedId}
         items={nestedSoundItems}
         setSelectedId={setSelectedId}
+        cacheKey="soundNavigator"
         height={height - (showSoundsSearch ? 60 : 30)}
         onKeyDown={(e: KeyboardEvent, item) => {
           listenForRenameStart(e);
