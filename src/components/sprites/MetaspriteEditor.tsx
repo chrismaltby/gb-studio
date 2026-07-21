@@ -29,7 +29,7 @@ import {
   MonoOBJPalette,
   SpriteModeSetting,
 } from "shared/lib/resources/types";
-import { TILE_SIZE } from "consts";
+import { DMG_PALETTE, TILE_SIZE } from "consts";
 import { useContextMenu } from "ui/hooks/use-context-menu";
 import { useSelectAllShortcut } from "ui/hooks/use-select-all";
 
@@ -235,6 +235,40 @@ const MetaspriteEditor = ({
   const defaultSpriteMode = useAppSelector(
     (state) => state.project.present.settings.spriteMode,
   );
+
+  const selectedTiles = useMemo(
+    () =>
+      selectedTileIds
+        .map((tileId) => metaspriteTileLookup[tileId])
+        .filter((tile) => tile !== undefined),
+    [selectedTileIds, metaspriteTileLookup],
+  );
+
+  const selectionPaletteIndex = useMemo(() => {
+    const firstPaletteIndex = selectedTiles[0]?.paletteIndex;
+    if (
+      selectedTiles.every((tile) => tile.paletteIndex === firstPaletteIndex)
+    ) {
+      return firstPaletteIndex;
+    }
+    return undefined;
+  }, [selectedTiles]);
+
+  const spritePalettes = useMemo(() => {
+    if (!colorsEnabled) {
+      return undefined;
+    }
+    return Array.from({ length: 8 }, (_, i) => {
+      const scenePaletteId = scene?.spritePaletteIds?.[i];
+      const defaultPaletteId = defaultSpritePaletteIds[i];
+      return (
+        (scenePaletteId ? palettesLookup[scenePaletteId] : undefined) ??
+        palettesLookup[defaultPaletteId] ??
+        DMG_PALETTE
+      );
+    });
+  }, [colorsEnabled, defaultSpritePaletteIds, palettesLookup, scene]);
+
   const [draggingSelection, setDraggingSelection] = useState(false);
   const [draggingMetasprite, setDraggingMetasprite] = useState(false);
   const dragMetasprites = useRef<MetaspriteSelection[]>([]);
@@ -787,14 +821,27 @@ const MetaspriteEditor = ({
 
   //#region Context Menu
 
-  const getContextMenu = useCallback(() => {
-    return renderMetaspriteTileContextMenu({
+  const getContextMenu = useCallback(
+    ({ closeMenu }: { closeMenu: () => void }) => {
+      return renderMetaspriteTileContextMenu({
+        dispatch,
+        spriteSheetId,
+        metaspriteId,
+        selectedTileIds,
+        selectionPaletteIndex,
+        palettes: spritePalettes,
+        onClose: closeMenu,
+      });
+    },
+    [
       dispatch,
-      spriteSheetId,
       metaspriteId,
       selectedTileIds,
-    });
-  }, [dispatch, metaspriteId, selectedTileIds, spriteSheetId]);
+      spriteSheetId,
+      selectionPaletteIndex,
+      spritePalettes,
+    ],
+  );
 
   const { onContextMenu, contextMenuElement } = useContextMenu({
     getMenu: getContextMenu,

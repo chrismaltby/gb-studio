@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Tilemap scenes, allowing scenes to be built from tilesets and edited directly within the application
 - Add default collision, color, and priority properties for tilesets which are used when painting Tilemap scenes
 - Add autotile groups for tilesets, supporting 2x2 Wang tiles and 9-slice autotiles
+- Add ability to set tile palettes from right click context menu in sprite editor
 
 ### Changed
 
