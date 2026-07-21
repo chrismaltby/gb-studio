@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improve actor and trigger dragging so entities keep their grabbed offset instead of snapping position to the cursor
 - Pressing `s` while creating a scene now toggles between creating an Image Scene or Tilemap Scene
+- Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
+- Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
+- Updated Ukrainian localisation. [@AmakerGame](https://github.com/AmakerGame)
 
 ### Fixed
 
