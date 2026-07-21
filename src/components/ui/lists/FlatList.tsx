@@ -1,10 +1,13 @@
 import throttle from "lodash/throttle";
 import React, { useEffect, useRef, useState } from "react";
-import { List, RowComponentProps, useListRef } from "react-window";
+import { List, RowComponentProps, useListCallbackRef } from "react-window";
 import styled from "styled-components";
 import { ThemeInterface } from "ui/theme/ThemeInterface";
 import { ListItem } from "./ListItem";
 import { getEventNodeName } from "renderer/lib/helpers/dom";
+import useCachedScroll, {
+  getCachedScrollPosition,
+} from "ui/hooks/use-cached-scroll";
 
 export interface FlatListItem {
   id: string;
@@ -29,6 +32,7 @@ type WrapperElementProps = React.PropsWithChildren<
 
 interface FlatListProps<T extends FlatListItem> {
   readonly height: number;
+  readonly cacheKey?: string;
   readonly items: T[];
   readonly selectedId?: string;
   readonly highlightIds?: string[];
@@ -52,6 +56,8 @@ const Wrapper = styled.div`
 const PassThrough = ({ children }: { children: React.ReactNode }) => (
   <>{children}</>
 );
+
+const ROW_HEIGHT = 25;
 
 const Row = ({
   index,
@@ -94,6 +100,7 @@ const Row = ({
 
 export const FlatList = <T extends FlatListItem>({
   items,
+  cacheKey,
   selectedId,
   highlightIds,
   setSelectedId,
@@ -107,11 +114,26 @@ export const FlatList = <T extends FlatListItem>({
 
   const ref = useRef<HTMLDivElement>(null);
   const [hasFocus, setHasFocus] = useState(false);
-  const listRef = useListRef(null);
+  const [listApi, setListApi] = useListCallbackRef(null);
+  const selectedIndex = items.findIndex((item) => item.id === selectedId);
+  const cachedScrollPosition = getCachedScrollPosition(cacheKey);
+  const selectedItemTop = selectedIndex * ROW_HEIGHT;
+  const isSelectionWithinCachedView =
+    cachedScrollPosition !== undefined &&
+    selectedIndex >= 0 &&
+    selectedItemTop >= cachedScrollPosition &&
+    selectedItemTop + ROW_HEIGHT <= cachedScrollPosition + height;
+  const shouldRestoreCachedScroll =
+    selectedIndex < 0 || isSelectionWithinCachedView;
+  const { onScroll } = useCachedScroll(
+    cacheKey,
+    listApi?.element ?? null,
+    shouldRestoreCachedScroll,
+  );
+  const hasMountedList = useRef(false);
+  const previousSelectedId = useRef(selectedId);
 
   const WrapperElement = outerElementType ?? PassThrough;
-
-  const selectedIndex = items.findIndex((item) => item.id === selectedId);
 
   const handleKeys = (e: KeyboardEvent) => {
     if (!hasFocus || getEventNodeName(e) === "INPUT") {
@@ -220,10 +242,38 @@ export const FlatList = <T extends FlatListItem>({
   });
 
   useEffect(() => {
-    if (selectedIndex >= 0 && listRef.current) {
-      listRef.current.scrollToRow({ index: selectedIndex });
+    hasMountedList.current = false;
+  }, [cacheKey]);
+
+  useEffect(() => {
+    if (!listApi?.element) {
+      return;
     }
-  }, [selectedIndex, items, listRef]);
+
+    if (!hasMountedList.current) {
+      if (selectedIndex >= 0) {
+        if (!cacheKey) {
+          listApi.scrollToRow({ index: selectedIndex });
+        } else if (!isSelectionWithinCachedView) {
+          listApi.scrollToRow({ align: "center", index: selectedIndex });
+        }
+      }
+      hasMountedList.current = true;
+    } else if (
+      selectedIndex >= 0 &&
+      previousSelectedId.current !== selectedId
+    ) {
+      listApi.scrollToRow({ index: selectedIndex });
+    }
+
+    previousSelectedId.current = selectedId;
+  }, [
+    cacheKey,
+    isSelectionWithinCachedView,
+    listApi,
+    selectedId,
+    selectedIndex,
+  ]);
 
   if (height <= 0) {
     return <Wrapper ref={ref} style={{ height }} />;
@@ -240,9 +290,11 @@ export const FlatList = <T extends FlatListItem>({
     >
       <WrapperElement>
         <List
-          listRef={listRef}
+          defaultHeight={height}
+          listRef={setListApi}
+          onScroll={cacheKey ? onScroll : undefined}
           rowCount={items.length}
-          rowHeight={25}
+          rowHeight={ROW_HEIGHT}
           rowComponent={Row}
           rowProps={{
             items: items as FlatListItem[],

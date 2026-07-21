@@ -69,7 +69,7 @@ export const PaletteNavigator = ({
     toggle: toggleFolderOpen,
     set: openFolder,
     unset: closeFolder,
-  } = useToggleableList<string>([]);
+  } = useToggleableList<string>([], "paletteNavigator");
 
   const [palettesSearchTerm, setPalettesSearchTerm] = useState("");
   const [palettesSearchEnabled, setPalettesSearchEnabled] = useState(false);
@@ -284,6 +284,7 @@ export const PaletteNavigator = ({
           selectedId={selectedId}
           items={nestedPaletteItems}
           setSelectedId={setSelectedId}
+          cacheKey="paletteNavigator"
           height={height - (showPalettesSearch ? 60 : 30)}
           outerElementType={FlatListOuterDropTarget}
           onKeyDown={(e: KeyboardEvent, item) => {

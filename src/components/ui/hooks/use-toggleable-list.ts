@@ -1,7 +1,19 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-const useToggleableList = <T>(initialState: T[]) => {
-  const [values, setValues] = useState<T[]>(initialState);
+const toggleableListCache: Record<string, unknown[]> = {};
+
+const useToggleableList = <T>(initialState: T[], cacheKey?: string) => {
+  const [values, setValues] = useState<T[]>(() =>
+    cacheKey && toggleableListCache[cacheKey]
+      ? (toggleableListCache[cacheKey] as T[])
+      : initialState,
+  );
+
+  useEffect(() => {
+    if (cacheKey) {
+      toggleableListCache[cacheKey] = values;
+    }
+  }, [cacheKey, values]);
 
   const set = useCallback((id: T) => {
     setValues((value) => ([] as T[]).concat(value, id));
