@@ -28,6 +28,7 @@ import ItemTypes from "renderer/lib/dnd/itemTypes";
 import { getParentPath } from "shared/lib/helpers/virtualFilesystem";
 import { FlatListOuterDropTarget } from "ui/lists/FlatListOuterDropTarget";
 import { FlatListOuterDropProvider } from "ui/lists/FlatListOuterDropContext";
+import { useNavigatorSearch } from "store/features/editor/hooks/useNavigatorSearch";
 
 interface PaletteNavigatorProps {
   height: number;
@@ -71,8 +72,12 @@ export const PaletteNavigator = ({
     unset: closeFolder,
   } = useToggleableList<string>([], "paletteNavigator");
 
-  const [palettesSearchTerm, setPalettesSearchTerm] = useState("");
-  const [palettesSearchEnabled, setPalettesSearchEnabled] = useState(false);
+  const {
+    searchEnabled: palettesSearchEnabled,
+    searchTerm: palettesSearchTerm,
+    setSearchTerm: setPalettesSearchTerm,
+    toggleSearchEnabled: togglePalettesSearchEnabled,
+  } = useNavigatorSearch("palettes");
 
   const nestedPaletteItems = useMemo(
     () =>
@@ -198,13 +203,6 @@ export const PaletteNavigator = ({
   );
 
   const showPalettesSearch = palettesSearchEnabled && height > 60;
-
-  const togglePalettesSearchEnabled = useCallback(() => {
-    if (palettesSearchEnabled) {
-      setPalettesSearchTerm("");
-    }
-    setPalettesSearchEnabled(!palettesSearchEnabled);
-  }, [palettesSearchEnabled]);
 
   const { onDropOntoItem, flatListDropProviderValue } = useFlatListReparentDnD<
     EntityNavigatorItem<Palette>

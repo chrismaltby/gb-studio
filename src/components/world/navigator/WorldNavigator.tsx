@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import useSplitPane from "ui/hooks/use-split-pane";
@@ -26,6 +26,7 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { ConstantNavigatorPane } from "./ConstantNavigatorPane";
 import { defaultProjectSettings } from "consts";
+import { useNavigatorSearch } from "store/features/editor/hooks/useNavigatorSearch";
 
 const COLLAPSED_SIZE = 30;
 const REOPEN_SIZE = 205;
@@ -132,64 +133,49 @@ export const WorldNavigator = () => {
     }
   };
 
-  const [scenesSearchTerm, setScenesSearchTerm] = useState("");
-  const [scenesSearchEnabled, setScenesSearchEnabled] = useState(false);
+  const {
+    searchEnabled: scenesSearchEnabled,
+    searchTerm: scenesSearchTerm,
+    setSearchTerm: setScenesSearchTerm,
+    toggleSearchEnabled: toggleScenesSearchEnabled,
+  } = useNavigatorSearch("scenes");
   const showScenesSearch = scenesSearchEnabled && splitSizes[SCENES_PANE] > 60;
 
-  const [scriptsSearchTerm, setScriptsSearchTerm] = useState("");
-  const [scriptsSearchEnabled, setScriptsSearchEnabled] = useState(false);
+  const {
+    searchEnabled: scriptsSearchEnabled,
+    searchTerm: scriptsSearchTerm,
+    setSearchTerm: setScriptsSearchTerm,
+    toggleSearchEnabled: toggleScriptsSearchEnabled,
+  } = useNavigatorSearch("customEvents");
   const showScriptsSearch =
     scriptsSearchEnabled && splitSizes[SCRIPTS_PANE] > 60;
 
-  const [prefabsSearchTerm, setPrefabsSearchTerm] = useState("");
-  const [prefabsSearchEnabled, setPrefabsSearchEnabled] = useState(false);
+  const {
+    searchEnabled: prefabsSearchEnabled,
+    searchTerm: prefabsSearchTerm,
+    setSearchTerm: setPrefabsSearchTerm,
+    toggleSearchEnabled: togglePrefabsSearchEnabled,
+  } = useNavigatorSearch("prefabs");
   const showPrefabsSearch =
     prefabsSearchEnabled && splitSizes[PREFABS_PANE] > 60;
 
-  const [variablesSearchTerm, setVariablesSearchTerm] = useState("");
-  const [variablesSearchEnabled, setVariablesSearchEnabled] = useState(false);
+  const {
+    searchEnabled: variablesSearchEnabled,
+    searchTerm: variablesSearchTerm,
+    setSearchTerm: setVariablesSearchTerm,
+    toggleSearchEnabled: toggleVariablesSearchEnabled,
+  } = useNavigatorSearch("variables");
   const showVariablesSearch =
     variablesSearchEnabled && splitSizes[VARIABLES_PANE] > 60;
 
-  const [constantsSearchTerm, setConstantsSearchTerm] = useState("");
-  const [constantsSearchEnabled, setConstantsSearchEnabled] = useState(false);
+  const {
+    searchEnabled: constantsSearchEnabled,
+    searchTerm: constantsSearchTerm,
+    setSearchTerm: setConstantsSearchTerm,
+    toggleSearchEnabled: toggleConstantsSearchEnabled,
+  } = useNavigatorSearch("constants");
   const showConstantsSearch =
     constantsSearchEnabled && splitSizes[CONSTANTS_PANE] > 60;
-
-  const toggleScenesSearchEnabled = useCallback(() => {
-    if (scenesSearchEnabled) {
-      setScenesSearchTerm("");
-    }
-    setScenesSearchEnabled(!scenesSearchEnabled);
-  }, [scenesSearchEnabled]);
-
-  const togglePrefabsSearchEnabled = useCallback(() => {
-    if (prefabsSearchEnabled) {
-      setPrefabsSearchTerm("");
-    }
-    setPrefabsSearchEnabled(!prefabsSearchEnabled);
-  }, [prefabsSearchEnabled]);
-
-  const toggleScriptsSearchEnabled = useCallback(() => {
-    if (scriptsSearchEnabled) {
-      setScriptsSearchTerm("");
-    }
-    setScriptsSearchEnabled(!scriptsSearchEnabled);
-  }, [scriptsSearchEnabled]);
-
-  const toggleVariablesSearchEnabled = useCallback(() => {
-    if (variablesSearchEnabled) {
-      setVariablesSearchTerm("");
-    }
-    setVariablesSearchEnabled(!variablesSearchEnabled);
-  }, [variablesSearchEnabled]);
-
-  const toggleConstantsSearchEnabled = useCallback(() => {
-    if (constantsSearchEnabled) {
-      setConstantsSearchTerm("");
-    }
-    setConstantsSearchEnabled(!constantsSearchEnabled);
-  }, [constantsSearchEnabled]);
 
   return (
     <Wrapper>

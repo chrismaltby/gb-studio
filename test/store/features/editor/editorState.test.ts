@@ -393,6 +393,36 @@ test("Should be able to edit search term", () => {
   expect(newState.searchTerm).toBe("Search Term");
 });
 
+test("Should store navigator search settings", () => {
+  const enabledState = reducer(
+    initialState,
+    actions.toggleNavigatorSearch("palettes"),
+  );
+  const searchedState = reducer(
+    enabledState,
+    actions.setNavigatorSearchTerm({
+      key: "palettes",
+      searchTerm: "Warm",
+    }),
+  );
+
+  expect(enabledState.navigatorSearch.palettes).toBe("");
+  expect(searchedState.navigatorSearch.palettes).toBe("Warm");
+});
+
+test("Should clear navigator search term when disabling search", () => {
+  const state: EditorState = {
+    ...initialState,
+    navigatorSearch: {
+      ...initialState.navigatorSearch,
+      palettes: "Warm",
+    },
+  };
+  const newState = reducer(state, actions.toggleNavigatorSearch("palettes"));
+
+  expect(newState.navigatorSearch.palettes).toBeUndefined();
+});
+
 test("Should be able to set script tab", () => {
   const state: EditorState = {
     ...initialState,

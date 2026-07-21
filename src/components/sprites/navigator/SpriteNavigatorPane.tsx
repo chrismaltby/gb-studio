@@ -18,6 +18,7 @@ import {
   FileSystemNavigatorItem,
   buildAssetNavigatorItems,
 } from "shared/lib/assets/buildAssetNavigatorItems";
+import { useNavigatorSearch } from "store/features/editor/hooks/useNavigatorSearch";
 import { FlexGrow, FlexRow } from "ui/spacing/Spacing";
 import { SplitPaneChildProps } from "ui/splitpane/SplitPaneVerticalContainer";
 
@@ -65,8 +66,12 @@ export const SpriteNavigatorPane = ({
     unset: closeFolder,
   } = useToggleableList<string>([], "spriteNavigator");
 
-  const [spritesSearchTerm, setSpritesSearchTerm] = useState("");
-  const [spritesSearchEnabled, setSpritesSearchEnabled] = useState(false);
+  const {
+    searchEnabled: spritesSearchEnabled,
+    searchTerm: spritesSearchTerm,
+    setSearchTerm: setSpritesSearchTerm,
+    toggleSearchEnabled: toggleSpritesSearchEnabled,
+  } = useNavigatorSearch("sprites");
 
   const nestedSpriteItems = useMemo(
     () => buildAssetNavigatorItems(allSprites, openFolders, spritesSearchTerm),
@@ -171,16 +176,6 @@ export const SpriteNavigatorPane = ({
 
   const showSpritesSearch = spritesSearchEnabled && (height ?? 0) > 60;
 
-  const toggleSpritesSearchEnabled = useCallback(() => {
-    setSpritesSearchEnabled((enabled) => {
-      if (enabled) {
-        setSpritesSearchTerm("");
-      }
-
-      return !enabled;
-    });
-  }, []);
-
   const onKeyDown = useCallback(
     (
       e: KeyboardEvent,
@@ -208,7 +203,7 @@ export const SpriteNavigatorPane = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSpritesSearchTerm(e.currentTarget.value);
     },
-    [],
+    [setSpritesSearchTerm],
   );
 
   const listHeight = (height ?? 0) - (showSpritesSearch ? 60 : 30);

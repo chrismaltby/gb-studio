@@ -22,6 +22,7 @@ import { FixedSpacer } from "ui/spacing/Spacing";
 import { MusicAsset } from "shared/lib/resources/types";
 import { SplitPaneChildProps } from "ui/splitpane/SplitPaneVerticalContainer";
 import { SplitPane } from "ui/splitpane/SplitPane";
+import { useNavigatorSearch } from "store/features/editor/hooks/useNavigatorSearch";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import trackerActions from "store/features/tracker/trackerActions";
 
@@ -63,8 +64,12 @@ export const SongNavigatorPane = ({
     unset: closeFolder,
   } = useToggleableList<string>([], "songNavigator");
 
-  const [songsSearchTerm, setSongsSearchTerm] = useState("");
-  const [songsSearchEnabled, setSongsSearchEnabled] = useState(false);
+  const {
+    searchEnabled: songsSearchEnabled,
+    searchTerm: songsSearchTerm,
+    setSearchTerm: setSongsSearchTerm,
+    toggleSearchEnabled: toggleSongsSearch,
+  } = useNavigatorSearch("songs");
   const [renameId, setRenameId] = useState("");
   const [selectedNavigatorId, setSelectedNavigatorId] =
     useState(selectedSongId);
@@ -181,13 +186,11 @@ export const SongNavigatorPane = ({
   const showSongsSearch = songsSearchEnabled && (height ?? 0) > 60;
 
   const toggleSongsSearchEnabled = useCallback(() => {
-    if (songsSearchEnabled) {
-      setSongsSearchTerm("");
-    } else {
+    if (!songsSearchEnabled) {
       ensureMinHeight?.(200);
     }
-    setSongsSearchEnabled((value) => !value);
-  }, [ensureMinHeight, songsSearchEnabled]);
+    toggleSongsSearch();
+  }, [ensureMinHeight, songsSearchEnabled, toggleSongsSearch]);
 
   return (
     <SplitPane style={{ height }}>

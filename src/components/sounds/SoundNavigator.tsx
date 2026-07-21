@@ -18,6 +18,7 @@ import useToggleableList from "ui/hooks/use-toggleable-list";
 import { Button } from "ui/buttons/Button";
 import { SearchIcon } from "ui/icons/Icons";
 import { SoundAsset } from "shared/lib/resources/types";
+import { useNavigatorSearch } from "store/features/editor/hooks/useNavigatorSearch";
 
 interface SoundNavigatorProps {
   height: number;
@@ -40,8 +41,12 @@ export const SoundNavigator = ({ height, selectedId }: SoundNavigatorProps) => {
     unset: closeFolder,
   } = useToggleableList<string>([], "soundNavigator");
 
-  const [soundsSearchTerm, setSoundsSearchTerm] = useState("");
-  const [soundsSearchEnabled, setSoundsSearchEnabled] = useState(false);
+  const {
+    searchEnabled: soundsSearchEnabled,
+    searchTerm: soundsSearchTerm,
+    setSearchTerm: setSoundsSearchTerm,
+    toggleSearchEnabled: toggleSoundsSearchEnabled,
+  } = useNavigatorSearch("sounds");
 
   const nestedSoundItems = useMemo(
     () => buildAssetNavigatorItems(allSounds, openFolders, soundsSearchTerm),
@@ -118,13 +123,6 @@ export const SoundNavigator = ({ height, selectedId }: SoundNavigatorProps) => {
   );
 
   const showSoundsSearch = soundsSearchEnabled && height > 60;
-
-  const toggleSoundsSearchEnabled = useCallback(() => {
-    if (soundsSearchEnabled) {
-      setSoundsSearchTerm("");
-    }
-    setSoundsSearchEnabled(!soundsSearchEnabled);
-  }, [soundsSearchEnabled]);
 
   return (
     <Pane style={{ height }}>

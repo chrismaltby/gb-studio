@@ -23,6 +23,7 @@ import useToggleableList from "ui/hooks/use-toggleable-list";
 import { Button } from "ui/buttons/Button";
 import { SearchIcon } from "ui/icons/Icons";
 import { BackgroundAsset, TilesetAsset } from "shared/lib/resources/types";
+import { useNavigatorSearch } from "store/features/editor/hooks/useNavigatorSearch";
 
 interface ImageNavigatorProps {
   height: number;
@@ -53,12 +54,18 @@ export const ImageNavigator = ({ height, selectedId }: ImageNavigatorProps) => {
 
   const dispatch = useAppDispatch();
 
-  const [backgroundsSearchTerm, setBackgroundsSearchTerm] = useState("");
-  const [backgroundsSearchEnabled, setBackgroundsSearchEnabled] =
-    useState(false);
-
-  const [tilesetsSearchTerm, setTilesetsSearchTerm] = useState("");
-  const [tilesetsSearchEnabled, setTilesetsSearchEnabled] = useState(false);
+  const {
+    searchEnabled: backgroundsSearchEnabled,
+    searchTerm: backgroundsSearchTerm,
+    setSearchTerm: setBackgroundsSearchTerm,
+    toggleSearchEnabled: toggleBackgroundsSearchEnabled,
+  } = useNavigatorSearch("backgrounds");
+  const {
+    searchEnabled: tilesetsSearchEnabled,
+    searchTerm: tilesetsSearchTerm,
+    setSearchTerm: setTilesetsSearchTerm,
+    toggleSearchEnabled: toggleTilesetsSearchEnabled,
+  } = useNavigatorSearch("tilesets");
 
   const nestedBackgroundItems = useMemo(
     () =>
@@ -200,20 +207,6 @@ export const ImageNavigator = ({ height, selectedId }: ImageNavigatorProps) => {
 
   const showBackgroundsSearch = backgroundsSearchEnabled && splitSizes[0] > 60;
   const showTilesetsSearch = tilesetsSearchEnabled && splitSizes[1] > 60;
-
-  const toggleBackgroundsSearchEnabled = useCallback(() => {
-    if (backgroundsSearchEnabled) {
-      setBackgroundsSearchTerm("");
-    }
-    setBackgroundsSearchEnabled(!backgroundsSearchEnabled);
-  }, [backgroundsSearchEnabled]);
-
-  const toggleTilesetsSearchEnabled = useCallback(() => {
-    if (tilesetsSearchEnabled) {
-      setTilesetsSearchTerm("");
-    }
-    setTilesetsSearchEnabled(!tilesetsSearchEnabled);
-  }, [tilesetsSearchEnabled]);
 
   return (
     <>

@@ -32,6 +32,11 @@ jest.mock("../../../../src/store/hooks", () => ({
       project: {
         present: {},
       },
+      editor: {
+        navigatorSearch: {
+          songs: undefined,
+        },
+      },
     }),
   ),
 }));
