@@ -10488,7 +10488,6 @@ __metadata:
     react-select: "npm:^5.10.2"
     react-simple-code-editor: "npm:^0.14.1"
     react-window: "npm:^2.2.7"
-    react-windowed-select: "npm:^5.2.0"
     redux: "npm:^5.0.1"
     redux-thunk: "npm:^3.1.0"
     redux-undo: "npm:1.1.0"
@@ -13116,13 +13115,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"memoize-one@npm:>=3.1.1 <6":
-  version: 5.2.1
-  resolution: "memoize-one@npm:5.2.1"
-  checksum: 10c0/fd22dbe9a978a2b4f30d6a491fc02fb90792432ad0dab840dc96c1734d2bd7c9cdeb6a26130ec60507eb43230559523615873168bcbe8fafab221c30b11d54c1
-  languageName: node
-  linkType: hard
-
 "memoize-one@npm:^6.0.0":
   version: 6.0.0
   resolution: "memoize-one@npm:6.0.0"
@@ -15174,7 +15166,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-select@npm:^5.10.2, react-select@npm:^5.2.2":
+"react-select@npm:^5.10.2":
   version: 5.10.2
   resolution: "react-select@npm:5.10.2"
   dependencies:
@@ -15219,19 +15211,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-window@npm:^1.8.6":
-  version: 1.8.11
-  resolution: "react-window@npm:1.8.11"
-  dependencies:
-    "@babel/runtime": "npm:^7.0.0"
-    memoize-one: "npm:>=3.1.1 <6"
-  peerDependencies:
-    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/5ae8da1bc5c47d8f0a428b28a600256e2db511975573e52cb65a9b27ed1a0e5b9f7b3bee5a54fb0da93956d782c24010be434be451072f46ba5a89159d2b3944
-  languageName: node
-  linkType: hard
-
 "react-window@npm:^2.2.7":
   version: 2.2.7
   resolution: "react-window@npm:2.2.7"
@@ -15239,19 +15218,6 @@ __metadata:
     react: ^18.0.0 || ^19.0.0
     react-dom: ^18.0.0 || ^19.0.0
   checksum: 10c0/4eba3bce2083fa53ac674513078fb23d4dc3ad7dfd12ea5733863b583ea1472294df791947a2b58f27bab45138cedf7a63fdc19b0420823bf19749aa10455b81
-  languageName: node
-  linkType: hard
-
-"react-windowed-select@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "react-windowed-select@npm:5.2.0"
-  dependencies:
-    react-select: "npm:^5.2.2"
-    react-window: "npm:^1.8.6"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/aa2d28f259b62f563119e7931736f177867c5188ea7691890857f43af02f7c17a51b7cb561d98ed85876153251d23ab69667ef0e9d03b48228c56b6188dc52f1
   languageName: node
   linkType: hard
 

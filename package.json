@@ -98,7 +98,6 @@
     "react-select": "^5.10.2",
     "react-simple-code-editor": "^0.14.1",
     "react-window": "^2.2.7",
-    "react-windowed-select": "^5.2.0",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
     "redux-undo": "1.1.0",

@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import WindowedSelect from "react-windowed-select";
 import CRSelect from "react-select/creatable";
 import React, { FC, JSX, ReactNode } from "react";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { SearchIcon } from "ui/icons/Icons";
 import L10NText from "./L10NText";
 import API from "renderer/lib/api";
+import { SelectWindowed } from "./SelectWindowed";
 
 export interface Option {
   value: string;
@@ -60,22 +60,44 @@ export interface SelectCommonProps {
 
 const menuPortalEl = document.getElementById("MenuPortal");
 
-export const Select: typeof WindowedSelect = styled(WindowedSelect).attrs(
-  (props) => ({
-    className: "CustomSelect",
-    classNamePrefix: props.classNamePrefix
-      ? `${props.classNamePrefix} CustomSelect`
-      : "CustomSelect",
-    styles: {
-      option: (base) => ({
-        ...base,
-        height: API.env === "web" && window.innerWidth < 840 ? 38 : 26,
-      }),
-    },
-    inputId: props.name,
-    menuPlacement: props.menuPlacement ?? "auto",
-    menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
-  }),
+export const Select: typeof SelectWindowed = styled(SelectWindowed).attrs(
+  (props) => {
+    const rowHeight = API.env === "web" && window.innerWidth < 840 ? 38 : 26;
+    const groupHeadingHeight = 28.75;
+    return {
+      className: "CustomSelect",
+      classNamePrefix: props.classNamePrefix
+        ? `${props.classNamePrefix} CustomSelect`
+        : "CustomSelect",
+      styles: {
+        option: (base) => ({
+          ...base,
+          height: rowHeight,
+        }),
+        group: (base) => ({
+          ...base,
+          paddingTop: 0,
+          paddingBottom: 0,
+        }),
+        groupHeading: (base) => ({
+          ...base,
+          display: "flex",
+          alignItems: "center",
+          height: groupHeadingHeight,
+          marginBottom: 0,
+        }),
+        menuList: (base) => ({
+          ...base,
+          paddingTop: 0,
+          paddingBottom: 0,
+        }),
+      },
+      inputId: props.name,
+      menuPlacement: props.menuPlacement ?? "auto",
+      menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
+      windowThreshold: 0,
+    };
+  },
 )`
   position: relative;
   width: 100%;
