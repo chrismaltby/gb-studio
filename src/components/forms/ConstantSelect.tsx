@@ -4,6 +4,7 @@ import {
   Option,
   OptGroup,
   SelectCommonProps,
+  findSelectOption,
 } from "ui/form/Select";
 import styled from "styled-components";
 import { constantSelectors } from "store/features/entities/entitiesSelectors";
@@ -184,6 +185,10 @@ const ConstantSelectComponent = ({
   }, [constants, engineConstantsLookup]);
 
   const currentValue: Option | undefined = useMemo(() => {
+    const option = findSelectOption(options, value);
+    if (option) {
+      return option;
+    }
     if (currentConstant) {
       return {
         value: currentConstant.id,
@@ -200,7 +205,14 @@ const ConstantSelectComponent = ({
       };
     }
     return undefined;
-  }, [constants, currentConstant, isEngineConstant, engineConstantName, value]);
+  }, [
+    constants,
+    currentConstant,
+    engineConstantName,
+    isEngineConstant,
+    options,
+    value,
+  ]);
 
   const dispatch = useAppDispatch();
 

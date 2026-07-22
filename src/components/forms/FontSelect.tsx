@@ -7,6 +7,7 @@ import {
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
+  findSelectOption,
 } from "ui/form/Select";
 import { FontIcon } from "ui/icons/Icons";
 import { SingleValue } from "react-select";
@@ -51,27 +52,11 @@ const FontSelectComponent = ({
     [fonts, optional, optionalLabel],
   );
   const currentValue = useMemo(() => {
-    const currentFont = fonts.find((item) => item.id === value);
-    if (currentFont) {
-      return {
-        value: currentFont.id,
-        label: `${currentFont.name}`,
-      };
-    }
-    if (optional) {
-      return {
-        value: "",
-        label: optionalLabel || "None",
-      };
-    }
-    const firstFont = fonts[0];
-    return firstFont
-      ? {
-          value: firstFont.id,
-          label: `${firstFont.name}`,
-        }
-      : undefined;
-  }, [fonts, value, optional, optionalLabel]);
+    return (
+      findSelectOption(options, value) ||
+      findSelectOption(options, optional ? "" : options[0]?.value)
+    );
+  }, [options, value, optional]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {

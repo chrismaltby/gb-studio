@@ -1,5 +1,11 @@
 import React, { memo, useMemo } from "react";
-import { Select, Option, OptGroup, OptionLabelWithInfo } from "ui/form/Select";
+import {
+  Select,
+  Option,
+  OptGroup,
+  OptionLabelWithInfo,
+  findSelectOption,
+} from "ui/form/Select";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
 import { useGroupedEngineFields } from "store/features/engine/hooks/useGroupedEngineFields";
 import { EngineFieldSchema } from "store/features/engine/engineState";
@@ -18,6 +24,14 @@ interface EngineFieldSelectProps {
 const notEditable = (engineField: EngineFieldSchema) =>
   engineField.cType !== "define" && engineField.type !== "label";
 
+interface EngineFieldOption extends Option {
+  group?: string;
+}
+
+interface EngineFieldOptGroup extends OptGroup {
+  options: EngineFieldOption[];
+}
+
 const AlertWrapper = styled.div`
   margin-top: 5px;
 `;
@@ -32,23 +46,26 @@ const EngineFieldSelect = ({
   const engineFields = useMemo(() => {
     return groupedFields.flatMap((g) => g.fields);
   }, [groupedFields]);
-  const options = useMemo<OptGroup[]>(() => {
+  const options = useMemo<EngineFieldOptGroup[]>(() => {
     return groupedFields.map((g) => ({
       label: l10n(g.name as L10NKey),
       options: g.fields.filter(notEditable).map((f) => ({
         value: f.key,
         label: l10n(f.label as L10NKey),
+        group: l10n(f.group as L10NKey),
       })),
     }));
   }, [groupedFields]);
 
   const currentField = engineFields.find((f) => f.key === value);
 
-  const currentValue = currentField && {
-    value: currentField.key,
-    label: l10n(currentField.label as L10NKey),
-    group: l10n(currentField.group as L10NKey),
-  };
+  const currentValue =
+    findSelectOption<EngineFieldOption>(options, value) ||
+    (currentField && {
+      value: currentField.key,
+      label: l10n(currentField.label as L10NKey),
+      group: l10n(currentField.group as L10NKey),
+    });
 
   return (
     <>

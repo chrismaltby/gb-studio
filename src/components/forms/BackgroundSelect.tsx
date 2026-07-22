@@ -10,6 +10,7 @@ import {
   Select,
   SelectCommonProps,
   FormatFolderLabel,
+  findSelectOption,
 } from "ui/form/Select";
 import styled from "styled-components";
 import { assetURLStyleProp } from "shared/lib/helpers/assets";
@@ -71,11 +72,15 @@ const BackgroundSelectComponent = ({
     }, [] as OptGroup[]);
   }, [backgrounds]);
   const currentValue = useMemo(() => {
+    const option = findSelectOption(options, value);
+    if (option) {
+      return option;
+    }
     const currentBackground = backgrounds.find((item) => item.id === value);
     return currentBackground
       ? { value: currentBackground.id, label: currentBackground.name }
       : undefined;
-  }, [backgrounds, value]);
+  }, [backgrounds, options, value]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {

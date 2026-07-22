@@ -17,6 +17,14 @@ export interface OptGroup {
   options: Option[];
 }
 
+export const findSelectOption = <TOption extends Option>(
+  options: readonly (TOption | { options: readonly TOption[] })[],
+  value: string | undefined,
+): TOption | undefined =>
+  options
+    .flatMap((option) => ("options" in option ? option.options : option))
+    .find((option) => option.value === value);
+
 interface OptionLabelWithPreviewProps {
   preview: ReactNode;
   info?: ReactNode;

@@ -10,6 +10,7 @@ import {
   Select,
   SelectCommonProps,
   FormatFolderLabel,
+  findSelectOption,
 } from "ui/form/Select";
 import styled from "styled-components";
 import editorActions from "store/features/editor/editorActions";
@@ -134,11 +135,8 @@ export const SceneSelect = memo(
     );
 
     const currentValue = useMemo(() => {
-      const sceneIndex = scenes.findIndex((scene) => scene.id === value);
-      const scene = sceneIndex >= 0 ? scenes[sceneIndex] : undefined;
-
-      return scene ? sceneToSceneOption(scene, sceneIndex) : undefined;
-    }, [scenes, value]);
+      return findSelectOption(options, value);
+    }, [options, value]);
 
     const onSelectChange = useCallback(
       (newValue: SingleValue<Option>) => {

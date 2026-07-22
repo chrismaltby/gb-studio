@@ -7,6 +7,7 @@ import {
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
+  findSelectOption,
 } from "ui/form/Select";
 import { EmoteCanvas } from "components/rendering/EmoteCanvas";
 import { SingleValue } from "react-select";
@@ -51,27 +52,11 @@ const EmoteSelectComponent = ({
     [emotes, optional, optionalLabel],
   );
   const currentValue = useMemo(() => {
-    const currentEmote = emotes.find((item) => item.id === value);
-    if (currentEmote) {
-      return {
-        value: currentEmote.id,
-        label: `${currentEmote.name}`,
-      };
-    }
-    if (optional) {
-      return {
-        value: "",
-        label: optionalLabel || "None",
-      };
-    }
-    const firstEmote = emotes[0];
-    return firstEmote
-      ? {
-          value: firstEmote.id,
-          label: `${firstEmote.name}`,
-        }
-      : undefined;
-  }, [emotes, value, optional, optionalLabel]);
+    return (
+      findSelectOption(options, value) ||
+      findSelectOption(options, optional ? "" : options[0]?.value)
+    );
+  }, [options, value, optional]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {

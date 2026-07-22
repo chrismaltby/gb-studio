@@ -128,63 +128,21 @@ const PaletteSelectComponent = ({
   );
 
   const currentValue = useMemo<PaletteOption>(() => {
-    const currentPalette =
-      value === dmgPalette.id
-        ? dmgPalette
-        : palettes.find((palette) => palette.id === value);
-    if (canKeep && value === "keep") {
-      return {
-        value: "keep",
-        label: keepLabel || "Keep",
-      };
-    }
-    if (canRestore && value === "restore") {
-      return {
-        value: "restore",
-        label: l10n("FIELD_RESTORE_DEFAULT"),
-      };
-    }
-    if (canAuto && value === "auto") {
-      return {
-        value: "auto",
-        label: l10n("FIELD_AUTOMATIC"),
-        palette: autoPalette,
-      };
-    }
-    if (currentPalette) {
-      return {
-        value: currentPalette.id,
-        label: `${currentPalette.name}`,
-        palette: currentPalette,
-      };
+    const matchingOption = options.find(
+      (option) => option.value === (value ?? (optional ? "" : undefined)),
+    );
+    if (matchingOption) {
+      return matchingOption;
     }
     if (optional) {
-      const optionalPalette =
-        palettes.find((p) => p.id === optionalDefaultPaletteId) || dmgPalette;
-      return {
-        value: "",
-        label: optionalLabel || "None",
-        palette: optionalPalette as Palette,
-      };
+      return options.find((option) => option.value === "") as PaletteOption;
     }
     return {
       value: "",
       label: dmgPalette.name,
       palette: dmgPalette,
     };
-  }, [
-    optionalDefaultPaletteId,
-    optional,
-    optionalLabel,
-    palettes,
-    canKeep,
-    keepLabel,
-    value,
-    canRestore,
-    dmgPalette,
-    canAuto,
-    autoPalette,
-  ]);
+  }, [options, optional, value, dmgPalette]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {
