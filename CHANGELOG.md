@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where copy/paste of scenes would not transfer actor references in properties used in values
 - Fix issue where creating a project from a template plugin included its thumbnail.png and plugin.json in the new project's root folder
 - Fix issue where projects created from a template plugin may not have their name and author values set correctly
+- Fix issue where select dropdowns (select Actor/Scene/Palette etc) would not scroll to the selected value when opened
 
 ## [4.3.2] - 2026-06-22
 
