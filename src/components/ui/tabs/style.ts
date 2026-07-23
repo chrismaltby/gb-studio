@@ -41,17 +41,19 @@ export const StyledTabBar = styled.div<StyledTabBarProps>`
   ${(props) =>
     props.$variant === "eventSection"
       ? css`
-          height: 25px;
-          max-width: none;
-          margin-left: -5px;
-          margin-right: -5px;
-          padding: 0px;
-          margin-top: -5px;
-          margin-bottom: 5px;
-          flex-basis: 100%;
-          width: 100%;
-          background: ${(props) =>
+          && {
+            height: 25px;
+            max-width: none;
+            margin-left: -5px;
+            margin-right: -5px;
+            padding: 0px;
+            margin-top: -5px;
+            margin-bottom: 5px;
+            flex-basis: 100%;
+            width: 100%;
+            background: ${(props) =>
             props.theme.colors.scripting.tabs.background};
+          }
         `
       : ""}
 
