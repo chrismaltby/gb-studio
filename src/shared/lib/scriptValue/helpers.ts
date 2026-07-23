@@ -14,9 +14,18 @@ import {
   RPNOperation,
   RPNUnaryOperation,
   ScriptValueAtom,
+  ScriptValueArrayAccess,
   OptimisedScriptValue,
 } from "./types";
 import { OperatorSymbol } from "shared/lib/rpn/types";
+import {
+  ParsedArrayExpression,
+  parseExpressionStatement,
+  expressionArrayNames,
+  matchesArrayName,
+  renameArrayInExpressionText,
+} from "shared/lib/rpn/arrays";
+import { getBaseName } from "shared/lib/helpers/virtualFilesystem";
 import { subpxShiftForUnits } from "shared/lib/helpers/subpixels";
 
 const boolToInt = (val: boolean) => (val ? 1 : 0);
@@ -204,14 +213,36 @@ export const optimiseScriptValue = (
     };
   } else if (input.type === "expression") {
     return optimiseScriptValue(expressionToScriptValue(input.value));
+  } else if (input.type === "arrayValue") {
+    return {
+      ...input,
+      index: optimiseScriptValue(input.index),
+    };
   }
   return input;
 };
 
 export const expressionToScriptValue = (expression: string): ScriptValue => {
   try {
-    const tokens = tokenize(expression);
-    const rpnTokens = shuntingYard(tokens);
+    const statement = parseExpressionStatement(tokenize(expression));
+    if (statement.target) {
+      // Assignment expressions aren't supported where a value is expected
+      return zero;
+    }
+    return parsedExpressionToScriptValue(statement.value);
+  } catch {
+    return zero;
+  }
+};
+
+const parsedExpressionToScriptValue = (
+  parsed: ParsedArrayExpression,
+): ScriptValue => {
+  try {
+    const rpnTokens = shuntingYard(parsed.tokens);
+    const arrayAccessLookup = new Map(
+      parsed.arrayAccesses.map((access) => [access.id, access]),
+    );
 
     const stack: ScriptValue[] = [];
 
@@ -293,6 +324,16 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
             });
           }
         }
+      } else if (operation.type === "ARRAYVAL") {
+        const access = arrayAccessLookup.get(operation.id);
+        if (!access) {
+          throw new Error("Missing extracted array access");
+        }
+        stack.push({
+          type: "arrayValue",
+          name: access.name,
+          index: parsedExpressionToScriptValue(access.index),
+        });
       } else if (operation.type === "FUN") {
         if (operation.function === "min") {
           const valueB = stack.pop();
@@ -387,6 +428,9 @@ export const walkScriptValue = (
   if ("value" in input && input.value && isUnaryOperation(input)) {
     walkScriptValue(input.value, fn);
   }
+  if (input.type === "arrayValue") {
+    walkScriptValue(input.index, fn);
+  }
 };
 
 // recursively search script value for matching node, stop iterating on first match
@@ -408,6 +452,8 @@ export const someInScriptValue = (
       stack.push(currentNode.valueB, currentNode.valueA);
     } else if ("value" in currentNode && isUnaryOperation(currentNode)) {
       stack.push(currentNode.value);
+    } else if (currentNode.type === "arrayValue") {
+      stack.push(currentNode.index);
     }
   }
 
@@ -420,7 +466,8 @@ export type MappedScriptValue<T> =
   | (Omit<RPNOperation, "valueA" | "valueB"> & {
       valueA: MappedScriptValue<T>;
       valueB: MappedScriptValue<T>;
-    });
+    })
+  | (Omit<ScriptValueArrayAccess, "index"> & { index: MappedScriptValue<T> });
 
 export const mapScriptValueLeafNodes = <T>(
   input: ScriptValue,
@@ -440,6 +487,12 @@ export const mapScriptValueLeafNodes = <T>(
     return {
       ...input,
       value: mapped,
+    };
+  }
+  if (input.type === "arrayValue") {
+    return {
+      ...input,
+      index: mapScriptValueLeafNodes(input.index, fn),
     };
   }
   return fn(input);
@@ -475,6 +528,81 @@ export const extractScriptValueVariables = (input: ScriptValue): string[] => {
     }
   });
   return variables;
+};
+
+// recursively search script value for a variable array access matching the
+// given folder path (including accesses within embedded expressions)
+export const arrayInScriptValue = (
+  folderPath: string,
+  input: ScriptValue,
+): boolean => {
+  return someInScriptValue(input, (val) => {
+    if (val.type === "arrayValue" && matchesArrayName(val.name, folderPath)) {
+      return true;
+    }
+    if (val.type === "expression" && typeof val.value === "string") {
+      return expressionArrayNames(val.value).some((name) =>
+        matchesArrayName(name, folderPath),
+      );
+    }
+    return false;
+  });
+};
+
+// Rewrite array accesses within a script value that refer to the folder at
+// fromPath so they point at toPath instead (used when renaming/moving
+// variable folders). Returns the original object reference when unchanged
+export const renameArrayInScriptValue = (
+  input: ScriptValue,
+  fromPath: string,
+  toPath: string,
+): ScriptValue => {
+  const toBaseName = getBaseName(toPath);
+  const normalize = (s: string) => s.replace(/[\s\\]+/g, "").toLowerCase();
+  const map = (val: ScriptValue): ScriptValue => {
+    if (val.type === "arrayValue") {
+      const newIndex = map(val.index);
+      let newName = val.name;
+      if (matchesArrayName(val.name, fromPath)) {
+        // Preserve reference style — full paths stay full paths,
+        // basename references stay basenames
+        newName =
+          normalize(val.name) === normalize(fromPath) ? toPath : toBaseName;
+      }
+      if (newName === val.name && newIndex === val.index) {
+        return val;
+      }
+      return { ...val, name: newName, index: newIndex };
+    }
+    if (isValueOperation(val)) {
+      const newValueA = val.valueA && map(val.valueA);
+      const newValueB = val.valueB && map(val.valueB);
+      if (newValueA === val.valueA && newValueB === val.valueB) {
+        return val;
+      }
+      return { ...val, valueA: newValueA, valueB: newValueB };
+    }
+    if (isUnaryOperation(val)) {
+      const newValue = val.value && map(val.value);
+      if (newValue === val.value) {
+        return val;
+      }
+      return { ...val, value: newValue };
+    }
+    if (val.type === "expression" && typeof val.value === "string") {
+      const newText = renameArrayInExpressionText(
+        val.value,
+        fromPath,
+        toBaseName,
+      );
+      if (newText === val.value) {
+        return val;
+      }
+      return { ...val, value: newText };
+    }
+    return val;
+  };
+  return map(input);
 };
 
 // recursively search script value for node containing variable, stop iterating on first match
@@ -735,6 +863,22 @@ export const precompileOptimisedScriptValue = (
       type: "local",
       value: localName,
     });
+  } else if (input.type === "arrayValue") {
+    // Variable array access — the target index is calculated into a local
+    // first so the value can be read with an indirect reference
+    const localName = `local_${localsLabel}${fetchOperations.length}`;
+    fetchOperations.push({
+      local: localName,
+      value: {
+        type: "arrayIndex",
+        name: input.name,
+        index: input.index,
+      },
+    });
+    rpnOperations.push({
+      type: "indirectLocal",
+      value: localName,
+    });
   } else {
     rpnOperations.push(input);
   }
@@ -754,6 +898,10 @@ export const sortFetchOperations = (
         return `${symbol}::${value.value.type}`;
       } else if (value.value.type === "engineField") {
         return `engineField::${value.value.value}`;
+      } else if (value.value.type === "arrayIndex") {
+        // Each array access has a unique local so there is nothing to
+        // dedupe — key on the local to keep the sort deterministic
+        return `arrayIndex::${value.value.name}::${value.local}`;
       }
       assertUnreachable(value.value);
       return "";

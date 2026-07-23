@@ -15,7 +15,7 @@ const tokenizer = (input: string): Token[] => {
     input
       .replace(/\s+/g, "")
       .split(
-        /(@[a-f0-9-]{36}@|@engine::[^@]+@|<<|>>|==|!=|>=|>|<=|<|&&|\|\||[+\-*/^%&|~!@(),])/,
+        /(@[a-f0-9-]{36}@|@engine::[^@]+@|<<|>>|==|!=|>=|>|<=|<|&&|\|\||[+\-*/^%&|~!@(),=[\]])/,
       )
       .filter(identity)
       .map((token): Token => {
@@ -44,6 +44,21 @@ const tokenizer = (input: string): Token[] => {
         if (token === ",") {
           return {
             type: "SEPERATOR",
+          };
+        }
+        if (token === "[") {
+          return {
+            type: "LBRACKET",
+          };
+        }
+        if (token === "]") {
+          return {
+            type: "RBRACKET",
+          };
+        }
+        if (token === "=") {
+          return {
+            type: "ASSIGN",
           };
         }
         if (isOperatorSymbol(token)) {
@@ -82,6 +97,8 @@ const tokenizer = (input: string): Token[] => {
         const previous = tokens[i - 1];
         if (
           previous.type === "LBRACE" ||
+          previous.type === "LBRACKET" ||
+          previous.type === "ASSIGN" ||
           previous.type === "SEPERATOR" ||
           (previous.type === "OP" && isOperatorSymbol(previous.operator))
         ) {

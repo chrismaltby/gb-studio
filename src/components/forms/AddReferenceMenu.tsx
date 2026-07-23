@@ -29,7 +29,7 @@ import {
   sceneName,
 } from "shared/lib/entities/entitiesHelpers";
 import { List, RowComponentProps } from "react-window";
-import { allVariables } from "renderer/lib/variables";
+import { definedGlobalVariableEntities } from "renderer/lib/variables";
 import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 import l10n from "shared/lib/lang/l10n";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
@@ -390,10 +390,10 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
       },
       {
         label: l10n("FIELD_VARIABLES"),
-        options: allVariables
-          .map((id: string) => ({
-            id,
-            namedVariable: variablesLookup[id],
+        options: definedGlobalVariableEntities(variablesLookup)
+          .map((namedVariable) => ({
+            id: namedVariable.id,
+            namedVariable,
           }))
           .map(variableToOption)
           .sort(sortAlphabeticallyByLabel),

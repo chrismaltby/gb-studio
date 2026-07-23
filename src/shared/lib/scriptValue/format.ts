@@ -167,6 +167,8 @@ export const scriptValueToString = (
     return `-(${scriptValueToString(value.value, options)})`;
   } else if (value.type === "indirect") {
     return `INDIRECT`;
+  } else if (value.type === "arrayValue") {
+    return `${value.name}[${scriptValueToString(value.index, options)}]`;
   }
 
   assertUnreachable(value.type);

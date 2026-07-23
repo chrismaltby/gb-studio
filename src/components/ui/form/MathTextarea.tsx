@@ -7,6 +7,10 @@ import keyBy from "lodash/keyBy";
 import debounce from "lodash/debounce";
 import tokenize from "shared/lib/rpn/tokenizer";
 import shuntingYard from "shared/lib/rpn/shuntingYard";
+import {
+  ParsedArrayExpression,
+  parseExpressionStatement,
+} from "shared/lib/rpn/arrays";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { SelectMenu, selectMenuStyleProps } from "./Select";
 import { VariableSelect } from "components/forms/VariableSelect";
@@ -319,7 +323,17 @@ export const MathTextarea: FC<MathTextareaProps> = ({
       try {
         const tokens = tokenize(val);
         if (tokens.length > 0) {
-          shuntingYard(tokens);
+          const statement = parseExpressionStatement(tokens);
+          const validateParsed = (parsed: ParsedArrayExpression) => {
+            shuntingYard(parsed.tokens);
+            parsed.arrayAccesses.forEach((access) =>
+              validateParsed(access.index),
+            );
+          };
+          validateParsed(statement.value);
+          if (statement.target?.type === "array") {
+            validateParsed(statement.target.index);
+          }
         }
         setError("");
       } catch (e: unknown) {

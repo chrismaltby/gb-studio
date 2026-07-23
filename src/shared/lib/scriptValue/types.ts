@@ -159,7 +159,20 @@ export type ConstScriptValueAtom =
       value: string;
     };
 
-export type ScriptValue = RPNOperation | RPNUnaryOperation | ScriptValueAtom;
+// Read access into a variable array (a folder of global variables) with a
+// runtime index e.g. "ArrayName[$00$ + 1]". Only created when parsing
+// expressions — never persisted in project data
+export type ScriptValueArrayAccess = {
+  type: "arrayValue";
+  name: string;
+  index: ScriptValue;
+};
+
+export type ScriptValue =
+  | RPNOperation
+  | RPNUnaryOperation
+  | ScriptValueAtom
+  | ScriptValueArrayAccess;
 
 export type ConstScriptValue = ConstScriptValueAtom;
 
@@ -177,6 +190,7 @@ type OptimisedScriptValueAtom = Exclude<
 export type OptimisedScriptValue =
   | RPNOperationWithOptimisedValues
   | RPNUnaryOperationWithOptimisedValue
+  | OptimisedScriptValueArrayAccess
   | OptimisedScriptValueAtom;
 
 type RPNOperationWithOptimisedValues = {
@@ -188,6 +202,12 @@ type RPNOperationWithOptimisedValues = {
 type RPNUnaryOperationWithOptimisedValue = {
   type: ValueUnaryOperatorType;
   value: OptimisedScriptValue;
+};
+
+type OptimisedScriptValueArrayAccess = {
+  type: "arrayValue";
+  name: string;
+  index: OptimisedScriptValue;
 };
 
 const validProperties = [
@@ -262,6 +282,12 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   }
   if (scriptValue.type === "indirect") {
     return true;
+  }
+  // Is Array Access
+  if (scriptValue.type === "arrayValue") {
+    return (
+      typeof scriptValue.name === "string" && isScriptValue(scriptValue.index)
+    );
   }
 
   return false;
@@ -354,6 +380,11 @@ export type PrecompiledValueFetch = {
     | {
         type: "engineField";
         value: string;
+      }
+    | {
+        type: "arrayIndex";
+        name: string;
+        index: OptimisedScriptValue;
       };
 };
 
@@ -386,6 +417,12 @@ export type PrecompiledValueRPNOperation =
       type: "local";
       value: string;
       offset?: number;
+    }
+  | {
+      // Read the variable whose index is stored in a fetched local
+      // (used for variable array accesses)
+      type: "indirectLocal";
+      value: string;
     }
   | {
       type: "memI16";

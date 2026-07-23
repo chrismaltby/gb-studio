@@ -74,6 +74,28 @@ export const globalVariableCode = (variable: string) => {
   return variable.padStart(2, "0");
 };
 
+export const MAX_GLOBAL_VARIABLES = 512;
+
+// The variables collection also stores local variable names using ids like
+// "<entityId>__L0" — global variables are the ones with purely numeric ids
+export const isGlobalVariableId = (id: string) => /^\d+$/.test(id);
+
+// Find the first `count` unused global variable slots. Returns fewer than
+// `count` ids when the project is running out of variable slots.
+export const nextAvailableVariableIds = (
+  usedIds: string[],
+  count: number,
+): string[] => {
+  const used = new Set(usedIds.filter(isGlobalVariableId).map(Number));
+  const result: string[] = [];
+  for (let i = 0; i < MAX_GLOBAL_VARIABLES && result.length < count; i++) {
+    if (!used.has(i)) {
+      result.push(String(i));
+    }
+  }
+  return result;
+};
+
 /******************************************************************************
  * Next Variable ID
  */

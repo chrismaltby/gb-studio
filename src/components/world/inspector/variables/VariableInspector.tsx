@@ -32,6 +32,7 @@ import type { VariableUse, VariableUseResult } from "./VariableUses.worker";
 import {
   globalVariableCode,
   globalVariableDefaultName,
+  isGlobalVariableId,
 } from "shared/lib/variables/variableNames";
 import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
@@ -66,6 +67,16 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
   const variable = useAppSelector((state) =>
     variableSelectors.selectById(state, id),
   );
+  // Selecting a folder in the variables navigator sets the folder path as
+  // the entity id — show a variable array inspector for it instead
+  const isFolder = !isGlobalVariableId(id);
+  const [folderNameEdit, setFolderNameEdit] = useState<string | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    setFolderNameEdit(undefined);
+  }, [id]);
   const [variableUses, setVariableUses] = useState<VariableUse[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
@@ -116,6 +127,7 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
     worker.postMessage({
       id,
       variableId: id,
+      arrayPath: isFolder ? id : undefined,
       scenes,
       actorsLookup,
       triggersLookup,
@@ -131,6 +143,7 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
     actorsLookup,
     triggersLookup,
     id,
+    isFolder,
     scriptEventsLookup,
     scriptEventDefs,
     customEventsLookup,
@@ -146,6 +159,37 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
         name: editValue,
       }),
     );
+  };
+
+  const onRenameFolder = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFolderNameEdit(e.currentTarget.value);
+  };
+
+  const onRenameFolderComplete = () => {
+    if (folderNameEdit === undefined) {
+      return;
+    }
+    const newPath = folderNameEdit.replace(/\\/g, "/").replace(/\/+$/, "").trim();
+    setFolderNameEdit(undefined);
+    if (!newPath || newPath === id || newPath.startsWith(`${id}/`)) {
+      return;
+    }
+    dispatch(
+      entitiesActions.renameVariablesFolder({
+        fromPath: id,
+        toPath: newPath,
+        scriptEventDefs,
+      }),
+    );
+    dispatch(editorActions.selectVariable({ variableId: newPath }));
+  };
+
+  const onRenameFolderKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      onRenameFolderComplete();
+    } else if (e.key === "Escape") {
+      setFolderNameEdit(undefined);
+    }
   };
 
   const onCopyVar = () => {
@@ -182,34 +226,47 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
   return (
     <Sidebar onClick={selectSidebar}>
       <FormHeader>
-        <EditableText
-          name="name"
-          placeholder={globalVariableDefaultName(id)}
-          value={variable?.name || ""}
-          onChange={onRename}
-        />
-        <DropdownButton
-          size="small"
-          variant="transparent"
-          menuDirection="right"
-        >
-          {!showSymbols && (
-            <MenuItem onClick={() => setShowSymbols(true)}>
-              {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+        {isFolder ? (
+          <EditableText
+            name="name"
+            placeholder={id}
+            value={folderNameEdit ?? id}
+            onChange={onRenameFolder}
+            onBlur={onRenameFolderComplete}
+            onKeyDown={onRenameFolderKeyDown}
+          />
+        ) : (
+          <EditableText
+            name="name"
+            placeholder={globalVariableDefaultName(id)}
+            value={variable?.name || ""}
+            onChange={onRename}
+          />
+        )}
+        {!isFolder && (
+          <DropdownButton
+            size="small"
+            variant="transparent"
+            menuDirection="right"
+          >
+            {!showSymbols && (
+              <MenuItem onClick={() => setShowSymbols(true)}>
+                {l10n("FIELD_VIEW_GBVM_SYMBOLS")}
+              </MenuItem>
+            )}
+            <MenuItem onClick={onCopyVar}>
+              {l10n("MENU_VARIABLE_COPY_EMBED")}
             </MenuItem>
-          )}
-          <MenuItem onClick={onCopyVar}>
-            {l10n("MENU_VARIABLE_COPY_EMBED")}
-          </MenuItem>
-          <MenuItem onClick={onCopyChar}>
-            {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
-          </MenuItem>
-        </DropdownButton>
+            <MenuItem onClick={onCopyChar}>
+              {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
+            </MenuItem>
+          </DropdownButton>
+        )}
       </FormHeader>
 
       <SidebarColumn>
         <FormContainer>
-          {showSymbols && (
+          {showSymbols && !isFolder && (
             <>
               <SymbolEditorWrapper>
                 <VariableReference id={id} />
@@ -218,9 +275,11 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
             </>
           )}
         </FormContainer>
-        <UsesWrapper ref={observe} $showSymbols={showSymbols}>
+        <UsesWrapper ref={observe} $showSymbols={showSymbols && !isFolder}>
           <SplitPaneHeader collapsed={false}>
-            {l10n("SIDEBAR_VARIABLE_USES")}
+            {isFolder
+              ? l10n("SIDEBAR_ARRAY_USES")
+              : l10n("SIDEBAR_VARIABLE_USES")}
           </SplitPaneHeader>
           {fetching ? (
             <UseMessage>...</UseMessage>
@@ -255,7 +314,11 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
                   }}
                 />
               ) : (
-                <UseMessage>{l10n("FIELD_VARIABLE_NOT_USED")}</UseMessage>
+                <UseMessage>
+                  {isFolder
+                    ? l10n("FIELD_ARRAY_NOT_USED")
+                    : l10n("FIELD_VARIABLE_NOT_USED")}
+                </UseMessage>
               )}
             </>
           )}

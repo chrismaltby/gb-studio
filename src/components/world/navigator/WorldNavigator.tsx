@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import useSplitPane from "ui/hooks/use-split-pane";
@@ -27,6 +27,9 @@ import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import { ConstantNavigatorPane } from "./ConstantNavigatorPane";
 import { defaultProjectSettings } from "consts";
 import { useNavigatorSearch } from "store/features/editor/hooks/useNavigatorSearch";
+import { variableSelectors } from "store/features/entities/entitiesSelectors";
+import { nextAvailableVariableIds } from "shared/lib/variables/variableNames";
+import { AddVariableArrayDialog } from "components/forms/AddVariableArrayDialog";
 
 const COLLAPSED_SIZE = 30;
 const REOPEN_SIZE = 205;
@@ -131,6 +134,33 @@ export const WorldNavigator = () => {
     if (Math.floor(splitSizes[CONSTANTS_PANE]) <= COLLAPSED_SIZE) {
       togglePane(CONSTANTS_PANE);
     }
+  };
+
+  const variables = useAppSelector(variableSelectors.selectAll);
+
+  const showVariablesPane = () => {
+    if (Math.floor(splitSizes[VARIABLES_PANE]) <= COLLAPSED_SIZE) {
+      togglePane(VARIABLES_PANE);
+    }
+  };
+
+  const onAddVariable = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const variableIds = variables.map((variable) => variable.id);
+    const newId = nextAvailableVariableIds(variableIds, 1)[0];
+    if (newId === undefined) {
+      return;
+    }
+    dispatch(entitiesActions.addVariable({ variableId: newId }));
+    showVariablesPane();
+  };
+
+  const [showAddArrayDialog, setShowAddArrayDialog] = useState(false);
+
+  const onOpenAddVariableArray = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowAddArrayDialog(true);
+    showVariablesPane();
   };
 
   const {
@@ -376,14 +406,32 @@ export const WorldNavigator = () => {
           onToggle={() => togglePane(VARIABLES_PANE)}
           collapsed={Math.floor(splitSizes[VARIABLES_PANE]) <= COLLAPSED_SIZE}
           buttons={
-            <Button
-              variant={variablesSearchEnabled ? "primary" : "transparent"}
-              size="small"
-              title={l10n("TOOLBAR_SEARCH")}
-              onClick={toggleVariablesSearchEnabled}
-            >
-              <SearchIcon />
-            </Button>
+            <>
+              <DropdownButton
+                variant="transparent"
+                size="small"
+                title={l10n("SIDEBAR_ADD_VARIABLE")}
+                label={<PlusIcon />}
+                showArrow={false}
+              >
+                <MenuItem onClick={onAddVariable}>
+                  {l10n("SIDEBAR_ADD_VARIABLE")}
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={onOpenAddVariableArray}>
+                  {l10n("SIDEBAR_ADD_VARIABLE_ARRAY")}
+                </MenuItem>
+              </DropdownButton>
+              <FixedSpacer width={5} />
+              <Button
+                variant={variablesSearchEnabled ? "primary" : "transparent"}
+                size="small"
+                title={l10n("TOOLBAR_SEARCH")}
+                onClick={toggleVariablesSearchEnabled}
+              >
+                <SearchIcon />
+              </Button>
+            </>
           }
         >
           {l10n("SIDEBAR_VARIABLES")}
@@ -402,6 +450,9 @@ export const WorldNavigator = () => {
           searchTerm={variablesSearchTerm}
         />
       </Pane>
+      {showAddArrayDialog && (
+        <AddVariableArrayDialog onClose={() => setShowAddArrayDialog(false)} />
+      )}
     </Wrapper>
   );
 };

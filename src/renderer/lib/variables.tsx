@@ -6,18 +6,24 @@ import {
   customEventVariableCode,
   customEventVariableName,
   globalVariableCode,
-  globalVariableName,
+  globalVariableDefaultName,
+  isGlobalVariableId,
   localVariableCode,
   localVariableName,
   tempVariableCode,
   tempVariableName,
+  MAX_GLOBAL_VARIABLES,
 } from "shared/lib/variables/variableNames";
+import {
+  getBaseName,
+  getParentPath,
+} from "shared/lib/helpers/virtualFilesystem";
 import { Variable } from "shared/lib/resources/types";
 
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));
 
-export const allVariables = arrayNStrings(512);
+export const allVariables = arrayNStrings(MAX_GLOBAL_VARIABLES);
 const localVariables = arrayNStrings(6);
 const tempVariables = arrayNStrings(2);
 const customEventVariables = arrayNStrings(10);
@@ -39,6 +45,34 @@ interface VariableGroup {
 /******************************************************************************
  * Available Variables List (for using in Dropdowns etc)
  */
+
+// Global variables defined in the project (explicitly added or migrated on
+// load). Only these appear in dropdowns — variables are added first via the
+// variables navigator, like constants.
+export const definedGlobalVariableEntities = (
+  variablesLookup: VariablesLookup,
+): Variable[] => {
+  return Object.values(variablesLookup).filter(
+    (variable): variable is Variable =>
+      !!variable && isGlobalVariableId(variable.id),
+  );
+};
+
+const namedDefinedGlobalVariables = (
+  variablesLookup: VariablesLookup,
+): NamedVariable[] => {
+  return definedGlobalVariableEntities(variablesLookup).map((variable) => {
+    const displayName =
+      getBaseName(variable.name) || globalVariableDefaultName(variable.id);
+    const folder = getParentPath(variable.name);
+    return {
+      id: variable.id,
+      code: globalVariableCode(variable.id),
+      name: displayName,
+      group: folder || l10n("FIELD_GLOBAL"),
+    };
+  });
+};
 
 export const namedVariablesByContext = (
   context: ScriptEditorCtx,
@@ -68,12 +102,7 @@ export const namedCustomEventVariables = (
       name: customEventVariableName(variable, customEvent),
       group: l10n("SIDEBAR_PARAMETERS"),
     })),
-    allVariables.map((variable) => ({
-      id: variable,
-      code: globalVariableCode(variable),
-      name: globalVariableName(variable, variablesLookup),
-      group: l10n("FIELD_GLOBAL"),
-    })),
+    namedDefinedGlobalVariables(variablesLookup),
   );
 };
 
@@ -94,26 +123,14 @@ const namedEntityVariables = (
       name: tempVariableName(variable),
       group: l10n("FIELD_TEMPORARY"),
     })),
-    allVariables.map((variable) => ({
-      id: variable,
-      code: globalVariableCode(variable),
-      name: globalVariableName(variable, variablesLookup),
-      group: l10n("FIELD_GLOBAL"),
-    })),
+    namedDefinedGlobalVariables(variablesLookup),
   );
 };
 
 const namedGlobalVariables = (
   variablesLookup: VariablesLookup,
 ): NamedVariable[] => {
-  return ([] as NamedVariable[]).concat(
-    allVariables.map((variable) => ({
-      id: variable,
-      code: globalVariableCode(variable),
-      name: globalVariableName(variable, variablesLookup),
-      group: l10n("FIELD_GLOBAL"),
-    })),
-  );
+  return namedDefinedGlobalVariables(variablesLookup);
 };
 
 export const groupVariables = (variables: NamedVariable[]): VariableGroup[] => {

@@ -193,6 +193,75 @@ test("should include fonts referenced in dialogue", async () => {
   );
 });
 
+test("should include all defined global variables even when not referenced by scripts", async () => {
+  const projectData = {
+    ...dummyProjectResources,
+    variables: {
+      _resourceType: "variables",
+      variables: [
+        { id: "7", name: "Second", symbol: "var_second" },
+        { id: "2", name: "First", symbol: "var_first" },
+        // Local variable name entities are not global variables
+        { id: "entity1__L0", name: "Local", symbol: "var_local" },
+      ],
+      constants: [],
+    },
+  } as ProjectResources;
+  const customEventsLookup = {} as Record<string, Script>;
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const usedAssets = determineUsedAssets({
+    projectData,
+    customEventsLookup,
+    scriptEventHandlers,
+    warnings: () => {},
+  });
+  expect(usedAssets.referencedVariables).toHaveLength(2);
+  // Project order preserved (not sorted by id)
+  expect(usedAssets.referencedVariables[0]?.id).toBe("7");
+  expect(usedAssets.referencedVariables[1]?.id).toBe("2");
+});
+
+test("should list script-referenced variables after defined variables without duplicates", async () => {
+  const projectData = {
+    ...dummyProjectResources,
+    variables: {
+      _resourceType: "variables",
+      variables: [{ id: "7", name: "Defined", symbol: "var_defined" }],
+      constants: [],
+    },
+    scenes: [
+      {
+        ...dummySceneResource,
+        id: "scene1",
+        script: [
+          {
+            id: "event1",
+            command: "EVENT_GBVM_SCRIPT",
+            args: {
+              script: "",
+              references: [
+                { type: "variable", id: "7" },
+                { type: "variable", id: "3" },
+              ],
+            },
+          },
+        ],
+      },
+    ] as SceneResource[],
+  } as ProjectResources;
+  const customEventsLookup = {} as Record<string, Script>;
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const usedAssets = determineUsedAssets({
+    projectData,
+    customEventsLookup,
+    scriptEventHandlers,
+    warnings: () => {},
+  });
+  expect(usedAssets.referencedVariables).toHaveLength(2);
+  expect(usedAssets.referencedVariables[0]?.id).toBe("7");
+  expect(usedAssets.referencedVariables[1]?.id).toBe("3");
+});
+
 test("should include sound from play sound effect", async () => {
   const projectData = {
     ...dummyProjectResources,

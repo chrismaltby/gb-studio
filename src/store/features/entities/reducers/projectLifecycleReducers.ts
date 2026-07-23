@@ -41,6 +41,7 @@ import {
   updateMonoOverrideIds,
 } from "store/features/entities/reducers/backgroundsReducers";
 import { updateAllTilemapReferences } from "store/features/entities/reducers/tilesetsReducers";
+import { ensureReferencedVariablesExist } from "store/features/entities/reducers/ensureReferencedVariables";
 
 export const loadProject: CaseReducer<
   EntitiesState,
@@ -101,6 +102,7 @@ export const loadProject: CaseReducer<
   updateAllTilemapReferences(state);
   fixAllScenesWithModifiedBackgrounds(state);
   updateMonoOverrideIds(state);
+  ensureReferencedVariablesExist(state, action.payload.scriptEventDefs);
   ensureSymbolsUnique(state);
   updateAllCustomEventsArgs(
     Object.values(state.customEvents.entities) as ScriptNormalized[],

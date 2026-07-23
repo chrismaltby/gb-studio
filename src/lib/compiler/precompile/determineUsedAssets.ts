@@ -329,8 +329,24 @@ export const determineUsedAssets = ({
     },
   );
 
+  // All defined global variables are included in the build, even when not
+  // referenced by any script, keeping their order from the project file so
+  // runtime indices are stable and follow the order set in the editor.
+  // (The variables collection also holds local variable names with ids like
+  // "<entityId>__L0" — only numeric ids are global variables.)
+  const definedGlobalVariables = projectData.variables.variables.filter(
+    (variable) => /^\d+$/.test(variable.id),
+  );
+  const definedGlobalVariableIds = new Set(
+    definedGlobalVariables.map((variable) => variable.id),
+  );
+
   return {
-    referencedVariables: valuesOf(usedVariablesLookup),
+    referencedVariables: definedGlobalVariables.concat(
+      valuesOf(usedVariablesLookup).filter(
+        (variable) => !definedGlobalVariableIds.has(variable.id),
+      ),
+    ),
     referencedSounds: valuesOf(usedSoundsLookup),
     referencedFonts: valuesOf(usedFontsLookup),
     referencedBackgrounds: valuesOf(usedBackgroundsLookup),

@@ -645,7 +645,7 @@ const isImmerDraft = <T>(value: T | Draft<T>): value is Draft<T> => {
 };
 
 const currentIfDraft = <T>(value: T | Draft<T>): T => {
-  return isImmerDraft(value) ? current(value) : value;
+  return isImmerDraft(value) ? (current(value) as T) : (value as T);
 };
 
 const cacheAssetByInode = <T extends Asset & { inode: string }>(asset: T) => {

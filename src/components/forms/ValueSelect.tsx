@@ -1,6 +1,7 @@
 import DirectionPicker from "components/forms/DirectionPicker";
 import { PropertySelect } from "components/forms/PropertySelect";
 import { VariableSelect } from "components/forms/VariableSelect";
+import { VariableArraySelect } from "components/forms/VariableArraySelect";
 import {
   isInfix,
   isUnaryOperation,
@@ -84,7 +85,11 @@ const TextIcon = styled.div`
 `;
 
 const iconLookup: Record<
-  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType | "rnd",
+  | ValueAtomType
+  | ValueOperatorType
+  | ValueUnaryOperatorType
+  | "rnd"
+  | "arrayValue",
   JSX.Element
 > = {
   // Value
@@ -93,6 +98,7 @@ const iconLookup: Record<
   direction: <CompassIcon />,
   variable: <VariableIcon />,
   indirect: <VariableIcon />,
+  arrayValue: <TextIcon>[i]</TextIcon>,
   constant: <ConstantIcon />,
   expression: <ExpressionIcon />,
   engineField: <SettingsIcon />,
@@ -131,7 +137,11 @@ const iconLookup: Record<
 };
 
 const l10nKeyLookup: Record<
-  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType | "rnd",
+  | ValueAtomType
+  | ValueOperatorType
+  | ValueUnaryOperatorType
+  | "rnd"
+  | "arrayValue",
   L10NKey
 > = {
   // Value
@@ -140,6 +150,7 @@ const l10nKeyLookup: Record<
   direction: "FIELD_DIRECTION",
   variable: "FIELD_VARIABLE",
   indirect: "FIELD_VARIABLE",
+  arrayValue: "FIELD_VARIABLE_ARRAY",
   constant: "FIELD_CONSTANT",
   expression: "FIELD_EXPRESSION",
   engineField: "FIELD_ENGINE_FIELD",
@@ -358,6 +369,12 @@ const CheckboxOverrideWrapper = styled.div`
   padding-left: 10px;
 `;
 
+const ArraySelectWrapper = styled.div`
+  flex-grow: 1;
+  min-width: 90px;
+  margin: 0 2.5px;
+`;
+
 const Wrapper = styled.div`
   display: flex;
   position: relative;
@@ -486,6 +503,17 @@ const ValueSelect = ({
     });
   }, [defaultConstant, onChange]);
 
+  const setArrayValue = useCallback(() => {
+    onChange({
+      type: "arrayValue",
+      name: "",
+      index: {
+        type: "number",
+        value: 0,
+      },
+    });
+  }, [onChange]);
+
   const setProperty = useCallback(() => {
     onChange({
       type: "property",
@@ -575,6 +603,8 @@ const ValueSelect = ({
         setVariable();
       } else if (e.key === "c") {
         setConstant();
+      } else if (e.key === "a") {
+        setArrayValue();
       } else if (e.key === "p") {
         setProperty();
       } else if (e.key === "e") {
@@ -633,6 +663,7 @@ const ValueSelect = ({
       setNumber,
       setVariable,
       setConstant,
+      setArrayValue,
       setProperty,
       setExpression,
       setEngineField,
@@ -781,6 +812,14 @@ const ValueSelect = ({
               <MenuAccelerator accelerator="c" />
             </MenuItem>,
             <MenuItem
+              key="arrayValue"
+              onClick={setArrayValue}
+              icon={value.type === "arrayValue" ? <CheckIcon /> : <BlankIcon />}
+            >
+              {l10n("FIELD_VARIABLE_ARRAY")}
+              <MenuAccelerator accelerator="a" />
+            </MenuItem>,
+            <MenuItem
               key="property"
               onClick={setProperty}
               icon={value.type === "property" ? <CheckIcon /> : <BlankIcon />}
@@ -853,6 +892,7 @@ const ValueSelect = ({
       onCopyValue,
       onPasteValue,
       setConstant,
+      setArrayValue,
       setDirection,
       setEngineField,
       setExpression,
@@ -1265,6 +1305,38 @@ const ValueSelect = ({
             />
           </InputGroup>
         </ValueWrapper>
+      );
+    } else if (value.type === "arrayValue") {
+      return (
+        <BracketsWrapper ref={previewRef} $isOver={isOver} $isFunction>
+          <OperatorWrapper ref={dropRef}>{dropdownButton}</OperatorWrapper>
+          <ArraySelectWrapper>
+            <VariableArraySelect
+              name={`${name}_array`}
+              value={value.name}
+              onChange={(newName: string) => {
+                onChange({
+                  ...value,
+                  name: newName,
+                });
+              }}
+            />
+          </ArraySelectWrapper>
+          <BracketsWrapper>
+            <ValueSelect
+              name={`${name}_index`}
+              entityId={entityId}
+              value={value.index}
+              onChange={(newIndex) => {
+                onChange({
+                  ...value,
+                  index: newIndex,
+                });
+              }}
+              innerValue
+            />
+          </BracketsWrapper>
+        </BracketsWrapper>
       );
     } else if (isUnaryOperation(value)) {
       return (

@@ -19,6 +19,7 @@ describe("compileGameGlobalsHeader", () => {
           entityType: "scene",
           entityId: "",
           sceneId: "",
+          index: 0,
         },
         var2: {
           id: "var2",
@@ -28,6 +29,7 @@ describe("compileGameGlobalsHeader", () => {
           entityType: "scene",
           entityId: "",
           sceneId: "",
+          index: 1,
         },
       },
       [
@@ -57,6 +59,44 @@ describe("compileGameGlobalsHeader", () => {
     expect(output).toInclude("STATE_DEFAULT 0");
     expect(output).toInclude("STATE_EXPLODE 1");
     expect(output).toInclude("STATE_OPEN 2");
+  });
+});
+
+describe("compileGameGlobalsHeader variable ordering", () => {
+  test("should order variables by allocation index rather than lookup key order", () => {
+    const output = compileGameGlobalsHeader(
+      {
+        // Numeric-string keys iterate in numeric order — the explicit index
+        // must win instead
+        "5": {
+          id: "5",
+          name: "Variable B",
+          symbol: "VAR_B",
+          isLocal: false,
+          entityType: "scene",
+          entityId: "",
+          sceneId: "",
+          index: 1,
+        },
+        "10": {
+          id: "10",
+          name: "Variable A",
+          symbol: "VAR_A",
+          isLocal: false,
+          entityType: "scene",
+          entityId: "",
+          sceneId: "",
+          index: 0,
+        },
+      },
+      [],
+      {},
+      [],
+      [],
+    );
+    expect(output).toInclude("VAR_A 0");
+    expect(output).toInclude("VAR_B 1");
+    expect(output).toInclude("MAX_GLOBAL_VARS 2");
   });
 });
 

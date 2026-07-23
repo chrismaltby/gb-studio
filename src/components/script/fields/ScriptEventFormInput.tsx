@@ -25,6 +25,7 @@ import { SceneSelect } from "components/forms/SceneSelect";
 import { SoundEffectSelect } from "components/forms/SoundEffectSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
+import { VariableArraySelect } from "components/forms/VariableArraySelect";
 import { FontSelect } from "components/forms/FontSelect";
 import {
   castEventToBool,
@@ -842,6 +843,16 @@ const ScriptEventFormInput = ({
     return (
       <OffscreenSkeletonInput>
         <CustomEventSelect
+          name={id}
+          value={String(value ?? "")}
+          onChange={onChangeField}
+        />
+      </OffscreenSkeletonInput>
+    );
+  } else if (type === "variableArray") {
+    return (
+      <OffscreenSkeletonInput>
+        <VariableArraySelect
           name={id}
           value={String(value ?? "")}
           onChange={onChangeField}

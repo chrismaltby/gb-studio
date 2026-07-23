@@ -1308,6 +1308,18 @@ export const replaceScriptSymbols = (
   return newScript;
 };
 
+// Global variable allocation order comes from the explicit index field —
+// the lookup's numeric-string keys iterate in numeric rather than insertion
+// order so key order can't be used here
+const sortedVariableSymbols = (
+  variableAliasLookup: Record<string, VariableMapData>,
+): string[] => {
+  return Object.values(variableAliasLookup)
+    .slice()
+    .sort((a, b) => a.index - b.index)
+    .map((v) => v.symbol);
+};
+
 export const compileGameGlobalsInclude = (
   variableAliasLookup: Record<string, VariableMapData>,
   constants: Constant[],
@@ -1315,9 +1327,7 @@ export const compileGameGlobalsInclude = (
   stateReferences: string[],
   fonts: PrecompiledFontData[],
 ) => {
-  const variables = Object.values(variableAliasLookup).map(
-    (v) => v?.symbol,
-  ) as string[];
+  const variables = sortedVariableSymbols(variableAliasLookup);
   return (
     variables
       .map((string, stringIndex) => {
@@ -1354,15 +1364,15 @@ export const compileGameGlobalsHeader = (
   stateReferences: string[],
   fonts: PrecompiledFontData[],
 ) => {
+  const variables = sortedVariableSymbols(variableAliasLookup);
   return (
     `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
-    Object.values(variableAliasLookup)
-      .map((v) => v?.symbol)
+    variables
       .map((string, stringIndex) => {
         return `#define ${string} ${stringIndex}\n`;
       })
       .join("") +
-    `#define MAX_GLOBAL_VARS ${Object.values(variableAliasLookup).length}\n` +
+    `#define MAX_GLOBAL_VARS ${variables.length}\n` +
     constants
       .filter((constant) => constant.symbol)
       .map((constant) => {

@@ -1328,6 +1328,20 @@ const editorSlice = createSlice({
         state.scene = "";
         state.entityId = action.payload.constantId;
       })
+      .addCase(entitiesActions.addVariable, (state, action) => {
+        if (!action.payload.skipSelection) {
+          state.type = "variable";
+          state.scene = "";
+          state.entityId = action.payload.variableId;
+        }
+      })
+      .addCase(entitiesActions.addVariableArray, (state, action) => {
+        if (action.payload.variableIds.length > 0) {
+          state.type = "variable";
+          state.scene = "";
+          state.entityId = action.payload.variableIds[0];
+        }
+      })
       .addCase(entitiesActions.moveActor, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {
           state.scene = action.payload.newSceneId;

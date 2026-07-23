@@ -2749,6 +2749,46 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
+  variableArrayGetValue = (
+    variable: string,
+    arrayName: string,
+    index: ScriptValue,
+  ) => {
+    if (!arrayName) {
+      this.options.warnings(
+        `No variable array selected for "Array Get Value" event, skipping`,
+      );
+      return;
+    }
+    this._addComment(`Variable ${variable} = Array ${arrayName}[..]`);
+    this.variableSetToScriptValue(variable, {
+      type: "arrayValue",
+      name: arrayName,
+      index,
+    });
+  };
+
+  variableArraySetValue = (
+    arrayName: string,
+    index: ScriptValue,
+    value: ScriptValue,
+  ) => {
+    if (!arrayName) {
+      this.options.warnings(
+        `No variable array selected for "Set Array Value" event, skipping`,
+      );
+      return;
+    }
+    this._addComment(`Array ${arrayName}[..] Set Value`);
+    const indexLocal = this._fetchArrayIndexIntoLocal(arrayName, index);
+    this._addComment(`-- Store value in array`);
+    this._stackPushScriptValue(value);
+    this._markLocalUse(indexLocal);
+    this._setInd(indexLocal, ".ARG0");
+    this._stackPop(1);
+    this._addNL();
+  };
+
   variableDataTableLookup = (indexVariable: string, table: ScriptDataTable) => {
     if (table.variables.length === 0 || table.rows.length === 0) {
       // No data provided, skip instruction

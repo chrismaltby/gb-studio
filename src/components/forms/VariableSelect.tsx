@@ -15,6 +15,11 @@ import {
   NamedVariable,
   namedVariablesByContext,
 } from "renderer/lib/variables";
+import {
+  globalVariableDefaultName,
+  isGlobalVariableId,
+  nextAvailableVariableIds,
+} from "shared/lib/variables/variableNames";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import { IMEInput } from "ui/form/IMEInput";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -128,6 +133,8 @@ const VariableRenameCompleteButton = styled.button`
   }
 `;
 
+const ADD_VARIABLE_VALUE = "__ADD_VARIABLE__";
+
 const VariableSelectComponent = ({
   value,
   onChange,
@@ -174,16 +181,47 @@ const VariableSelectComponent = ({
         options,
       };
     });
+    if (context.type !== "script" || customEvent) {
+      groupedOptions.push({
+        label: "",
+        options: [
+          {
+            value: ADD_VARIABLE_VALUE,
+            label: `+ ${l10n("SIDEBAR_ADD_VARIABLE")}`,
+          },
+        ],
+      });
+    }
     setVariables(variables);
     setOptions(groupedOptions);
   }, [entityId, variablesLookup, context, customEvent]);
 
   const currentValue = useMemo(() => {
     const currentVariable = variables.find((variable) => variable.id === value);
-    return currentVariable
-      ? { value: currentVariable.id, label: `$${currentVariable.name}` }
-      : undefined;
+    if (currentVariable) {
+      return { value: currentVariable.id, label: `$${currentVariable.name}` };
+    }
+    // Referenced variable isn't defined in the project (created in an older
+    // version of GB Studio) — still display it with its default name
+    if (value && isGlobalVariableId(value)) {
+      return { value, label: `$${globalVariableDefaultName(value)}` };
+    }
+    return undefined;
   }, [variables, value]);
+
+  const onAddVariable = () => {
+    const newId = nextAvailableVariableIds(
+      Object.keys(variablesLookup),
+      1,
+    )[0];
+    if (newId === undefined) {
+      return;
+    }
+    dispatch(
+      entitiesActions.addVariable({ variableId: newId, skipSelection: true }),
+    );
+    onChange(newId);
+  };
 
   const onRenameStart = () => {
     if (currentValue) {
@@ -263,7 +301,11 @@ const VariableSelectComponent = ({
           options={options}
           onChange={(newValue: SingleValue<Option>) => {
             if (newValue) {
-              onChange(newValue.value);
+              if (newValue.value === ADD_VARIABLE_VALUE) {
+                onAddVariable();
+              } else {
+                onChange(newValue.value);
+              }
             }
           }}
           {...selectProps}

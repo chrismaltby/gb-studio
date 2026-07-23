@@ -135,7 +135,8 @@ import { applyPrefabs } from "./applyPrefabs";
 import { EngineSchema } from "lib/project/loadEngineSchema";
 import { createLinkToResource } from "shared/lib/helpers/resourceLinks";
 import difference from "lodash/difference";
-import { toProjectileHash } from "./scriptBuilder/helpers";
+import { toASMVar, toProjectileHash } from "./scriptBuilder/helpers";
+import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 
 type CompiledTilemapData = {
   symbol: string;
@@ -162,6 +163,10 @@ export type VariableMapData = {
   entityType: EntityType;
   entityId: string;
   sceneId: string;
+  // Allocation order for the runtime global index. Object key ordering can't
+  // be relied on here as numeric-string keys are iterated in numeric order
+  // rather than insertion order.
+  index: number;
 };
 
 const indexById = <T extends { id: string }>(arr: T[]) => keyBy(arr, "id");
@@ -1478,19 +1483,35 @@ const compile = async (
   const variablesLookup = keyBy(projectData.variables.variables, "id");
   const variableAliasLookup = precompiled.usedVariables.reduce(
     (memo, variable) => {
-      // Include variables referenced from GBVM
-      if (variable.symbol) {
-        const symbol = variable.symbol.toUpperCase();
-        memo[variable.id] = {
-          symbol,
-          id: variable.id,
-          name: variable.name,
-          isLocal: false,
-          entityType: "scene",
-          entityId: "",
-          sceneId: "",
-        };
+      if (memo[variable.id]) {
+        return memo;
       }
+      // Pre-allocate all defined and GBVM referenced variables in
+      // precompiled order so runtime indices are stable, generating a
+      // unique fallback symbol for variables that don't have one yet
+      let symbol = variable.symbol
+        ? variable.symbol.toUpperCase()
+        : "VAR_" +
+          toASMVar(variable.name || globalVariableDefaultName(variable.id));
+      const takenSymbols = new Set(
+        Object.values(memo).map((v) => v?.symbol),
+      );
+      let counter = 1;
+      const baseSymbol = symbol;
+      while (takenSymbols.has(symbol)) {
+        symbol = `${baseSymbol}_${counter}`;
+        counter++;
+      }
+      memo[variable.id] = {
+        symbol,
+        id: variable.id,
+        name: variable.name,
+        isLocal: false,
+        entityType: "scene",
+        entityId: "",
+        sceneId: "",
+        index: Object.keys(memo).length,
+      };
       return memo;
     },
     {} as Record<string, VariableMapData>,

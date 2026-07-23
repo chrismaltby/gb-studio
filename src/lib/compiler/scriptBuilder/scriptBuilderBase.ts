@@ -69,9 +69,19 @@ import {
 } from "shared/lib/entities/entitiesHelpers";
 import {
   globalVariableDefaultName,
+  isGlobalVariableId,
   localVariableName,
   tempVariableName,
 } from "shared/lib/variables/variableNames";
+import {
+  ParsedArrayExpression,
+  parseExpressionStatement,
+} from "shared/lib/rpn/arrays";
+import type { RPNToken } from "shared/lib/rpn/types";
+import {
+  getBaseName,
+  getParentPath,
+} from "shared/lib/helpers/virtualFilesystem";
 import { defaultVariableForContext } from "shared/lib/scripts/context";
 import { PrecompiledProjectile } from "lib/compiler/generateGBVMData";
 import { ScriptEvent, ScriptEditorCtxType } from "shared/lib/resources/types";
@@ -286,56 +296,194 @@ abstract class ScriptBuilderBase {
     }
   };
 
+  _resolveExpressionVariable = (symbol: string): ScriptBuilderVariable => {
+    const variable = symbol.replace(/\$/g, "");
+    if (variable.match(/^V[0-9]$/)) {
+      const arg = this.options.argLookup.variable.get(variable);
+      if (!arg) {
+        throw new Error("Cant find arg");
+      }
+      return arg;
+    }
+    return variable;
+  };
+
+  _rpnEvaluatedTokens = (
+    rpn: ReturnType<ScriptBuilderBase["_rpn"]>,
+    rpnTokens: RPNToken[],
+    arrayIndexLocals: Record<number, string>,
+  ) => {
+    for (const token of rpnTokens) {
+      if (token.type === "VAL") {
+        rpn.int16(token.value);
+      } else if (token.type === "VAR") {
+        rpn.refVariable(this._resolveExpressionVariable(token.symbol));
+      } else if (token.type === "FUN") {
+        rpn.operator(funToScriptOperator(token.function));
+      } else if (token.type === "OP") {
+        rpn.operator(toScriptOperator(token.operator));
+      } else if (token.type === "CONST") {
+        rpn.intConstant(token.symbol);
+      } else if (token.type === "ARRAYVAL") {
+        const localName = arrayIndexLocals[token.id];
+        if (localName === undefined) {
+          throw new Error("Array access index was not precalculated");
+        }
+        // Redeclaring extends the local's liveness range so it isn't
+        // packed into the same address as a later local before this read
+        rpn.refInd(this._declareLocal(localName, 1));
+      } else {
+        assertUnreachable(token);
+      }
+    }
+    return rpn;
+  };
+
+  // Resolve a variable array name (a folder in the variables list) to the
+  // symbol of the folder's first variable. Global variable symbols equal
+  // their runtime index in game_globals.i, and folder members are allocated
+  // contiguously, so the returned symbol acts as the array's base index
+  _getArrayBaseSymbol = (name: string): string => {
+    const { variablesLookup, variableAliasLookup } = this.options;
+    const normalizeName = (s: string) => s.replace(/\s+/g, "").toLowerCase();
+    const searchName = normalizeName(name);
+    let baseId: string | undefined;
+    let baseIndex = Infinity;
+    for (const variable of Object.values(variablesLookup)) {
+      if (!variable || !isGlobalVariableId(variable.id)) {
+        continue;
+      }
+      const folderPath = getParentPath(variable.name);
+      if (!folderPath) {
+        continue;
+      }
+      if (
+        normalizeName(folderPath) !== searchName &&
+        normalizeName(getBaseName(folderPath)) !== searchName
+      ) {
+        continue;
+      }
+      const index = variableAliasLookup[variable.id]?.index ?? Infinity;
+      if (baseId === undefined || index < baseIndex) {
+        baseIndex = index;
+        baseId = variable.id;
+      }
+    }
+    if (baseId === undefined) {
+      throw new Error(
+        `Unknown variable array "${name}". Group variables in a folder named "${name}" in the variables list to create an array.`,
+      );
+    }
+    return this.getVariableAlias(baseId);
+  };
+
+  // Calculate the runtime variable index for an array access
+  // (base index + index expression) storing it in a named local for use
+  // with the indirect reference operations. Returns the local's name —
+  // callers redeclare it at each use so its liveness range stays accurate
+  _computeArrayIndexLocal = (
+    name: string,
+    index: ParsedArrayExpression,
+    arrayIndexLocals: Record<number, string>,
+  ): string => {
+    const baseSymbol = this._getArrayBaseSymbol(name);
+    const localName = `arr_idx_${Object.keys(this.localsLookup).length}`;
+    const indexRef = this._declareLocal(localName, 1);
+    const rpn = this._rpn();
+    rpn.int16(baseSymbol);
+    this._rpnEvaluatedTokens(rpn, shuntingYard(index.tokens), arrayIndexLocals);
+    rpn.operator(".ADD");
+    rpn.refSet(indexRef);
+    rpn.stop();
+    return localName;
+  };
+
+  // Precalculate the variable index of every array access within an
+  // expression (deepest first so nested accesses resolve before the
+  // accesses using them)
+  _evaluateArrayIndexes = (
+    parsed: ParsedArrayExpression,
+    arrayIndexLocals: Record<number, string>,
+  ) => {
+    for (const access of parsed.arrayAccesses) {
+      this._evaluateArrayIndexes(access.index, arrayIndexLocals);
+      arrayIndexLocals[access.id] = this._computeArrayIndexLocal(
+        access.name,
+        access.index,
+        arrayIndexLocals,
+      );
+    }
+  };
+
   _stackPushEvaluatedExpression = (
     expression: string,
     resultVariable?: ScriptBuilderVariable,
   ) => {
     const tokens = tokenize(expression);
-    const rpnTokens = shuntingYard(tokens);
-    if (rpnTokens.length > 0) {
-      let rpn = this._rpn();
-      let token = rpnTokens.shift();
-      while (token) {
-        if (token.type === "VAL") {
-          rpn = rpn.int16(token.value);
-        } else if (token.type === "VAR") {
-          const ref = token.symbol.replace(/\$/g, "");
-          const variable = ref;
-          if (variable.match(/^V[0-9]$/)) {
-            const key = variable;
-            const arg = this.options.argLookup.variable.get(key);
-            if (!arg) {
-              throw new Error("Cant find arg");
-            }
-            rpn = rpn.refVariable(arg);
-          } else {
-            rpn = rpn.refVariable(ref);
-          }
-        } else if (token.type === "FUN") {
-          const op = funToScriptOperator(token.function);
-          rpn = rpn.operator(op);
-        } else if (token.type === "OP") {
-          const op = toScriptOperator(token.operator);
-          rpn = rpn.operator(op);
-        } else if (token.type === "CONST") {
-          rpn = rpn.intConstant(token.symbol);
-        } else {
-          assertUnreachable(token);
-        }
-        token = rpnTokens.shift();
-      }
-      if (resultVariable !== undefined) {
-        rpn.refSetVariable(resultVariable);
-      }
-      rpn.stop();
-    } else {
+    const statement = parseExpressionStatement(tokens);
+    const arrayIndexLocals: Record<number, string> = {};
+
+    if (!statement.target && statement.value.tokens.length === 0) {
       // If expression empty use value 0
       if (resultVariable !== undefined) {
         this._setVariableConst(resultVariable, 0);
       } else {
         this._stackPushConst(0);
       }
+      return;
     }
+
+    this._evaluateArrayIndexes(statement.value, arrayIndexLocals);
+    const valueRPNTokens = shuntingYard(statement.value.tokens);
+
+    if (!statement.target) {
+      const rpn = this._rpn();
+      this._rpnEvaluatedTokens(rpn, valueRPNTokens, arrayIndexLocals);
+      if (resultVariable !== undefined) {
+        rpn.refSetVariable(resultVariable);
+      }
+      rpn.stop();
+      return;
+    }
+
+    if (statement.target.type === "variable") {
+      // "$variable$ = expression" assignment
+      const targetVariable = this._resolveExpressionVariable(
+        statement.target.symbol,
+      );
+      const rpn = this._rpn();
+      this._rpnEvaluatedTokens(rpn, valueRPNTokens, arrayIndexLocals);
+      rpn.refSetVariable(targetVariable);
+      rpn.stop();
+      if (resultVariable !== undefined) {
+        if (resultVariable !== targetVariable) {
+          this._setVariableToVariable(resultVariable, targetVariable);
+        }
+      } else {
+        // Assignment expressions evaluate to the assigned value
+        this._stackPushVariable(targetVariable);
+      }
+      return;
+    }
+
+    // "Array[index] = expression" assignment
+    this._evaluateArrayIndexes(statement.target.index, arrayIndexLocals);
+    const targetIndexLocal = this._computeArrayIndexLocal(
+      statement.target.name,
+      statement.target.index,
+      arrayIndexLocals,
+    );
+    const rpn = this._rpn();
+    this._rpnEvaluatedTokens(rpn, valueRPNTokens, arrayIndexLocals);
+    rpn.stop();
+    // Assigned value is on the stack — store it into the array item
+    this._setInd(this._declareLocal(targetIndexLocal, 1), ".ARG0");
+    if (resultVariable !== undefined) {
+      this._setVariable(resultVariable, ".ARG0");
+      this._stackPop(1);
+    }
+    // When no result variable the assigned value remains on the stack as
+    // the expression result
   };
 
   _expressionToHumanReadable = (expression: string) => {
@@ -994,6 +1142,34 @@ abstract class ScriptBuilderBase {
     return rpn;
   };
 
+  // Calculate the runtime variable index of a variable array item
+  // (folder base index + index value) into a temporary local for use with
+  // the indirect reference operations. Callers should extend the local's
+  // liveness with _markLocalUse when reading it after further output
+  _fetchArrayIndexIntoLocal = (
+    name: string,
+    index: ScriptValue,
+    localsLabel = "arridx_",
+  ): string => {
+    this._addComment(`-- Calculate ${name}[] index`);
+    const baseSymbol = this._getArrayBaseSymbol(name);
+    const localVar = this._declareLocal("arr_idx", 1, true);
+    // The index value may itself require fetch operations
+    // (e.g. nested array accesses or actor properties)
+    const [indexRpnOps, indexFetchOps] = precompileScriptValue(
+      index,
+      localsLabel,
+    );
+    const nestedLocalsLookup = this._performFetchOperations(indexFetchOps);
+    const rpn = this._rpn();
+    rpn.int16(baseSymbol);
+    this._performValueRPN(rpn, indexRpnOps, nestedLocalsLookup);
+    rpn.operator(".ADD");
+    rpn.refSet(localVar);
+    rpn.stop();
+    return localVar;
+  };
+
   _performFetchOperations = (
     fetchOps: PrecompiledValueFetch[],
   ): Record<string, string | PrecompiledValueRPNOperation[]> => {
@@ -1060,6 +1236,20 @@ abstract class ScriptBuilderBase {
         currentProperty = property;
         prevLocalVar = localVar;
         localsLookup[fetchOp.local] = localVar;
+      } else if (property === "arrayIndex") {
+        if (!fetchOp.value.name) {
+          // No array selected yet — fallback to value 0
+          this.options.warnings(
+            `No variable array selected for value, using 0`,
+          );
+          localsLookup[fetchOp.local] = [{ type: "number", value: 0 }];
+        } else {
+          localsLookup[fetchOp.local] = this._fetchArrayIndexIntoLocal(
+            fetchOp.value.name,
+            fetchOp.value.index,
+            `${fetchOp.local}_`,
+          );
+        }
       } else if (property === "engineField") {
         const key = fetchOp.value.value || "";
         const { engineFields } = this.options;
@@ -1137,6 +1327,21 @@ abstract class ScriptBuilderBase {
         }
         case "indirect": {
           rpn.refInd(rpnOp.value);
+          break;
+        }
+        case "indirectLocal": {
+          const local = localsLookup[rpnOp.value];
+          if (typeof local === "string") {
+            // Local holds the index of the variable to read
+            this._markLocalUse(local);
+            rpn.refInd(this._localRef(local, 0));
+          } else if (local) {
+            // Fallback value used when the array access couldn't be
+            // resolved (e.g. no array selected)
+            this._performValueRPN(rpn, local, localsLookup);
+          } else {
+            throw new Error("Array index must be fetched into a local");
+          }
           break;
         }
         case "direction": {
@@ -2552,6 +2757,9 @@ extern void __mute_mask_${symbol};
         entityType: "scene",
         entityId: "",
         sceneId: "",
+        index:
+          variableAliasLookup[id]?.index ??
+          Object.keys(variableAliasLookup).length,
       };
       return symbol;
     }
@@ -2602,6 +2810,7 @@ extern void __mute_mask_${symbol};
       entityType,
       entityId: entity?.id ?? "",
       sceneId: scene?.id ?? "",
+      index: Object.keys(variableAliasLookup).length,
     };
 
     return newAlias;

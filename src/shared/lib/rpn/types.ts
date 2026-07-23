@@ -57,6 +57,26 @@ interface TokenRBrace {
   type: "RBRACE";
 }
 
+interface TokenLBracket {
+  type: "LBRACKET";
+}
+
+interface TokenRBracket {
+  type: "RBRACKET";
+}
+
+interface TokenAssign {
+  type: "ASSIGN";
+}
+
+// Placeholder for a variable array access ("Array[index]") after the access
+// has been extracted from the token stream. Behaves as a value token —
+// the id links back to the extracted access
+export interface TokenArrayValue {
+  type: "ARRAYVAL";
+  id: number;
+}
+
 interface TokenSeperator {
   type: "SEPERATOR";
 }
@@ -92,14 +112,23 @@ export type Token =
   | TokenConst
   | TokenLBrace
   | TokenRBrace
+  | TokenLBracket
+  | TokenRBracket
+  | TokenAssign
+  | TokenArrayValue
   | TokenFunction
   | TokenOperator
   | TokenSeperator;
 
 export type RPNToken =
-  TokenVal | TokenVar | TokenConst | TokenFunction | TokenOperator;
+  | TokenVal
+  | TokenVar
+  | TokenConst
+  | TokenArrayValue
+  | TokenFunction
+  | TokenOperator;
 
-const rpnTokenTypes = ["VAL", "VAR", "FUN", "OP"] as const;
+const rpnTokenTypes = ["VAL", "VAR", "FUN", "OP", "ARRAYVAL"] as const;
 
 export const isRPNToken = (token: Token): token is RPNToken => {
   return rpnTokenTypes.includes(token.type as (typeof rpnTokenTypes)[number]);

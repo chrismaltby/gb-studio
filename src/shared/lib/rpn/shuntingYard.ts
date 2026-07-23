@@ -25,11 +25,24 @@ const shuntingYard = (input: Token[]): RPNToken[] => {
     if (
       token.type === "VAL" ||
       token.type === "VAR" ||
-      token.type === "CONST"
+      token.type === "CONST" ||
+      token.type === "ARRAYVAL"
     ) {
       output.push(token);
       prevToken = token;
       continue;
+    }
+
+    // Array accesses must be extracted (see rpn/arrays.ts) before running
+    // the shunting yard algorithm — assignments and raw brackets are not
+    // supported here
+    if (token.type === "LBRACKET" || token.type === "RBRACKET") {
+      throw new Error(
+        `Unexpected "${token.type === "LBRACKET" ? "[" : "]"}" in expression`,
+      );
+    }
+    if (token.type === "ASSIGN") {
+      throw new Error(`Unexpected "=" in expression`);
     }
 
     // If the current Token is a function, put it onto the operator stack.
@@ -212,7 +225,8 @@ const shuntingYard = (input: Token[]): RPNToken[] => {
     if (
       token.type === "VAL" ||
       token.type === "VAR" ||
-      token.type === "CONST"
+      token.type === "CONST" ||
+      token.type === "ARRAYVAL"
     ) {
       stackCount++;
     } else if (token.type === "FUN") {

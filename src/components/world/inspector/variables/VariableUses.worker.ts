@@ -24,8 +24,15 @@ import {
   walkNormalizedCustomEventScripts,
   walkNormalizedScenesScripts,
 } from "shared/lib/scripts/walk";
-import { variableInScriptValue } from "shared/lib/scriptValue/helpers";
+import {
+  arrayInScriptValue,
+  variableInScriptValue,
+} from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  expressionArrayNames,
+  matchesArrayName,
+} from "shared/lib/rpn/arrays";
 import {
   variableInDialogueText,
   variableInExpressionText,
@@ -76,6 +83,9 @@ const workerCtx: Worker = self as unknown as Worker;
 workerCtx.onmessage = async (evt) => {
   const id = evt.data.id;
   const variableId: string = evt.data.variableId;
+  // When set, search for uses of a variable array (a folder of global
+  // variables) rather than a single variable
+  const arrayPath: string | undefined = evt.data.arrayPath;
   const scenes: SceneNormalized[] = evt.data.scenes;
   const scriptEventsLookup: Record<string, ScriptEventNormalized> =
     evt.data.scriptEventsLookup;
@@ -107,6 +117,23 @@ workerCtx.onmessage = async (evt) => {
     const argValue = args[arg];
     const field = scriptEventDefs[scriptEvent.command]?.fieldsLookup?.[arg];
     if (!field) {
+      return false;
+    }
+    // Searching for variable array uses rather than a single variable
+    if (arrayPath !== undefined) {
+      if (field.type === "variableArray") {
+        return (
+          typeof argValue === "string" && matchesArrayName(argValue, arrayPath)
+        );
+      }
+      if (isScriptValueField(scriptEvent.command, arg, args, scriptEventDefs)) {
+        return isScriptValue(argValue) && arrayInScriptValue(arrayPath, argValue);
+      }
+      if (field.type === "matharea" && typeof argValue === "string") {
+        return expressionArrayNames(argValue).some((name) =>
+          matchesArrayName(name, arrayPath),
+        );
+      }
       return false;
     }
     // If field was a script value extract used variables in value
