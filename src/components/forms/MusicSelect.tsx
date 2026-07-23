@@ -9,6 +9,7 @@ import {
   SelectCommonProps,
   OptGroup,
   FormatFolderLabel,
+  findSelectOption,
 } from "ui/form/Select";
 import { PauseIcon, PlayIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
@@ -91,10 +92,7 @@ const MusicSelectComponent = ({
   }, [tracks]);
 
   const currentValue = useMemo(
-    () =>
-      options
-        .flatMap((group) => group.options)
-        .find((option) => option.value === value) || options[0]?.options[0],
+    () => findSelectOption(options, value) || options[0]?.options[0],
     [options, value],
   );
 

@@ -1,9 +1,10 @@
-import React, { memo, useContext, useEffect, useMemo, useState } from "react";
+import React, { memo, useContext, useMemo, useState } from "react";
 import {
   Select as DefaultSelect,
   Option,
   OptGroup,
   SelectCommonProps,
+  findSelectOption,
 } from "ui/form/Select";
 import styled from "styled-components";
 import {
@@ -12,7 +13,6 @@ import {
 } from "store/features/entities/entitiesSelectors";
 import {
   groupVariables,
-  NamedVariable,
   namedVariablesByContext,
 } from "renderer/lib/variables";
 import {
@@ -149,8 +149,6 @@ const VariableSelectComponent = ({
   const [renameVisible, setRenameVisible] = useState(false);
   const [editValue, setEditValue] = useState("");
   const [renameId, setRenameId] = useState("");
-  const [variables, setVariables] = useState<NamedVariable[]>([]);
-  const [options, setOptions] = useState<OptGroup[]>([]);
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state),
   );
@@ -164,14 +162,14 @@ const VariableSelectComponent = ({
   const canRename =
     allowRename && !valueIsTemp && context.entityType !== "customEvent";
 
-  useEffect(() => {
+  const options = useMemo<OptGroup[]>(() => {
     const variables = namedVariablesByContext(
       context,
       variablesLookup,
       customEvent,
     );
     const groupedVariables = groupVariables(variables);
-    const groupedOptions: OptGroup[] = groupedVariables.map((g) => {
+    const groupedOptions = groupedVariables.map((g) => {
       const options = g.variables.map((v) => ({
         value: v.id,
         label: `${v.name}`,
@@ -192,28 +190,26 @@ const VariableSelectComponent = ({
         ],
       });
     }
-    setVariables(variables);
-    setOptions(groupedOptions);
-  }, [entityId, variablesLookup, context, customEvent]);
+    return groupedOptions;
+  }, [variablesLookup, context, customEvent]);
 
   const currentValue = useMemo(() => {
-    const currentVariable = variables.find((variable) => variable.id === value);
-    if (currentVariable) {
-      return { value: currentVariable.id, label: `$${currentVariable.name}` };
+    const option = findSelectOption(options, value);
+    if (option) {
+      return option;
     }
     // Referenced variable isn't defined in the project (created in an older
     // version of GB Studio) — still display it with its default name
     if (value && isGlobalVariableId(value)) {
-      return { value, label: `$${globalVariableDefaultName(value)}` };
+      return { value, label: globalVariableDefaultName(value) };
     }
     return undefined;
-  }, [variables, value]);
+  }, [options, value]);
+
+  const currentLabel = currentValue ? `$${currentValue.label}` : "";
 
   const onAddVariable = () => {
-    const newId = nextAvailableVariableIds(
-      Object.keys(variablesLookup),
-      1,
-    )[0];
+    const newId = nextAvailableVariableIds(Object.keys(variablesLookup), 1)[0];
     if (newId === undefined) {
       return;
     }
@@ -225,7 +221,7 @@ const VariableSelectComponent = ({
 
   const onRenameStart = () => {
     if (currentValue) {
-      setEditValue(currentValue.label.replace(/^\$/, ""));
+      setEditValue(currentValue.label);
       setRenameId(currentValue.value);
       setRenameVisible(true);
     }
@@ -308,6 +304,9 @@ const VariableSelectComponent = ({
               }
             }
           }}
+          formatOptionLabel={(option, { context }) =>
+            context === "value" ? `$${option.label}` : option.label
+          }
           {...selectProps}
         />
       )}
@@ -329,7 +328,7 @@ const VariableSelectComponent = ({
         ))}
       {units && (
         <UnitsSelectButtonInputOverlay
-          parentValue={(currentValue && currentValue.label) ?? ""}
+          parentValue={currentLabel}
           value={units}
           allowedValues={unitsAllowed}
           onChange={onChangeUnits}

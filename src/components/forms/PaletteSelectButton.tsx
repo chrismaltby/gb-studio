@@ -146,6 +146,10 @@ const PaletteSelectButtonComponent = ({
     buttonRef.current?.focus();
   };
 
+  const onCreatePalette = (newValue: string) => {
+    onChange?.(newValue);
+  };
+
   const onButtonFocus = () => {
     setButtonFocus(true);
   };
@@ -200,6 +204,7 @@ const PaletteSelectButtonComponent = ({
               value={value}
               type={type}
               onChange={onSelectChange}
+              onCreate={onCreatePalette}
               onBlur={closeMenu}
               optional={optional}
               optionalLabel={optionalLabel}

@@ -16,8 +16,9 @@ const Wrapper = styled.div`
 const Color = styled.div`
   flex-grow: 1;
   max-width: 32px;
-  height: 32px;
+  height: 28px;
   border: 1px solid transparent;
+  box-sizing: border-box;
 
   &:first-of-type {
     border-top-left-radius: 4px;

@@ -10,6 +10,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
   FormatFolderLabel,
+  findSelectOption,
 } from "ui/form/Select";
 import { TileCanvas } from "components/rendering/TileCanvas";
 import uniq from "lodash/uniq";
@@ -133,6 +134,13 @@ const TilesetSelectComponent = ({
   );
 
   const currentValue = useMemo<TilesetOption | undefined>(() => {
+    const option = findSelectOption<TilesetOption>(
+      options,
+      value ?? (optional ? "" : undefined),
+    );
+    if (option) {
+      return option;
+    }
     if (currentTileset) {
       return {
         value: currentTileset.id,
@@ -149,7 +157,7 @@ const TilesetSelectComponent = ({
     }
 
     return undefined;
-  }, [currentTileset, optional, optionalLabel]);
+  }, [currentTileset, options, optional, optionalLabel, value]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {

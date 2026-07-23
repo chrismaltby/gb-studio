@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import styled from "styled-components";
 import {
@@ -79,11 +79,6 @@ export const InstrumentSelect = memo(
   }: InstrumentSelectProps) => {
     const playPreview = useMusicNotePreview();
 
-    const [options, setOptions] = useState<InstrumentOption[]>([]);
-    const [currentInstrument, setCurrentInstrument] =
-      useState<InstrumentOption>();
-    const [currentValue, setCurrentValue] = useState<InstrumentOption>();
-
     const dutyInstruments = useAppSelector(
       (state) => state.trackerDocument.present.song?.dutyInstruments,
     );
@@ -98,7 +93,7 @@ export const InstrumentSelect = memo(
       (state) => state.tracker.selectedChannel,
     );
 
-    useEffect(() => {
+    const options = useMemo(() => {
       let instruments = defaultInstrumentOptions;
       if (dutyInstruments && waveInstruments && noiseInstruments) {
         switch (selectedChannel) {
@@ -132,28 +127,17 @@ export const InstrumentSelect = memo(
             break;
         }
       }
-      setOptions(
-        ([] as InstrumentOption[]).concat(
-          [] as InstrumentOption[],
-          instruments,
-        ),
-      );
+      return instruments;
     }, [dutyInstruments, noiseInstruments, selectedChannel, waveInstruments]);
 
-    useEffect(() => {
-      setCurrentInstrument(options.find((v) => v.value === value));
-    }, [options, value]);
-
-    useEffect(() => {
-      if (currentInstrument) {
-        setCurrentValue(currentInstrument);
-      } else {
-        setCurrentValue({
+    const currentValue = useMemo(
+      () =>
+        options.find((option) => option.value === value) || {
           value: -1,
           label: noneLabel ?? l10n("FIELD_NONE"),
-        });
-      }
-    }, [currentInstrument, noneLabel, options]);
+        },
+      [noneLabel, options, value],
+    );
 
     const onSelectChange = useCallback(
       (newValue: SingleValue<InstrumentOption>) => {
