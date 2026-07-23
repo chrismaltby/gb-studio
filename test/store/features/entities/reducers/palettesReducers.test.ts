@@ -22,6 +22,19 @@ test("Should be able to add a palette", () => {
   );
 });
 
+test("Should be able to add a palette with a name", () => {
+  const state: EntitiesState = {
+    ...initialState,
+  };
+
+  const action = actions.addPalette({ name: "Characters/Hero" });
+  const newState = reducer(state, action);
+
+  expect(newState.palettes.entities[action.payload.paletteId]?.name).toBe(
+    "Characters/Hero",
+  );
+});
+
 test("Should be able to edit a palette", () => {
   const state: EntitiesState = {
     ...initialState,

@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 import debounce from "lodash/debounce";
 import useResizable from "ui/hooks/use-resizable";
@@ -12,29 +6,13 @@ import useWindowSize from "ui/hooks/use-window-size";
 import { SplitPaneHorizontalDivider } from "ui/splitpane/SplitPaneDivider";
 import editorActions from "store/features/editor/editorActions";
 import { paletteSelectors } from "store/features/entities/entitiesSelectors";
-import l10n from "shared/lib/lang/l10n";
-import { Button } from "ui/buttons/Button";
 import CustomPalettePicker from "components/forms/CustomPalettePicker";
 import { PaletteNavigator } from "components/palettes/PaletteNavigator";
-import entitiesActions from "store/features/entities/entitiesActions";
-import { IMEInput } from "ui/form/IMEInput";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { paletteName } from "shared/lib/entities/entitiesHelpers";
 
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
-`;
-
-const Header = styled.div`
-  display: flex;
-  height: 100px;
-  align-items: center;
-  margin-bottom: 30px;
-
-  h1 {
-    margin-right: 10px;
-  }
 `;
 
 const Sidebar = styled.div`
@@ -85,14 +63,9 @@ const PalettePage = () => {
   const windowWidth = windowSize.width || 0;
   const windowHeight = windowSize.height || 0;
   const minCenterPaneWidth = 0;
-  const [edit, setEdit] = useState(false);
 
   const allPalettes = useAppSelector((state) =>
     paletteSelectors.selectAll(state),
-  );
-
-  const allPaletteIds = useAppSelector((state) =>
-    paletteSelectors.selectIds(state),
   );
 
   const palette = useAppSelector((state) =>
@@ -110,12 +83,6 @@ const PalettePage = () => {
     () => palette?.id || lastPaletteId.current || allPalettes[0]?.id,
     [allPalettes, palette],
   );
-
-  const viewPalette = useAppSelector((state) =>
-    paletteSelectors.selectById(state, viewPaletteId),
-  );
-
-  const viewPaletteIndex = allPaletteIds.indexOf(viewPaletteId);
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
     initialSize: navigatorSidebarWidth,
@@ -152,47 +119,6 @@ const PalettePage = () => {
 
   useEffect(() => debouncedStoreWidths.current(leftPaneWidth), [leftPaneWidth]);
 
-  const onStartEdit = useCallback(() => {
-    setEdit(true);
-  }, []);
-
-  const onFinishEdit = () => {
-    if (!viewPalette) {
-      return;
-    }
-    if (!viewPalette?.name) {
-      dispatch(
-        entitiesActions.editPalette({
-          paletteId: viewPalette.id,
-          changes: {
-            name: "Palette",
-          },
-        }),
-      );
-    }
-    setEdit(false);
-  };
-
-  const checkForFinishEdit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      onFinishEdit();
-    }
-  };
-
-  const onEditName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!viewPalette) {
-      return;
-    }
-    dispatch(
-      entitiesActions.editPalette({
-        paletteId: viewPalette.id,
-        changes: {
-          name: e.currentTarget.value,
-        },
-      }),
-    );
-  };
-
   return (
     <Wrapper>
       <Sidebar
@@ -210,36 +136,7 @@ const PalettePage = () => {
       <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
       <Document>
         <Container>
-          <Header>
-            {viewPalette && (
-              <>
-                {edit ? (
-                  <IMEInput
-                    displaySize="large"
-                    value={viewPalette.name}
-                    placeholder={paletteName(viewPalette, viewPaletteIndex)}
-                    onChange={onEditName}
-                    onKeyDown={checkForFinishEdit}
-                    onBlur={onFinishEdit}
-                    autoFocus
-                  />
-                ) : (
-                  <h1>{paletteName(viewPalette, viewPaletteIndex)}</h1>
-                )}
-                {!viewPalette.defaultColors && !edit && (
-                  <Button
-                    key="edit"
-                    onClick={onStartEdit}
-                    size="small"
-                    variant="transparent"
-                  >
-                    {l10n("FIELD_RENAME")}
-                  </Button>
-                )}
-              </>
-            )}
-          </Header>
-          {viewPalette && <CustomPalettePicker paletteId={viewPaletteId} />}
+          {viewPaletteId && <CustomPalettePicker paletteId={viewPaletteId} />}
         </Container>
       </Document>
     </Wrapper>

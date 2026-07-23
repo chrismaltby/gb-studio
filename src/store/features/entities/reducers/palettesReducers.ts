@@ -18,13 +18,15 @@ import { localPaletteSelectTotal } from "store/features/entities/helpers";
 
 const addPalette: CaseReducer<
   EntitiesState,
-  PayloadAction<{ paletteId: string }>
+  PayloadAction<{ paletteId: string; name?: string }>
 > = (state, action) => {
   const newPalette: Palette = {
     id: action.payload.paletteId,
-    name: `${l10n("TOOL_PALETTE_N", {
-      number: localPaletteSelectTotal(state) + 1,
-    })}`,
+    name:
+      action.payload.name ||
+      `${l10n("TOOL_PALETTE_N", {
+        number: localPaletteSelectTotal(state) + 1,
+      })}`,
     colors: [
       DMG_PALETTE.colors[0],
       DMG_PALETTE.colors[1],
@@ -142,9 +144,10 @@ const reparentPalette: CaseReducer<
 const palettesReducers = {
   addPalette: {
     reducer: addPalette,
-    prepare: () => {
+    prepare: (payload?: { name?: string }) => {
       return {
         payload: {
+          ...payload,
           paletteId: uuid(),
         },
       };

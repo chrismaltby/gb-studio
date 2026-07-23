@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add default collision, color, and priority properties for tilesets which are used when painting Tilemap scenes
 - Add autotile groups for tilesets, supporting 2x2 Wang tiles and 9-slice autotiles
 - Add ability to set tile palettes from right click context menu in sprite editor
+- Add ability to edit palettes from palette select menus in the World view
+- Add ability to create/edit palettes from palette selects in the World view by entering a new name in the search field
 
 ### Changed
 

@@ -218,6 +218,14 @@ const ValuePreview = styled.div`
   }
 `;
 
+export const OptionLabelHoverContent = styled.div`
+  flex-shrink: 0;
+  opacity: 0;
+  .CustomSelect__option:hover & {
+    opacity: 1;
+  }
+`;
+
 const OptionLabelWithPreviewWrapper = styled.div`
   display: flex;
   white-space: nowrap;
@@ -271,7 +279,7 @@ export const OptionLabelWithPreview: FC<OptionLabelWithPreviewProps> = ({
       </OptionLabelPreviewOffset>
     </OptionLabelPreview>
     {children}
-    <OptionLabelInfo>{info}</OptionLabelInfo>
+    {info && <OptionLabelInfo>{info}</OptionLabelInfo>}
   </OptionLabelWithPreviewWrapper>
 );
 
@@ -388,7 +396,10 @@ export const SelectMenu = styled.div`
 
 export const CreatableSelect: typeof CRSelect = styled(CRSelect).attrs(
   (props) => ({
-    classNamePrefix: "CustomSelect",
+    className: "CustomSelect",
+    classNamePrefix: props.classNamePrefix
+      ? `${props.classNamePrefix} CustomSelect`
+      : "CustomSelect",
     styles: {
       option: (base) => ({
         ...base,
