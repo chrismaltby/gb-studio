@@ -22,6 +22,7 @@ import ReactSelect, {
   SelectInstance,
 } from "react-select";
 import { List, RowComponentProps, useListCallbackRef } from "react-window";
+import styled from "styled-components";
 
 interface MenuChildProps {
   children?: ReactNode;
@@ -95,6 +96,21 @@ const canReuseMenuChild = (previous: MenuChild, next: MenuChild) =>
 
 const numericHeight = (height: unknown, fallback: number) =>
   typeof height === "number" ? height : fallback;
+
+const FORMATTED_OPTION_WIDTH_ALLOWANCE = 52;
+
+const MenuWidthSizer = styled.div<{ $formatted: boolean }>`
+  box-sizing: border-box;
+  width: max-content;
+  height: 0;
+  padding: 0
+    ${(props) =>
+      10 + (props.$formatted ? FORMATTED_OPTION_WIDTH_ALLOWANCE : 0)}px
+    0 10px;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+`;
 
 const setRef = (
   ref: React.Ref<HTMLDivElement>,
@@ -172,6 +188,16 @@ const SelectWindowedMenuList = <
     items.findIndex((item) => item.props.isFocused),
     0,
   );
+  const longestLabel = items.reduce((longest, item) => {
+    const label = item.props.data?.label ?? "";
+    return label.length > longest.length ? label : longest;
+  }, "");
+  const hasFormattedLabels = items.some(
+    (item) =>
+      item.props.type === "option" &&
+      typeof item.props.children !== "string" &&
+      typeof item.props.children !== "number",
+  );
 
   const hasScrolledToInitialItem = useRef(false);
   const [listApi, setListApi] = useListCallbackRef(null);
@@ -217,30 +243,37 @@ const SelectWindowedMenuList = <
   const classNamePrefix = selectProps.classNamePrefix;
 
   return (
-    <List
-      {...innerProps}
-      onMouseMoveCapture={handleMouseMoveCapture}
-      className={
-        classNamePrefix
-          ? `${classNamePrefix}__menu-list${
-              selectProps.isMulti
-                ? ` ${classNamePrefix}__menu-list--is-multi`
-                : ""
-            }`
-          : undefined
-      }
-      defaultHeight={height}
-      listRef={setListApi}
-      rowComponent={MenuRow}
-      rowCount={items.length}
-      rowHeight={getRowHeight}
-      rowProps={{ heights, items }}
-      style={{
-        ...(style as CSSProperties),
-        height,
-        width: "100%",
-      }}
-    />
+    <>
+      {longestLabel && (
+        <MenuWidthSizer aria-hidden inert $formatted={hasFormattedLabels}>
+          {longestLabel}
+        </MenuWidthSizer>
+      )}
+      <List
+        {...innerProps}
+        onMouseMoveCapture={handleMouseMoveCapture}
+        className={
+          classNamePrefix
+            ? `${classNamePrefix}__menu-list${
+                selectProps.isMulti
+                  ? ` ${classNamePrefix}__menu-list--is-multi`
+                  : ""
+              }`
+            : undefined
+        }
+        defaultHeight={height}
+        listRef={setListApi}
+        rowComponent={MenuRow}
+        rowCount={items.length}
+        rowHeight={getRowHeight}
+        rowProps={{ heights, items }}
+        style={{
+          ...(style as CSSProperties),
+          height,
+          width: "100%",
+        }}
+      />
+    </>
   );
 };
 

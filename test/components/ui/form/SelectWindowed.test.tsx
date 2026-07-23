@@ -1,7 +1,13 @@
 /** @jest-environment jsdom */
 
 import React, { memo, useEffect } from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { Select } from "ui/form/Select";
 import { SelectWindowed } from "ui/form/SelectWindowed";
 import ThemeProvider from "ui/theme/ThemeProvider";
@@ -254,8 +260,9 @@ test("rerenders option labels when the search input changes", async () => {
 
   fireEvent.change(screen.getByRole("combobox"), { target: { value: "o" } });
 
-  expect(await screen.findByText("One:o")).toBeInTheDocument();
-  expect(screen.getByText("Two:o")).toBeInTheDocument();
+  const menuList = screen.getByTestId("windowed-list");
+  expect(await within(menuList).findByText("One:o")).toBeInTheDocument();
+  expect(within(menuList).getByText("Two:o")).toBeInTheDocument();
 });
 
 test("omits empty group headings", () => {
@@ -290,7 +297,9 @@ test("flattens mixed options and groups into separate rows", () => {
   expect(screen.getByTestId("windowed-list").children).toHaveLength(3);
   expect(screen.getByRole("option", { name: "One" })).toBeInTheDocument();
   expect(screen.getByRole("option", { name: "Two" })).toBeInTheDocument();
-  expect(screen.getByText("Plugin")).toBeInTheDocument();
+  expect(
+    within(screen.getByTestId("windowed-list")).getByText("Plugin"),
+  ).toBeInTheDocument();
 });
 
 test("uses the value returned by onInputChange", () => {
@@ -346,4 +355,30 @@ test("allows the app Select to set its maximum menu height", () => {
   );
 
   expect(screen.getByTestId("windowed-list")).toHaveStyle({ height: "70px" });
+});
+
+test("renders only the longest plain label for intrinsic menu width sizing", () => {
+  const { container } = render(
+    <SelectWindowed
+      formatOptionLabel={(option) => (
+        <span>
+          <span>Preview</span>
+          {option.label}
+          <button type="button">Edit</button>
+        </span>
+      )}
+      menuIsOpen
+      options={[
+        ...options,
+        { value: "long", label: "A much longer option label" },
+      ]}
+      windowThreshold={0}
+    />,
+  );
+
+  const widthSizer = container.querySelector("[inert]");
+  expect(widthSizer).toHaveTextContent("A much longer option label");
+  expect(widthSizer).not.toHaveTextContent("Preview");
+  expect(widthSizer).not.toHaveTextContent("Edit");
+  expect(widthSizer?.querySelector("button")).toBeNull();
 });
