@@ -6,7 +6,6 @@ import soundFxMiddleware from "./features/soundfx/soundfxMiddleware";
 import assetsMiddleware from "./features/assets/assetsMiddleware";
 import clipboardMiddleware from "./features/clipboard/clipboardMiddleware";
 import projectMiddleware from "./features/project/projectMiddleware";
-import spriteMiddleware from "./features/sprite/spriteMiddleware";
 import throttleMiddleware from "./features/throttle/throttleMiddleware";
 import trackerDocumentMiddleware from "./features/trackerDocument/trackerDocumentMiddleware";
 import entitiesMiddleware from "./features/entities/entitiesMiddleware";
@@ -25,14 +24,12 @@ const store = configureStore({
       serializableCheck: false,
       immutableCheck: false,
     })
-      .prepend(listenerMiddleware.middleware)
+      .prepend(throttleMiddleware, listenerMiddleware.middleware)
       .concat([
-        throttleMiddleware,
         electronMiddleware,
         projectMiddleware,
         entitiesMiddleware,
         settingsMiddleware,
-        spriteMiddleware,
         musicMiddleware,
         soundFxMiddleware,
         assetsMiddleware,
