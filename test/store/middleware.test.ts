@@ -12,7 +12,6 @@ import musicMiddleware from "store/features/music/musicMiddleware";
 import projectMiddleware from "store/features/project/projectMiddleware";
 import settingsMiddleware from "store/features/settings/settingsMiddleware";
 import soundfxMiddleware from "store/features/soundfx/soundfxMiddleware";
-import spriteMiddleware from "store/features/sprite/spriteMiddleware";
 import throttleMiddleware from "store/features/throttle/throttleMiddleware";
 import trackerDocumentMiddleware from "store/features/trackerDocument/trackerDocumentMiddleware";
 import type { RootState } from "store/storeTypes";
@@ -35,7 +34,6 @@ const appMiddleware: Array<[string, Middleware]> = [
   ["project", projectMiddleware],
   ["entities", entitiesMiddleware],
   ["settings", settingsMiddleware],
-  ["sprite", spriteMiddleware],
   ["clipboard", clipboardMiddleware],
   ["music", musicMiddleware],
   ["sound effects", soundfxMiddleware],

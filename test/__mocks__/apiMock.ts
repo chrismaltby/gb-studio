@@ -24,6 +24,9 @@ const APIMock = {
         warnings: [],
       }),
   },
+  sprite: {
+    compileSprite: () => Promise.resolve({ tiles: [] }),
+  },
 
   music: {
     openMusic: () => {},
