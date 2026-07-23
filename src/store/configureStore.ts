@@ -1,11 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./rootReducer";
 import electronMiddleware from "./features/electron/electronMiddleware";
-import buildGameMiddleware from "./features/buildGame/buildGameMiddleware";
 import musicMiddleware from "./features/music/musicMiddleware";
 import soundFxMiddleware from "./features/soundfx/soundfxMiddleware";
 import assetsMiddleware from "./features/assets/assetsMiddleware";
-import undoMiddleware from "./features/undo/undoMiddleware";
 import clipboardMiddleware from "./features/clipboard/clipboardMiddleware";
 import projectMiddleware from "./features/project/projectMiddleware";
 import spriteMiddleware from "./features/sprite/spriteMiddleware";
@@ -14,6 +12,7 @@ import trackerDocumentMiddleware from "./features/trackerDocument/trackerDocumen
 import entitiesMiddleware from "./features/entities/entitiesMiddleware";
 import settingsMiddleware from "./features/settings/settingsMiddleware";
 import consoleMiddleware from "./features/console/consoleMiddleware";
+import listenerMiddleware from "./listenerMiddleware";
 
 const store = configureStore({
   reducer: rootReducer,
@@ -25,22 +24,22 @@ const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
       immutableCheck: false,
-    }).concat([
-      throttleMiddleware,
-      electronMiddleware,
-      projectMiddleware,
-      entitiesMiddleware,
-      settingsMiddleware,
-      spriteMiddleware,
-      buildGameMiddleware,
-      musicMiddleware,
-      soundFxMiddleware,
-      assetsMiddleware,
-      consoleMiddleware,
-      undoMiddleware,
-      clipboardMiddleware,
-      trackerDocumentMiddleware,
-    ]),
+    })
+      .prepend(listenerMiddleware.middleware)
+      .concat([
+        throttleMiddleware,
+        electronMiddleware,
+        projectMiddleware,
+        entitiesMiddleware,
+        settingsMiddleware,
+        spriteMiddleware,
+        musicMiddleware,
+        soundFxMiddleware,
+        assetsMiddleware,
+        consoleMiddleware,
+        clipboardMiddleware,
+        trackerDocumentMiddleware,
+      ]),
 });
 
 export type AppDispatch = typeof store.dispatch;

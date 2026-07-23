@@ -1,13 +1,14 @@
 /* eslint-disable import/export */
 import { render, RenderOptions } from "@testing-library/react";
+import type { Store, UnknownAction } from "@reduxjs/toolkit";
 import React, { ReactNode, ReactElement } from "react";
 import ThemeProvider from "../src/components/ui/theme/ThemeProvider";
-import type { AppStore } from "../src/store/configureStore";
+import type { RootState } from "../src/store/storeTypes";
 import { Provider } from "react-redux";
 
 interface ProvidersProps {
   children: ReactNode;
-  store?: AppStore;
+  store?: Store<RootState, UnknownAction>;
 }
 
 const AllTheProviders = ({ children, store }: ProvidersProps) => {
@@ -22,7 +23,7 @@ const AllTheProviders = ({ children, store }: ProvidersProps) => {
 
 const customRender = (
   ui: ReactElement,
-  store?: AppStore,
+  store?: Store<RootState, UnknownAction>,
   options?: Omit<RenderOptions, "wrapper">,
 ) =>
   render(ui, {

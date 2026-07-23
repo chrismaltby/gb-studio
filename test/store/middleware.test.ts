@@ -4,7 +4,6 @@
 
 import type { Dispatch, Middleware, MiddlewareAPI } from "@reduxjs/toolkit";
 import assetsMiddleware from "store/features/assets/assetsMiddleware";
-import buildGameMiddleware from "store/features/buildGame/buildGameMiddleware";
 import clipboardMiddleware from "store/features/clipboard/clipboardMiddleware";
 import consoleMiddleware from "store/features/console/consoleMiddleware";
 import electronMiddleware from "store/features/electron/electronMiddleware";
@@ -16,7 +15,6 @@ import soundfxMiddleware from "store/features/soundfx/soundfxMiddleware";
 import spriteMiddleware from "store/features/sprite/spriteMiddleware";
 import throttleMiddleware from "store/features/throttle/throttleMiddleware";
 import trackerDocumentMiddleware from "store/features/trackerDocument/trackerDocumentMiddleware";
-import undoMiddleware from "store/features/undo/undoMiddleware";
 import type { RootState } from "store/storeTypes";
 
 jest.mock("components/world/inspector/constants/ConstantInspector", () => ({
@@ -38,13 +36,11 @@ const appMiddleware: Array<[string, Middleware]> = [
   ["entities", entitiesMiddleware],
   ["settings", settingsMiddleware],
   ["sprite", spriteMiddleware],
-  ["build game", buildGameMiddleware],
   ["clipboard", clipboardMiddleware],
   ["music", musicMiddleware],
   ["sound effects", soundfxMiddleware],
   ["assets", assetsMiddleware],
   ["console", consoleMiddleware],
-  ["undo", undoMiddleware],
   ["tracker document", trackerDocumentMiddleware],
 ];
 
