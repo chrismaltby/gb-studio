@@ -34,7 +34,7 @@ import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEven
 import type { ConstantUseResult } from "components/world/inspector/constants/ConstantUses.worker";
 
 const electronMiddleware: Middleware<Dispatch, RootState> =
-  (store) => (next) => async (action) => {
+  (store) => (next) => (action) => {
     const syncProjectWindowMenu = (
       state: RootState,
       overrides?: Partial<{

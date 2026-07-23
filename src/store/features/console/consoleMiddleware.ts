@@ -87,7 +87,7 @@ const getLinkToSymbol = (
 };
 
 const consoleMiddleware: Middleware<Dispatch, RootState> =
-  (store) => (next) => async (action) => {
+  (store) => (next) => (action) => {
     if (consoleActions.stdErr.match(action)) {
       if (action.payload.text.includes("Object files too large")) {
         const state = store.getState();
