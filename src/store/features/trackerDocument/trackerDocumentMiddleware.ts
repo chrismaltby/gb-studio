@@ -1,5 +1,6 @@
-import { ThunkMiddleware } from "redux-thunk";
-import { RootState } from "store/storeTypes";
+import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
+import type { ThunkDispatch } from "redux-thunk";
+import type { AppThunk, RootState } from "store/storeTypes";
 import { musicSelectors } from "store/features/entities/entitiesSelectors";
 import navigationActions from "store/features/navigation/navigationActions";
 import {
@@ -14,8 +15,37 @@ import API from "renderer/lib/api";
 import projectActions from "store/features/project/projectActions";
 import trackerActions from "store/features/tracker/trackerActions";
 
-const trackerMiddleware: ThunkMiddleware<RootState> =
-  (store) => (next) => async (action) => {
+const confirmUnsavedChangesAndContinue =
+  (action: UnknownAction): AppThunk<Promise<UnknownAction | undefined>> =>
+  async (dispatch, getState) => {
+    const state = getState();
+    const songsLookup = musicSelectors.selectEntities(state);
+    const selectedSong = songsLookup[state.tracker.selectedSongId];
+    const option = await API.dialog.confirmUnsavedChangesTrackerDialog(
+      selectedSong?.name ?? "",
+    );
+
+    if (option === 0) {
+      // Save and continue
+      const result = await dispatch(saveSongFile());
+      if (saveSongFile.rejected.match(result)) {
+        return;
+      }
+    } else if (option === 1) {
+      // Continue without saving
+      dispatch(trackerDocumentActions.unloadSong());
+    } else {
+      // Cancel
+      return;
+    }
+
+    return dispatch(action);
+  };
+
+type TrackerDispatch = ThunkDispatch<RootState, undefined, UnknownAction>;
+
+const trackerMiddleware: Middleware<object, RootState, TrackerDispatch> =
+  (store) => (next) => (action) => {
     const state = store.getState();
 
     if (
@@ -26,23 +56,9 @@ const trackerMiddleware: ThunkMiddleware<RootState> =
       requestAddNewSongFile.match(action)
     ) {
       if (state.tracker.modified) {
-        // Display confirmation and stop action if
-        const songsLookup = musicSelectors.selectEntities(state);
-        const selectedSong = songsLookup[state.tracker.selectedSongId];
-        const option = await API.dialog.confirmUnsavedChangesTrackerDialog(
-          selectedSong?.name ?? "",
+        return store.dispatch(
+          confirmUnsavedChangesAndContinue(action as UnknownAction),
         );
-        switch (option) {
-          case 0: // Save and continue
-            store.dispatch(saveSongFile());
-            break;
-          case 1: // continue without saving
-            store.dispatch(trackerDocumentActions.unloadSong());
-            break;
-          case 2: // cancel
-          default:
-            return;
-        }
       }
     }
 
