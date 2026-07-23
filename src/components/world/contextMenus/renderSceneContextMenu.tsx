@@ -1,6 +1,5 @@
 import DirectionPicker from "components/forms/DirectionPicker";
-import React, { Dispatch } from "react";
-import { UnknownAction } from "redux";
+import React from "react";
 import { SceneNormalized } from "shared/lib/entities/entitiesTypes";
 import l10n from "shared/lib/lang/l10n";
 import {
@@ -8,6 +7,7 @@ import {
   ColorModeOverrideSetting,
   labelColorValues,
 } from "shared/lib/resources/types";
+import { AppDispatch } from "store/configureStore";
 import buildGameActions from "store/features/buildGame/buildGameActions";
 import editorActions from "store/features/editor/editorActions";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -17,7 +17,7 @@ import { BlankIcon, CheckIcon } from "ui/icons/Icons";
 import { MenuDivider, MenuItem, MenuSection } from "ui/menu/Menu";
 
 interface SceneContextMenuProps {
-  dispatch: Dispatch<UnknownAction>;
+  dispatch: AppDispatch;
   sceneId: string;
   additionalSceneIds: string[];
   startSceneId: string;
