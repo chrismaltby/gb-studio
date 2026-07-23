@@ -343,6 +343,7 @@ export const defaultProjectSettings: Settings = {
   spriteMode: "8x16",
   openBuildFolderOnExport: true,
   showRomUsageAfterBuild: false,
+  dedupeScriptsEnabled: true,
   romFilename: "",
   defaultSceneTypeId: "TOPDOWN",
   disabledSceneTypeIds: [],
