@@ -45,6 +45,9 @@ export const SettingsSectionBuild = ({
   const showRomUsageAfterBuild = useAppSelector(
     (state) => state.project.present.settings.showRomUsageAfterBuild,
   );
+  const dedupeScriptsEnabled = useAppSelector(
+    (state) => state.project.present.settings.dedupeScriptsEnabled,
+  );
   const compilerPreset = useAppSelector(
     (state) => state.project.present.settings.compilerPreset,
   );
@@ -113,6 +116,16 @@ export const SettingsSectionBuild = ({
     [dispatch],
   );
 
+  const onChangeDedupeScriptsEnabled = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      dispatch(
+        settingsActions.editSettings({
+          dedupeScriptsEnabled: castEventToBool(e),
+        }),
+      ),
+    [dispatch],
+  );
+
   const onChangeCompilerPreset = useCallback(
     (value: number) =>
       dispatch(
@@ -129,6 +142,7 @@ export const SettingsSectionBuild = ({
         settingsActions.editSettings({
           openBuildLogOnWarnings: true,
           generateDebugFilesEnabled: false,
+          dedupeScriptsEnabled: true,
           compilerPreset: 3000,
         }),
       ),
@@ -143,6 +157,7 @@ export const SettingsSectionBuild = ({
         l10n("FIELD_ROM_FILENAME"),
         l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS"),
         l10n("FIELD_GENERATE_DEBUG_FILES"),
+        l10n("FIELD_DEDUPE_SCRIPTS"),
         l10n("FIELD_COMPILER_PRESET"),
       ]}
     >
@@ -228,6 +243,21 @@ export const SettingsSectionBuild = ({
             name="showRomUsageAfterBuild"
             checked={showRomUsageAfterBuild}
             onChange={onChangeShowRomUsageAfterBuild}
+          />
+        </SettingRowInput>
+      </SearchableSettingRow>
+
+      <SearchableSettingRow
+        searchTerm={searchTerm}
+        searchMatches={[l10n("FIELD_DEDUPE_SCRIPTS")]}
+      >
+        <SettingRowLabel>{l10n("FIELD_DEDUPE_SCRIPTS")}</SettingRowLabel>
+        <SettingRowInput>
+          <Checkbox
+            id="dedupeScriptsEnabled"
+            name="dedupeScriptsEnabled"
+            checked={dedupeScriptsEnabled}
+            onChange={onChangeDedupeScriptsEnabled}
           />
         </SettingRowInput>
       </SearchableSettingRow>

@@ -1266,6 +1266,7 @@
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "Set Sprite Mode Override",
   "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Open Build Folder On Export",
   "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "Show ROM Usage After Build",
+  "FIELD_DEDUPE_SCRIPTS": "Merge Duplicate Scripts",
   "FIELD_ROM_FILENAME": "ROM Filename",
   "FIELD_2_WAY": "2-Way",
   "FIELD_4_WAY": "4-Way",

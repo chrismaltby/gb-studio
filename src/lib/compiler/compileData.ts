@@ -79,6 +79,7 @@ import {
   emptySpriteSheet,
 } from "./generateGBVMData";
 import compileSGBImage, { sgbImageHeader } from "./sgb";
+import { gbvmScriptChecksum } from "./gbvm/buildHelpers";
 import { compileScriptEngineInit } from "./compileBootstrap";
 import {
   compileMusicTracks,
@@ -1525,6 +1526,8 @@ const compile = async (
     }
   > = {};
   const additionalScriptsCache: Record<string, string> = {};
+  const entityScriptsCache: Record<string, string> = {};
+  let mergedEntityScriptsCount = 0;
   const recursiveSymbolMap: Record<string, string> = {};
   const compiledAssetsCache: Record<string, string> = {};
 
@@ -1621,6 +1624,18 @@ const compile = async (
           isFunction: false,
           debugEnabled,
         });
+
+        // If this script is identical to an already generated entity script
+        // just reuse the existing symbol rather than writing a duplicate file.
+        if (projectData.settings.dedupeScriptsEnabled) {
+          const scriptHash = gbvmScriptChecksum(compiledScript);
+          const existingScriptName = entityScriptsCache[scriptHash];
+          if (existingScriptName) {
+            mergedEntityScriptsCount++;
+            return existingScriptName;
+          }
+          entityScriptsCache[scriptHash] = scriptName;
+        }
 
         output[`${scriptName}.s`] = compiledScript;
         output[`${scriptName}.h`] = compileScriptHeader(scriptName);
@@ -1840,6 +1855,14 @@ const compile = async (
     );
     output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
   });
+
+  if (mergedEntityScriptsCount > 0) {
+    progress(
+      `Merged ${mergedEntityScriptsCount} duplicate entity script${
+        mergedEntityScriptsCount === 1 ? "" : "s"
+      }`,
+    );
+  }
 
   (
     Object.values(additionalOutput) as {

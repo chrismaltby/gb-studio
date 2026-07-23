@@ -388,6 +388,7 @@ export const dummyProjectData: ProjectData = {
     autoTileFlipEnabled: true,
     webTemplate: "",
     selectedSceneTilesetId: "",
+    dedupeScriptsEnabled: true,
   },
 };
 
@@ -699,6 +700,7 @@ export const dummySettingsResource: SettingsResource = {
   autoTileFlipEnabled: true,
   webTemplate: "",
   selectedSceneTilesetId: "",
+  dedupeScriptsEnabled: true,
 };
 
 export const dummyVariablesResource: VariablesResource = {
@@ -845,6 +847,7 @@ export const dummyProjectResources: ProjectResources = {
     autoTileFlipEnabled: true,
     webTemplate: "",
     selectedSceneTilesetId: "",
+    dedupeScriptsEnabled: true,
   },
 };
 
