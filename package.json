@@ -80,7 +80,7 @@
     "mediabunny": "^1.50.8",
     "node-fetch": "^3.3.2",
     "normalizr": "^3.6.2",
-    "open": "^7.3.0",
+    "open": "^11.0.0",
     "path-browserify": "^1.0.1",
     "pngjs": "^7.0.0",
     "prismjs": "^1.30.0",
