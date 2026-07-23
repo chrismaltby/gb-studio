@@ -10350,10 +10350,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fuse.js@npm:^6.4.6":
-  version: 6.6.2
-  resolution: "fuse.js@npm:6.6.2"
-  checksum: 10c0/c2fe4f234f516e9ea83b06f06f8f3c8b7117f51aa75bbccd052eed0c0423364bf1e360ffbf29cadae8ef6aa39476b7961eaf9d07bed779cea5c83d62b34e2df9
+"fuse.js@npm:^7.5.0":
+  version: 7.5.0
+  resolution: "fuse.js@npm:7.5.0"
+  checksum: 10c0/1fa51a66063b9b0579921ed1d774864e5e027719d3a4fdb469e6636befa4a9f2f7da626c07da757c6e1ef8a761c7bd3a217e6ecc8e16f0276e1a0f8dd941ff77
   languageName: node
   linkType: hard
 
@@ -10454,7 +10454,7 @@ __metadata:
     focus-visible: "npm:^5.2.1"
     fork-ts-checker-webpack-plugin: "npm:^7.2.13"
     fs-extra: "npm:^11.3.6"
-    fuse.js: "npm:^6.4.6"
+    fuse.js: "npm:^7.5.0"
     git-revision-webpack-plugin: "npm:^5.0.0"
     glob: "npm:^13.0.6"
     globals: "npm:^17.7.0"
