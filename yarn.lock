@@ -10496,7 +10496,7 @@ __metadata:
     semver: "npm:7.8.5"
     spark-md5: "npm:^3.0.2"
     storybook: "npm:^10.5.0"
-    styled-components: "npm:^6.4.3"
+    styled-components: "npm:^6.4.4"
     ts-flood-fill: "npm:^1.0.2"
     ts-jest: "npm:^29.4.11"
     ts-loader: "npm:^9.6.2"
@@ -16806,9 +16806,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"styled-components@npm:^6.4.3":
-  version: 6.4.3
-  resolution: "styled-components@npm:6.4.3"
+"styled-components@npm:^6.4.4":
+  version: 6.4.4
+  resolution: "styled-components@npm:6.4.4"
   dependencies:
     "@emotion/is-prop-valid": "npm:1.4.0"
     css-to-react-native: "npm:3.2.0"
@@ -16826,7 +16826,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 10c0/158514feb0a502dfa7f95610a8270faa56be2572c12902b7bf5c2855bf9fdd5d76a5909d67dcbecf627ee40511f4161f8016b23f9fef22c14f7911337359647c
+  checksum: 10c0/ed574b053a85adab543958bde7eb80ea9bf6075dc0c54f8763b2d7251c4ce940a5151513fbc7af8c5be5100c387a55d0b175c0270a829ff37ec6f88b72ac4bca
   languageName: node
   linkType: hard
 
