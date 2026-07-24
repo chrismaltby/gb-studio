@@ -43,11 +43,7 @@ jest.mock("components/forms/PaletteSelect", () => ({
 test("keeps the picker mounted after creating a palette", () => {
   const onChange = jest.fn();
   render(
-    <PaletteSelectButton
-      name="palette"
-      value="palette1"
-      onChange={onChange}
-    />,
+    <PaletteSelectButton name="palette" value="palette1" onChange={onChange} />,
   );
 
   fireEvent.click(screen.getByTitle("Test Palette"));

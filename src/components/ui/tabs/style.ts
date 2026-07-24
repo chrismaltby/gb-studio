@@ -52,7 +52,7 @@ export const StyledTabBar = styled.div<StyledTabBarProps>`
             flex-basis: 100%;
             width: 100%;
             background: ${(props) =>
-            props.theme.colors.scripting.tabs.background};
+              props.theme.colors.scripting.tabs.background};
           }
         `
       : ""}
