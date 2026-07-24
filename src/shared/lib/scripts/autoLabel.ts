@@ -188,7 +188,7 @@ export const getAutoLabel = (
       )}`;
     } else if (fieldType === "matharea") {
       return String(value)
-        .replace(/\$([VLT]*[0-9]+)\$/g, (_, match) => {
+        .replace(/\$([VLT]*[0-9]+|[a-z0-9-]{36})\$/g, (_, match) => {
           return `||variable:${match}||`;
         })
         .replace(/@([a-z0-9-]{36})@/g, (_, match) => {

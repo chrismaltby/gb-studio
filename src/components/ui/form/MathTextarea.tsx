@@ -14,7 +14,7 @@ import l10n from "shared/lib/lang/l10n";
 import { portalRoot } from "ui/layout/Portal";
 import { ConstantSelect } from "components/forms/ConstantSelect";
 
-const varRegex = /\$([VLT0-9][0-9]*)\$/g;
+const varRegex = /\$([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$/g;
 const constRegex = /@([a-z0-9-]{36}|engine::[^@]+)@/g;
 
 const functionSymbols = [
@@ -431,10 +431,10 @@ export const MathTextarea: FC<MathTextareaProps> = ({
       >
         <CustomMention
           className="Mentions__TokenVar"
-          trigger={/(\$([\p{L}0-9]+))$/u}
+          trigger={/(\$([\p{L}0-9_-]+))$/u}
           markup="$__id__$"
           data={searchVariables(variables)}
-          regex={/\$([VLT0-9][0-9]*)\$/}
+          regex={/\$([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$/}
           displayTransform={(variable) =>
             "$" + (variablesLookup[variable]?.name || variable + "$")
           }
