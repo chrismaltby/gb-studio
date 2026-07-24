@@ -1,13 +1,17 @@
-import middleware from "../../../../src/store/features/clipboard/clipboardMiddleware";
-import actions from "../../../../src/store/features/clipboard/clipboardActions";
-import { RootState } from "store/storeTypes";
+import clipboardActions from "../../../../src/store/features/clipboard/clipboardActions";
+import type { AppThunk, RootState } from "store/storeTypes";
 import {
   dummyActorNormalized,
   dummyCustomEventNormalized,
   dummySceneNormalized,
   dummyTriggerNormalized,
 } from "../../../dummydata";
-import { MiddlewareAPI, Dispatch, UnknownAction } from "@reduxjs/toolkit";
+import {
+  MiddlewareAPI,
+  Dispatch,
+  UnknownAction,
+  ThunkDispatch,
+} from "@reduxjs/toolkit";
 import {
   ClipboardTypeActors,
   ClipboardTypeScenes,
@@ -20,6 +24,16 @@ jest.mock("../../../__mocks__/apiMock");
 
 const mockedAPI = jest.mocked(API);
 const mockedClipboard = mockedAPI.clipboard;
+
+const runThunk = (
+  store: MiddlewareAPI<Dispatch<UnknownAction>, RootState>,
+  thunk: AppThunk<Promise<void>>,
+) =>
+  thunk(
+    store.dispatch as ThunkDispatch<RootState, unknown, UnknownAction>,
+    store.getState,
+    undefined,
+  );
 
 const noOpFileReader = () => "";
 
@@ -103,14 +117,12 @@ test("Should be able to copy actor to clipboard", async () => {
     dispatch: jest.fn(),
   } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
-  const next = jest.fn();
-  const action = actions.copyActors({
+  const action = clipboardActions.copyActors({
     actorIds: [dummyActorNormalized.id],
   });
 
-  await middleware(store)(next)(action);
+  await runThunk(store, action);
 
-  expect(next).toHaveBeenCalledWith(action);
   expect(mockedClipboard.writeBuffer).toHaveBeenCalledWith(
     ClipboardTypeActors,
     Buffer.from(
@@ -173,14 +185,12 @@ test("Should include referenced variables when copying actor", async () => {
     dispatch: jest.fn(),
   } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
-  const next = jest.fn();
-  const action = actions.copyActors({
+  const action = clipboardActions.copyActors({
     actorIds: [dummyActorNormalized.id],
   });
 
-  await middleware(store)(next)(action);
+  await runThunk(store, action);
 
-  expect(next).toHaveBeenCalledWith(action);
   expect(mockedClipboard.writeBuffer).toHaveBeenCalledWith(
     ClipboardTypeActors,
     Buffer.from(
@@ -287,7 +297,7 @@ test("Should remap actor references in scene init script when pasting scene", as
     dispatch,
   } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
-  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+  await runThunk(store, clipboardActions.pasteSceneAt({ x: 0, y: 0 }));
 
   expect(dispatch.mock.calls.length).toBeGreaterThan(0);
 
@@ -410,7 +420,7 @@ test("Should remap actor property references in scene init script when pasting s
     dispatch,
   } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
-  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+  await runThunk(store, clipboardActions.pasteSceneAt({ x: 0, y: 0 }));
 
   expect(dispatch.mock.calls.length).toBeGreaterThan(0);
 
@@ -540,7 +550,7 @@ test("Should remap actor references in actor script when pasting scene", async (
     dispatch,
   } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
-  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+  await runThunk(store, clipboardActions.pasteSceneAt({ x: 0, y: 0 }));
 
   expect(dispatch.mock.calls.length).toBeGreaterThan(0);
 
@@ -665,7 +675,7 @@ test("Should remap actor references in trigger script when pasting scene", async
     dispatch,
   } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
-  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+  await runThunk(store, clipboardActions.pasteSceneAt({ x: 0, y: 0 }));
 
   expect(dispatch.mock.calls.length).toBeGreaterThan(0);
 
@@ -784,7 +794,7 @@ test("Should remap actor references in scene hit script when pasting scene", asy
     dispatch,
   } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
-  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+  await runThunk(store, clipboardActions.pasteSceneAt({ x: 0, y: 0 }));
 
   expect(dispatch.mock.calls.length).toBeGreaterThan(0);
 
@@ -905,7 +915,7 @@ test("Should remap actor references in actor prefab overrides when pasting scene
     dispatch,
   } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
-  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+  await runThunk(store, clipboardActions.pasteSceneAt({ x: 0, y: 0 }));
 
   expect(dispatch.mock.calls.length).toBeGreaterThan(0);
 
@@ -1029,7 +1039,7 @@ test("Should remap actor property references in actor prefab overrides when past
     dispatch,
   } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
-  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+  await runThunk(store, clipboardActions.pasteSceneAt({ x: 0, y: 0 }));
 
   expect(dispatch.mock.calls.length).toBeGreaterThan(0);
 
@@ -1157,7 +1167,7 @@ test("Should remap actor references in trigger prefab overrides when pasting sce
     dispatch,
   } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
-  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+  await runThunk(store, clipboardActions.pasteSceneAt({ x: 0, y: 0 }));
 
   expect(dispatch.mock.calls.length).toBeGreaterThan(0);
 
@@ -1309,7 +1319,7 @@ test("Should remap actor references in call script events when pasting scene", a
     dispatch,
   } as unknown as MiddlewareAPI<Dispatch<UnknownAction>, RootState>;
 
-  await middleware(store)(jest.fn())(actions.pasteSceneAt({ x: 0, y: 0 }));
+  await runThunk(store, clipboardActions.pasteSceneAt({ x: 0, y: 0 }));
 
   expect(dispatch.mock.calls.length).toBeGreaterThan(0);
 

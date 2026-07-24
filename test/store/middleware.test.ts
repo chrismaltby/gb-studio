@@ -4,7 +4,6 @@
 
 import type { Dispatch, Middleware, MiddlewareAPI } from "@reduxjs/toolkit";
 import assetsMiddleware from "store/features/assets/assetsMiddleware";
-import clipboardMiddleware from "store/features/clipboard/clipboardMiddleware";
 import consoleMiddleware from "store/features/console/consoleMiddleware";
 import electronMiddleware from "store/features/electron/electronMiddleware";
 import entitiesMiddleware from "store/features/entities/entitiesMiddleware";
@@ -34,7 +33,6 @@ const appMiddleware: Array<[string, Middleware]> = [
   ["project", projectMiddleware],
   ["entities", entitiesMiddleware],
   ["settings", settingsMiddleware],
-  ["clipboard", clipboardMiddleware],
   ["music", musicMiddleware],
   ["sound effects", soundfxMiddleware],
   ["assets", assetsMiddleware],
