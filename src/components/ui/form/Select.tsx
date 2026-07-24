@@ -5,6 +5,7 @@ import { setDefault } from "shared/lib/helpers/setDefault";
 import { SearchIcon } from "ui/icons/Icons";
 import L10NText from "./L10NText";
 import API from "renderer/lib/api";
+import l10n from "shared/lib/lang/l10n";
 import { SelectWindowed } from "./SelectWindowed";
 
 export interface Option {
@@ -409,6 +410,10 @@ export const CreatableSelect: typeof CRSelect = styled(CRSelect).attrs(
     inputId: props.name,
     menuPlacement: "auto",
     menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
+    formatCreateLabel:
+      props.formatCreateLabel ??
+      ((inputValue: string) =>
+        l10n("FIELD_CREATE_NAMED", { name: inputValue })),
   }),
 )`
   .CustomSelect__control {
