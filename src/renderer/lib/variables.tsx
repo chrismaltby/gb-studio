@@ -13,6 +13,7 @@ import {
   tempVariableName,
 } from "shared/lib/variables/variableNames";
 import { Variable } from "shared/lib/resources/types";
+import { sortByName } from "shared/lib/helpers/sort";
 
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));
@@ -68,12 +69,7 @@ export const namedCustomEventVariables = (
       name: customEventVariableName(variable, customEvent),
       group: l10n("SIDEBAR_PARAMETERS"),
     })),
-    allVariables.map((variable) => ({
-      id: variable,
-      code: globalVariableCode(variable),
-      name: globalVariableName(variable, variablesLookup),
-      group: l10n("FIELD_GLOBAL"),
-    })),
+    namedGlobalVariables(variablesLookup),
   );
 };
 
@@ -94,27 +90,24 @@ const namedEntityVariables = (
       name: tempVariableName(variable),
       group: l10n("FIELD_TEMPORARY"),
     })),
-    allVariables.map((variable) => ({
-      id: variable,
-      code: globalVariableCode(variable),
-      name: globalVariableName(variable, variablesLookup),
-      group: l10n("FIELD_GLOBAL"),
-    })),
+    namedGlobalVariables(variablesLookup),
   );
 };
 
+const isGlobalVariable = (variable: Variable) => !variable.id.includes("__L");
+
 const namedGlobalVariables = (
   variablesLookup: VariablesLookup,
-): NamedVariable[] => {
-  return ([] as NamedVariable[]).concat(
-    allVariables.map((variable) => ({
-      id: variable,
-      code: globalVariableCode(variable),
-      name: globalVariableName(variable, variablesLookup),
+): NamedVariable[] =>
+  (Object.values(variablesLookup) as Variable[])
+    .filter(isGlobalVariable)
+    .map((variable) => ({
+      id: variable.id,
+      code: globalVariableCode(variable.id),
+      name: globalVariableName(variable.id, variablesLookup),
       group: l10n("FIELD_GLOBAL"),
-    })),
-  );
-};
+    }))
+    .sort(sortByName);
 
 export const groupVariables = (variables: NamedVariable[]): VariableGroup[] => {
   const groups = uniq(variables.map((f) => f.group));
