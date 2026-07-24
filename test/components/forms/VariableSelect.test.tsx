@@ -8,6 +8,7 @@ import { render, screen, fireEvent } from "../../react-utils";
 import { UnknownAction, Store } from "@reduxjs/toolkit";
 import { RootState } from "store/storeTypes";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
+import entitiesActions from "store/features/entities/entitiesActions";
 
 test("Should use default variable name with not renamed", () => {
   const state = {
@@ -197,6 +198,68 @@ test("Should use renamed variable for custom event", () => {
     {},
   );
   expect(screen.getByText("$My Custom Event Variable")).toBeInTheDocument();
+});
+
+test("Should create and select a named variable", () => {
+  const state = {
+    editor: {
+      type: "actor",
+    },
+    project: {
+      present: {
+        entities: {
+          customEvents: {
+            entities: {},
+            ids: [],
+          },
+          variables: {
+            entities: {},
+            ids: [],
+          },
+        },
+      },
+    },
+  };
+  const dispatch = jest.fn();
+  const onChange = jest.fn();
+
+  const store = {
+    getState: () => state,
+    dispatch,
+    subscribe: () => {},
+  } as unknown as Store<RootState, UnknownAction>;
+
+  render(
+    <VariableSelect
+      name="test"
+      entityId=""
+      value="0"
+      onChange={onChange}
+      menuIsOpen
+      menuPortalTarget={null}
+    />,
+    store,
+    {},
+  );
+
+  fireEvent.change(screen.getByRole("combobox"), {
+    target: { value: "Player Health" },
+  });
+  fireEvent.keyDown(screen.getByRole("combobox"), { key: "Enter" });
+
+  const addAction = dispatch.mock.calls
+    .map(([action]) => action)
+    .find(entitiesActions.addVariable.match);
+  if (!addAction) {
+    throw new Error("Expected addVariable to be dispatched");
+  }
+  expect(dispatch).toHaveBeenCalledWith(
+    entitiesActions.renameVariable({
+      variableId: addAction.payload.variableId,
+      name: "Player Health",
+    }),
+  );
+  expect(onChange).toHaveBeenCalledWith(addAction.payload.variableId);
 });
 
 test("Should be able to rename variable", async () => {

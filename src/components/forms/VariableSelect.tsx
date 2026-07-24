@@ -1,6 +1,6 @@
 import React, { memo, useContext, useMemo, useState } from "react";
 import {
-  Select as DefaultSelect,
+  CreatableSelect,
   Option,
   OptGroup,
   SelectCommonProps,
@@ -44,7 +44,7 @@ export const VariableSelectWrapper = styled.div`
   min-width: 78px;
 `;
 
-const Select: typeof DefaultSelect = styled(DefaultSelect)`
+const Select: typeof CreatableSelect = styled(CreatableSelect)`
   .CustomSelect__control {
   }
 `;
@@ -240,6 +240,23 @@ const VariableSelectComponent = ({
     }
   };
 
+  const onCreateVariable = (inputValue: string) => {
+    const name = inputValue.trim();
+    if (!name) {
+      return;
+    }
+
+    const action = entitiesActions.addVariable();
+    dispatch(action);
+    dispatch(
+      entitiesActions.renameVariable({
+        variableId: action.payload.variableId,
+        name,
+      }),
+    );
+    onChange(action.payload.variableId);
+  };
+
   return (
     <VariableSelectWrapper onClick={onJumpToVariable}>
       {renameVisible ? (
@@ -261,6 +278,7 @@ const VariableSelectComponent = ({
               onChange(newValue.value);
             }
           }}
+          onCreateOption={onCreateVariable}
           formatOptionLabel={(option, { context }) =>
             context === "value" ? `$${option.label}` : option.label
           }
