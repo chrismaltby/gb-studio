@@ -60,7 +60,6 @@
     "POINTNCLICK": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26",
     "LOGO": "ac1e8ef4-ffe6-47cd-b16f-9af5da77ec26"
   },
-  "musicDriver": "huge",
   "cartType": "mbc5",
   "batterylessEnabled": false,
   "customColorsWhite": "E8F8E0",
@@ -112,5 +111,6 @@
   "romFilename": "",
   "defaultSceneTypeId": "TOPDOWN",
   "disabledSceneTypeIds": [],
-  "autoTileFlipEnabled": true
+  "autoTileFlipEnabled": true,
+  "webTemplate": ""
 }
