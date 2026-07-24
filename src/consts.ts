@@ -307,7 +307,6 @@ export const defaultProjectSettings: Settings = {
   defaultFontId: "",
   defaultCharacterEncoding: "",
   defaultPlayerSprites: {},
-  musicDriver: "gbt",
   cartType: "mbc5",
   batterylessEnabled: false,
   favoriteEvents: ["EVENT_TEXT", "EVENT_SWITCH_SCENE"],

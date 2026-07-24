@@ -801,13 +801,6 @@ export type ShowSceneScreenGridSetting = Static<
   typeof ShowSceneScreenGridSetting
 >;
 
-export const MusicDriverSetting = Type.Union([
-  Type.Literal("huge"),
-  Type.Literal("gbt"),
-]);
-
-export type MusicDriverSetting = Static<typeof MusicDriverSetting>;
-
 export const CartType = Type.Union([
   Type.Literal("mbc5"),
   Type.Literal("mbc3"),
@@ -943,7 +936,6 @@ export const SettingsResource = Type.Object({
   defaultFontId: Type.String(),
   defaultCharacterEncoding: Type.String(),
   defaultPlayerSprites: Type.Record(Type.String(), Type.String()),
-  musicDriver: MusicDriverSetting,
   cartType: CartType,
   batterylessEnabled: Type.Boolean(),
   favoriteEvents: Type.Array(Type.String()),
