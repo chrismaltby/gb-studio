@@ -8,21 +8,26 @@ import { SingleValue } from "react-select";
 interface AppSelectProps {
   value?: string;
   onChange?: (newValue: string) => void;
+  presetOptions?: Option[];
 }
 
-export const AppSelect: FC<AppSelectProps> = ({ value, onChange }) => {
+export const AppSelect: FC<AppSelectProps> = ({ value, onChange, presetOptions = [
+      {
+        value: "",
+        label: l10n("FIELD_SYSTEM_DEFAULT"),
+      },
+    ],
+  }) => {
+
   const options = ([] as Option[]).concat(
     [
       {
         value: "choose",
         label: l10n("FIELD_CHOOSE_APPLICATION"),
       },
-      {
-        value: "",
-        label: l10n("FIELD_SYSTEM_DEFAULT"),
-      },
+      ...presetOptions,
     ],
-    value
+    value && !presetOptions.some((option) => option.value === value)
       ? {
           value,
           label: Path.basename(value),

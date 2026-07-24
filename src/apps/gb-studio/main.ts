@@ -193,6 +193,7 @@ import {
   settingsUnset,
   settingsUpdate,
 } from "lib/helpers/appSettings";
+import { spawn } from "child_process";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -299,7 +300,7 @@ export const createPreferences = async () => {
   // Create the browser window.
   preferencesWindow = new BrowserWindow({
     width: 600,
-    height: 400,
+    height: 480,
     resizable: false,
     maximizable: false,
     fullscreenable: false,
@@ -1625,6 +1626,10 @@ ipcMain.handle(
             "COMPILER_STARTING_EMULATOR",
           )}...`,
         );
+
+        const emulatorPath = options.debugEnabled  ? "" : String((await settingsGet("emulatorPath")) || "");
+        const romPath = Path.join(outputRoot, "build", "rom", romFilename);
+
         if (debuggerEnabled) {
           const { memoryMap, globalVariables } = await readDebuggerSymbols(
             outputRoot,
@@ -1651,11 +1656,18 @@ ipcMain.handle(
             gbvmScripts,
           });
         }
-        createPlay(
-          `file://${outputRoot}/build/web/index.html`,
-          sgbEnabled && colorMode === "mono",
-          debuggerEnabled,
-        );
+
+        if (emulatorPath === "") {
+          createPlay(
+            `file://${outputRoot}/build/web/index.html`,
+            sgbEnabled && colorMode === "mono",
+            debuggerEnabled,
+          );
+        } else if (emulatorPath === "system-default") {
+          open(romPath);
+        } else {
+          spawn(emulatorPath, [romPath], { detached: true });
+        }
       }
 
       const buildTime = Date.now() - buildStartTime;
