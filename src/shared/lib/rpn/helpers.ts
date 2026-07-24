@@ -36,7 +36,7 @@ export const isFunctionSymbol = (x: string): x is FunctionSymbol => {
 };
 
 export const isVariable = (token: string): boolean => {
-  return !!/^[$A-Z_][0-9A-Z_$]*$/i.exec(token);
+  return !!/^\$([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$$/i.exec(token);
 };
 
 export const isConstant = (token: string): boolean => {

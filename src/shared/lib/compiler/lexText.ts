@@ -3,6 +3,11 @@ import { ensureNumber } from "shared/types";
 
 const CONTROL_CODE_END = 16;
 
+const varRegex =
+  /^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$|\$[a-z0-9-]{36}\$)/;
+
+const charRegex = /^(#L[0-9]#|#T[0-1]#|#V[0-9]#|#[0-9]+#|#[a-z0-9-]{36}#)/;
+
 export type Token =
   | {
       type: "text";
@@ -76,9 +81,7 @@ export const lexText = (inputText: string): Token[] => {
       inputText[i + 1] === "d" &&
       inputText[i + 2] === "$"
     ) {
-      const variableMatch = inputText
-        .substring(i + 2)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+      const variableMatch = inputText.substring(i + 2).match(varRegex)?.[0];
       if (variableMatch) {
         i += variableMatch.length + 1;
         tokens.push({
@@ -100,9 +103,8 @@ export const lexText = (inputText: string): Token[] => {
       inputText[i + 1] === "D" &&
       inputText[i + 3] === "$"
     ) {
-      const variableMatch = inputText
-        .substring(i + 3)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+      const variableMatch = inputText.substring(i + 3).match(varRegex)?.[0];
+
       if (variableMatch) {
         tokens.push({
           type: "variable",
@@ -125,9 +127,7 @@ export const lexText = (inputText: string): Token[] => {
       inputText[i + 1] === "c" &&
       inputText[i + 2] === "$"
     ) {
-      const variableMatch = inputText
-        .substring(i + 2)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+      const variableMatch = inputText.substring(i + 2).match(varRegex)?.[0];
       if (variableMatch) {
         i += variableMatch.length + 1;
         tokens.push({
@@ -149,9 +149,7 @@ export const lexText = (inputText: string): Token[] => {
       inputText[i + 1] === "t" &&
       inputText[i + 2] === "$"
     ) {
-      const variableMatch = inputText
-        .substring(i + 2)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+      const variableMatch = inputText.substring(i + 2).match(varRegex)?.[0];
       if (variableMatch) {
         i += variableMatch.length + 1;
         tokens.push({
@@ -173,9 +171,7 @@ export const lexText = (inputText: string): Token[] => {
       inputText[i + 1] === "f" &&
       inputText[i + 2] === "$"
     ) {
-      const variableMatch = inputText
-        .substring(i + 2)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+      const variableMatch = inputText.substring(i + 2).match(varRegex)?.[0];
       if (variableMatch) {
         i += variableMatch.length + 1;
         tokens.push({
@@ -193,9 +189,7 @@ export const lexText = (inputText: string): Token[] => {
 
     // Check for variable
     if (inputText[i] === "$") {
-      const variableMatch = inputText
-        .substring(i)
-        .match(/^(\$L[0-9]\$|\$T[0-1]\$|\$V[0-9]\$|\$[0-9]+\$)/)?.[0];
+      const variableMatch = inputText.substring(i).match(varRegex)?.[0];
       if (variableMatch) {
         i += variableMatch.length - 1;
         tokens.push({
@@ -212,9 +206,7 @@ export const lexText = (inputText: string): Token[] => {
     }
     // Check for character variable
     if (inputText[i] === "#") {
-      const variableMatch = inputText
-        .substring(i)
-        .match(/^(#L[0-9]#|#T[0-1]#|#V[0-9]#|#[0-9]+#)/)?.[0];
+      const variableMatch = inputText.substring(i).match(charRegex)?.[0];
       if (variableMatch) {
         i += variableMatch.length - 1;
         tokens.push({
@@ -432,5 +424,6 @@ export const lexText = (inputText: string): Token[] => {
       });
     }
   }
+
   return tokens;
 };
