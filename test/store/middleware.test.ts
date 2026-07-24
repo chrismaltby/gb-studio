@@ -7,7 +7,6 @@ import assetsMiddleware from "store/features/assets/assetsMiddleware";
 import consoleMiddleware from "store/features/console/consoleMiddleware";
 import electronMiddleware from "store/features/electron/electronMiddleware";
 import entitiesMiddleware from "store/features/entities/entitiesMiddleware";
-import musicMiddleware from "store/features/music/musicMiddleware";
 import settingsMiddleware from "store/features/settings/settingsMiddleware";
 import soundfxMiddleware from "store/features/soundfx/soundfxMiddleware";
 import throttleMiddleware from "store/features/throttle/throttleMiddleware";
@@ -31,7 +30,6 @@ const appMiddleware: Array<[string, Middleware]> = [
   ["electron", electronMiddleware],
   ["entities", entitiesMiddleware],
   ["settings", settingsMiddleware],
-  ["music", musicMiddleware],
   ["sound effects", soundfxMiddleware],
   ["assets", assetsMiddleware],
   ["console", consoleMiddleware],
