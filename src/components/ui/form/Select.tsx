@@ -1,12 +1,11 @@
 import styled from "styled-components";
-import CRSelect from "react-select/creatable";
 import React, { FC, JSX, ReactNode } from "react";
 import { setDefault } from "shared/lib/helpers/setDefault";
 import { SearchIcon } from "ui/icons/Icons";
 import L10NText from "./L10NText";
 import API from "renderer/lib/api";
 import l10n from "shared/lib/lang/l10n";
-import { SelectWindowed } from "./SelectWindowed";
+import { CreatableSelectWindowed, SelectWindowed } from "./SelectWindowed";
 
 export interface Option {
   value: string;
@@ -395,27 +394,27 @@ export const SelectMenu = styled.div`
   }
 `;
 
-export const CreatableSelect: typeof CRSelect = styled(CRSelect).attrs(
-  (props) => ({
-    className: "CustomSelect",
-    classNamePrefix: props.classNamePrefix
-      ? `${props.classNamePrefix} CustomSelect`
-      : "CustomSelect",
-    styles: {
-      option: (base) => ({
-        ...base,
-        height: 26,
-      }),
-    },
-    inputId: props.name,
-    menuPlacement: "auto",
-    menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
-    formatCreateLabel:
-      props.formatCreateLabel ??
-      ((inputValue: string) =>
-        l10n("FIELD_CREATE_NAMED", { name: inputValue })),
-  }),
-)`
+export const CreatableSelect: typeof CreatableSelectWindowed = styled(
+  CreatableSelectWindowed,
+).attrs((props) => ({
+  className: "CustomSelect",
+  classNamePrefix: props.classNamePrefix
+    ? `${props.classNamePrefix} CustomSelect`
+    : "CustomSelect",
+  styles: {
+    option: (base) => ({
+      ...base,
+      height: 26,
+    }),
+  },
+  inputId: props.name,
+  menuPlacement: "auto",
+  menuPortalTarget: setDefault(props.menuPortalTarget, menuPortalEl),
+  windowThreshold: 0,
+  formatCreateLabel:
+    props.formatCreateLabel ??
+    ((inputValue: string) => l10n("FIELD_CREATE_NAMED", { name: inputValue })),
+}))`
   .CustomSelect__control {
     height: 28px;
     min-height: 28px;
