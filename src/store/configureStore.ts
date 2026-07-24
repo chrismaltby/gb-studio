@@ -4,7 +4,6 @@ import electronMiddleware from "./features/electron/electronMiddleware";
 import musicMiddleware from "./features/music/musicMiddleware";
 import soundFxMiddleware from "./features/soundfx/soundfxMiddleware";
 import assetsMiddleware from "./features/assets/assetsMiddleware";
-import clipboardMiddleware from "./features/clipboard/clipboardMiddleware";
 import projectMiddleware from "./features/project/projectMiddleware";
 import throttleMiddleware from "./features/throttle/throttleMiddleware";
 import trackerDocumentMiddleware from "./features/trackerDocument/trackerDocumentMiddleware";
@@ -34,7 +33,6 @@ const store = configureStore({
         soundFxMiddleware,
         assetsMiddleware,
         consoleMiddleware,
-        clipboardMiddleware,
         trackerDocumentMiddleware,
       ]),
 });

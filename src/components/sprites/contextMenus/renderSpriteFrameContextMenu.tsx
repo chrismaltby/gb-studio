@@ -1,5 +1,4 @@
-import React, { Dispatch } from "react";
-import { UnknownAction } from "redux";
+import React from "react";
 import l10n from "shared/lib/lang/l10n";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import {
@@ -7,10 +6,11 @@ import {
   ClipboardTypeMetasprites,
 } from "store/features/clipboard/clipboardTypes";
 import entitiesActions from "store/features/entities/entitiesActions";
+import type { AppDispatch } from "store/configureStore";
 import { MenuDivider, MenuItem } from "ui/menu/Menu";
 
 interface SpriteFrameContextMenuProps {
-  dispatch: Dispatch<UnknownAction>;
+  dispatch: AppDispatch;
   clipboard?: ClipboardType;
   spriteSheetId: string;
   metaspriteId: string;
