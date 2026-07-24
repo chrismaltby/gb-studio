@@ -8,7 +8,6 @@ import consoleMiddleware from "store/features/console/consoleMiddleware";
 import electronMiddleware from "store/features/electron/electronMiddleware";
 import entitiesMiddleware from "store/features/entities/entitiesMiddleware";
 import musicMiddleware from "store/features/music/musicMiddleware";
-import projectMiddleware from "store/features/project/projectMiddleware";
 import settingsMiddleware from "store/features/settings/settingsMiddleware";
 import soundfxMiddleware from "store/features/soundfx/soundfxMiddleware";
 import throttleMiddleware from "store/features/throttle/throttleMiddleware";
@@ -30,7 +29,6 @@ jest.mock("store/features/clipboard/clipboardHelpers", () => ({
 const appMiddleware: Array<[string, Middleware]> = [
   ["throttle", throttleMiddleware],
   ["electron", electronMiddleware],
-  ["project", projectMiddleware],
   ["entities", entitiesMiddleware],
   ["settings", settingsMiddleware],
   ["music", musicMiddleware],

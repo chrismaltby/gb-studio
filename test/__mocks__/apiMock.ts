@@ -10,8 +10,14 @@ const APIMock = {
     getTheme: () => Promise.resolve("light"),
     onChange: () => {},
   },
+  app: {
+    showProjectWindow: () => Promise.resolve(),
+  },
   project: {
     ejectWebTemplate: () => Promise.resolve(undefined),
+    loadProject: () => Promise.resolve({}),
+    removeAsset: () => Promise.resolve(true),
+    renameAsset: () => Promise.resolve(true),
     getBackgroundInfo: () =>
       Promise.resolve({
         numTiles: 1,
@@ -57,6 +63,7 @@ const APIMock = {
   },
   dialog: {
     confirmUnsavedChangesTrackerDialog: () => Promise.resolve(2),
+    migrateWarning: () => Promise.resolve(true),
   },
   clipboard: {
     readText: () => {},
