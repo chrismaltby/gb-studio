@@ -9,6 +9,7 @@ import { UnknownAction, Store } from "@reduxjs/toolkit";
 import { RootState } from "store/storeTypes";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import entitiesActions from "store/features/entities/entitiesActions";
+import { clearL10NData, setL10NData } from "shared/lib/lang/l10n";
 
 test("Should use default variable name with not renamed", () => {
   const state = {
@@ -201,6 +202,9 @@ test("Should use renamed variable for custom event", () => {
 });
 
 test("Should create and select a named variable", () => {
+  setL10NData({
+    FIELD_CREATE_NAMED: 'Create localized "{name}"',
+  });
   const state = {
     editor: {
       type: "actor",
@@ -245,6 +249,10 @@ test("Should create and select a named variable", () => {
   fireEvent.change(screen.getByRole("combobox"), {
     target: { value: "Player Health" },
   });
+  expect(
+    screen.getByText('Create localized "Player Health"'),
+  ).toBeInTheDocument();
+  clearL10NData();
   fireEvent.keyDown(screen.getByRole("combobox"), { key: "Enter" });
 
   const addAction = dispatch.mock.calls

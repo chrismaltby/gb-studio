@@ -158,6 +158,7 @@
   "FIELD_MAX_VALUE_RAND_DESC": "The maximum value for the random range.",
   "FIELD_CLAMP": "Clamp value between 0 and 255",
   "FIELD_RENAME": "Rename",
+  "FIELD_CREATE_NAMED": "Create \"{name}\"",
   "FIELD_MOVE_TOP": "Move To Top",
   "FIELD_MOVE_UP": "Move Up",
   "FIELD_MOVE_DOWN": "Move Down",
