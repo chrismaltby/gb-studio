@@ -137,7 +137,8 @@ export const WorldNavigator = () => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
-    dispatch(entitiesActions.addVariable());
+    const action = dispatch(entitiesActions.addVariable());
+    dispatch(editorActions.selectVariable(action.payload));
     if (Math.floor(splitSizes[VARIABLES_PANE]) <= COLLAPSED_SIZE) {
       togglePane(VARIABLES_PANE);
     }
