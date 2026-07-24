@@ -4,7 +4,7 @@
 
 import React from "react";
 import { VariableSelect } from "../../../src/components/forms/VariableSelect";
-import { render, screen, fireEvent } from "../../react-utils";
+import { render, screen, fireEvent, waitFor } from "../../react-utils";
 import { UnknownAction, Store } from "@reduxjs/toolkit";
 import { RootState } from "store/storeTypes";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
@@ -24,8 +24,14 @@ test("Should use default variable name with not renamed", () => {
             ids: [],
           },
           variables: {
-            entities: {},
-            ids: [],
+            entities: {
+              "0": {
+                id: "0",
+                name: "",
+                symbol: "var_1",
+              },
+            },
+            ids: ["0"],
           },
         },
       },
@@ -141,6 +147,67 @@ test("Should use renamed variable", () => {
   expect(screen.getByText("$My Variable Name")).toBeInTheDocument();
 });
 
+test("Should scroll a selected variable into view in a windowed menu", async () => {
+  const variables = Object.fromEntries(
+    Array.from({ length: 20 }, (_, index) => {
+      const id = `variable${index}`;
+      return [
+        id,
+        {
+          id,
+          name: `Variable ${String(index).padStart(2, "0")}`,
+          symbol: `var_${index}`,
+        },
+      ];
+    }),
+  );
+  const state = {
+    editor: {
+      type: "actor",
+    },
+    project: {
+      present: {
+        entities: {
+          customEvents: {
+            entities: {},
+            ids: [],
+          },
+          variables: {
+            entities: variables,
+            ids: Object.keys(variables),
+          },
+        },
+      },
+    },
+  };
+
+  const store = {
+    getState: () => state,
+    dispatch: () => {},
+    subscribe: () => {},
+  } as unknown as Store<RootState, UnknownAction>;
+
+  const { container } = render(
+    <VariableSelect
+      name="test"
+      entityId=""
+      value="variable19"
+      onChange={() => {}}
+      menuIsOpen
+      menuPortalTarget={null}
+    />,
+    store,
+    {},
+  );
+
+  await waitFor(() =>
+    expect(container.querySelector('[aria-selected="true"]')).toHaveTextContent(
+      "Variable 19",
+    ),
+  );
+  expect(screen.getAllByRole("option").length).toBeLessThan(28);
+});
+
 test("Should use renamed variable for custom event", () => {
   const state = {
     editor: {
@@ -250,7 +317,9 @@ test("Should create and select a named variable", () => {
     target: { value: "Player Health" },
   });
   expect(
-    screen.getByText('Create localized "Player Health"'),
+    screen.getByRole("option", {
+      name: 'Create localized "Player Health"',
+    }),
   ).toBeInTheDocument();
   clearL10NData();
   fireEvent.keyDown(screen.getByRole("combobox"), { key: "Enter" });

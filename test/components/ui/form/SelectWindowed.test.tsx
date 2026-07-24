@@ -8,7 +8,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import { Select } from "ui/form/Select";
+import { CreatableSelect, Select } from "ui/form/Select";
 import { SelectWindowed } from "ui/form/SelectWindowed";
 import ThemeProvider from "ui/theme/ThemeProvider";
 
@@ -355,6 +355,27 @@ test("allows the app Select to set its maximum menu height", () => {
   );
 
   expect(screen.getByTestId("windowed-list")).toHaveStyle({ height: "70px" });
+});
+
+test("windows creatable options and centres the selected option", async () => {
+  render(
+    <ThemeProvider>
+      <CreatableSelect
+        menuIsOpen
+        menuPortalTarget={null}
+        options={options}
+        value={options[1]}
+      />
+    </ThemeProvider>,
+  );
+
+  expect(screen.getByTestId("windowed-list")).toBeInTheDocument();
+  await waitFor(() =>
+    expect(mockScrollToRow).toHaveBeenCalledWith({
+      align: "center",
+      index: 1,
+    }),
+  );
 });
 
 test("renders only the longest plain label for intrinsic menu width sizing", () => {

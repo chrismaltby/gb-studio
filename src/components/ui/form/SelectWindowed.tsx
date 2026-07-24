@@ -20,7 +20,9 @@ import ReactSelect, {
   Props as ReactSelectProps,
   SelectComponentsConfig,
   SelectInstance,
+  useStateManager,
 } from "react-select";
+import { CreatableProps, useCreatable } from "react-select/creatable";
 import { List, RowComponentProps, useListCallbackRef } from "react-window";
 import styled from "styled-components";
 
@@ -366,6 +368,38 @@ export const SelectWindowed = React.forwardRef(
   Group extends GroupBase<Option> = GroupBase<Option>,
 >(
   props: SelectWindowedProps<Option, IsMulti, Group> & {
+    ref?: React.ForwardedRef<SelectInstance<Option, IsMulti, Group>>;
+  },
+) => ReactElement;
+
+export type CreatableSelectWindowedProps<
+  Option = unknown,
+  IsMulti extends boolean = false,
+  Group extends GroupBase<Option> = GroupBase<Option>,
+> = CreatableProps<Option, IsMulti, Group> & {
+  windowThreshold?: number;
+};
+
+export const CreatableSelectWindowed = React.forwardRef(
+  <
+    Option,
+    IsMulti extends boolean,
+    Group extends GroupBase<Option> = GroupBase<Option>,
+  >(
+    props: CreatableSelectWindowedProps<Option, IsMulti, Group>,
+    ref: React.ForwardedRef<SelectInstance<Option, IsMulti, Group>>,
+  ) => {
+    const stateManagedProps = useStateManager(props);
+    const creatableProps = useCreatable(stateManagedProps);
+
+    return <SelectWindowed {...creatableProps} ref={ref} />;
+  },
+) as <
+  Option = unknown,
+  IsMulti extends boolean = false,
+  Group extends GroupBase<Option> = GroupBase<Option>,
+>(
+  props: CreatableSelectWindowedProps<Option, IsMulti, Group> & {
     ref?: React.ForwardedRef<SelectInstance<Option, IsMulti, Group>>;
   },
 ) => ReactElement;

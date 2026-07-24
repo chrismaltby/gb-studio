@@ -110,6 +110,7 @@ test("scrolls a selected palette near the end of a windowed menu into view", asy
       "Palette 119",
     ),
   );
+  expect(screen.getAllByRole("option").length).toBeLessThan(121);
 });
 
 test("keeps the search and restores its focus when the editor closes", () => {
