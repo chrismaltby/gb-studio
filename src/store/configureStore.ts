@@ -1,7 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./rootReducer";
 import electronMiddleware from "./features/electron/electronMiddleware";
-import musicMiddleware from "./features/music/musicMiddleware";
 import soundFxMiddleware from "./features/soundfx/soundfxMiddleware";
 import assetsMiddleware from "./features/assets/assetsMiddleware";
 import throttleMiddleware from "./features/throttle/throttleMiddleware";
@@ -27,7 +26,6 @@ const store = configureStore({
         electronMiddleware,
         entitiesMiddleware,
         settingsMiddleware,
-        musicMiddleware,
         soundFxMiddleware,
         assetsMiddleware,
         consoleMiddleware,

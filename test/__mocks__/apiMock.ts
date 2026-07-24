@@ -37,6 +37,8 @@ const APIMock = {
   music: {
     openMusic: () => {},
     closeMusic: () => {},
+    playUGE: () => {},
+    playMOD: () => {},
     sendToMusicWindow: () => {},
     sendToProjectWindow: () => {},
     updateMidiInputMenuState: () => {},
