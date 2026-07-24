@@ -29,6 +29,7 @@ module.exports = {
     "^ui(.*)$": "<rootDir>/src/components/ui/$1",
     "^renderer(.*)$": "<rootDir>/src/renderer/$1",
     "^shared(.*)$": "<rootDir>/src/shared/$1",
+    "^gbs-music-web/(.*)$": "<rootDir>/src/apps/gbs-music-web/$1",
     "patrons.json": "<rootDir>/patrons.json",
     "#my-quickjs-variant": require.resolve(
       "@jitl/quickjs-singlefile-cjs-debug-sync",

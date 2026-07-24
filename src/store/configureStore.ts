@@ -4,7 +4,6 @@ import electronMiddleware from "./features/electron/electronMiddleware";
 import musicMiddleware from "./features/music/musicMiddleware";
 import soundFxMiddleware from "./features/soundfx/soundfxMiddleware";
 import assetsMiddleware from "./features/assets/assetsMiddleware";
-import projectMiddleware from "./features/project/projectMiddleware";
 import throttleMiddleware from "./features/throttle/throttleMiddleware";
 import trackerDocumentMiddleware from "./features/trackerDocument/trackerDocumentMiddleware";
 import entitiesMiddleware from "./features/entities/entitiesMiddleware";
@@ -26,7 +25,6 @@ const store = configureStore({
       .prepend(throttleMiddleware, listenerMiddleware.middleware)
       .concat([
         electronMiddleware,
-        projectMiddleware,
         entitiesMiddleware,
         settingsMiddleware,
         musicMiddleware,
