@@ -4,8 +4,32 @@ import {
   SliceCaseReducers,
 } from "@reduxjs/toolkit";
 import { EntitiesState } from "shared/lib/entities/entitiesTypes";
-import { genEntitySymbol } from "shared/lib/entities/entitiesHelpers";
+import {
+  applyReparentEntityToCollection,
+  applyReparentFolderToCollection,
+  genEntitySymbol,
+} from "shared/lib/entities/entitiesHelpers";
 import { variablesAdapter } from "store/features/entities/adapters";
+import { v4 as uuid } from "uuid";
+import { localVariableSelectTotal } from "store/features/entities/helpers";
+import { Variable } from "shared/lib/resources/types";
+
+const addVariable: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    variableId: string;
+  }>
+> = (state, action) => {
+  const numVariables = localVariableSelectTotal(state);
+
+  const newVariable: Variable = {
+    id: action.payload.variableId,
+    name: "",
+    symbol: genEntitySymbol(state, `var_${numVariables + 1}`),
+  };
+
+  variablesAdapter.addOne(state.variables, newVariable);
+};
 
 const renameVariable: CaseReducer<
   EntitiesState,
@@ -52,9 +76,50 @@ const renameVariableFlags: CaseReducer<
   }
 };
 
+const reparentVariablesFolder: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    fromPath: string;
+    toPath: string;
+  }>
+> = (state, action) => {
+  applyReparentFolderToCollection(
+    state.variables.entities,
+    action.payload.fromPath,
+    action.payload.toPath,
+  );
+};
+
+const reparentVariable: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    constantId: string;
+    toPath: string;
+  }>
+> = (state, action) => {
+  applyReparentEntityToCollection(
+    state.variables.entities,
+    action.payload.constantId,
+    action.payload.toPath,
+  );
+};
+
 const variablesReducers = {
+  addVariable: {
+    reducer: addVariable,
+    prepare: () => {
+      return {
+        payload: {
+          variableId: uuid(),
+        },
+      };
+    },
+  },
+
   renameVariable,
   renameVariableFlags,
+  reparentVariablesFolder,
+  reparentVariable,
 } satisfies SliceCaseReducers<EntitiesState>;
 
 export default variablesReducers;

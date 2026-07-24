@@ -1336,6 +1336,11 @@ const editorSlice = createSlice({
         state.scene = "";
         state.entityId = action.payload.constantId;
       })
+      .addCase(entitiesActions.addVariable, (state, action) => {
+        state.type = "variable";
+        state.scene = "";
+        state.entityId = action.payload.variableId;
+      })
       .addCase(entitiesActions.moveActor, (state, action) => {
         if (state.scene !== action.payload.newSceneId) {
           state.scene = action.payload.newSceneId;

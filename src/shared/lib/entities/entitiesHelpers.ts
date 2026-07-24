@@ -892,6 +892,13 @@ export const customEventName = (
   return customEvent.name || defaultLocalisedCustomEventName(customEventIndex);
 };
 
+export const variableName = (variable: NamedEntity, variableIndex: number) => {
+  if (variable.name.endsWith("/") || variable.name.endsWith("\\")) {
+    return `${variable.name}${defaultLocalisedVariableName(variableIndex)}`;
+  }
+  return variable.name || defaultLocalisedVariableName(variableIndex);
+};
+
 export const constantName = (constant: NamedEntity, constantIndex: number) => {
   if (constant.name.endsWith("/") || constant.name.endsWith("\\")) {
     return `${constant.name}${defaultLocalisedConstantName(constantIndex)}`
@@ -949,6 +956,8 @@ export const defaultLocalisedCustomEventName = (customEventIndex: number) =>
   `${l10n("CUSTOM_EVENT")} ${customEventIndex + 1}`;
 export const defaultLocalisedConstantName = (constantIndex: number) =>
   `${l10n("CONSTANT")} ${constantIndex + 1}`;
+export const defaultLocalisedVariableName = (variableIndex: number) =>
+  `${l10n("FIELD_VARIABLE")} ${variableIndex + 1}`;
 const defaultLocalisedPaletteName = (paletteIndex: number) =>
   l10n("TOOL_PALETTE_N", { number: paletteIndex + 1 });
 

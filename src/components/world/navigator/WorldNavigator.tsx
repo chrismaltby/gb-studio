@@ -133,6 +133,16 @@ export const WorldNavigator = () => {
     }
   };
 
+  const onAddVariable = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
+    dispatch(entitiesActions.addVariable());
+    if (Math.floor(splitSizes[VARIABLES_PANE]) <= COLLAPSED_SIZE) {
+      togglePane(VARIABLES_PANE);
+    }
+  };
+
   const {
     searchEnabled: scenesSearchEnabled,
     searchTerm: scenesSearchTerm,
@@ -376,14 +386,25 @@ export const WorldNavigator = () => {
           onToggle={() => togglePane(VARIABLES_PANE)}
           collapsed={Math.floor(splitSizes[VARIABLES_PANE]) <= COLLAPSED_SIZE}
           buttons={
-            <Button
-              variant={variablesSearchEnabled ? "primary" : "transparent"}
-              size="small"
-              title={l10n("TOOLBAR_SEARCH")}
-              onClick={toggleVariablesSearchEnabled}
-            >
-              <SearchIcon />
-            </Button>
+            <>
+              <Button
+                variant="transparent"
+                size="small"
+                title={l10n("SIDEBAR_ADD_VARIABLE")}
+                onClick={onAddVariable}
+              >
+                <PlusIcon />
+              </Button>
+              <FixedSpacer width={5} />
+              <Button
+                variant={variablesSearchEnabled ? "primary" : "transparent"}
+                size="small"
+                title={l10n("TOOLBAR_SEARCH")}
+                onClick={toggleVariablesSearchEnabled}
+              >
+                <SearchIcon />
+              </Button>
+            </>
           }
         >
           {l10n("SIDEBAR_VARIABLES")}
