@@ -114,13 +114,20 @@ test("Should close music when paused", () => {
   expect(closeMusic).toHaveBeenCalledTimes(1);
 });
 
-test.each([
-  navigationActions.setSection("settings"),
-  navigationActions.setNavigationId("navigator"),
-])("Should pause music after $type", (action) => {
+test("Should pause music when selected asset changes", () => {
   const { actions, store } = setupMusicListeners();
-
-  store.dispatch(action);
-
+  store.dispatch(navigationActions.setNavigationId("navigator"));
   expect(actions).toContainEqual(musicActions.pauseMusic());
+});
+
+test("Should pause music when section is no longer music", () => {
+  const { actions, store } = setupMusicListeners();
+  store.dispatch(navigationActions.setSection("world"));
+  expect(actions).toContainEqual(musicActions.pauseMusic());
+});
+
+test("Should not pause music when section is changed to be music", () => {
+  const { actions, store } = setupMusicListeners();
+  store.dispatch(navigationActions.setSection("music"));
+  expect(actions).not.toContainEqual(musicActions.pauseMusic());
 });

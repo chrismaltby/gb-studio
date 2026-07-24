@@ -1,4 +1,4 @@
-import { isAnyOf, type TypedStartListening } from "@reduxjs/toolkit";
+import { type TypedStartListening } from "@reduxjs/toolkit";
 import API from "renderer/lib/api";
 import { assetPath } from "shared/lib/helpers/assets";
 import { musicSelectors } from "store/features/entities/entitiesSelectors";
@@ -37,10 +37,16 @@ export const registerMusicListeners = (startListening: StartAppListening) => {
   });
 
   startListening({
-    matcher: isAnyOf(
-      navigationActions.setSection,
-      navigationActions.setNavigationId,
-    ),
+    actionCreator: navigationActions.setSection,
+    effect: (action, listenerApi) => {
+      if (action.payload !== "music") {
+        listenerApi.dispatch(musicActions.pauseMusic());
+      }
+    },
+  });
+
+  startListening({
+    actionCreator: navigationActions.setNavigationId,
     effect: (_action, listenerApi) => {
       listenerApi.dispatch(musicActions.pauseMusic());
     },
