@@ -170,3 +170,10 @@ export const getMaxWorldBottom = createSelector(
 
 export const getSceneActorIds = (state: RootState, { id }: { id: string }) =>
   sceneSelectors.selectById(state, id)?.actors;
+
+export const selectGlobalVariablesAll = createSelector(
+  [variableSelectors.selectAll],
+  (variables) => {
+    return variables.filter((variable) => !variable.id.includes("__L"));
+  },
+);

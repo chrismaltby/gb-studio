@@ -86,6 +86,9 @@ export const localMusicSelectAll = (state: EntitiesState) =>
 export const localVariableSelectById = (state: EntitiesState, id: string) =>
   state.variables.entities[id];
 
+export const localVariableSelectTotal = (state: EntitiesState) =>
+  state.variables.ids.length;
+
 export const localConstantSelectById = (state: EntitiesState, id: string) =>
   state.constants.entities[id];
 

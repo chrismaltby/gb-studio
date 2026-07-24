@@ -1,71 +1,87 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { variableSelectors } from "store/features/entities/entitiesSelectors";
+import React, { useCallback, useMemo, useState } from "react";
+import { selectGlobalVariablesAll } from "store/features/entities/entitiesSelectors";
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
-import { allVariables } from "renderer/lib/variables";
-import { EntityListItem } from "ui/lists/EntityListItem";
-import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Variable } from "shared/lib/resources/types";
+import useToggleableList from "ui/hooks/use-toggleable-list";
+import { variableName } from "shared/lib/entities/entitiesHelpers";
+import {
+  buildEntityNavigatorItems,
+  EntityNavigatorItem,
+} from "shared/lib/entities/buildEntityNavigatorItems";
+import { EntityListItemDnD } from "ui/lists/EntityListItemDnD";
+import ItemTypes from "renderer/lib/dnd/itemTypes";
+import { assertUnreachable } from "shared/lib/helpers/assert";
+import { useFlatListReparentDnD } from "ui/hooks/use-flatlist-reparent-dnd";
+import { getParentPath } from "shared/lib/helpers/virtualFilesystem";
 
 interface VariableNavigatorPaneProps {
   height: number;
   searchTerm: string;
 }
 
-interface NavigatorItem {
-  id: string;
-  name: string;
-}
-
-const variableToNavigatorItem = (
-  variable: Variable | undefined,
-  variableCode: string,
-): NavigatorItem => ({
-  id: variableCode,
-  name: variable?.name
-    ? variable.name
-    : globalVariableDefaultName(variableCode),
-});
-
-const collator = new Intl.Collator(undefined, {
-  numeric: true,
-  sensitivity: "base",
-});
-
-const sortByName = (a: NavigatorItem, b: NavigatorItem) => {
-  return collator.compare(a.name, b.name);
-};
+const ACCEPT_TYPES = [ItemTypes.VARIABLE, ItemTypes.VARIABLE_FOLDER];
 
 export const VariableNavigatorPane = ({
   height,
   searchTerm,
 }: VariableNavigatorPaneProps) => {
-  const [items, setItems] = useState<NavigatorItem[]>([]);
-  const variablesLookup = useAppSelector((state) =>
-    variableSelectors.selectEntities(state),
-  );
+  const variables = useAppSelector(selectGlobalVariablesAll);
+
   const entityId = useAppSelector((state) => state.editor.entityId);
   const editorType = useAppSelector((state) => state.editor.type);
   const selectedId = editorType === "variable" ? entityId : "";
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    const searchTermUpperCase = searchTerm.toLocaleUpperCase();
-    setItems(
-      allVariables
-        .map((value) => variableToNavigatorItem(variablesLookup[value], value))
-        .filter(
-          (value) =>
-            searchTermUpperCase.length === 0 ||
-            value.name.toLocaleUpperCase().includes(searchTermUpperCase),
-        )
-        .sort(sortByName),
+  const {
+    values: openFolders,
+    isSet: isFolderOpen,
+    toggle: toggleFolderOpen,
+  } = useToggleableList<string>([], "variableNavigator");
+
+  const nestedVariableItems = useMemo(() => {
+    const userVariables = variables.map((variable, index) => ({
+      ...variable,
+      name: variableName(variable, index),
+    }));
+
+    if (searchTerm.length > 0) {
+      const searchTermUpperCase = searchTerm.toLocaleUpperCase();
+
+      const matchingUserVariables = userVariables.filter((constant) =>
+        constant.name.toLocaleUpperCase().includes(searchTermUpperCase),
+      );
+
+      const items: EntityNavigatorItem<Variable>[] = [];
+
+      items.push(
+        ...matchingUserVariables.map((constant) => ({
+          id: constant.id,
+          type: "entity" as const,
+          name: constant.name,
+          filename: constant.name,
+          nestLevel: 0,
+          entity: constant,
+        })),
+      );
+
+      return items;
+    }
+
+    const items = buildEntityNavigatorItems(
+      userVariables,
+      openFolders,
+      searchTerm,
+      undefined,
+      0,
     );
-  }, [searchTerm, variablesLookup]);
+
+    return items;
+  }, [variables, openFolders, searchTerm]);
 
   const setSelectedId = (id: string) => {
     dispatch(editorActions.selectVariable({ variableId: id }));
@@ -101,32 +117,100 @@ export const VariableNavigatorPane = ({
     setRenameId("");
   }, []);
 
-  const renderContextMenu = useCallback((item: NavigatorItem) => {
-    return [
-      <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
-        {l10n("FIELD_RENAME")}
-      </MenuItem>,
-    ];
-  }, []);
+  const renderContextMenu = useCallback(
+    (item: EntityNavigatorItem<Variable>) => {
+      return [
+        <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
+          {l10n("FIELD_RENAME")}
+        </MenuItem>,
+      ];
+    },
+    [],
+  );
+
+  const renderLabel = useCallback(
+    (item: EntityNavigatorItem<Variable>) => {
+      if (item.type === "folder") {
+        return (
+          <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
+        );
+      }
+      return item.filename;
+    },
+    [toggleFolderOpen],
+  );
+
+  const { onDropOntoItem } = useFlatListReparentDnD<
+    EntityNavigatorItem<Variable>
+  >({
+    onReparent: (item, { dropFolder }) => {
+      if (item.type === "folder") {
+        dispatch(
+          entitiesActions.reparentVariablesFolder({
+            fromPath: item.name,
+            toPath: dropFolder,
+          }),
+        );
+      } else if (item.type === "entity") {
+        dispatch(
+          entitiesActions.reparentVariable({
+            constantId: item.id,
+            toPath: dropFolder,
+          }),
+        );
+      } else {
+        assertUnreachable(item.type);
+      }
+    },
+    acceptTypes: ACCEPT_TYPES,
+    getName: (item) => item.name,
+    getDropFolder: (target) =>
+      target.type === "folder" ? target.name : getParentPath(target.name),
+  });
 
   return (
     <FlatList
       selectedId={selectedId}
-      items={items}
+      items={nestedVariableItems}
       setSelectedId={setSelectedId}
       cacheKey="variableNavigator"
       height={height}
-      onKeyDown={listenForRenameStart}
-      children={({ item }) => (
-        <EntityListItem
-          type="variable"
-          item={item}
-          rename={renameId === item.id}
-          onRename={onRenameComplete}
-          onRenameCancel={onRenameCancel}
-          renderContextMenu={renderContextMenu}
-        />
-      )}
+      onKeyDown={(e: KeyboardEvent, item) => {
+        listenForRenameStart(e);
+        if (item?.type === "folder") {
+          if (e.key === "ArrowRight") {
+            toggleFolderOpen(item.id);
+          } else if (e.key === "ArrowLeft") {
+            toggleFolderOpen(item.id);
+          }
+        }
+      }}
+      children={({ item }) => {
+        return (
+          <EntityListItemDnD
+            type={item.type === "folder" ? "folder" : "variable"}
+            item={item}
+            rename={item.type === "entity" && renameId === item.id}
+            onRename={onRenameComplete}
+            onRenameCancel={onRenameCancel}
+            renderContextMenu={
+              item.type === "entity" ? renderContextMenu : undefined
+            }
+            collapsable={item.type === "folder"}
+            collapsed={!isFolderOpen(item.id) && searchTerm.length === 0}
+            onToggleCollapse={() => toggleFolderOpen(item.id)}
+            nestLevel={item.nestLevel}
+            renderLabel={renderLabel}
+            dragType={
+              item.type === "folder"
+                ? ItemTypes.VARIABLE_FOLDER
+                : ItemTypes.VARIABLE
+            }
+            acceptTypes={ACCEPT_TYPES}
+            onDrop={onDropOntoItem}
+          />
+        );
+      }}
     />
   );
 };
