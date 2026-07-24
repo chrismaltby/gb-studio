@@ -263,4 +263,34 @@ describe("exportToC", () => {
 
     expect(exported).not.toContain("static const unsigned char subpattern_0[]");
   });
+
+  it("does not include unused patterns in generated output", () => {
+    const song = createSong();
+    song.patterns = [
+      createPattern(),
+      createPattern(),
+      createPattern(),
+      createPattern(),
+    ];
+    if (song.patterns[0]?.[0]) {
+      song.patterns[0][0].instrument = 3;
+    }
+    if (song.patterns[1]?.[0]) {
+      song.patterns[1][0].instrument = 4;
+    }
+    if (song.patterns[2]?.[0]) {
+      song.patterns[2][0].instrument = 5;
+    }
+    if (song.patterns[3]?.[0]) {
+      song.patterns[3][0].instrument = 6;
+    }
+
+    song.sequence = [{ splitPattern: true, channels: [0, 0, 1, 1] }];
+
+    const exported = exportToC(song, "test_track");
+
+    expect(
+      exported.match(/static const unsigned char song_pattern_\d+\[\]/g),
+    ).toHaveLength(2);
+  });
 });
