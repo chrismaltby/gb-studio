@@ -193,7 +193,6 @@ import {
   settingsUnset,
   settingsUpdate,
 } from "lib/helpers/appSettings";
-import { spawn } from "child_process";
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1630,7 +1629,7 @@ ipcMain.handle(
         const emulatorPath = options.debugEnabled  ? "" : String((await settingsGet("emulatorPath")) || "");
         const romPath = Path.join(outputRoot, "build", "rom", romFilename);
 
-        if (debuggerEnabled) {
+        if (debuggerEnabled && emulatorPath === "") {
           const { memoryMap, globalVariables } = await readDebuggerSymbols(
             outputRoot,
             romStem,
@@ -1655,6 +1654,10 @@ ipcMain.handle(
             sceneMap: compiledData.sceneMap,
             gbvmScripts,
           });
+        } else if (emulatorPath !== "") {
+          if (!playWindow) {
+            sendToProjectWindow("debugger:disconnected");
+          }
         }
 
         if (emulatorPath === "") {
@@ -1666,7 +1669,8 @@ ipcMain.handle(
         } else if (emulatorPath === "system-default") {
           open(romPath);
         } else {
-          spawn(emulatorPath, [romPath], { detached: true });
+          const app = emulatorPath;
+          open(romPath, { app });
         }
       }
 
