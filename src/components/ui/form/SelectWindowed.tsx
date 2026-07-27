@@ -14,9 +14,11 @@ import React, {
   useState,
 } from "react";
 import ReactSelect, {
+  components as reactSelectComponents,
   GroupBase,
   InputActionMeta,
   MenuListProps,
+  OptionProps,
   Props as ReactSelectProps,
   SelectComponentsConfig,
   SelectInstance,
@@ -287,6 +289,8 @@ const countOptions = <Option, Group extends GroupBase<Option>>(
     return total + (Array.isArray(groupOptions) ? groupOptions.length : 1);
   }, 0);
 
+const ignoreOptionRef = () => {};
+
 export interface SelectWindowedProps<
   Option = unknown,
   IsMulti extends boolean = false,
@@ -335,14 +339,25 @@ export const SelectWindowed = React.forwardRef(
     );
     const isWindowed = countOptions(options) >= windowThreshold;
     const windowedRenderToken = {};
+    const WindowedOption = useMemo(() => {
+      const OptionComponent =
+        components?.Option ?? reactSelectComponents.Option;
+
+      return (optionProps: OptionProps<Option, IsMulti, Group>) => (
+        <OptionComponent {...optionProps} innerRef={ignoreOptionRef} />
+      );
+    }, [components?.Option]);
     const selectComponents = useMemo<
       SelectComponentsConfig<Option, IsMulti, Group>
     >(
       () => ({
         ...components,
-        ...(isWindowed && { MenuList: SelectWindowedMenuList }),
+        ...(isWindowed && {
+          MenuList: SelectWindowedMenuList,
+          Option: WindowedOption,
+        }),
       }),
-      [components, isWindowed],
+      [components, isWindowed, WindowedOption],
     );
 
     const reactSelectProps = {
