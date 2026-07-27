@@ -9,6 +9,7 @@ import ScriptBuilderBase from "./scriptBuilder/scriptBuilderBase";
 import { PrecompiledScene } from "./generateGBVMData";
 import { LATEST_PROJECT_VERSION } from "lib/project/migration/migrateProjectResources";
 import { ScriptEvent, SpriteModeSetting } from "shared/lib/resources/types";
+import { isVariableIndex } from "shared/lib/scriptValue/types";
 
 const STRING_NOT_FOUND = "STRING_NOT_FOUND";
 const VARIABLE_NOT_FOUND = "VARIABLE_NOT_FOUND";
@@ -147,16 +148,36 @@ export const compileEventsWithScriptBuilder = (
           continue;
         }
         scriptBuilder.eventCommand = command;
-        scriptEventHandlers[command]?.compile(
-          { ...subInput[i].args, ...subInput[i].children },
-          {
-            LATEST_PROJECT_VERSION: LATEST_PROJECT_VERSION,
-            ...scriptBuilder.options,
-            ...scriptBuilder,
-            scriptSymbolName,
-            event: subInput[i],
-          },
-        );
+        const input = {
+          ...subInput[i].args,
+          ...subInput[i].children,
+        };
+        for (const field of scriptEventHandlers[command].fields) {
+          const key = field.key;
+          if (
+            field.type === "variable" &&
+            key &&
+            typeof input[key] === "string" &&
+            scriptBuilder.options.variablesLookup[input[key] as string]
+              ?.type === "array"
+          ) {
+            const index = input[`${key}Index`];
+            if (isVariableIndex(index)) {
+              input[key] = {
+                type: "indexed",
+                value: input[key],
+                index,
+              };
+            }
+          }
+        }
+        scriptEventHandlers[command]?.compile(input, {
+          LATEST_PROJECT_VERSION: LATEST_PROJECT_VERSION,
+          ...scriptBuilder.options,
+          ...scriptBuilder,
+          scriptSymbolName,
+          event: subInput[i],
+        });
       } catch (e) {
         console.error(e);
         throw new Error(

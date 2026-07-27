@@ -23,6 +23,7 @@ test("extracts variable IDs from schema-driven event arguments", () => {
     command: "EVENT_PLUGIN_TEST",
     args: {
       direct: "12",
+      directIndex: { type: "variable", value: "26" },
       union: { type: "variable", value: "13" },
       value: {
         type: "add",
@@ -31,7 +32,7 @@ test("extracts variable IDs from schema-driven event arguments", () => {
       },
       text: "%d$016$ #17# %t$18$ %f$19$",
       textarea: ["No variable", "$20$"],
-      expression: "$21$ + $22$",
+      expression: "$21$[2] + $22$[$27$]",
       table: {
         variables: ["23"],
         rows: [{ values: [{ type: "number", value: 1 }] }],
@@ -62,6 +63,8 @@ test("extracts variable IDs from schema-driven event arguments", () => {
       "23",
       "24",
       "25",
+      "26",
+      "27",
     ].sort(),
   );
 });

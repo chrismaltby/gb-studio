@@ -2594,7 +2594,10 @@ class ScriptBuilder extends ScriptBuilderBase {
     if (rpnOps.length === 1 && rpnOps[0].type === "number") {
       this._setVariableConst(variable, rpnOps[0].value);
     } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
-      this._setVariableToVariable(variable, rpnOps[0].value);
+      this._setVariableToVariable(
+        variable,
+        this._scriptValueVariable(rpnOps[0].value, rpnOps[0].index),
+      );
     } else {
       const localsLookup = this._performFetchOperations(fetchOps);
       this._addComment(`-- Calculate value`);

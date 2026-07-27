@@ -46,6 +46,9 @@ export const variableInExpressionText = (
 ): boolean => {
   const expressionTokens = tokenizer(input);
   const isMatch = (token: ExpressionToken) =>
-    expressionTokenToVariableId(token) === variableId;
+    expressionTokenToVariableId(token) === variableId ||
+    (token.type === "VAR" &&
+      token.index?.type === "VAR" &&
+      token.index.symbol.replace(/\$/g, "").replace(/^0/g, "") === variableId);
   return expressionTokens.some(isMatch);
 };

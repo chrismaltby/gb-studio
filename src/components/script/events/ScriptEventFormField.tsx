@@ -39,6 +39,7 @@ import { ScriptEditorContext } from "components/script/context/ScriptEditorConte
 import { ScriptEventUserPresets } from "./ScriptEventUserPresets";
 import throttle from "lodash/throttle";
 import isEqual from "lodash/isEqual";
+import type { VariableIndex } from "shared/lib/scriptValue/types";
 
 interface ScriptEventFormFieldProps {
   scriptEvent: ScriptEventNormalized;
@@ -286,6 +287,13 @@ const ScriptEventFormField = memo(
       [field.key, setArgValue, value],
     );
 
+    const onChangeVariableIndex = useCallback(
+      (newValue: VariableIndex | undefined) => {
+        throttledPublishArgValue(`${field.key || ""}Index`, newValue);
+      },
+      [field.key, throttledPublishArgValue],
+    );
+
     // Handle value updating from store (only if not currently updating due to user input)
     useEffect(() => {
       if (lastUpdateSource.current !== "store") {
@@ -448,6 +456,7 @@ const ScriptEventFormField = memo(
                 value={value[valueIndex]}
                 args={scriptEvent?.args || {}}
                 onChange={onChange}
+                onChangeVariableIndex={onChangeVariableIndex}
                 onInsertEventAfter={onInsertEventAfter}
               />
               <ButtonRow>
@@ -473,6 +482,7 @@ const ScriptEventFormField = memo(
           value={value}
           args={scriptEvent?.args || {}}
           onChange={onChange}
+          onChangeVariableIndex={onChangeVariableIndex}
           onInsertEventAfter={onInsertEventAfter}
         />
       );

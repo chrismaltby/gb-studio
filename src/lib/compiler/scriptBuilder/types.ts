@@ -23,6 +23,7 @@ import type { PrecompiledMusicTrack } from "../compileMusic";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
 import type ScriptBuilderBase from "./scriptBuilderBase";
+import type { VariableIndex } from "shared/lib/scriptValue/types";
 
 export type ScriptOutput = string[];
 
@@ -59,8 +60,16 @@ export type ScriptBuilderFunctionArg = {
 
 type ScriptBuilderSimpleVariable = string | number;
 
+export type ScriptBuilderIndexedVariable = {
+  type: "indexed";
+  value: ScriptBuilderSimpleVariable | ScriptBuilderFunctionArg;
+  index: VariableIndex;
+};
+
 export type ScriptBuilderVariable =
-  ScriptBuilderSimpleVariable | ScriptBuilderFunctionArg;
+  | ScriptBuilderSimpleVariable
+  | ScriptBuilderFunctionArg
+  | ScriptBuilderIndexedVariable;
 
 export type CameraProperty =
   | "camera_x"

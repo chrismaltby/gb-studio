@@ -9,6 +9,7 @@ import {
   PrecompiledValueFetch,
   PrecompiledValueRPNOperation,
   ScriptValue,
+  VariableIndex,
 } from "shared/lib/scriptValue/types";
 import {
   optimiseScriptValue,
@@ -28,6 +29,7 @@ import {
   ScriptBuilderComparisonOperator,
   ScriptBuilderDataTable,
   ScriptBuilderFunctionArg,
+  ScriptBuilderIndexedVariable,
   ScriptBuilderLocalSymbol,
   ScriptBuilderMoveType,
   ScriptBuilderOptions,
@@ -300,17 +302,29 @@ abstract class ScriptBuilderBase {
           rpn = rpn.int16(token.value);
         } else if (token.type === "VAR") {
           const ref = token.symbol.replace(/\$/g, "");
-          const variable = ref;
-          if (variable.match(/^V[0-9]$/)) {
-            const key = variable;
+          let variable: ScriptBuilderVariable = ref;
+          if (ref.match(/^V[0-9]$/)) {
+            const key = ref;
             const arg = this.options.argLookup.variable.get(key);
             if (!arg) {
               throw new Error("Cant find arg");
             }
-            rpn = rpn.refVariable(arg);
-          } else {
-            rpn = rpn.refVariable(ref);
+            variable = arg;
           }
+          if (token.index) {
+            variable = {
+              type: "indexed",
+              value: variable,
+              index:
+                token.index.type === "VAL"
+                  ? { type: "number", value: token.index.value }
+                  : {
+                      type: "variable",
+                      value: token.index.symbol.replace(/\$/g, ""),
+                    },
+            };
+          }
+          rpn = rpn.refVariable(variable);
         } else if (token.type === "FUN") {
           const op = funToScriptOperator(token.function);
           rpn = rpn.operator(op);
@@ -379,6 +393,9 @@ abstract class ScriptBuilderBase {
         return { type: "number", value: this.getActorIndex(id) };
       }
     }
+    if (this._isIndexedVariable(id)) {
+      return { type: "reference", symbol: this.getVariableAlias(id) };
+    }
     return { type: "reference", symbol: id.symbol };
   }
 
@@ -428,6 +445,18 @@ abstract class ScriptBuilderBase {
     }
   };
 
+  _scriptValueVariable = (
+    value: string,
+    index?: VariableIndex,
+  ): ScriptBuilderVariable =>
+    index
+      ? {
+          type: "indexed",
+          value,
+          index,
+        }
+      : value;
+
   _stackPushReference = (
     addr: ScriptBuilderStackVariable,
     comment?: string,
@@ -444,7 +473,9 @@ abstract class ScriptBuilderBase {
     if (rpnOps.length === 1 && rpnOps[0].type === "number") {
       this._stackPushConst(rpnOps[0].value);
     } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
-      this._stackPushVariable(rpnOps[0].value);
+      this._stackPushVariable(
+        this._scriptValueVariable(rpnOps[0].value, rpnOps[0].index),
+      );
     } else {
       const localsLookup = this._performFetchOperations(fetchOps);
       this._addComment(`-- Calculate value`);
@@ -1120,7 +1151,7 @@ abstract class ScriptBuilderBase {
           break;
         }
         case "variable": {
-          rpn.refVariable(this._resolveVariableRef(rpnOp.value));
+          rpn.refVariable(this._scriptValueVariable(rpnOp.value, rpnOp.index));
           break;
         }
         case "local": {
@@ -2280,8 +2311,18 @@ extern void __mute_mask_${symbol};
     );
   };
 
+  _isIndexedVariable = (x: unknown): x is ScriptBuilderIndexedVariable => {
+    return isObject(x) && x.type === "indexed";
+  };
+
   _isIndirectVariable = (x: ScriptBuilderVariable): boolean => {
-    return this._isFunctionArg(x) && x.indirect;
+    const resolved = this._isIndexedVariable(x)
+      ? x
+      : this._resolveVariableRef(x);
+    return (
+      (this._isFunctionArg(resolved) && resolved.indirect) ||
+      (this._isIndexedVariable(resolved) && resolved.index.type === "variable")
+    );
   };
 
   _declareLocal = (
@@ -2506,6 +2547,21 @@ extern void __mute_mask_${symbol};
   };
 
   getVariableAlias = (variable: ScriptBuilderVariable = ""): string => {
+    if (this._isIndexedVariable(variable)) {
+      const variableAlias = this.getVariableAlias(variable.value);
+      if (variable.index.type === "number") {
+        return `^/(${variableAlias} + ${variable.index.value})/`;
+      }
+      const pointer = this._declareLocal("array_ptr", 1, true);
+      this._rpn()
+        .int16(variableAlias)
+        .refVariable(this._resolveVariableRef(variable.index.value))
+        .operator(".ADD")
+        .refSet(pointer)
+        .stop();
+      return pointer;
+    }
+
     if (this._isFunctionArg(variable)) {
       return variable.symbol;
     }

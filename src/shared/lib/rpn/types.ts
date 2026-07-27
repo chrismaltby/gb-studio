@@ -69,6 +69,15 @@ interface TokenVal {
 interface TokenVar {
   type: "VAR";
   symbol: string;
+  index?:
+    | {
+        type: "VAL";
+        value: number;
+      }
+    | {
+        type: "VAR";
+        symbol: string;
+      };
 }
 
 interface TokenConst {

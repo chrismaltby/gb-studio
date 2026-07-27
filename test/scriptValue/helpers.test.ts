@@ -965,6 +965,34 @@ test("should convert expression ($00$ + 8) to script value", () => {
   });
 });
 
+test("should convert statically indexed variables in expressions", () => {
+  expect(
+    expressionToScriptValue("$11111111-1111-1111-1111-111111111111$[3]"),
+  ).toEqual({
+    type: "variable",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: {
+      type: "number",
+      value: 3,
+    },
+  });
+});
+
+test("should convert variable indexed variables in expressions", () => {
+  expect(
+    expressionToScriptValue(
+      "$11111111-1111-1111-1111-111111111111$[$22222222-2222-2222-2222-222222222222$]",
+    ),
+  ).toEqual({
+    type: "variable",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: {
+      type: "variable",
+      value: "22222222-2222-2222-2222-222222222222",
+    },
+  });
+});
+
 test("should convert expression ($L0$ + 8) to script value", () => {
   const input = "$L0$ + 8";
   expect(expressionToScriptValue(input)).toEqual({

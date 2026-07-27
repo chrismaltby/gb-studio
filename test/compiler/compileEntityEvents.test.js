@@ -28,6 +28,37 @@ _testname::
 `);
 });
 
+test("should compile variable fields with array indices", async () => {
+  const scriptEventHandlers = await getTestScriptHandlers();
+  const output = compileEntityEvents(
+    "testname",
+    [
+      {
+        command: "EVENT_INC_VALUE",
+        args: {
+          variable: "11111111-1111-1111-1111-111111111111",
+          variableIndex: { type: "number", value: 2 },
+        },
+      },
+    ],
+    {
+      scriptEventHandlers,
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+    },
+  );
+
+  expect(output).toContain(".R_REF      ^/(VAR_ARRAY + 2)/");
+  expect(output).toContain(".R_REF_SET  ^/(VAR_ARRAY + 2)/");
+});
+
 test("should collapse multiple end events", async () => {
   const scriptEventHandlers = await getTestScriptHandlers();
   const input = [

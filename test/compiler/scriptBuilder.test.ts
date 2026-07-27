@@ -925,6 +925,136 @@ test("Should get default alias for variable with empty name", () => {
   expect(sb.getVariableAlias("13")).toEqual("VAR_VARIABLE_13");
 });
 
+test("Should increment an array variable with a static index", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+    },
+  );
+
+  sb.variableInc({
+    type: "indexed",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: { type: "number", value: 2 },
+  });
+
+  expect(output).toEqual([
+    "        ; Variable Increment By 1",
+    "        VM_RPN",
+    "            .R_REF      ^/(VAR_ARRAY + 2)/",
+    "            .R_INT8     1",
+    "            .R_OPERATOR .ADD",
+    "            .R_REF_SET  ^/(VAR_ARRAY + 2)/",
+    "            .R_STOP",
+    "",
+  ]);
+});
+
+test("Should increment an array variable with a variable index", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+        "22222222-2222-2222-2222-222222222222": {
+          id: "22222222-2222-2222-2222-222222222222",
+          name: "Index",
+          symbol: "var_index",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  sb.variableInc({
+    type: "indexed",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: {
+      type: "variable",
+      value: "22222222-2222-2222-2222-222222222222",
+    },
+  });
+
+  expect(output.join("\n")).toContain(".R_INT16    VAR_ARRAY");
+  expect(output.join("\n")).toContain(".R_REF      VAR_INDEX");
+  expect(output.join("\n")).toContain(".R_REF_IND");
+  expect(output.join("\n")).toContain(".R_REF_SET_IND");
+});
+
+test("Should evaluate expressions containing array offsets", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+        "22222222-2222-2222-2222-222222222222": {
+          id: "22222222-2222-2222-2222-222222222222",
+          name: "Index",
+          symbol: "var_index",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  sb.variableEvaluateExpression(
+    "0",
+    "$11111111-1111-1111-1111-111111111111$[1] + $11111111-1111-1111-1111-111111111111$[$22222222-2222-2222-2222-222222222222$]",
+  );
+
+  expect(output.join("\n")).toContain(".R_REF      ^/(VAR_ARRAY + 1)/");
+  expect(output.join("\n")).toContain(".R_REF      VAR_INDEX");
+  expect(output.join("\n")).toContain(".R_REF_IND");
+});
+
+test("Should read an indexed array variable from a ScriptValue", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+    },
+  );
+
+  sb.variableSetToScriptValue("0", {
+    type: "variable",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: { type: "number", value: 3 },
+  });
+
+  expect(output).toContain(
+    "        VM_SET                  VAR_VARIABLE_0, ^/(VAR_ARRAY + 3)/",
+  );
+});
+
 test("Should do truthy conditional test", () => {
   const output: string[] = [];
   const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);

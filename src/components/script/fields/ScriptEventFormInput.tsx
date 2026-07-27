@@ -25,6 +25,7 @@ import { SceneSelect } from "components/forms/SceneSelect";
 import { SoundEffectSelect } from "components/forms/SoundEffectSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
+import { VariableIndexSelect } from "components/forms/VariableIndexSelect";
 import { FontSelect } from "components/forms/FontSelect";
 import {
   castEventToBool,
@@ -45,6 +46,7 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { CodeEditor } from "ui/form/CodeEditor";
 import { Input } from "ui/form/Input";
+import { InputGroup } from "ui/form/InputGroup";
 import { NumberInput } from "ui/form/NumberInput";
 import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
@@ -71,8 +73,10 @@ import ValueSelect, {
   ValueSelectInputOverrideTypes,
 } from "components/forms/ValueSelect";
 import {
+  isVariableIndex,
   isConstScriptValue,
   isScriptValue,
+  VariableIndex,
 } from "shared/lib/scriptValue/types";
 import { FlagField } from "ui/form/FlagField";
 import { FlagSelect } from "components/forms/FlagSelect";
@@ -84,6 +88,7 @@ import { OverlaySpeedSelect } from "components/forms/OverlaySpeedSelect";
 import { ActorDirection, CollisionGroup } from "shared/lib/resources/types";
 import { DataTableInput } from "components/forms/DataTableInput";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
+import { variableSelectors } from "store/features/entities/entitiesSelectors";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -96,6 +101,7 @@ interface ScriptEventFormInputProps {
   args: Record<string, unknown>;
   allowRename?: boolean;
   onChange: (newValue: unknown, valueIndex?: number | undefined) => void;
+  onChangeVariableIndex?: (newValue: VariableIndex | undefined) => void;
   onInsertEventAfter: () => void;
 }
 
@@ -143,6 +149,7 @@ const ScriptEventFormInput = ({
   index,
   defaultValue,
   onChange,
+  onChangeVariableIndex,
   onInsertEventAfter,
   allowRename = true,
 }: ScriptEventFormInputProps) => {
@@ -153,6 +160,9 @@ const ScriptEventFormInput = ({
     (state) => state.project.present.settings.defaultSpritePaletteIds || [],
   );
   const engineFieldsLookup = useAppSelector((state) => state.engine.lookup);
+  const variablesLookup = useAppSelector((state) =>
+    variableSelectors.selectEntities(state),
+  );
   const context = useContext(ScriptEditorContext);
 
   const onChangeField = useCallback(
@@ -561,15 +571,41 @@ const ScriptEventFormInput = ({
     if (fallbackValue === "LAST_VARIABLE") {
       fallbackValue = defaultVariableForContext(context.type);
     }
+    const variableId = String(value || fallbackValue || "0");
+    const variable = variablesLookup[variableId];
+    const storedIndex = args[`${field.key}Index`];
+    const variableIndex = isVariableIndex(storedIndex)
+      ? storedIndex
+      : { type: "number" as const, value: 0 };
     return (
       <OffscreenSkeletonInput>
-        <VariableSelect
-          name={id}
-          value={String(value || fallbackValue || "0")}
-          entityId={entityId}
-          onChange={onChangeField}
-          allowRename={allowRename}
-        />
+        <InputGroup>
+          <VariableSelect
+            name={id}
+            value={variableId}
+            entityId={entityId}
+            onChange={(newValue) => {
+              onChangeField(newValue);
+              if (variablesLookup[newValue]?.type === "array") {
+                onChangeVariableIndex?.(variableIndex);
+              } else {
+                onChangeVariableIndex?.(undefined);
+              }
+            }}
+            allowRename={allowRename}
+          />
+          {variable?.type === "array" && (
+            <VariableIndexSelect
+              name={`${id}_index`}
+              entityId={entityId}
+              value={variableIndex}
+              max={variable.size - 1}
+              onChange={(newValue) => {
+                onChangeVariableIndex?.(newValue);
+              }}
+            />
+          )}
+        </InputGroup>
       </OffscreenSkeletonInput>
     );
   } else if (type === "direction") {

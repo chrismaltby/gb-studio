@@ -36,7 +36,11 @@ export const isFunctionSymbol = (x: string): x is FunctionSymbol => {
 };
 
 export const isVariable = (token: string): boolean => {
-  return !!/^\$([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$$/i.exec(token);
+  const variable = String.raw`\$([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$`;
+  return !!new RegExp(
+    `^${variable}(?:\\[(?:-?[0-9]+|${variable})\\])?$`,
+    "i",
+  ).exec(token);
 };
 
 export const isConstant = (token: string): boolean => {

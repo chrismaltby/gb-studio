@@ -53,7 +53,12 @@ const extractExpressionVariableIds = (value: unknown): string[] => {
   try {
     return tokenizer(value)
       .filter((token) => token.type === "VAR")
-      .map((token) => token.symbol.replaceAll("$", ""));
+      .flatMap((token) => [
+        token.symbol.replaceAll("$", ""),
+        ...(token.index?.type === "VAR"
+          ? [token.index.symbol.replaceAll("$", "")]
+          : []),
+      ]);
   } catch {
     return [];
   }
@@ -104,6 +109,10 @@ export const extractVariableIdsFromScriptEvent = (
         addVariableId(value);
       } else if (isUnionVariableValue(value)) {
         addVariableId(value.value);
+      }
+      const index = args[`${key}Index`];
+      if (isScriptValue(index)) {
+        extractScriptValueVariables(index).forEach(addVariableId);
       }
     }
 

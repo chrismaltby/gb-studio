@@ -261,6 +261,20 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
         stack.push({
           type: "variable",
           value: operation.symbol.replace(/\$/g, "").replace(/^0/g, ""),
+          ...(operation.index && {
+            index:
+              operation.index.type === "VAL"
+                ? {
+                    type: "number",
+                    value: operation.index.value,
+                  }
+                : {
+                    type: "variable",
+                    value: operation.index.symbol
+                      .replace(/\$/g, "")
+                      .replace(/^0/g, ""),
+                  },
+          }),
         });
       } else if (operation.type === "VAL") {
         stack.push({
@@ -378,6 +392,9 @@ export const walkScriptValue = (
   fn: (val: ScriptValue) => void,
 ): void => {
   fn(input);
+  if (input.type === "variable" && input.index) {
+    fn(input.index);
+  }
   if ("valueA" in input && input.valueA) {
     walkScriptValue(input.valueA, fn);
   }
@@ -404,7 +421,9 @@ export const someInScriptValue = (
       return true;
     }
 
-    if ("valueA" in currentNode && "valueB" in currentNode) {
+    if (currentNode.type === "variable" && currentNode.index) {
+      stack.push(currentNode.index);
+    } else if ("valueA" in currentNode && "valueB" in currentNode) {
       stack.push(currentNode.valueB, currentNode.valueA);
     } else if ("value" in currentNode && isUnaryOperation(currentNode)) {
       stack.push(currentNode.value);

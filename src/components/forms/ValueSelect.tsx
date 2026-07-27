@@ -1,6 +1,7 @@
 import DirectionPicker from "components/forms/DirectionPicker";
 import { PropertySelect } from "components/forms/PropertySelect";
 import { VariableSelect } from "components/forms/VariableSelect";
+import { VariableIndexSelect } from "components/forms/VariableIndexSelect";
 import {
   isInfix,
   isUnaryOperation,
@@ -64,7 +65,10 @@ import { ClipboardTypeScriptValue } from "store/features/clipboard/clipboardType
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import clipboardActions from "store/features/clipboard/clipboardActions";
 import { copy, paste } from "store/features/clipboard/clipboardHelpers";
-import { constantSelectors } from "store/features/entities/entitiesSelectors";
+import {
+  constantSelectors,
+  variableSelectors,
+} from "store/features/entities/entitiesSelectors";
 import { ConstantSelect } from "./ConstantSelect";
 import { SingleValue } from "react-select";
 import EngineFieldSelect from "components/forms/EngineFieldSelect";
@@ -419,6 +423,9 @@ const ValueSelect = ({
   const editorType = useAppSelector((state) => state.editor.type);
   const defaultConstant = useAppSelector(
     (state) => constantSelectors.selectAll(state)[0],
+  );
+  const variablesLookup = useAppSelector((state) =>
+    variableSelectors.selectEntities(state),
   );
   const isValueFn = isValueOperation(value);
   const dragRef = useRef<HTMLDivElement>(null);
@@ -1143,6 +1150,7 @@ const ValueSelect = ({
         </ValueWrapper>
       );
     } else if (value.type === "variable") {
+      const selectedVariable = variablesLookup[value.value];
       return (
         <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
@@ -1153,12 +1161,32 @@ const ValueSelect = ({
               value={value.value}
               allowRename
               onChange={(newValue) => {
+                const newVariable = variablesLookup[newValue];
                 onChange({
                   type: "variable",
                   value: newValue,
+                  ...(newVariable?.type === "array"
+                    ? {
+                        index: value.index ?? {
+                          type: "number" as const,
+                          value: 0,
+                        },
+                      }
+                    : {}),
                 });
               }}
             />
+            {selectedVariable?.type === "array" && (
+              <VariableIndexSelect
+                name={`${name}_index`}
+                entityId={entityId}
+                value={value.index}
+                max={selectedVariable.size - 1}
+                onChange={(index) => {
+                  onChange({ ...value, index });
+                }}
+              />
+            )}
           </InputGroup>
         </ValueWrapper>
       );
@@ -1372,6 +1400,7 @@ const ValueSelect = ({
     placeholder,
     step,
     value,
+    variablesLookup,
   ]);
 
   if (innerValue) {

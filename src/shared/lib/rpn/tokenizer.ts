@@ -15,7 +15,7 @@ const tokenizer = (input: string): Token[] => {
     input
       .replace(/\s+/g, "")
       .split(
-        /(\$[a-f0-9-]{36}\$|@[a-f0-9-]{36}@|@engine::[^@]+@|<<|>>|==|!=|>=|>|<=|<|&&|\|\||[+\-*/^%&|~!@(),])/,
+        /(\$(?:[VLT][0-9]|[a-f0-9-]{36}|[0-9]+)\$(?:\[(?:-?[0-9]+|\$(?:[VLT][0-9]|[a-f0-9-]{36}|[0-9]+)\$)\])?|@[a-f0-9-]{36}@|@engine::[^@]+@|<<|>>|==|!=|>=|>|<=|<|&&|\|\||[+\-*/^%&|~!@(),])/i,
       )
       .filter(identity)
       .map((token): Token => {
@@ -53,9 +53,18 @@ const tokenizer = (input: string): Token[] => {
           };
         }
         if (isVariable(token)) {
+          const [, symbol, index] =
+            token.match(
+              /^(\$(?:[VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$)(?:\[(-?[0-9]+|\$(?:[VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$)\])?$/i,
+            ) ?? [];
           return {
             type: "VAR",
-            symbol: token,
+            symbol,
+            ...(index !== undefined && {
+              index: isNumeric(index)
+                ? { type: "VAL" as const, value: toNumber(index) }
+                : { type: "VAR" as const, symbol: index },
+            }),
           };
         }
         if (isConstant(token)) {
