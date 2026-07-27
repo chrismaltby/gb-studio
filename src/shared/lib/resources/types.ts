@@ -986,12 +986,32 @@ export type SettingsResource = Static<typeof SettingsResource>;
 
 export type Settings = ExtractResource<SettingsResource>;
 
-export const Variable = Type.Object({
+export const VariableType = Type.Union([
+  Type.Literal("number"),
+  Type.Literal("array"),
+]);
+
+export type VariableType = Static<typeof VariableType>;
+
+const VariableBase = Type.Object({
   id: Type.String(),
   name: Type.String(),
   symbol: Type.String(),
   flags: Type.Optional(Type.Record(Type.String(), Type.String())),
 });
+
+export const Variable = Type.Intersect([
+  VariableBase,
+  Type.Union([
+    Type.Object({
+      type: Type.Literal("number"),
+    }),
+    Type.Object({
+      type: Type.Literal("array"),
+      size: Type.Integer({ minimum: 1 }),
+    }),
+  ]),
+]);
 
 export type Variable = Static<typeof Variable>;
 

@@ -14,7 +14,9 @@ import { EditableText } from "ui/form/EditableText";
 import {
   FormContainer,
   FormDivider,
+  FormField,
   FormHeader,
+  FormRow,
 } from "ui/form/layout/FormLayout";
 import { MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -37,6 +39,10 @@ import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { CodeIcon } from "ui/icons/Icons";
+import { findSelectOption, Option, Select } from "ui/form/Select";
+import { SingleValue } from "react-select";
+import { NumberInput } from "ui/form/NumberInput";
+import { VariableType } from "shared/lib/resources/types";
 
 const worker = new Worker(new URL("./VariableUses.worker.ts", import.meta.url));
 
@@ -49,7 +55,7 @@ interface UsesWrapperProps {
 
 const UsesWrapper = styled.div<UsesWrapperProps>`
   position: absolute;
-  top: ${(props) => (props.$showSymbols ? `71px` : `38px`)};
+  top: ${(props) => (props.$showSymbols ? `125px` : `92px`)};
   left: 0;
   bottom: 0;
   right: 0;
@@ -93,6 +99,11 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
   );
 
   const dispatch = useAppDispatch();
+  const variableType = variable?.type ?? "number";
+  const variableTypeOptions: Option[] = [
+    { value: "number", label: l10n("FIELD_NUMBER") },
+    { value: "array", label: l10n("FIELD_ARRAY") },
+  ];
 
   const onWorkerComplete = useCallback(
     (e: MessageEvent<VariableUseResult>) => {
@@ -156,6 +167,28 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
     dispatch(clipboardActions.copyText(`#${globalVariableCode(id)}#`));
   };
 
+  const onChangeVariableType = (newValue: SingleValue<Option>): void => {
+    if (newValue) {
+      dispatch(
+        entitiesActions.setVariableType({
+          variableId: id,
+          type: newValue.value as VariableType,
+        }),
+      );
+    }
+  };
+
+  const onChangeVariableSize = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
+    dispatch(
+      entitiesActions.setVariableSize({
+        variableId: id,
+        size: Number(e.currentTarget.value),
+      }),
+    );
+  };
+
   const setSelectedId = (id: string, item: VariableUse) => {
     if (item.type === "scene") {
       dispatch(editorActions.selectScene({ sceneId: id }));
@@ -217,6 +250,27 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
               <FormDivider />
             </>
           )}
+          <FormRow>
+            <FormField name="variableType" label={l10n("FIELD_TYPE")}>
+              <Select
+                name="variableType"
+                value={findSelectOption(variableTypeOptions, variableType)}
+                options={variableTypeOptions}
+                onChange={onChangeVariableType}
+              />
+            </FormField>
+            {variableType === "array" && (
+              <FormField name="variableSize" label={l10n("FIELD_SIZE")}>
+                <NumberInput
+                  id="variableSize"
+                  value={variable?.type === "array" ? variable.size : 1}
+                  min={1}
+                  step={1}
+                  onChange={onChangeVariableSize}
+                />
+              </FormField>
+            )}
+          </FormRow>
         </FormContainer>
         <UsesWrapper ref={observe} $showSymbols={showSymbols}>
           <SplitPaneHeader collapsed={false}>

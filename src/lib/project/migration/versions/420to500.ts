@@ -7,12 +7,26 @@ import { genSymbol } from "shared/lib/helpers/symbols";
 import { Variable } from "shared/lib/resources/types";
 import { extractVariableIdsFromScriptEvent } from "shared/lib/variables/extractVariableReferences";
 
+type LegacyVariable = {
+  id: string;
+  name: string;
+  symbol: string;
+  flags?: Record<string, string>;
+};
+
 // Create global variable entry for all variable references
 export const migrateFrom420r10To500r1Variables: ProjectResourcesMigrationFn = (
   resources,
   context,
 ) => {
-  const globalVariables = resources.variables.variables;
+  const globalVariables = resources.variables
+    .variables as unknown as LegacyVariable[];
+  const migratedGlobalVariables: Variable[] = globalVariables.map(
+    (variable) => ({
+      ...variable,
+      type: "number",
+    }),
+  );
   const existingVariableIds = new Set(
     globalVariables.map((variable) => variable.id),
   );
@@ -49,6 +63,7 @@ export const migrateFrom420r10To500r1Variables: ProjectResourcesMigrationFn = (
         id: variableId,
         name: `Variable ${variableId}`,
         symbol,
+        type: "number",
       };
     });
 
@@ -56,7 +71,7 @@ export const migrateFrom420r10To500r1Variables: ProjectResourcesMigrationFn = (
     ...migratedResources,
     variables: {
       ...resources.variables,
-      variables: [...globalVariables, ...newGlobalVariables],
+      variables: [...migratedGlobalVariables, ...newGlobalVariables],
     },
   };
 };

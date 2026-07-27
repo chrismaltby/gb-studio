@@ -90,6 +90,7 @@ test("Should be able to add an actor to a scene with default values and variable
         id: "clipboard_id__L0",
         name: "Clipboard Variable Name",
         symbol: "VAR_clipboard_id__L0",
+        type: "number",
       },
     ],
   });

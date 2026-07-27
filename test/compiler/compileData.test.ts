@@ -111,7 +111,15 @@ test("should compile simple project into files object", async () => {
             leaveScript: [],
           },
         ],
-        script: [],
+        script: [
+          {
+            command: "EVENT_GBVM_SCRIPT",
+            args: {
+              script: "",
+              references: [{ type: "variable", id: "1" }],
+            },
+          },
+        ],
         playerHit1Script: [],
         playerHit2Script: [],
         playerHit3Script: [],
@@ -395,7 +403,15 @@ test("should compile simple project into files object", async () => {
     avatars: [],
     emotes: [],
     variables: {
-      variables: [],
+      variables: [
+        {
+          id: "1",
+          name: "Inventory",
+          symbol: "var_inventory",
+          type: "array",
+          size: 3,
+        },
+      ],
       constants: [],
     },
     engineFieldValues: {
@@ -421,6 +437,8 @@ test("should compile simple project into files object", async () => {
     warnings: (_msg: string) => {},
   });
   expect(compiled).toBeInstanceOf(Object);
+  expect(compiled.files["game_globals.i"]).toInclude("VAR_INVENTORY = 0");
+  expect(compiled.files["game_globals.i"]).toInclude("MAX_GLOBAL_VARS = 3");
 });
 
 test("should precompile image data", async () => {

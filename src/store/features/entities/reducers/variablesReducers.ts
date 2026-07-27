@@ -12,7 +12,7 @@ import {
 import { variablesAdapter } from "store/features/entities/adapters";
 import { v4 as uuid } from "uuid";
 import { localVariableSelectTotal } from "store/features/entities/helpers";
-import { Variable } from "shared/lib/resources/types";
+import { Variable, VariableType } from "shared/lib/resources/types";
 
 const addVariable: CaseReducer<
   EntitiesState,
@@ -26,9 +26,57 @@ const addVariable: CaseReducer<
     id: action.payload.variableId,
     name: "",
     symbol: genEntitySymbol(state, `var_${numVariables + 1}`),
+    type: "number",
   };
 
   variablesAdapter.addOne(state.variables, newVariable);
+};
+
+const setVariableType: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ variableId: string; type: VariableType }>
+> = (state, action) => {
+  const existingVariable = state.variables.entities[action.payload.variableId];
+  if (!existingVariable) {
+    return;
+  }
+  const baseVariable = {
+    id: existingVariable.id,
+    name: existingVariable.name,
+    symbol: existingVariable.symbol,
+    flags: existingVariable.flags,
+  };
+  const updatedVariable: Variable =
+    action.payload.type === "array"
+      ? {
+          ...baseVariable,
+          type: "array",
+          size:
+            existingVariable.type === "array"
+              ? Math.max(1, Math.floor(existingVariable.size))
+              : 1,
+        }
+      : {
+          ...baseVariable,
+          type: "number",
+        };
+  variablesAdapter.setOne(state.variables, updatedVariable);
+};
+
+const setVariableSize: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ variableId: string; size: number }>
+> = (state, action) => {
+  const existingVariable = state.variables.entities[action.payload.variableId];
+  if (!existingVariable || existingVariable.type !== "array") {
+    return;
+  }
+  variablesAdapter.updateOne(state.variables, {
+    id: action.payload.variableId,
+    changes: {
+      size: Math.max(1, Math.floor(action.payload.size || 1)),
+    },
+  });
 };
 
 const renameVariable: CaseReducer<
@@ -39,14 +87,25 @@ const renameVariable: CaseReducer<
   const existingHasFlags =
     existingVariable?.flags && Object.keys(existingVariable.flags).length > 0;
   if (action.payload.name.length > 0 || existingHasFlags) {
-    variablesAdapter.upsertOne(state.variables, {
-      id: action.payload.variableId,
+    const changes = {
       name: action.payload.name,
       symbol:
         action.payload.name.length > 0
           ? genEntitySymbol(state, `var_${action.payload.name}`)
           : "",
-    });
+    };
+    if (existingVariable) {
+      variablesAdapter.updateOne(state.variables, {
+        id: action.payload.variableId,
+        changes,
+      });
+    } else {
+      variablesAdapter.addOne(state.variables, {
+        id: action.payload.variableId,
+        ...changes,
+        type: "number",
+      });
+    }
   } else {
     // Variable is being set with empty name and doesn't have flags
     // set so can safely remove it
@@ -63,12 +122,22 @@ const renameVariableFlags: CaseReducer<
   const existingHasName =
     existingVariable?.name && existingVariable?.name.length > 0;
   if (numFlags > 0 || existingHasName) {
-    variablesAdapter.upsertOne(state.variables, {
-      id: action.payload.variableId,
-      name: existingVariable?.name ?? "",
-      symbol: existingVariable?.symbol ?? "",
-      flags: action.payload.flags,
-    });
+    if (existingVariable) {
+      variablesAdapter.updateOne(state.variables, {
+        id: action.payload.variableId,
+        changes: {
+          flags: action.payload.flags,
+        },
+      });
+    } else {
+      variablesAdapter.addOne(state.variables, {
+        id: action.payload.variableId,
+        name: "",
+        symbol: "",
+        type: "number",
+        flags: action.payload.flags,
+      });
+    }
   } else {
     // Variable is being set with empty flags and doesn't have name
     // set so can safely remove it
@@ -118,6 +187,8 @@ const variablesReducers = {
 
   renameVariable,
   renameVariableFlags,
+  setVariableType,
+  setVariableSize,
   reparentVariablesFolder,
   reparentVariable,
 } satisfies SliceCaseReducers<EntitiesState>;

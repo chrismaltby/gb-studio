@@ -736,17 +736,49 @@ describe("TypeBox Schemas", () => {
   });
 
   it("should validate VariableData", () => {
-    const validVariable = { id: "var1", name: "Variable 1", symbol: "symbol" };
-    const invalidVariable = { id: "var1", name: "Variable 1" };
+    const validNumberVariable = {
+      id: "var1",
+      name: "Variable 1",
+      symbol: "symbol",
+      type: "number",
+    };
+    const validArrayVariable = {
+      id: "var2",
+      name: "Variable 2",
+      symbol: "symbol_2",
+      type: "array",
+      size: 4,
+    };
+    const missingType = { id: "var1", name: "Variable 1", symbol: "symbol" };
+    const arrayWithoutSize = {
+      id: "var2",
+      name: "Variable 2",
+      symbol: "symbol_2",
+      type: "array",
+    };
+    const emptyArray = {
+      ...validArrayVariable,
+      size: 0,
+    };
 
-    expect(() => Value.Decode(Variable, validVariable)).not.toThrow();
-    expect(() => Value.Decode(Variable, invalidVariable)).toThrow();
+    expect(() => Value.Decode(Variable, validNumberVariable)).not.toThrow();
+    expect(() => Value.Decode(Variable, validArrayVariable)).not.toThrow();
+    expect(() => Value.Decode(Variable, missingType)).toThrow();
+    expect(() => Value.Decode(Variable, arrayWithoutSize)).toThrow();
+    expect(() => Value.Decode(Variable, emptyArray)).toThrow();
   });
 
   it("should validate VariablesResource", () => {
     const validVariables = {
       _resourceType: "variables",
-      variables: [{ id: "var1", name: "Variable 1", symbol: "symbol" }],
+      variables: [
+        {
+          id: "var1",
+          name: "Variable 1",
+          symbol: "symbol",
+          type: "number",
+        },
+      ],
       constants: [],
     };
     const invalidVariables = {

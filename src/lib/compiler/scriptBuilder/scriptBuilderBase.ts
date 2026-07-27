@@ -2552,6 +2552,10 @@ extern void __mute_mask_${symbol};
         entityType: "scene",
         entityId: "",
         sceneId: "",
+        size:
+          namedVariable.type === "array"
+            ? Math.max(1, Math.floor(namedVariable.size))
+            : 1,
       };
       return symbol;
     }

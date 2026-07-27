@@ -1308,6 +1308,25 @@ export const replaceScriptSymbols = (
   return newScript;
 };
 
+const globalVariableOffsets = (
+  variableAliasLookup: Record<string, VariableMapData>,
+) => {
+  let nextOffset = 0;
+  const variables = Object.values(variableAliasLookup).map((variable) => {
+    const offset = nextOffset;
+    const size = Math.max(1, Math.floor(variable.size ?? 1));
+    nextOffset += size;
+    return {
+      symbol: variable.symbol,
+      offset,
+    };
+  });
+  return {
+    variables,
+    size: nextOffset,
+  };
+};
+
 export const compileGameGlobalsInclude = (
   variableAliasLookup: Record<string, VariableMapData>,
   constants: Constant[],
@@ -1315,16 +1334,14 @@ export const compileGameGlobalsInclude = (
   stateReferences: string[],
   fonts: PrecompiledFontData[],
 ) => {
-  const variables = Object.values(variableAliasLookup).map(
-    (v) => v?.symbol,
-  ) as string[];
+  const variableOffsets = globalVariableOffsets(variableAliasLookup);
   return (
-    variables
-      .map((string, stringIndex) => {
-        return `${string} = ${stringIndex}\n`;
+    variableOffsets.variables
+      .map((variable) => {
+        return `${variable.symbol} = ${variable.offset}\n`;
       })
       .join("") +
-    `MAX_GLOBAL_VARS = ${variables.length}\n` +
+    `MAX_GLOBAL_VARS = ${variableOffsets.size}\n` +
     constants
       .filter((constant) => constant.symbol)
       .map((constant) => {
@@ -1354,15 +1371,15 @@ export const compileGameGlobalsHeader = (
   stateReferences: string[],
   fonts: PrecompiledFontData[],
 ) => {
+  const variableOffsets = globalVariableOffsets(variableAliasLookup);
   return (
     `#ifndef GAME_GLOBALS_H\n#define GAME_GLOBALS_H\n\n` +
-    Object.values(variableAliasLookup)
-      .map((v) => v?.symbol)
-      .map((string, stringIndex) => {
-        return `#define ${string} ${stringIndex}\n`;
+    variableOffsets.variables
+      .map((variable) => {
+        return `#define ${variable.symbol} ${variable.offset}\n`;
       })
       .join("") +
-    `#define MAX_GLOBAL_VARS ${Object.values(variableAliasLookup).length}\n` +
+    `#define MAX_GLOBAL_VARS ${variableOffsets.size}\n` +
     constants
       .filter((constant) => constant.symbol)
       .map((constant) => {

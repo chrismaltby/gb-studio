@@ -1,6 +1,7 @@
 import cloneDeep from "lodash/cloneDeep";
 import { migrateFrom420r10To500r1Variables } from "lib/project/migration/versions/420to500";
 import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
+import type { CompressedProjectResources } from "shared/lib/resources/types";
 import {
   dummyCompressedProjectResources,
   dummyScriptResource,
@@ -87,9 +88,12 @@ test("creates entries for referenced unnamed legacy global variables", () => {
   };
   const originalResources = cloneDeep(resources);
 
-  const migrated = migrateFrom420r10To500r1Variables(resources, {
-    scriptEventDefs,
-  });
+  const migrated = migrateFrom420r10To500r1Variables(
+    resources as unknown as CompressedProjectResources,
+    {
+      scriptEventDefs,
+    },
+  );
 
   const migratedVariables = migrated.variables.variables;
   expect(migratedVariables.map((variable) => variable.id)).toEqual([
@@ -115,16 +119,48 @@ test("creates entries for referenced unnamed legacy global variables", () => {
     id: "3",
     name: "Named Variable",
     symbol: "var_1",
+    type: "number",
   });
   expect(migratedVariables.slice(1)).toEqual(
     migratedVariables.slice(1).map((variable) => ({
       id: variable.id,
       name: `Variable ${variable.id}`,
       symbol: expect.any(String),
+      type: "number",
     })),
   );
   expect(
     new Set(migratedVariables.map((variable) => variable.symbol)).size,
   ).toBe(migratedVariables.length);
   expect(resources).toEqual(originalResources);
+});
+
+test("adds number type to existing legacy variables", () => {
+  const resources = {
+    ...dummyCompressedProjectResources,
+    variables: {
+      ...dummyCompressedProjectResources.variables,
+      variables: [
+        {
+          id: "legacy",
+          name: "Legacy",
+          symbol: "var_legacy",
+        },
+      ],
+    },
+  };
+
+  const migrated = migrateFrom420r10To500r1Variables(
+    resources as unknown as CompressedProjectResources,
+    { scriptEventDefs },
+  );
+
+  expect(migrated.variables.variables).toEqual([
+    {
+      id: "legacy",
+      name: "Legacy",
+      symbol: "var_legacy",
+      type: "number",
+    },
+  ]);
 });

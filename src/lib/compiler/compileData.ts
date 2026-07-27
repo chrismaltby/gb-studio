@@ -162,6 +162,7 @@ export type VariableMapData = {
   entityType: EntityType;
   entityId: string;
   sceneId: string;
+  size?: number;
 };
 
 const indexById = <T extends { id: string }>(arr: T[]) => keyBy(arr, "id");
@@ -1489,6 +1490,10 @@ const compile = async (
           entityType: "scene",
           entityId: "",
           sceneId: "",
+          size:
+            variable.type === "array"
+              ? Math.max(1, Math.floor(variable.size))
+              : 1,
         };
       }
       return memo;

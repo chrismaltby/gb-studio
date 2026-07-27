@@ -843,6 +843,7 @@
   "FIELD_ANIMATION_FRAMES": "Animation Frames",
   "FIELD_ANIMATION_FRAMES_DESC": "The number of animation frames to cycle through.",
   "FIELD_NUMBER": "Number",
+  "FIELD_ARRAY": "Array",
   "FIELD_PROPERTY": "Property",
   "FIELD_REMOVE": "Remove",
   "FIELD_LAUNCH_AT": "Launch At",

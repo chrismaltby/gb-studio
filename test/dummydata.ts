@@ -701,7 +701,9 @@ export const dummySettingsResource: SettingsResource = {
 
 export const dummyVariablesResource: VariablesResource = {
   _resourceType: "variables",
-  variables: [{ id: "var1", name: "Variable 1", symbol: "symbol" }],
+  variables: [
+    { id: "var1", name: "Variable 1", symbol: "symbol", type: "number" },
+  ],
   constants: [],
 };
 
@@ -709,6 +711,7 @@ export const dummyVariable: Variable = {
   id: "var1",
   name: "Variable 1",
   symbol: "symbol",
+  type: "number",
 };
 
 export const dummyEngineFieldValuesResource: EngineFieldValuesResource = {
