@@ -81,6 +81,8 @@ export const getVariableId = (
     }
   } else if (isVariableTemp(variable)) {
     return variable;
+  } else if (variable.match(/[a-z0-9-]{36}/)) {
+    return variable;
   }
   return String(parseInt(variable || "0"));
 };
