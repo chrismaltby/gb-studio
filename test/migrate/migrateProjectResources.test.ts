@@ -10,23 +10,24 @@ describe("migrateProjectResources", () => {
   // Keep a clone before any migrations take place to allow
   // confirming that input data was not mutated
   const clonedProject = cloneDeep(migrationTestProject);
+  const migrationContext = { scriptEventDefs: {} };
 
   test("should migrate to latest version without errors", async () => {
     const project = migrationTestProject;
-    const migrated = await migrateProjectResources(project);
+    const migrated = await migrateProjectResources(project, migrationContext);
     expect(migrated.metadata._version).toEqual(LATEST_PROJECT_VERSION);
     expect(migrated.metadata._release).toEqual(LATEST_PROJECT_MINOR_VERSION);
   });
 
   test("should not mutate input data", async () => {
     const project = migrationTestProject;
-    await migrateProjectResources(project);
+    await migrateProjectResources(project, migrationContext);
     expect(project).toEqual(clonedProject);
   });
 
   test("should use constvalues in switch event values", async () => {
     const project = migrationTestProject;
-    const migrated = await migrateProjectResources(project);
+    const migrated = await migrateProjectResources(project, migrationContext);
     expect(migrated.scripts[0]?.script[0]?.args?.value0).toEqual({
       type: "number",
       value: 1,

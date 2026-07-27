@@ -2,6 +2,7 @@ import {
   CompressedProjectResources,
   ScriptEvent,
 } from "shared/lib/resources/types";
+import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import {
   mapScenesScript,
   mapActorsScript,
@@ -12,8 +13,12 @@ import {
 } from "shared/lib/scripts/walk";
 
 export type ScriptEventMigrationFn = (scriptEvent: ScriptEvent) => ScriptEvent;
+export type ProjectResourcesMigrationContext = {
+  scriptEventDefs: ScriptEventDefs;
+};
 export type ProjectResourcesMigrationFn = (
   resources: CompressedProjectResources,
+  context: ProjectResourcesMigrationContext,
 ) => CompressedProjectResources;
 
 export type ProjectResourcesMigration = {
@@ -25,6 +30,7 @@ export type ProjectResourcesMigration = {
 export const applyProjectResourcesMigration = (
   resources: CompressedProjectResources,
   migration: ProjectResourcesMigration,
+  context: ProjectResourcesMigrationContext,
 ): CompressedProjectResources => {
   if (
     !isProjectVersion(migration.from.version, migration.from.release, resources)
@@ -32,7 +38,7 @@ export const applyProjectResourcesMigration = (
     return resources;
   }
   return {
-    ...migration.migrationFn(resources),
+    ...migration.migrationFn(resources, context),
     metadata: {
       ...resources.metadata,
       _version: migration.to.version,
@@ -84,9 +90,12 @@ export const createScriptEventsMigrator =
 export const pipeMigrationFns = (
   migrationFns: ProjectResourcesMigrationFn[],
 ): ProjectResourcesMigrationFn => {
-  return (resources: CompressedProjectResources): CompressedProjectResources =>
+  return (
+    resources: CompressedProjectResources,
+    context: ProjectResourcesMigrationContext,
+  ): CompressedProjectResources =>
     migrationFns.reduce(
-      (currentResources, migrationFn) => migrationFn(currentResources),
+      (currentResources, migrationFn) => migrationFn(currentResources, context),
       resources,
     );
 };

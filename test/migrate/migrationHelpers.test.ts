@@ -21,6 +21,8 @@ import {
   ScriptEvent,
 } from "shared/lib/resources/types";
 
+const migrationContext = { scriptEventDefs: {} };
+
 describe("isProjectVersion", () => {
   test("should confirm version matches", () => {
     const input: CompressedProjectResources = {
@@ -103,7 +105,11 @@ describe("applyProjectResourcesMigration", () => {
         };
       },
     };
-    const migrated = applyProjectResourcesMigration(input, migration);
+    const migrated = applyProjectResourcesMigration(
+      input,
+      migration,
+      migrationContext,
+    );
     expect(migrated.metadata._version).toEqual("4.1.1");
     expect(migrated.metadata._release).toEqual("2");
     expect(migrated.scenes.length).toEqual(1);
@@ -142,7 +148,11 @@ describe("applyProjectResourcesMigration", () => {
         };
       },
     };
-    const migrated = applyProjectResourcesMigration(input, migration);
+    const migrated = applyProjectResourcesMigration(
+      input,
+      migration,
+      migrationContext,
+    );
     expect(migrated).toEqual(input);
   });
 });
@@ -670,7 +680,7 @@ describe("pipeMigrationFns", () => {
 
     const combinedMigrations = pipeMigrationFns([migrator, migrator2]);
 
-    const output = combinedMigrations(input);
+    const output = combinedMigrations(input, migrationContext);
 
     expect(output.scenes[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST",

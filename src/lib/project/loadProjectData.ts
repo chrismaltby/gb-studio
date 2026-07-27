@@ -89,7 +89,9 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
       )
     : await loadProjectResources(projectRoot, originalJson);
 
-  const resources = await migrateProjectResources(unmigratedResources);
+  const resources = await migrateProjectResources(unmigratedResources, {
+    scriptEventDefs,
+  });
 
   const engineSchema = await loadEngineSchema(projectRoot);
 
