@@ -1,5 +1,6 @@
 import { CompressedProjectResources } from "shared/lib/resources/types";
 import {
+  ProjectResourcesMigrationContext,
   ProjectResourcesMigration,
   applyProjectResourcesMigration,
 } from "./helpers";
@@ -15,6 +16,7 @@ import {
   migrate420r8To420r9,
   migrate420r9To420r10,
 } from "./versions/410to420";
+import { migrate420r10To500r1 } from "lib/project/migration/versions/420to500";
 
 const migrations: ProjectResourcesMigration[] = [
   // 4.1.0 to 4.2.0
@@ -28,6 +30,8 @@ const migrations: ProjectResourcesMigration[] = [
   migrate420r7To420r8,
   migrate420r8To420r9,
   migrate420r9To420r10,
+  // 4.2.0 to 5.0.0
+  migrate420r10To500r1,
 ];
 
 const lastMigration = migrations[migrations.length - 1];
@@ -37,8 +41,13 @@ export const LATEST_PROJECT_MINOR_VERSION = lastMigration.to.release;
 
 export const migrateProjectResources = async (
   resources: CompressedProjectResources,
+  context: ProjectResourcesMigrationContext,
 ): Promise<CompressedProjectResources> => {
   return migrations.reduce((migratedResources, migration) => {
-    return applyProjectResourcesMigration(migratedResources, migration);
+    return applyProjectResourcesMigration(
+      migratedResources,
+      migration,
+      context,
+    );
   }, resources);
 };

@@ -1,7 +1,6 @@
 import {
   actorName,
   customEventName,
-  isUnionValue,
   sceneName,
   triggerName,
 } from "shared/lib/entities/entitiesHelpers";
@@ -15,21 +14,12 @@ import {
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
-import {
-  ScriptEventDefs,
-  isScriptValueField,
-  isVariableField,
-} from "shared/lib/scripts/scriptDefHelpers";
+import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import {
   walkNormalizedCustomEventScripts,
   walkNormalizedScenesScripts,
 } from "shared/lib/scripts/walk";
-import { variableInScriptValue } from "shared/lib/scriptValue/helpers";
-import { isScriptValue } from "shared/lib/scriptValue/types";
-import {
-  variableInDialogueText,
-  variableInExpressionText,
-} from "shared/lib/variables/variablesInText";
+import { extractVariableIdsFromScriptEvent } from "shared/lib/variables/extractVariableReferences";
 
 export type VariableUse = {
   id: string;
@@ -96,55 +86,10 @@ workerCtx.onmessage = async (evt) => {
   const uses: VariableUse[] = [];
   const useLookup: Record<string, boolean> = {};
 
-  const isVariableInArg = (
-    scriptEvent: ScriptEventNormalized,
-    arg: string,
-  ): boolean => {
-    const args = scriptEvent.args;
-    if (!args) {
-      return false;
-    }
-    const argValue = args[arg];
-    const field = scriptEventDefs[scriptEvent.command]?.fieldsLookup?.[arg];
-    if (!field) {
-      return false;
-    }
-    // If field was a script value extract used variables in value
-    // and check if any match this variable
-    if (isScriptValueField(scriptEvent.command, arg, args, scriptEventDefs)) {
-      if (
-        isScriptValue(argValue) &&
-        variableInScriptValue(variableId, argValue)
-      ) {
-        return true;
-      }
-    }
-    // If field was a variable check if it matches this variable
-    else if (isVariableField(scriptEvent.command, arg, args, scriptEventDefs)) {
-      const isVariableId =
-        argValue === variableId ||
-        (isUnionValue(argValue) &&
-          argValue.type === "variable" &&
-          argValue.value === variableId);
-
-      if (isVariableId) {
-        return true;
-      }
-    } else if (field.type === "text" || field.type === "textarea") {
-      const allText = String(
-        Array.isArray(argValue) ? argValue.join("|") : argValue,
-      );
-      if (variableInDialogueText(variableId, allText)) {
-        return true;
-      }
-    } else if (field.type === "matharea" && typeof argValue === "string") {
-      if (variableInExpressionText(variableId, argValue)) {
-        return true;
-      }
-    }
-
-    return false;
-  };
+  const isVariableInEvent = (scriptEvent: ScriptEventNormalized): boolean =>
+    extractVariableIdsFromScriptEvent(scriptEvent, scriptEventDefs).includes(
+      variableId,
+    );
 
   walkNormalizedScenesScripts(
     scenes,
@@ -174,11 +119,7 @@ workerCtx.onmessage = async (evt) => {
         return;
       }
 
-      for (const arg in scriptEvent.args) {
-        if (!isVariableInArg(scriptEvent, arg)) {
-          continue;
-        }
-
+      if (isVariableInEvent(scriptEvent)) {
         if (!useLookup[scene.id]) {
           const sceneIndex = scenes.indexOf(scene);
           uses.push({
@@ -246,11 +187,7 @@ workerCtx.onmessage = async (evt) => {
           return;
         }
 
-        for (const arg in scriptEvent.args) {
-          if (!isVariableInArg(scriptEvent, arg)) {
-            continue;
-          }
-
+        if (isVariableInEvent(scriptEvent)) {
           if (!useLookup[customEvent.id]) {
             uses.push({
               id: customEvent.id,

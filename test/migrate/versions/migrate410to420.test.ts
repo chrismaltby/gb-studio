@@ -24,6 +24,9 @@ import {
   dummyCompressedSceneResource,
   dummySpriteResource,
 } from "../../dummydata";
+import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
+
+const scriptEventDefs = {} as unknown as ScriptEventDefs;
 
 describe("migrateFrom410r1To420r1Event", () => {
   test("Should convert EVENT_SWITCH values to const values", () => {
@@ -326,7 +329,9 @@ describe("migrateFrom420r2To420r3EngineFields", () => {
         ],
       },
     };
-    const migrated = migrateFrom420r2To420r3EngineFields(resources);
+    const migrated = migrateFrom420r2To420r3EngineFields(resources, {
+      scriptEventDefs,
+    });
     expect(
       getFieldValue(migrated.engineFieldValues, "shooter_scroll_speed"),
     ).toEqual(10);
@@ -340,7 +345,9 @@ describe("migrateFrom420r2To420r3EngineFields", () => {
         engineFieldValues: [{ id: "other_field", value: 10 }],
       },
     };
-    const migrated = migrateFrom420r2To420r3EngineFields(resources);
+    const migrated = migrateFrom420r2To420r3EngineFields(resources, {
+      scriptEventDefs,
+    });
     expect(getFieldValue(migrated.engineFieldValues, "other_field")).toEqual(
       10,
     );
@@ -354,7 +361,9 @@ describe("migrateFrom420r2To420r3EngineFields", () => {
         engineFieldValues: [],
       },
     };
-    const migrated = migrateFrom420r2To420r3EngineFields(resources);
+    const migrated = migrateFrom420r2To420r3EngineFields(resources, {
+      scriptEventDefs,
+    });
     expect(migrated.engineFieldValues.engineFieldValues).toEqual([
       {
         id: "FEAT_PLATFORM_COYOTE_TIME",
@@ -380,7 +389,9 @@ describe("migrateFrom420r2To420r3EngineFields", () => {
         ],
       },
     };
-    const migrated = migrateFrom420r2To420r3EngineFields(resources);
+    const migrated = migrateFrom420r2To420r3EngineFields(resources, {
+      scriptEventDefs,
+    });
     expect(migrated.engineFieldValues.engineFieldValues).toEqual([
       {
         id: "FEAT_PLATFORM_COYOTE_TIME",
@@ -409,12 +420,13 @@ describe("migrateFrom420r3To420r4Sprites", () => {
       sprites: [oldSprite],
     };
 
-    expect(migrateFrom420r3To420r4Sprites(oldProject).sprites[0]).toMatchObject(
-      {
-        ...oldSprite,
-        boundsY: -8,
-      },
-    );
+    expect(
+      migrateFrom420r3To420r4Sprites(oldProject, { scriptEventDefs })
+        .sprites[0],
+    ).toMatchObject({
+      ...oldSprite,
+      boundsY: -8,
+    });
   });
 
   test("should migrate sprite bounds when bounds offset from previous origin", () => {
@@ -431,12 +443,13 @@ describe("migrateFrom420r3To420r4Sprites", () => {
       sprites: [oldSprite],
     };
 
-    expect(migrateFrom420r3To420r4Sprites(oldProject).sprites[0]).toMatchObject(
-      {
-        ...oldSprite,
-        boundsY: -24,
-      },
-    );
+    expect(
+      migrateFrom420r3To420r4Sprites(oldProject, { scriptEventDefs })
+        .sprites[0],
+    ).toMatchObject({
+      ...oldSprite,
+      boundsY: -24,
+    });
   });
 });
 
@@ -684,7 +697,9 @@ describe("migrateFrom420r5To420r6EngineFields", () => {
         engineFieldValues: [],
       },
     };
-    const migrated = migrateFrom420r5To420r6EngineFields(resources);
+    const migrated = migrateFrom420r5To420r6EngineFields(resources, {
+      scriptEventDefs,
+    });
     expect(
       getFieldValue(migrated.engineFieldValues, "SHOOTER_MOVEMENT_TYPE"),
     ).toEqual("MOVEMENT_TYPE_LOCK_PERPENDICULAR");
@@ -698,7 +713,9 @@ describe("migrateFrom420r5To420r6EngineFields", () => {
         engineFieldValues: [],
       },
     };
-    const migrated = migrateFrom420r5To420r6EngineFields(resources);
+    const migrated = migrateFrom420r5To420r6EngineFields(resources, {
+      scriptEventDefs,
+    });
     expect(
       getFieldValue(migrated.engineFieldValues, "SHOOTER_TRIGGER_ACTIVATION"),
     ).toEqual("ON_PLAYER_COLLISION");
@@ -712,7 +729,9 @@ describe("migrateFrom420r5To420r6EngineFields", () => {
         engineFieldValues: [],
       },
     };
-    const migrated = migrateFrom420r5To420r6EngineFields(resources);
+    const migrated = migrateFrom420r5To420r6EngineFields(resources, {
+      scriptEventDefs,
+    });
     expect(
       getFieldValue(migrated.engineFieldValues, "SHOOTER_WALL_COLLISION_GROUP"),
     ).toEqual("COLLISION_GROUP_NONE");
@@ -726,7 +745,9 @@ describe("migrateFrom420r5To420r6EngineFields", () => {
         engineFieldValues: [{ id: "other_field", value: 10 }],
       },
     };
-    const migrated = migrateFrom420r5To420r6EngineFields(resources);
+    const migrated = migrateFrom420r5To420r6EngineFields(resources, {
+      scriptEventDefs,
+    });
     expect(getFieldValue(migrated.engineFieldValues, "other_field")).toEqual(
       10,
     );
@@ -863,7 +884,9 @@ describe("migrateFrom420r7To420r8Scenes", () => {
         },
       ],
     };
-    const migrated = migrateFrom420r7To420r8Scenes(resources);
+    const migrated = migrateFrom420r7To420r8Scenes(resources, {
+      scriptEventDefs,
+    });
     expect(migrated.scenes[0]?.paletteIds).not.toEqual(
       resources.scenes[0]?.paletteIds,
     );
@@ -902,7 +925,9 @@ describe("migrateFrom420r7To420r8Scenes", () => {
         },
       ],
     };
-    const migrated = migrateFrom420r7To420r8Scenes(resources);
+    const migrated = migrateFrom420r7To420r8Scenes(resources, {
+      scriptEventDefs,
+    });
     expect(migrated.scenes[0]?.paletteIds[7]).not.toEqual("auto");
     expect(migrated.scenes[0]?.paletteIds).toEqual(
       resources.scenes[0]?.paletteIds,
@@ -930,7 +955,9 @@ describe("migrateFrom420r7To420r8Scenes", () => {
       ],
       backgrounds: [],
     };
-    const migrated = migrateFrom420r7To420r8Scenes(resources);
+    const migrated = migrateFrom420r7To420r8Scenes(resources, {
+      scriptEventDefs,
+    });
     expect(migrated.scenes[0]?.paletteIds[7]).not.toEqual("auto");
     expect(migrated.scenes[0]?.paletteIds).toEqual(
       resources.scenes[0]?.paletteIds,
