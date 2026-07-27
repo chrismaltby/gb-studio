@@ -994,6 +994,13 @@ test("Should increment an array variable with a variable index", async () => {
   expect(output.join("\n")).toContain(".R_REF      VAR_INDEX");
   expect(output.join("\n")).toContain(".R_REF_IND");
   expect(output.join("\n")).toContain(".R_REF_SET_IND");
+  expect(
+    output.filter((line) => line.includes(".R_INT16    VAR_ARRAY")),
+  ).toHaveLength(1);
+  expect(output.join("\n")).toContain(
+    ".R_REF_SET_IND .LOCAL_TMP0_ARRAY_PTR",
+  );
+  expect(output.join("\n")).not.toContain(".LOCAL_TMP1_ARRAY_PTR");
 });
 
 test("Should evaluate expressions containing array offsets", async () => {

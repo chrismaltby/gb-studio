@@ -904,6 +904,17 @@ abstract class ScriptBuilderBase {
   _rpn = () => {
     const output: string[] = [];
     let rpnStackSize = 0;
+    const variableAliases = new Map<ScriptBuilderVariable, string>();
+
+    const variableAlias = (variable: ScriptBuilderVariable) => {
+      const cachedAlias = variableAliases.get(variable);
+      if (cachedAlias !== undefined) {
+        return cachedAlias;
+      }
+      const alias = this.getVariableAlias(variable);
+      variableAliases.set(variable, alias);
+      return alias;
+    };
 
     const rpnCmd = (
       cmd: string,
@@ -931,11 +942,11 @@ abstract class ScriptBuilderBase {
         return rpn;
       },
       refVariable: (variable: ScriptBuilderVariable) => {
-        const variableAlias = this.getVariableAlias(variable);
+        const alias = variableAlias(variable);
         if (this._isIndirectVariable(variable)) {
-          return rpn.refInd(variableAlias);
+          return rpn.refInd(alias);
         } else {
-          return rpn.ref(variableAlias);
+          return rpn.ref(alias);
         }
       },
       refSet: (variable: ScriptBuilderStackVariable) => {
@@ -949,11 +960,11 @@ abstract class ScriptBuilderBase {
         return rpn;
       },
       refSetVariable: (variable: ScriptBuilderVariable) => {
-        const variableAlias = this.getVariableAlias(variable);
+        const alias = variableAlias(variable);
         if (this._isIndirectVariable(variable)) {
-          return rpn.refSetInd(variableAlias);
+          return rpn.refSetInd(alias);
         } else {
-          return rpn.refSet(variableAlias);
+          return rpn.refSet(alias);
         }
       },
       refMem: (type: RPNMemType, address: string) => {
