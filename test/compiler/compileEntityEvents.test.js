@@ -36,8 +36,11 @@ test("should compile variable fields with array indices", async () => {
       {
         command: "EVENT_INC_VALUE",
         args: {
-          variable: "11111111-1111-1111-1111-111111111111",
-          variableIndex: { type: "number", value: 2 },
+          variable: {
+            type: "indexed",
+            value: "11111111-1111-1111-1111-111111111111",
+            index: { type: "number", value: 2 },
+          },
         },
       },
     ],

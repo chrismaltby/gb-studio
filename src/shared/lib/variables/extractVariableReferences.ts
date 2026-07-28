@@ -4,7 +4,10 @@ import { lexText } from "shared/lib/compiler/lexText";
 import tokenizer from "shared/lib/rpn/tokenizer";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
 import { extractScriptValueVariables } from "shared/lib/scriptValue/helpers";
-import { isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  isIndexedVariable,
+  isScriptValue,
+} from "shared/lib/scriptValue/types";
 
 const normalizeVariableId = (variableId: string): string => {
   if (/^\d+$/.test(variableId)) {
@@ -107,12 +110,13 @@ export const extractVariableIdsFromScriptEvent = (
     if (field?.type === "variable" || (field && isUnionVariableValue(value))) {
       if (typeof value === "string") {
         addVariableId(value);
+      } else if (isIndexedVariable(value)) {
+        addVariableId(value.value);
+        if (value.index.type === "variable") {
+          addVariableId(value.index.value);
+        }
       } else if (isUnionVariableValue(value)) {
         addVariableId(value.value);
-      }
-      const index = args[`${key}Index`];
-      if (isScriptValue(index)) {
-        extractScriptValueVariables(index).forEach(addVariableId);
       }
     }
 

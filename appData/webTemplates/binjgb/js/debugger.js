@@ -181,16 +181,25 @@ class Debug {
                     (variableId) => {
                       const variableData = this.variableMap[variableId];
                       const symbol = variableData?.symbol;
-                      const variableIndex = this.globalVariables[symbol];
-                      if (variableIndex !== undefined) {
-                        return (
-                          this.prevGlobals[variableIndex] !== undefined &&
-                          globals[variableIndex] !==
-                            this.prevGlobals[variableIndex]
-                        );
+                      const variableOffset =
+                        variableData?.offset ?? this.globalVariables[symbol];
+                      const variableSize = Math.max(
+                        1,
+                        Math.floor(variableData?.size ?? 1),
+                      );
+                      if (variableOffset !== undefined) {
+                        for (let i = 0; i < variableSize; i++) {
+                          const index = variableOffset + i;
+                          if (
+                            this.prevGlobals[index] !== undefined &&
+                            globals[index] !== this.prevGlobals[index]
+                          ) {
+                            return true;
+                          }
+                        }
                       }
                       return false;
-                    }
+                    },
                   );
                   if (changedVariable) {
                     this.pauseOnVMStep = true;
@@ -464,8 +473,8 @@ class Debug {
     return this.readVariables(variablesStartAddr, variablesLength);
   }
 
-  setGlobal(symbol, value) {
-    const offset = (this.globalVariables[symbol] ?? 0) * 2;
+  setGlobal(symbol, value, index = 0) {
+    const offset = ((this.globalVariables[symbol] ?? 0) + index) * 2;
     const variablesStartAddr = this.memoryMap[SCRIPT_MEMORY_SYMBOL];
     this.writeMemInt16(variablesStartAddr + offset, value);
     this.prevGlobals = this.getGlobals();
@@ -572,7 +581,7 @@ let ready = setInterval(() => {
           debug.pauseOnWatchedVariableChanged = data;
           break;
         case "set-global":
-          debug.setGlobal(data.symbol, data.value);
+          debug.setGlobal(data.symbol, data.value, data.index);
           break;
         case "set-watched":
           debug.setWatchedVariables(data);

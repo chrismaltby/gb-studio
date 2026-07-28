@@ -452,8 +452,8 @@ const APISetup = {
       ipcRenderer.invoke("debugger:pause-on-script", enabled),
     setPauseOnWatchVariableChanged: (enabled: boolean) =>
       ipcRenderer.invoke("debugger:pause-on-var", enabled),
-    setGlobal: (symbol: string, value: number) =>
-      ipcRenderer.invoke("debugger:set-global", symbol, value),
+    setGlobal: (symbol: string, value: number, index = 0) =>
+      ipcRenderer.invoke("debugger:set-global", symbol, value, index),
     step: () => ipcRenderer.invoke("debugger:step"),
     stepFrame: () => ipcRenderer.invoke("debugger:step-frame"),
     setBreakpoints: (breakpoints: string[]) =>

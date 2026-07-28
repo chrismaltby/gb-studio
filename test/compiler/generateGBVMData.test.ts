@@ -2,6 +2,7 @@ import { SCREEN_HEIGHT, SCREEN_WIDTH } from "consts";
 import {
   compileGameGlobalsInclude,
   compileGameGlobalsHeader,
+  globalVariableOffsets,
   compileScrollBounds,
   parallaxStep,
   toASMCollisionGroup,
@@ -105,6 +106,15 @@ describe("compileGameGlobalsHeader", () => {
     expect(header).toInclude("VAR_NUMBER 3");
     expect(header).toInclude("VAR_SECOND_ARRAY 4");
     expect(header).toInclude("MAX_GLOBAL_VARS 6");
+    expect(
+      globalVariableOffsets(variables).variables.map(
+        ({ symbol, offset, size }) => ({ symbol, offset, size }),
+      ),
+    ).toEqual([
+      { symbol: "VAR_ARRAY", offset: 0, size: 3 },
+      { symbol: "VAR_NUMBER", offset: 3, size: 1 },
+      { symbol: "VAR_SECOND_ARRAY", offset: 4, size: 2 },
+    ]);
   });
 });
 

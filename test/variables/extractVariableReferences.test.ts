@@ -22,8 +22,11 @@ test("extracts variable IDs from schema-driven event arguments", () => {
     id: "event1",
     command: "EVENT_PLUGIN_TEST",
     args: {
-      direct: "12",
-      directIndex: { type: "variable", value: "26" },
+      direct: {
+        type: "indexed",
+        value: "12",
+        index: { type: "variable", value: "26" },
+      },
       union: { type: "variable", value: "13" },
       value: {
         type: "add",

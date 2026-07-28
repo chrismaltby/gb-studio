@@ -77,6 +77,7 @@ import {
   compileGlobalProjectiles,
   emptySpriteSheetHeader,
   emptySpriteSheet,
+  globalVariableOffsets,
 } from "./generateGBVMData";
 import compileSGBImage, { sgbImageHeader } from "./sgb";
 import { compileScriptEngineInit } from "./compileBootstrap";
@@ -163,6 +164,7 @@ export type VariableMapData = {
   entityId: string;
   sceneId: string;
   size?: number;
+  offset?: number;
 };
 
 const indexById = <T extends { id: string }>(arr: T[]) => keyBy(arr, "id");
@@ -2069,7 +2071,10 @@ const compile = async (
     precompiled.usedFonts,
   );
 
-  const variableMap = keyBy(Object.values(variableAliasLookup), "symbol");
+  const variableMap = keyBy(
+    globalVariableOffsets(variableAliasLookup).variables,
+    "symbol",
+  );
 
   output[`data_bootstrap.h`] =
     `#ifndef DATA_PTRS_H\n#define DATA_PTRS_H\n\n` +

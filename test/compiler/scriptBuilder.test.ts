@@ -1062,6 +1062,50 @@ test("Should read an indexed array variable from a ScriptValue", async () => {
   );
 });
 
+test("Should not reuse the array pointer local while setting an indexed variable", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+        "22222222-2222-2222-2222-222222222222": {
+          id: "22222222-2222-2222-2222-222222222222",
+          name: "Index",
+          symbol: "var_index",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  sb.variableSetToScriptValue(
+    {
+      type: "indexed",
+      value: "11111111-1111-1111-1111-111111111111",
+      index: {
+        type: "variable",
+        value: "22222222-2222-2222-2222-222222222222",
+      },
+    },
+    { type: "number", value: 3 },
+  );
+  sb._packLocals();
+
+  const script = sb.toScriptString("MY_SCRIPT", false);
+  expect(script).toContain(".LOCAL_TMP0_ARRAY_PTR = -1");
+  expect(script).toContain(".LOCAL_TMP1_VALUE_TMP = -2");
+  expect(script).toContain("VM_RESERVE              2");
+  expect(script).toContain(
+    "VM_SET_INDIRECT         .LOCAL_TMP0_ARRAY_PTR, .LOCAL_TMP1_VALUE_TMP",
+  );
+});
+
 test("Should do truthy conditional test", () => {
   const output: string[] = [];
   const sb = new ScriptBuilder(output, {} as unknown as ScriptBuilderOptions);

@@ -1402,10 +1402,10 @@ ipcMain.handle("debugger:pause-on-var", (_event, enabled: boolean) => {
 
 ipcMain.handle(
   "debugger:set-global",
-  (_event, symbol: string, value: number) => {
+  (_event, symbol: string, value: number, index: number) => {
     sendToGameWindow("debugger:data", {
       action: "set-global",
-      data: { symbol, value },
+      data: { symbol, value, index },
     });
   },
 );

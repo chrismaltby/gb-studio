@@ -73,10 +73,10 @@ import ValueSelect, {
   ValueSelectInputOverrideTypes,
 } from "components/forms/ValueSelect";
 import {
+  isIndexedVariable,
   isVariableIndex,
   isConstScriptValue,
   isScriptValue,
-  VariableIndex,
 } from "shared/lib/scriptValue/types";
 import { FlagField } from "ui/form/FlagField";
 import { FlagSelect } from "components/forms/FlagSelect";
@@ -101,7 +101,6 @@ interface ScriptEventFormInputProps {
   args: Record<string, unknown>;
   allowRename?: boolean;
   onChange: (newValue: unknown, valueIndex?: number | undefined) => void;
-  onChangeVariableIndex?: (newValue: VariableIndex | undefined) => void;
   onInsertEventAfter: () => void;
 }
 
@@ -149,7 +148,6 @@ const ScriptEventFormInput = ({
   index,
   defaultValue,
   onChange,
-  onChangeVariableIndex,
   onInsertEventAfter,
   allowRename = true,
 }: ScriptEventFormInputProps) => {
@@ -571,11 +569,15 @@ const ScriptEventFormInput = ({
     if (fallbackValue === "LAST_VARIABLE") {
       fallbackValue = defaultVariableForContext(context.type);
     }
-    const variableId = String(value || fallbackValue || "0");
+    const indexedVariable = isIndexedVariable(value) ? value : undefined;
+    const variableId =
+      indexedVariable?.value ??
+      (typeof value === "string"
+        ? value
+        : String(fallbackValue || "0"));
     const variable = variablesLookup[variableId];
-    const storedIndex = args[`${field.key}Index`];
-    const variableIndex = isVariableIndex(storedIndex)
-      ? storedIndex
+    const variableIndex = isVariableIndex(indexedVariable?.index)
+      ? indexedVariable.index
       : { type: "number" as const, value: 0 };
     return (
       <OffscreenSkeletonInput>
@@ -585,11 +587,14 @@ const ScriptEventFormInput = ({
             value={variableId}
             entityId={entityId}
             onChange={(newValue) => {
-              onChangeField(newValue);
               if (variablesLookup[newValue]?.type === "array") {
-                onChangeVariableIndex?.(variableIndex);
+                onChangeField({
+                  type: "indexed",
+                  value: newValue,
+                  index: variableIndex,
+                });
               } else {
-                onChangeVariableIndex?.(undefined);
+                onChangeField(newValue);
               }
             }}
             allowRename={allowRename}
@@ -601,7 +606,11 @@ const ScriptEventFormInput = ({
               value={variableIndex}
               max={variable.size - 1}
               onChange={(newValue) => {
-                onChangeVariableIndex?.(newValue);
+                onChangeField({
+                  type: "indexed",
+                  value: variableId,
+                  index: newValue,
+                });
               }}
             />
           )}

@@ -1308,7 +1308,7 @@ export const replaceScriptSymbols = (
   return newScript;
 };
 
-const globalVariableOffsets = (
+export const globalVariableOffsets = (
   variableAliasLookup: Record<string, VariableMapData>,
 ) => {
   let nextOffset = 0;
@@ -1317,7 +1317,7 @@ const globalVariableOffsets = (
     const size = Math.max(1, Math.floor(variable.size ?? 1));
     nextOffset += size;
     return {
-      symbol: variable.symbol,
+      ...variable,
       offset,
     };
   });

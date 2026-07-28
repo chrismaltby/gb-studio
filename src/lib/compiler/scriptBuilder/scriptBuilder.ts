@@ -2586,7 +2586,10 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
-  variableSetToScriptValue = (variable: string, value: ScriptValue) => {
+  variableSetToScriptValue = (
+    variable: ScriptBuilderVariable,
+    value: ScriptValue,
+  ) => {
     this._addComment("Variable Set To");
     const [rpnOps, fetchOps] = precompileScriptValue(
       optimiseScriptValue(value),

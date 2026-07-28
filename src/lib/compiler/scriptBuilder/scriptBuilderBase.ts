@@ -2391,6 +2391,9 @@ extern void __mute_mask_${symbol};
     symbol: ScriptBuilderStackVariable,
     offset = 0,
   ): string => {
+    if (typeof symbol === "string") {
+      this._markLocalUse(symbol);
+    }
     if (
       typeof symbol === "number" ||
       (symbol.indexOf(".SCRIPT_ARG_") !== 0 && symbol.indexOf(".LOCAL_") !== 0)
@@ -2409,6 +2412,9 @@ extern void __mute_mask_${symbol};
     symbol: ScriptBuilderStackVariable,
     offset = 0,
   ): string => {
+    if (typeof symbol === "string") {
+      this._markLocalUse(symbol);
+    }
     if (
       typeof symbol === "number" ||
       (symbol.indexOf(".SCRIPT_ARG_") !== 0 && symbol.indexOf(".LOCAL_") !== 0)

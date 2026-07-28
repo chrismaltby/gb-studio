@@ -114,6 +114,12 @@ export type VariableIndex =
       value: string;
     };
 
+export type IndexedVariable = {
+  type: "indexed";
+  value: string;
+  index: VariableIndex;
+};
+
 export const isVariableIndex = (value: unknown): value is VariableIndex => {
   if (!value || typeof value !== "object") {
     return false;
@@ -122,6 +128,18 @@ export const isVariableIndex = (value: unknown): value is VariableIndex => {
   return (
     (index.type === "number" && typeof index.value === "number") ||
     (index.type === "variable" && typeof index.value === "string")
+  );
+};
+
+export const isIndexedVariable = (value: unknown): value is IndexedVariable => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const variable = value as IndexedVariable;
+  return (
+    variable.type === "indexed" &&
+    typeof variable.value === "string" &&
+    isVariableIndex(variable.index)
   );
 };
 

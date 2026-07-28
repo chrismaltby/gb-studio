@@ -60,7 +60,11 @@ import {
   extractScriptValueActorIds,
   extractScriptValueVariables,
 } from "shared/lib/scriptValue/helpers";
-import { ScriptValue, isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  isIndexedVariable,
+  ScriptValue,
+  isScriptValue,
+} from "shared/lib/scriptValue/types";
 import {
   Actor,
   AvatarAsset,
@@ -1246,6 +1250,16 @@ export const updateCustomEventArgs = (
             isVariableCustomEvent(variable.value)
           ) {
             addVariable(variable.value);
+          } else if (isIndexedVariable(variable)) {
+            if (isVariableCustomEvent(variable.value)) {
+              addVariable(variable.value);
+            }
+            if (
+              variable.index.type === "variable" &&
+              isVariableCustomEvent(variable.index.value)
+            ) {
+              addVariable(variable.index.value);
+            }
           } else if (
             typeof variable === "string" &&
             isVariableCustomEvent(variable)

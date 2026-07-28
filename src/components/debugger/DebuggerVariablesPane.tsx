@@ -15,6 +15,7 @@ import { getSettings } from "store/features/settings/settingsState";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import API from "renderer/lib/api";
+import { expandDebuggerVariables } from "shared/lib/debugger/variables";
 
 interface DebuggerVariablesPaneProps {
   collapsible?: boolean;
@@ -252,17 +253,17 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
   }, [dispatch]);
 
   const filteredVariables = useMemo(() => {
-    return variableSymbols
-      .filter((symbol) => {
+    return expandDebuggerVariables(
+      variableSymbols,
+      variableDataBySymbol,
+      variablesData,
+    )
+      .filter((variableData) => {
         const key =
-          `${symbol} ${variableDataBySymbol[symbol]?.name}`.toUpperCase();
+          `${variableData.displaySymbol} ${variableData.displayName}`.toUpperCase();
         return key.includes(varSearchTerm.toUpperCase());
       })
-      .map((symbol) => {
-        const variableData = variableDataBySymbol[symbol];
-        if (!variableData) {
-          return undefined;
-        }
+      .map((variableData) => {
         const isFavorite = watchedVariableIds.includes(variableData.id);
         if (variablesFilter === "watched" && !isFavorite) {
           return undefined;
@@ -270,12 +271,14 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
         return {
           ...variableData,
           isFavorite,
-          value: variablesData[variableSymbols.indexOf(variableData.symbol)],
         };
       })
       .filter((i) => i) as (VariableMapData & {
+      arrayIndex: number;
+      displayName: string;
+      displaySymbol: string;
       isFavorite: boolean;
-      value: number;
+      value: number | undefined;
     })[];
   }, [
     varSearchTerm,
@@ -333,12 +336,12 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
         <Content>
           {filteredVariables.map((variableData) => {
             return (
-              <VariableRow key={variableData.symbol}>
+              <VariableRow key={variableData.displaySymbol}>
                 <VariableName>
                   <ValueButton onClick={() => onSelectVariable(variableData)}>
-                    {variableData.name ?? variableData.symbol}
+                    {variableData.displayName}
                   </ValueButton>
-                  <Symbol>{variableData.symbol}</Symbol>
+                  <Symbol>{variableData.displaySymbol}</Symbol>
                 </VariableName>
                 <FlexGrow />
                 <Eq>=</Eq>
@@ -349,7 +352,11 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
                     value={variableData.value}
                     onChange={(e) => {
                       const newValue = castEventToInt(e, 0);
-                      API.debugger.setGlobal(variableData.symbol, newValue);
+                      API.debugger.setGlobal(
+                        variableData.symbol,
+                        newValue,
+                        variableData.arrayIndex,
+                      );
                     }}
                   />
                 </InputWrapper>
