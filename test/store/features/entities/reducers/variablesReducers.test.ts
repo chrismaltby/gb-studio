@@ -31,7 +31,7 @@ test("Should be able to set a variable's name", () => {
   expect(newState.variables.entities["1"]?.name).toBe("Var Name");
 });
 
-test("Should be able to delete a variable name by setting blank value", () => {
+test("Should be able to clear a variable name without deleting it", () => {
   const state: EntitiesState = {
     ...initialState,
     variables: {
@@ -40,7 +40,8 @@ test("Should be able to delete a variable name by setting blank value", () => {
           id: "1",
           name: "Var Name",
           symbol: "VAR_1",
-          type: "number",
+          type: "array",
+          size: 4,
         },
       },
       ids: ["1"],
@@ -56,7 +57,13 @@ test("Should be able to delete a variable name by setting blank value", () => {
 
   const newState = reducer(state, action);
 
-  expect(newState.variables.entities["1"]).toBeUndefined();
+  expect(newState.variables.entities["1"]).toEqual({
+    id: "1",
+    name: "",
+    symbol: "VAR_1",
+    type: "array",
+    size: 4,
+  });
 });
 
 test("Should be able to add flags to existing named variable", () => {
@@ -132,7 +139,7 @@ test("Should be able to add flags to unnamed variable", () => {
   });
 });
 
-test("Should remove variable when name is empty and doesn't have flags", () => {
+test("Should retain variable when name is empty and doesn't have flags", () => {
   const state: EntitiesState = {
     ...initialState,
     variables: {
@@ -153,7 +160,12 @@ test("Should remove variable when name is empty and doesn't have flags", () => {
   });
 
   const newState = reducer(state, action);
-  expect(newState.variables.entities["13"]).toBeUndefined();
+  expect(newState.variables.entities["13"]).toEqual({
+    id: "13",
+    name: "",
+    symbol: "var_powers",
+    type: "number",
+  });
 });
 
 test("Should not remove variable when name is empty but has named flags", () => {
@@ -186,7 +198,7 @@ test("Should not remove variable when name is empty but has named flags", () => 
   expect(newState.variables.entities["14"]).toMatchObject({
     id: "14",
     name: "",
-    symbol: "",
+    symbol: "var_powers",
     flags: {
       flag1: "Crouch Ball",
       flag2: "Cannon",
@@ -196,7 +208,7 @@ test("Should not remove variable when name is empty but has named flags", () => 
   });
 });
 
-test("Should remove variable when all flags removed and was unnamed", () => {
+test("Should retain unnamed variable when all flags are removed", () => {
   const state: EntitiesState = {
     ...initialState,
     variables: {
@@ -223,7 +235,13 @@ test("Should remove variable when all flags removed and was unnamed", () => {
   });
 
   const newState = reducer(state, action);
-  expect(newState.variables.entities["15"]).toBeUndefined();
+  expect(newState.variables.entities["15"]).toEqual({
+    id: "15",
+    name: "",
+    symbol: "",
+    type: "number",
+    flags: {},
+  });
 });
 
 test("Should not remove variable when all flags removed but variable was named", () => {

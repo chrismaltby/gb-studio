@@ -1,4 +1,5 @@
 import { commandIndex as cmd, JUMP } from "./scriptCommands";
+import { normalizeVariableId } from "shared/lib/variables/variableIds";
 
 export const getActorIndex = (actorId, scene) => {
   return scene.actors.findIndex((a) => a.id === actorId) + 1;
@@ -46,9 +47,9 @@ export const getSpriteSceneIndex = (spriteId, sprites, scene) => {
 };
 
 export const getVariableIndex = (variable, variables) => {
-  const normalisedVariable = String(variable)
-    .replace(/\$/g, "")
-    .replace(/^0+([0-9])/, "$1");
+  const normalisedVariable = normalizeVariableId(
+    String(variable).replace(/\$/g, ""),
+  );
   let variableIndex = variables.indexOf(normalisedVariable);
   if (variableIndex === -1) {
     variables.push(normalisedVariable);

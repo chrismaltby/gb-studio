@@ -978,6 +978,21 @@ test("should convert statically indexed variables in expressions", () => {
   });
 });
 
+test("should preserve UUID variable IDs beginning with zero", () => {
+  expect(
+    expressionToScriptValue(
+      "$01111111-1111-1111-1111-111111111111$[$02222222-2222-2222-2222-222222222222$]",
+    ),
+  ).toEqual({
+    type: "variable",
+    value: "01111111-1111-1111-1111-111111111111",
+    index: {
+      type: "variable",
+      value: "02222222-2222-2222-2222-222222222222",
+    },
+  });
+});
+
 test("should convert variable indexed variables in expressions", () => {
   expect(
     expressionToScriptValue(

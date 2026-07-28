@@ -12,6 +12,7 @@ import entitiesActions from "store/features/entities/entitiesActions";
 import { clearL10NData, setL10NData } from "shared/lib/lang/l10n";
 
 test("Should use default variable name with not renamed", () => {
+  setL10NData({ FIELD_VARIABLE: "Variable" });
   const state = {
     editor: {
       type: "actor",
@@ -49,7 +50,60 @@ test("Should use default variable name with not renamed", () => {
     store,
     {},
   );
-  expect(screen.getByText("$Variable 0")).toBeInTheDocument();
+  expect(screen.getByText("$Variable 1")).toBeInTheDocument();
+  clearL10NData();
+});
+
+test("Should use position-based default names for unnamed UUID variables", () => {
+  setL10NData({ FIELD_VARIABLE: "Variable" });
+  const variableId = "9fa94043-5b72-4ae4-a36f-56bc5a9cc875";
+  const state = {
+    editor: {
+      type: "actor",
+    },
+    project: {
+      present: {
+        entities: {
+          customEvents: {
+            entities: {},
+            ids: [],
+          },
+          variables: {
+            entities: {
+              [variableId]: {
+                id: variableId,
+                name: "",
+                symbol: "var_1",
+                type: "number",
+              },
+            },
+            ids: [variableId],
+          },
+        },
+      },
+    },
+  };
+
+  const store = {
+    getState: () => state,
+    dispatch: () => {},
+    subscribe: () => {},
+  } as unknown as Store<RootState, UnknownAction>;
+
+  render(
+    <VariableSelect
+      name="test"
+      entityId=""
+      value={variableId}
+      onChange={() => {}}
+    />,
+    store,
+    {},
+  );
+
+  expect(screen.getByText("$Variable 1")).toBeInTheDocument();
+  expect(screen.queryByText(`$Variable ${variableId}`)).not.toBeInTheDocument();
+  clearL10NData();
 });
 
 test("Should use default custom event variable name with not renamed", () => {

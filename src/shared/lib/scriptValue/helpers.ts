@@ -18,6 +18,7 @@ import {
 } from "./types";
 import { OperatorSymbol } from "shared/lib/rpn/types";
 import { subpxShiftForUnits } from "shared/lib/helpers/subpixels";
+import { normalizeVariableId } from "shared/lib/variables/variableIds";
 
 const boolToInt = (val: boolean) => (val ? 1 : 0);
 const zero = {
@@ -258,9 +259,12 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
 
     for (const operation of rpnTokens) {
       if (operation.type === "VAR") {
+        const variableId = normalizeVariableId(
+          operation.symbol.replace(/\$/g, ""),
+        );
         stack.push({
           type: "variable",
-          value: operation.symbol.replace(/\$/g, "").replace(/^0/g, ""),
+          value: variableId,
           ...(operation.index && {
             index:
               operation.index.type === "VAL"
@@ -270,9 +274,9 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
                   }
                 : {
                     type: "variable",
-                    value: operation.index.symbol
-                      .replace(/\$/g, "")
-                      .replace(/^0/g, ""),
+                    value: normalizeVariableId(
+                      operation.index.symbol.replace(/\$/g, ""),
+                    ),
                   },
           }),
         });

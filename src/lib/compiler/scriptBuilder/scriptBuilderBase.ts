@@ -16,6 +16,7 @@ import {
   precompileScriptValue,
   sortFetchOperations,
 } from "shared/lib/scriptValue/helpers";
+import { normalizeVariableId } from "shared/lib/variables/variableIds";
 import { chunkTextOnWaitCodes } from "shared/lib/text/textCodes";
 import {
   ASMSFXPriority,
@@ -1668,7 +1669,7 @@ abstract class ScriptBuilderBase {
           }
         } else {
           usedVariableAliases.push(
-            this.getVariableAlias(variable.replace(/^0/g, "")),
+            this.getVariableAlias(normalizeVariableId(variable)),
           );
         }
         if (token.type === "variable" && token.fixedLength !== undefined) {
@@ -1772,7 +1773,7 @@ abstract class ScriptBuilderBase {
           }
         } else {
           usedVariableAliases.push(
-            this.getVariableAlias(variable.replace(/^0/g, "")),
+            this.getVariableAlias(normalizeVariableId(variable)),
           );
         }
         if (token.type === "variable" && token.fixedLength !== undefined) {

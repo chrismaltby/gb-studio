@@ -6,7 +6,6 @@ import {
   customEventVariableCode,
   customEventVariableName,
   globalVariableCode,
-  globalVariableName,
   localVariableCode,
   localVariableName,
   tempVariableCode,
@@ -14,6 +13,7 @@ import {
 } from "shared/lib/variables/variableNames";
 import { Variable } from "shared/lib/resources/types";
 import { sortByName } from "shared/lib/helpers/sort";
+import { variableName } from "shared/lib/entities/entitiesHelpers";
 
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));
@@ -101,10 +101,10 @@ const namedGlobalVariables = (
 ): NamedVariable[] =>
   (Object.values(variablesLookup) as Variable[])
     .filter(isGlobalVariable)
-    .map((variable) => ({
+    .map((variable, index) => ({
       id: variable.id,
       code: globalVariableCode(variable.id),
-      name: globalVariableName(variable.id, variablesLookup),
+      name: variableName(variable, index),
       group: l10n("FIELD_GLOBAL"),
     }))
     .sort(sortByName);
