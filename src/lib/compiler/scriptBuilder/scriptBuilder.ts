@@ -2846,10 +2846,14 @@ class ScriptBuilder extends ScriptBuilderBase {
         }
       } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
         // Was single variable
+        const variable = this._scriptValueVariable(
+          rpnOps[0].value,
+          rpnOps[0].index,
+        );
         if (is16BitCType(cType)) {
-          this._setMemInt16ToVariable(key, rpnOps[0].value);
+          this._setMemInt16ToVariable(key, variable);
         } else {
-          this._setMemInt8ToVariable(key, rpnOps[0].value);
+          this._setMemInt8ToVariable(key, variable);
         }
       } else {
         // Was RPN instructions
@@ -3802,12 +3806,16 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addComment(`If`);
 
     if (optimisedValue.type === "variable") {
+      const variable = this._scriptValueVariable(
+        optimisedValue.value,
+        optimisedValue.index,
+      );
       if (testIfTruthy) {
         this._addComment(`-- If Truthy`);
-        this._ifVariableConst(".NE", optimisedValue.value, 0, trueLabel, 0);
+        this._ifVariableConst(".NE", variable, 0, trueLabel, 0);
       } else {
         this._addComment(`-- If Falsy`);
-        this._ifVariableConst(".EQ", optimisedValue.value, 0, trueLabel, 0);
+        this._ifVariableConst(".EQ", variable, 0, trueLabel, 0);
       }
     } else {
       const [rpnOps, fetchOps] = precompileScriptValue(optimisedValue);

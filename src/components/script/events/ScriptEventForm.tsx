@@ -54,7 +54,7 @@ const getScriptEventFields = (
           type: "value",
           defaultValue: {
             type: "variable",
-            value: "0",
+            value: "LAST_VARIABLE",
           },
         };
       }) || [];

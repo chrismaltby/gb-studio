@@ -596,7 +596,10 @@ abstract class ScriptBuilderBase {
     this._addCmd("VM_SET_INT16", `_${cVariable}`, addr);
   };
 
-  _setMemInt8ToVariable = (cVariable: string, variable: string) => {
+  _setMemInt8ToVariable = (
+    cVariable: string,
+    variable: ScriptBuilderVariable,
+  ) => {
     const variableAlias = this.getVariableAlias(variable);
     this._addDependency(cVariable);
     if (this._isIndirectVariable(variable)) {
@@ -608,7 +611,10 @@ abstract class ScriptBuilderBase {
     }
   };
 
-  _setMemUInt8ToVariable = (cVariable: string, variable: string) => {
+  _setMemUInt8ToVariable = (
+    cVariable: string,
+    variable: ScriptBuilderVariable,
+  ) => {
     const variableAlias = this.getVariableAlias(variable);
     this._addDependency(cVariable);
     if (this._isIndirectVariable(variable)) {
@@ -620,7 +626,10 @@ abstract class ScriptBuilderBase {
     }
   };
 
-  _setMemInt16ToVariable = (cVariable: string, variable: string) => {
+  _setMemInt16ToVariable = (
+    cVariable: string,
+    variable: ScriptBuilderVariable,
+  ) => {
     const variableAlias = this.getVariableAlias(variable);
     this._addDependency(cVariable);
     if (this._isIndirectVariable(variable)) {
@@ -651,12 +660,16 @@ abstract class ScriptBuilderBase {
       }
     } else if (rpnOps.length === 1 && rpnOps[0].type === "variable") {
       // Was single variable
+      const variable = this._scriptValueVariable(
+        rpnOps[0].value,
+        rpnOps[0].index,
+      );
       if (cType === "WORD" || cType === "UWORD") {
-        this._setMemInt16ToVariable(cVariable, rpnOps[0].value);
+        this._setMemInt16ToVariable(cVariable, variable);
       } else if (cType === "UBYTE") {
-        this._setMemUInt8ToVariable(cVariable, rpnOps[0].value);
+        this._setMemUInt8ToVariable(cVariable, variable);
       } else {
-        this._setMemInt8ToVariable(cVariable, rpnOps[0].value);
+        this._setMemInt8ToVariable(cVariable, variable);
       }
     } else {
       // Was RPN instructions
@@ -1263,7 +1276,7 @@ abstract class ScriptBuilderBase {
 
   _ifVariableConst = (
     operator: ScriptBuilderComparisonOperator,
-    variable: string,
+    variable: ScriptBuilderVariable,
     value: ScriptBuilderStackVariable,
     label: string,
     popNum: number,
@@ -2565,6 +2578,28 @@ extern void __mute_mask_${symbol};
 
   getVariableAlias = (variable: ScriptBuilderVariable = ""): string => {
     if (this._isIndexedVariable(variable)) {
+      const resolvedVariable = this._resolveVariableRef(variable.value);
+      if (!this._isFunctionArg(resolvedVariable)) {
+        const variableId = getVariableId(
+          String(resolvedVariable),
+          this.options.entity,
+        );
+        const variableDefinition = this.options.variablesLookup[variableId];
+        if (variableDefinition?.type !== "array") {
+          throw new Error(
+            `Cannot index non-array variable "${variableDefinition?.name || variableId}"`,
+          );
+        }
+        if (
+          variable.index.type === "number" &&
+          (variable.index.value < 0 ||
+            variable.index.value >= variableDefinition.size)
+        ) {
+          throw new Error(
+            `Array index ${variable.index.value} is out of bounds for variable "${variableDefinition.name || variableId}" with size ${variableDefinition.size}`,
+          );
+        }
+      }
       const variableAlias = this.getVariableAlias(variable.value);
       if (variable.index.type === "number") {
         return `^/(${variableAlias} + ${variable.index.value})/`;

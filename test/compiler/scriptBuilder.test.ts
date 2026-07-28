@@ -1062,6 +1062,121 @@ test("Should read an indexed array variable from a ScriptValue", async () => {
   );
 });
 
+test("Should set a camera property from an indexed ScriptValue", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+    },
+  );
+
+  sb.cameraSetPropertyToScriptValue("camera_offset_x", {
+    type: "variable",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: { type: "number", value: 3 },
+  });
+
+  expect(output.join("\n")).toContain(
+    "VM_SET_INT8             _camera_offset_x, ^/(VAR_ARRAY + 3)/",
+  );
+});
+
+test("Should set an engine field from an indexed ScriptValue", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+      engineFields: {
+        myfield: {
+          ...dummyEngineFieldSchema,
+          key: "myfield",
+          cType: "BYTE",
+        },
+      },
+    },
+  );
+
+  sb.engineFieldSetToScriptValue("myfield", {
+    type: "variable",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: { type: "number", value: 3 },
+  });
+
+  expect(output.join("\n")).toContain(
+    "VM_SET_INT8             _myfield, ^/(VAR_ARRAY + 3)/",
+  );
+});
+
+test("Should reject indexed references to number variables", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Number",
+          symbol: "var_number",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  expect(() =>
+    sb.getVariableAlias({
+      type: "indexed",
+      value: "11111111-1111-1111-1111-111111111111",
+      index: { type: "number", value: 0 },
+    }),
+  ).toThrow('Cannot index non-array variable "Number"');
+});
+
+test.each([-1, 4])(
+  "Should reject static array index %s outside the declared size",
+  async (index) => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          "11111111-1111-1111-1111-111111111111": {
+            id: "11111111-1111-1111-1111-111111111111",
+            name: "Array",
+            symbol: "var_array",
+            type: "array",
+            size: 4,
+          },
+        },
+      },
+    );
+
+    expect(() =>
+      sb.getVariableAlias({
+        type: "indexed",
+        value: "11111111-1111-1111-1111-111111111111",
+        index: { type: "number", value: index },
+      }),
+    ).toThrow(
+      `Array index ${index} is out of bounds for variable "Array" with size 4`,
+    );
+  },
+);
+
 test("Should not reuse the array pointer local while setting an indexed variable", async () => {
   const { sb } = await createTestScriptBuilder(
     {},

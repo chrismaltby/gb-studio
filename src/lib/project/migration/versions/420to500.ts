@@ -61,7 +61,7 @@ export const migrateFrom420r10To500r1Variables: ProjectResourcesMigrationFn = (
       existingSymbols.add(symbol);
       return {
         id: variableId,
-        name: `Variable ${variableId}`,
+        name: "",
         symbol,
         type: "number",
       };

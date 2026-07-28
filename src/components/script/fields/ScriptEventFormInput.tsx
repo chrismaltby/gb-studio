@@ -32,7 +32,7 @@ import {
   castEventToFloat,
 } from "renderer/lib/helpers/castEventValue";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   MovementType,
@@ -88,7 +88,11 @@ import { OverlaySpeedSelect } from "components/forms/OverlaySpeedSelect";
 import { ActorDirection, CollisionGroup } from "shared/lib/resources/types";
 import { DataTableInput } from "components/forms/DataTableInput";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
-import { variableSelectors } from "store/features/entities/entitiesSelectors";
+import {
+  customEventSelectors,
+  variableSelectors,
+} from "store/features/entities/entitiesSelectors";
+import { namedVariablesByContext } from "renderer/lib/variables";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -161,7 +165,14 @@ const ScriptEventFormInput = ({
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state),
   );
+  const customEvent = useAppSelector((state) =>
+    customEventSelectors.selectById(state, entityId),
+  );
   const context = useContext(ScriptEditorContext);
+  const availableVariables = useMemo(
+    () => namedVariablesByContext(context, variablesLookup, customEvent),
+    [context, customEvent, variablesLookup],
+  );
 
   const onChangeField = useCallback(
     (e: unknown) => {
@@ -569,12 +580,16 @@ const ScriptEventFormInput = ({
     if (fallbackValue === "LAST_VARIABLE") {
       fallbackValue = defaultVariableForContext(context.type);
     }
+    const fallbackVariableId =
+      availableVariables.find(({ id }) => id === fallbackValue)?.id ??
+      availableVariables[0]?.id ??
+      "";
     const indexedVariable = isIndexedVariable(value) ? value : undefined;
     const variableId =
       indexedVariable?.value ??
       (typeof value === "string"
         ? value
-        : String(fallbackValue || "0"));
+        : fallbackVariableId);
     const variable = variablesLookup[variableId];
     const variableIndex = isVariableIndex(indexedVariable?.index)
       ? indexedVariable.index

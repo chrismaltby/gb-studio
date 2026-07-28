@@ -124,7 +124,7 @@ test("creates entries for referenced unnamed legacy global variables", () => {
   expect(migratedVariables.slice(1)).toEqual(
     migratedVariables.slice(1).map((variable) => ({
       id: variable.id,
-      name: `Variable ${variable.id}`,
+      name: "",
       symbol: expect.any(String),
       type: "number",
     })),

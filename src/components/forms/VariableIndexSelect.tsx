@@ -1,7 +1,14 @@
 import { VariableSelect } from "components/forms/VariableSelect";
-import React from "react";
+import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
+import React, { useContext, useMemo } from "react";
 import l10n from "shared/lib/lang/l10n";
 import type { VariableIndex } from "shared/lib/scriptValue/types";
+import {
+  customEventSelectors,
+  variableSelectors,
+} from "store/features/entities/entitiesSelectors";
+import { useAppSelector } from "store/hooks";
+import { namedVariablesByContext } from "renderer/lib/variables";
 import { DropdownButton } from "ui/buttons/DropdownButton";
 import {
   InputGroup,
@@ -27,11 +34,26 @@ export const VariableIndexSelect = ({
   max,
   onChange,
 }: VariableIndexSelectProps) => {
+  const context = useContext(ScriptEditorContext);
+  const variablesLookup = useAppSelector((state) =>
+    variableSelectors.selectEntities(state),
+  );
+  const customEvent = useAppSelector((state) =>
+    customEventSelectors.selectById(state, entityId),
+  );
+  const defaultVariableId = useMemo(
+    () =>
+      namedVariablesByContext(context, variablesLookup, customEvent).find(
+        ({ id }) => variablesLookup[id]?.type !== "array",
+      )?.id,
+    [context, customEvent, variablesLookup],
+  );
+
   const onChangeType = (type: VariableIndex["type"]) => {
     if (type === "number") {
       onChange({ type: "number", value: 0 });
-    } else {
-      onChange({ type: "variable", value: "0" });
+    } else if (defaultVariableId) {
+      onChange({ type: "variable", value: defaultVariableId });
     }
   };
 

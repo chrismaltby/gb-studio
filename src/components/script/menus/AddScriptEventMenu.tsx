@@ -31,10 +31,10 @@ import {
   spriteSheetSelectors,
   tilesetSelectors,
   fontSelectors,
+  variableSelectors,
 } from "store/features/entities/entitiesSelectors";
 import { useDebounce } from "ui/hooks/use-debounce";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
-import { defaultVariableForContext } from "shared/lib/scripts/context";
 import { EVENT_CALL_CUSTOM_EVENT, EVENT_COMMENT, EVENT_TEXT } from "consts";
 import { selectScriptEventDefsWithPresets } from "store/features/scriptEventDefs/scriptEventDefsState";
 import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
@@ -46,6 +46,7 @@ import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { StyledButton } from "ui/buttons/style";
 import { StyledMenu, StyledMenuItem } from "ui/menu/style";
 import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
+import { namedVariablesByContext } from "renderer/lib/variables";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -594,6 +595,18 @@ const AddScriptEventMenu = ({
   const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectAll(state),
   );
+  const variablesLookup = useAppSelector((state) =>
+    variableSelectors.selectEntities(state),
+  );
+  const currentCustomEvent = useAppSelector((state) =>
+    customEventSelectors.selectById(state, context.entityId),
+  );
+  const defaultVariableId = useMemo(
+    () =>
+      namedVariablesByContext(context, variablesLookup, currentCustomEvent)[0]
+        ?.id ?? "",
+    [context, currentCustomEvent, variablesLookup],
+  );
   const disabledSceneTypeIds = useAppSelector(
     (state) => state.project.present.settings.disabledSceneTypeIds,
   );
@@ -842,7 +855,7 @@ const AddScriptEventMenu = ({
           data: [
             instanciateScriptEvent(newEvent, {
               defaultActorId: "player",
-              defaultVariableId: defaultVariableForContext(context.type),
+              defaultVariableId,
               defaultMusicId: String(lastMusicId),
               defaultSceneId: String(lastSceneId),
               defaultSpriteId: String(lastSpriteId),
@@ -871,7 +884,7 @@ const AddScriptEventMenu = ({
       parentKey,
       insertId,
       before,
-      context.type,
+      defaultVariableId,
       lastMusicId,
       lastSceneId,
       lastSpriteId,
