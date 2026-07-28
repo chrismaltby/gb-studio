@@ -1177,6 +1177,118 @@ test.each([-1, 4])(
   },
 );
 
+test("Should read an indexed array through a by-reference script argument", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      argLookup: {
+        variable: new Map([
+          [
+            "V0",
+            {
+              type: "argument",
+              indirect: true,
+              symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+            },
+          ],
+          [
+            "V1",
+            {
+              type: "argument",
+              indirect: true,
+              symbol: ".SCRIPT_ARG_INDIRECT_1_VARIABLE",
+            },
+          ],
+        ]),
+        actor: new Map(),
+      },
+    },
+  );
+
+  sb.variableSetToScriptValue("V1", {
+    type: "variable",
+    value: "V0",
+    index: { type: "number", value: 3 },
+  });
+
+  const script = output.join("\n");
+  expect(script).toContain(".R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE");
+  expect(script).toContain(".R_INT16    3");
+  expect(script).toContain(".R_REF_SET  .LOCAL_TMP0_ARRAY_PTR");
+  expect(script).toContain("VM_PUSH_VALUE_IND       .LOCAL_TMP0_ARRAY_PTR");
+  expect(script).toContain("VM_SET_INDIRECT");
+  expect(script).toContain(".SCRIPT_ARG_INDIRECT_1_VARIABLE - 1");
+  expect(script).not.toContain(
+    "^/(.SCRIPT_ARG_INDIRECT_0_VARIABLE + 3)/",
+  );
+});
+
+test("Should write an indexed array through a by-reference script argument", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      argLookup: {
+        variable: new Map([
+          [
+            "V0",
+            {
+              type: "argument",
+              indirect: true,
+              symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+            },
+          ],
+        ]),
+        actor: new Map(),
+      },
+    },
+  );
+
+  sb.variableSetToScriptValue(
+    {
+      type: "indexed",
+      value: "V0",
+      index: { type: "number", value: 3 },
+    },
+    { type: "number", value: 99 },
+  );
+
+  const script = output.join("\n");
+  expect(script).toContain(".R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE");
+  expect(script).toContain(".R_INT16    3");
+  expect(script).toContain(
+    "VM_SET_INDIRECT         .LOCAL_TMP0_ARRAY_PTR, .LOCAL_TMP1_VALUE_TMP",
+  );
+});
+
+test("Should reject indexing a script argument passed by value", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      argLookup: {
+        variable: new Map([
+          [
+            "V0",
+            {
+              type: "argument",
+              indirect: false,
+              symbol: ".SCRIPT_ARG_0_VARIABLE",
+            },
+          ],
+        ]),
+        actor: new Map(),
+      },
+    },
+  );
+
+  expect(() =>
+    sb.getVariableAlias({
+      type: "indexed",
+      value: "V0",
+      index: { type: "number", value: 1 },
+    }),
+  ).toThrow("because it is passed by value");
+});
+
 test("Should not reuse the array pointer local while setting an indexed variable", async () => {
   const { sb } = await createTestScriptBuilder(
     {},

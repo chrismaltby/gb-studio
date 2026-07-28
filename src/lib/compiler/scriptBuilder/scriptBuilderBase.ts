@@ -2343,9 +2343,15 @@ extern void __mute_mask_${symbol};
     const resolved = this._isIndexedVariable(x)
       ? x
       : this._resolveVariableRef(x);
+    if (this._isIndexedVariable(resolved)) {
+      const baseVariable = this._resolveVariableRef(resolved.value);
+      return (
+        (this._isFunctionArg(baseVariable) && baseVariable.indirect) ||
+        resolved.index.type === "variable"
+      );
+    }
     return (
-      (this._isFunctionArg(resolved) && resolved.indirect) ||
-      (this._isIndexedVariable(resolved) && resolved.index.type === "variable")
+      this._isFunctionArg(resolved) && resolved.indirect
     );
   };
 
@@ -2579,7 +2585,32 @@ extern void __mute_mask_${symbol};
   getVariableAlias = (variable: ScriptBuilderVariable = ""): string => {
     if (this._isIndexedVariable(variable)) {
       const resolvedVariable = this._resolveVariableRef(variable.value);
-      if (!this._isFunctionArg(resolvedVariable)) {
+      if (this._isFunctionArg(resolvedVariable)) {
+        if (!resolvedVariable.indirect) {
+          throw new Error(
+            `Cannot index variable argument "${resolvedVariable.symbol}" because it is passed by value`,
+          );
+        }
+        if (variable.index.type === "number" && variable.index.value < 0) {
+          throw new Error(
+            `Array index ${variable.index.value} cannot be negative`,
+          );
+        }
+        if (variable.index.type === "number" && variable.index.value === 0) {
+          return resolvedVariable.symbol;
+        }
+        const pointer = this._declareLocal("array_ptr", 1, true);
+        const rpn = this._rpn().ref(resolvedVariable.symbol);
+        if (variable.index.type === "number") {
+          rpn.int16(variable.index.value);
+        } else {
+          rpn.refVariable(
+            this._resolveVariableRef(variable.index.value),
+          );
+        }
+        rpn.operator(".ADD").refSet(pointer).stop();
+        return pointer;
+      } else {
         const variableId = getVariableId(
           String(resolvedVariable),
           this.options.entity,

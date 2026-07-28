@@ -591,6 +591,9 @@ const ScriptEventFormInput = ({
         ? value
         : fallbackVariableId);
     const variable = variablesLookup[variableId];
+    const isIndexableVariable =
+      variable?.type === "array" ||
+      !!customEvent?.variables[variableId]?.passByReference;
     const variableIndex = isVariableIndex(indexedVariable?.index)
       ? indexedVariable.index
       : { type: "number" as const, value: 0 };
@@ -602,7 +605,10 @@ const ScriptEventFormInput = ({
             value={variableId}
             entityId={entityId}
             onChange={(newValue) => {
-              if (variablesLookup[newValue]?.type === "array") {
+              const isIndexable =
+                variablesLookup[newValue]?.type === "array" ||
+                !!customEvent?.variables[newValue]?.passByReference;
+              if (isIndexable) {
                 onChangeField({
                   type: "indexed",
                   value: newValue,
@@ -614,12 +620,12 @@ const ScriptEventFormInput = ({
             }}
             allowRename={allowRename}
           />
-          {variable?.type === "array" && (
+          {isIndexableVariable && (
             <VariableIndexSelect
               name={`${id}_index`}
               entityId={entityId}
               value={variableIndex}
-              max={variable.size - 1}
+              max={variable?.type === "array" ? variable.size - 1 : undefined}
               onChange={(newValue) => {
                 onChangeField({
                   type: "indexed",

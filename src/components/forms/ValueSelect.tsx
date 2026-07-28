@@ -67,6 +67,7 @@ import clipboardActions from "store/features/clipboard/clipboardActions";
 import { copy, paste } from "store/features/clipboard/clipboardHelpers";
 import {
   constantSelectors,
+  customEventSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesSelectors";
 import { ConstantSelect } from "./ConstantSelect";
@@ -426,6 +427,9 @@ const ValueSelect = ({
   );
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state),
+  );
+  const customEvent = useAppSelector((state) =>
+    customEventSelectors.selectById(state, entityId),
   );
   const isValueFn = isValueOperation(value);
   const dragRef = useRef<HTMLDivElement>(null);
@@ -1151,6 +1155,9 @@ const ValueSelect = ({
       );
     } else if (value.type === "variable") {
       const selectedVariable = variablesLookup[value.value];
+      const isIndexableVariable =
+        selectedVariable?.type === "array" ||
+        !!customEvent?.variables[value.value]?.passByReference;
       return (
         <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
@@ -1162,10 +1169,13 @@ const ValueSelect = ({
               allowRename
               onChange={(newValue) => {
                 const newVariable = variablesLookup[newValue];
+                const isIndexable =
+                  newVariable?.type === "array" ||
+                  !!customEvent?.variables[newValue]?.passByReference;
                 onChange({
                   type: "variable",
                   value: newValue,
-                  ...(newVariable?.type === "array"
+                  ...(isIndexable
                     ? {
                         index: value.index ?? {
                           type: "number" as const,
@@ -1176,12 +1186,16 @@ const ValueSelect = ({
                 });
               }}
             />
-            {selectedVariable?.type === "array" && (
+            {isIndexableVariable && (
               <VariableIndexSelect
                 name={`${name}_index`}
                 entityId={entityId}
                 value={value.index}
-                max={selectedVariable.size - 1}
+                max={
+                  selectedVariable?.type === "array"
+                    ? selectedVariable.size - 1
+                    : undefined
+                }
                 onChange={(index) => {
                   onChange({ ...value, index });
                 }}
@@ -1400,6 +1414,7 @@ const ValueSelect = ({
     placeholder,
     step,
     value,
+    customEvent,
     variablesLookup,
   ]);
 
