@@ -6,10 +6,7 @@ import {
 import l10n from "shared/lib/lang/l10n";
 import type { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { scriptValueToString } from "shared/lib/scriptValue/format";
-import {
-  isIndexedVariable,
-  isScriptValue,
-} from "shared/lib/scriptValue/types";
+import { isIndexedVariable, isScriptValue } from "shared/lib/scriptValue/types";
 import { lexText } from "shared/lib/compiler/lexText";
 
 export const getAutoLabel = (

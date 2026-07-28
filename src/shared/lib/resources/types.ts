@@ -424,7 +424,7 @@ export type Scene = Omit<
 export const ScriptVariable = Type.Object({
   id: Type.String(),
   name: Type.String(),
-  passByReference: Type.Boolean(),
+  passByReference: Type.Union([Type.Boolean(), Type.Literal("array")]),
 });
 
 export type ScriptVariable = Static<typeof ScriptVariable>;

@@ -2350,9 +2350,7 @@ extern void __mute_mask_${symbol};
         resolved.index.type === "variable"
       );
     }
-    return (
-      this._isFunctionArg(resolved) && resolved.indirect
-    );
+    return this._isFunctionArg(resolved) && resolved.indirect;
   };
 
   _declareLocal = (
@@ -2591,6 +2589,11 @@ extern void __mute_mask_${symbol};
             `Cannot index variable argument "${resolvedVariable.symbol}" because it is passed by value`,
           );
         }
+        if (!resolvedVariable.array) {
+          throw new Error(
+            `Cannot index variable argument "${resolvedVariable.symbol}" because it is not an array reference`,
+          );
+        }
         if (variable.index.type === "number" && variable.index.value < 0) {
           throw new Error(
             `Array index ${variable.index.value} cannot be negative`,
@@ -2604,9 +2607,7 @@ extern void __mute_mask_${symbol};
         if (variable.index.type === "number") {
           rpn.int16(variable.index.value);
         } else {
-          rpn.refVariable(
-            this._resolveVariableRef(variable.index.value),
-          );
+          rpn.refVariable(this._resolveVariableRef(variable.index.value));
         }
         rpn.operator(".ADD").refSet(pointer).stop();
         return pointer;

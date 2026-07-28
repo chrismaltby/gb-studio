@@ -1157,7 +1157,7 @@ const ValueSelect = ({
       const selectedVariable = variablesLookup[value.value];
       const isIndexableVariable =
         selectedVariable?.type === "array" ||
-        !!customEvent?.variables[value.value]?.passByReference;
+        customEvent?.variables[value.value]?.passByReference === "array";
       return (
         <ValueWrapper ref={previewRef} $isOver={isOver}>
           <InputGroup ref={dropRef}>
@@ -1171,7 +1171,7 @@ const ValueSelect = ({
                 const newVariable = variablesLookup[newValue];
                 const isIndexable =
                   newVariable?.type === "array" ||
-                  !!customEvent?.variables[newValue]?.passByReference;
+                  customEvent?.variables[newValue]?.passByReference === "array";
                 onChange({
                   type: "variable",
                   value: newValue,

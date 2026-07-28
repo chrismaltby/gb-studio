@@ -55,6 +55,7 @@ export type ScriptBuilderStackVariable = string | number;
 export type ScriptBuilderFunctionArg = {
   type: "argument";
   indirect: boolean;
+  array?: boolean;
   symbol: string;
 };
 

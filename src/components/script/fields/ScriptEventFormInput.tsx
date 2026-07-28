@@ -587,13 +587,11 @@ const ScriptEventFormInput = ({
     const indexedVariable = isIndexedVariable(value) ? value : undefined;
     const variableId =
       indexedVariable?.value ??
-      (typeof value === "string"
-        ? value
-        : fallbackVariableId);
+      (typeof value === "string" ? value : fallbackVariableId);
     const variable = variablesLookup[variableId];
     const isIndexableVariable =
       variable?.type === "array" ||
-      !!customEvent?.variables[variableId]?.passByReference;
+      customEvent?.variables[variableId]?.passByReference === "array";
     const variableIndex = isVariableIndex(indexedVariable?.index)
       ? indexedVariable.index
       : { type: "number" as const, value: 0 };
@@ -607,7 +605,7 @@ const ScriptEventFormInput = ({
             onChange={(newValue) => {
               const isIndexable =
                 variablesLookup[newValue]?.type === "array" ||
-                !!customEvent?.variables[newValue]?.passByReference;
+                customEvent?.variables[newValue]?.passByReference === "array";
               if (isIndexable) {
                 onChangeField({
                   type: "indexed",

@@ -22,6 +22,148 @@ describe("Custom Events", () => {
     ).toEqual([]);
   });
 
+  describe("editCustomEventVariablePassByReference", () => {
+    test("removes indexes when changing an array reference to a scalar reference", () => {
+      const state: EntitiesState = {
+        ...initialState,
+        customEvents: {
+          entities: {
+            customEvent1: {
+              ...dummyCustomEventNormalized,
+              id: "customEvent1",
+              variables: {
+                V0: {
+                  id: "V0",
+                  name: "Variable A",
+                  passByReference: "array",
+                },
+                V1: {
+                  id: "V1",
+                  name: "Variable B",
+                  passByReference: "array",
+                },
+              },
+              script: ["scriptEvent1"],
+            },
+          },
+          ids: ["customEvent1"],
+        },
+        scriptEvents: {
+          entities: {
+            scriptEvent1: {
+              id: "scriptEvent1",
+              command: "EVENT_SET_VALUE",
+              args: {
+                variable: {
+                  type: "indexed",
+                  value: "V1",
+                  index: { type: "number", value: 0 },
+                },
+                value: {
+                  type: "variable",
+                  value: "V1",
+                  index: { type: "number", value: 2 },
+                },
+                arrayIndex: {
+                  type: "variable",
+                  value: "V1",
+                },
+                unchanged: {
+                  type: "variable",
+                  value: "V0",
+                  index: { type: "number", value: 3 },
+                },
+              },
+            },
+          },
+          ids: ["scriptEvent1"],
+        },
+      };
+
+      const newState = reducer(
+        state,
+        entitiesActions.editCustomEventVariablePassByReference({
+          customEventId: "customEvent1",
+          variableId: "V1",
+          passByReference: true,
+        }),
+      );
+
+      expect(
+        newState.customEvents.entities.customEvent1?.variables.V1
+          ?.passByReference,
+      ).toBe(true);
+      expect(newState.scriptEvents.entities.scriptEvent1?.args).toEqual({
+        variable: "V1",
+        value: {
+          type: "variable",
+          value: "V1",
+        },
+        arrayIndex: {
+          type: "variable",
+          value: "V1",
+        },
+        unchanged: {
+          type: "variable",
+          value: "V0",
+          index: { type: "number", value: 3 },
+        },
+      });
+    });
+
+    test("retains indexes while changing to an array reference", () => {
+      const state: EntitiesState = {
+        ...initialState,
+        customEvents: {
+          entities: {
+            customEvent1: {
+              ...dummyCustomEventNormalized,
+              id: "customEvent1",
+              variables: {
+                V0: {
+                  id: "V0",
+                  name: "Variable A",
+                  passByReference: true,
+                },
+              },
+              script: ["scriptEvent1"],
+            },
+          },
+          ids: ["customEvent1"],
+        },
+        scriptEvents: {
+          entities: {
+            scriptEvent1: {
+              id: "scriptEvent1",
+              command: "EVENT_SET_VALUE",
+              args: {
+                variable: "V0",
+              },
+            },
+          },
+          ids: ["scriptEvent1"],
+        },
+      };
+
+      const newState = reducer(
+        state,
+        entitiesActions.editCustomEventVariablePassByReference({
+          customEventId: "customEvent1",
+          variableId: "V0",
+          passByReference: "array",
+        }),
+      );
+
+      expect(
+        newState.customEvents.entities.customEvent1?.variables.V0
+          ?.passByReference,
+      ).toBe("array");
+      expect(
+        newState.scriptEvents.entities.scriptEvent1?.args?.variable,
+      ).toBe("V0");
+    });
+  });
+
   describe("removeCustomEvent", () => {
     test("Should remove a custom event and clear references when deleteReferences is false", () => {
       const state: EntitiesState = {

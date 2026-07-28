@@ -2172,6 +2172,7 @@ class ScriptBuilder extends ScriptBuilderBase {
       type: "actor" | "variable",
       indirect: boolean,
       value: string,
+      array = false,
     ) => {
       if (!argLookup[type].get(value)) {
         const newArg = `.SCRIPT_ARG_${
@@ -2180,6 +2181,7 @@ class ScriptBuilder extends ScriptBuilderBase {
         argLookup[type].set(value, {
           type: "argument",
           indirect,
+          array,
           symbol: newArg,
         });
         numArgs--;
@@ -2219,7 +2221,12 @@ class ScriptBuilder extends ScriptBuilderBase {
     if (variableArgs) {
       for (const variableArg of clone(variableArgs).reverse()) {
         if (variableArg) {
-          registerArg("variable", variableArg.passByReference, variableArg.id);
+          registerArg(
+            "variable",
+            variableArg.passByReference !== false,
+            variableArg.id,
+            variableArg.passByReference === "array",
+          );
         }
       }
     }

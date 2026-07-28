@@ -4,10 +4,7 @@ import { lexText } from "shared/lib/compiler/lexText";
 import tokenizer from "shared/lib/rpn/tokenizer";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
 import { extractScriptValueVariables } from "shared/lib/scriptValue/helpers";
-import {
-  isIndexedVariable,
-  isScriptValue,
-} from "shared/lib/scriptValue/types";
+import { isIndexedVariable, isScriptValue } from "shared/lib/scriptValue/types";
 
 const normalizeVariableId = (variableId: string): string => {
   if (/^\d+$/.test(variableId)) {
