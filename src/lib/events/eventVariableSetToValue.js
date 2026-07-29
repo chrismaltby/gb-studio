@@ -18,7 +18,6 @@ const fields = [
     type: "variable",
     defaultValue: "LAST_VARIABLE",
     flexBasis: 0,
-    minWidth: 150,
   },
   {
     key: "value",

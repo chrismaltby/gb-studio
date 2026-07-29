@@ -1,7 +1,10 @@
 import DirectionPicker from "components/forms/DirectionPicker";
 import { PropertySelect } from "components/forms/PropertySelect";
 import { VariableSelect } from "components/forms/VariableSelect";
-import { VariableIndexSelect } from "components/forms/VariableIndexSelect";
+import {
+  IndexedVariableInputGroup,
+  VariableIndexSelect,
+} from "components/forms/VariableIndexSelect";
 import {
   isInfix,
   isUnaryOperation,
@@ -288,6 +291,7 @@ const booleanOperatorMenuItems: ValueFunctionMenuItem[] = [
 
 interface ValueWrapperProps {
   $isOver: boolean;
+  $isIndexedVariable?: boolean;
 }
 
 const OperatorWrapper = styled.div`
@@ -316,7 +320,7 @@ const ValueWrapper = styled.div<ValueWrapperProps>`
   display: flex;
   flex-grow: 1;
   align-items: center;
-  min-width: 98px;
+  min-width: ${(props) => (props.$isIndexedVariable ? "min-content" : "98px")};
   flex-basis: 130px;
   ${(props) => (props.$isOver ? dropTargetStyle : "")}
 `;
@@ -1159,8 +1163,12 @@ const ValueSelect = ({
         selectedVariable?.type === "array" ||
         customEvent?.variables[value.value]?.passByReference === "array";
       return (
-        <ValueWrapper ref={previewRef} $isOver={isOver}>
-          <InputGroup ref={dropRef}>
+        <ValueWrapper
+          ref={previewRef}
+          $isOver={isOver}
+          $isIndexedVariable={isIndexableVariable}
+        >
+          <IndexedVariableInputGroup ref={dropRef}>
             <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
             <VariableSelect
               name={name}
@@ -1201,7 +1209,7 @@ const ValueSelect = ({
                 }}
               />
             )}
-          </InputGroup>
+          </IndexedVariableInputGroup>
         </ValueWrapper>
       );
     } else if (value.type === "constant") {

@@ -25,7 +25,7 @@ const fields = [
     description: l10n("FIELD_VARIABLE_DESC"),
     type: "variable",
     defaultValue: "LAST_VARIABLE",
-    width: "50%",
+    flexBasis: 0,
   },
   {
     key: "expression",
@@ -35,6 +35,7 @@ const fields = [
     rows: 5,
     placeholder: "e.g. 5 + (6 * $health)...",
     defaultValue: "",
+    flexBasis: "100%",
   },
 ];
 

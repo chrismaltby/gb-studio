@@ -17,14 +17,23 @@ jest.mock("ui/buttons/DropdownButton", () => ({
   DropdownButton: ({
     label,
     children,
+    variant,
+    onKeyDown,
   }: {
-    label: string;
+    label: React.ReactNode;
     children: React.ReactNode;
+    variant: string;
+    onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => boolean;
   }) => (
-    <div>
+    <button
+      type="button"
+      data-testid="index-type-button"
+      data-variant={variant}
+      onKeyDown={onKeyDown}
+    >
       <span>{label}</span>
       {children}
-    </div>
+    </button>
   ),
 }));
 
@@ -119,6 +128,13 @@ test("switches an array index to the first available constant", () => {
     type: "constant",
     value: "constant-1",
   });
+  expect(screen.getByTestId("index-type-button")).toHaveAttribute(
+    "data-variant",
+    "normal",
+  );
+  expect(screen.getByText("n")).toBeInTheDocument();
+  expect(screen.getByText("$")).toBeInTheDocument();
+  expect(screen.getByText("c")).toBeInTheDocument();
 });
 
 test("updates a selected constant index", () => {
@@ -141,3 +157,31 @@ test("updates a selected constant index", () => {
     value: "constant-2",
   });
 });
+
+test.each([
+  ["n", false, { type: "number", value: 0 }],
+  ["$", true, { type: "variable", value: "L0" }],
+  ["c", false, { type: "constant", value: "constant-1" }],
+] as const)(
+  "changes the array index type using the %s accelerator",
+  (key, shiftKey, expectedValue) => {
+    const onChange = jest.fn();
+
+    render(
+      <VariableIndexSelect
+        name="index"
+        entityId="entity-1"
+        value={{ type: "number", value: 0 }}
+        onChange={onChange}
+      />,
+      store,
+    );
+
+    fireEvent.keyDown(screen.getByTestId("index-type-button"), {
+      key,
+      shiftKey,
+    });
+
+    expect(onChange).toHaveBeenCalledWith(expectedValue);
+  },
+);

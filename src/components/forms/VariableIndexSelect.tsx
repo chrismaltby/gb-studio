@@ -1,7 +1,11 @@
 import { ConstantSelect } from "components/forms/ConstantSelect";
-import { VariableSelect } from "components/forms/VariableSelect";
+import {
+  VariableSelect,
+  VariableSelectWrapper,
+} from "components/forms/VariableSelect";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
-import React, { useContext, useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
+import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import type { VariableIndex } from "shared/lib/scriptValue/types";
 import {
@@ -12,14 +16,62 @@ import {
 import { useAppSelector } from "store/hooks";
 import { namedVariablesByContext } from "renderer/lib/variables";
 import { DropdownButton } from "ui/buttons/DropdownButton";
-import {
-  InputGroup,
-  InputGroupLabel,
-  InputGroupPrepend,
-} from "ui/form/InputGroup";
+import { InputGroupPrepend } from "ui/form/InputGroup";
 import { NumberInput } from "ui/form/NumberInput";
-import { CheckIcon, BlankIcon } from "ui/icons/Icons";
-import { MenuItem } from "ui/menu/Menu";
+import { StyledInput } from "ui/form/style";
+import {
+  BlankIcon,
+  CheckIcon,
+  ConstantIcon,
+  NumberIcon,
+  VariableIcon,
+} from "ui/icons/Icons";
+import { MenuAccelerator, MenuItem } from "ui/menu/Menu";
+
+const VariableIndexBracket = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  font-size: 12px;
+  font-weight: bold;
+  color: ${(props) => props.theme.colors.input.text};
+`;
+
+const VariableIndexInputGroup = styled.div`
+  display: flex;
+  width: auto;
+  min-width: min-content;
+  flex: 1 1 160px;
+
+  > ${InputGroupPrepend} + * .CustomSelect__control,
+  > ${InputGroupPrepend} + * ${StyledInput} {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+`;
+
+export const IndexedVariableInputGroup = styled.div`
+  display: flex;
+  width: 100%;
+  min-width: 200px;
+
+  > ${InputGroupPrepend} + ${VariableSelectWrapper} .CustomSelect__control {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  > ${VariableSelectWrapper} {
+    width: auto;
+    flex: 3 1 160px;
+  }
+
+  > ${VariableIndexInputGroup} {
+    flex: 2 1 160px;
+  }
+`;
 
 interface VariableIndexSelectProps {
   name: string;
@@ -60,48 +112,90 @@ export const VariableIndexSelect = ({
       ? `engine::${Object.keys(engineConstants).sort()[0]}`
       : undefined);
 
-  const onChangeType = (type: VariableIndex["type"]) => {
-    if (type === "number") {
-      onChange({ type: "number", value: 0 });
-    } else if (type === "variable" && defaultVariableId) {
-      onChange({ type: "variable", value: defaultVariableId });
-    } else if (type === "constant" && defaultConstantId) {
-      onChange({ type: "constant", value: defaultConstantId });
-    }
-  };
+  const onChangeType = useCallback(
+    (type: VariableIndex["type"]) => {
+      if (type === "number") {
+        onChange({ type: "number", value: 0 });
+      } else if (type === "variable" && defaultVariableId) {
+        onChange({ type: "variable", value: defaultVariableId });
+      } else if (type === "constant" && defaultConstantId) {
+        onChange({ type: "constant", value: defaultConstantId });
+      }
+    },
+    [defaultConstantId, defaultVariableId, onChange],
+  );
+
+  const onKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLElement>) => {
+      if (event.metaKey || event.ctrlKey) {
+        return false;
+      }
+      if (event.key === "n") {
+        onChangeType("number");
+      } else if (event.key === "$") {
+        onChangeType("variable");
+      } else if (event.key === "c") {
+        onChangeType("constant");
+      } else {
+        return false;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      return true;
+    },
+    [onChangeType],
+  );
+
+  const currentTypeLabel =
+    value.type === "number"
+      ? l10n("FIELD_NUMBER")
+      : value.type === "variable"
+        ? l10n("FIELD_VARIABLE")
+        : l10n("FIELD_CONSTANT");
 
   return (
-    <InputGroup>
+    <VariableIndexInputGroup>
+      <VariableIndexBracket>[</VariableIndexBracket>
       <InputGroupPrepend>
-        <InputGroupLabel>[</InputGroupLabel>
+        <DropdownButton
+          variant="normal"
+          size="small"
+          showArrow={false}
+          title={currentTypeLabel}
+          onKeyDown={onKeyDown}
+          label={
+            value.type === "number" ? (
+              <NumberIcon />
+            ) : value.type === "variable" ? (
+              <VariableIcon />
+            ) : (
+              <ConstantIcon />
+            )
+          }
+        >
+          <MenuItem
+            icon={value.type === "number" ? <CheckIcon /> : <BlankIcon />}
+            onClick={() => onChangeType("number")}
+          >
+            {l10n("FIELD_NUMBER")}
+            <MenuAccelerator accelerator="n" />
+          </MenuItem>
+          <MenuItem
+            icon={value.type === "variable" ? <CheckIcon /> : <BlankIcon />}
+            onClick={() => onChangeType("variable")}
+          >
+            {l10n("FIELD_VARIABLE")}
+            <MenuAccelerator accelerator="$" />
+          </MenuItem>
+          <MenuItem
+            icon={value.type === "constant" ? <CheckIcon /> : <BlankIcon />}
+            onClick={() => onChangeType("constant")}
+          >
+            {l10n("FIELD_CONSTANT")}
+            <MenuAccelerator accelerator="c" />
+          </MenuItem>
+        </DropdownButton>
       </InputGroupPrepend>
-      <DropdownButton
-        variant="transparent"
-        size="small"
-        showArrow={false}
-        label={
-          value.type === "number" ? "#" : value.type === "variable" ? "$" : "@"
-        }
-      >
-        <MenuItem
-          icon={value.type === "number" ? <CheckIcon /> : <BlankIcon />}
-          onClick={() => onChangeType("number")}
-        >
-          {l10n("FIELD_NUMBER")}
-        </MenuItem>
-        <MenuItem
-          icon={value.type === "variable" ? <CheckIcon /> : <BlankIcon />}
-          onClick={() => onChangeType("variable")}
-        >
-          {l10n("FIELD_VARIABLE")}
-        </MenuItem>
-        <MenuItem
-          icon={value.type === "constant" ? <CheckIcon /> : <BlankIcon />}
-          onClick={() => onChangeType("constant")}
-        >
-          {l10n("FIELD_CONSTANT")}
-        </MenuItem>
-      </DropdownButton>
       {value.type === "number" ? (
         <NumberInput
           id={name}
@@ -138,7 +232,7 @@ export const VariableIndexSelect = ({
           }}
         />
       )}
-      <InputGroupLabel>]</InputGroupLabel>
-    </InputGroup>
+      <VariableIndexBracket>]</VariableIndexBracket>
+    </VariableIndexInputGroup>
   );
 };

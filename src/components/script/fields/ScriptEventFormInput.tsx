@@ -25,7 +25,10 @@ import { SceneSelect } from "components/forms/SceneSelect";
 import { SoundEffectSelect } from "components/forms/SoundEffectSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
-import { VariableIndexSelect } from "components/forms/VariableIndexSelect";
+import {
+  IndexedVariableInputGroup,
+  VariableIndexSelect,
+} from "components/forms/VariableIndexSelect";
 import { FontSelect } from "components/forms/FontSelect";
 import {
   castEventToBool,
@@ -46,7 +49,6 @@ import { DropdownButton } from "ui/buttons/DropdownButton";
 import { CheckboxField } from "ui/form/CheckboxField";
 import { CodeEditor } from "ui/form/CodeEditor";
 import { Input } from "ui/form/Input";
-import { InputGroup } from "ui/form/InputGroup";
 import { NumberInput } from "ui/form/NumberInput";
 import { Select } from "ui/form/Select";
 import { SliderField } from "ui/form/SliderField";
@@ -620,7 +622,7 @@ const ScriptEventFormInput = ({
       : { type: "number" as const, value: 0 };
     return (
       <OffscreenSkeletonInput>
-        <InputGroup>
+        <IndexedVariableInputGroup>
           <VariableSelect
             name={id}
             value={variableId}
@@ -664,7 +666,7 @@ const ScriptEventFormInput = ({
               }}
             />
           )}
-        </InputGroup>
+        </IndexedVariableInputGroup>
       </OffscreenSkeletonInput>
     );
   } else if (type === "direction") {
