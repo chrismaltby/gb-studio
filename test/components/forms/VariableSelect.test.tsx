@@ -106,6 +106,67 @@ test("Should use position-based default names for unnamed UUID variables", () =>
   clearL10NData();
 });
 
+test("Should only show array variables when arrays are required", () => {
+  const state = {
+    editor: {
+      type: "actor",
+    },
+    project: {
+      present: {
+        entities: {
+          customEvents: {
+            entities: {},
+            ids: [],
+          },
+          variables: {
+            entities: {
+              scalar: {
+                id: "scalar",
+                name: "Scalar",
+                symbol: "var_scalar",
+                type: "number",
+              },
+              array: {
+                id: "array",
+                name: "Array",
+                symbol: "var_array",
+                type: "array",
+                size: 4,
+              },
+            },
+            ids: ["scalar", "array"],
+          },
+        },
+      },
+    },
+  };
+
+  const store = {
+    getState: () => state,
+    dispatch: () => {},
+    subscribe: () => {},
+  } as unknown as Store<RootState, UnknownAction>;
+
+  render(
+    <VariableSelect
+      name="test"
+      entityId=""
+      value="array"
+      allowedVariableTypes={["array"]}
+      onChange={() => {}}
+      menuIsOpen
+      menuPortalTarget={null}
+    />,
+    store,
+    {},
+  );
+
+  expect(screen.getByRole("option", { name: "Array" })).toBeInTheDocument();
+  expect(
+    screen.queryByRole("option", { name: "Scalar" }),
+  ).not.toBeInTheDocument();
+});
+
 test("Should use default custom event variable name with not renamed", () => {
   const state = {
     editor: {

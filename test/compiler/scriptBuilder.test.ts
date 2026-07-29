@@ -982,7 +982,7 @@ test("Should resolve a scalar variable object without an index", async () => {
   ).toBe("VAR_NUMBER");
 });
 
-test("Should pass an indexed variable object to an array-reference script argument", async () => {
+test("Should pass an array root to an array-reference script argument", async () => {
   const { sb, output } = await createTestScriptBuilder(
     {},
     {
@@ -1019,12 +1019,149 @@ test("Should pass an indexed variable object to an array-reference script argume
     "$variable[V0]$": {
       type: "variable",
       value: "11111111-1111-1111-1111-111111111111",
-      index: { type: "number", value: 2 },
     },
   });
 
   expect(output).toContain(
-    "        VM_PUSH_REFERENCE       ^/(VAR_ARRAY + 2)/ ; Variable V0",
+    "        VM_PUSH_REFERENCE       VAR_ARRAY ; Variable V0",
+  );
+});
+
+test("Should reject an indexed element passed to an array-reference script argument", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+      customEvents: [
+        {
+          id: "script1",
+          name: "Array Script",
+          description: "",
+          variables: {
+            V0: {
+              id: "V0",
+              name: "Array",
+              passByReference: "array",
+            },
+          },
+          actors: {},
+          symbol: "script_1",
+          script: [],
+        },
+      ],
+    },
+  );
+
+  expect(() =>
+    sb.callScript("script1", {
+      "$variable[V0]$": {
+        type: "variable",
+        value: "11111111-1111-1111-1111-111111111111",
+        index: { type: "number", value: 2 },
+      },
+    }),
+  ).toThrow(
+    'Array reference argument "V0" must reference the root of an array',
+  );
+});
+
+test("Should reject a scalar passed to an array-reference script argument", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Scalar",
+          symbol: "var_scalar",
+          type: "number",
+        },
+      },
+      customEvents: [
+        {
+          id: "script1",
+          name: "Array Script",
+          description: "",
+          variables: {
+            V0: {
+              id: "V0",
+              name: "Array",
+              passByReference: "array",
+            },
+          },
+          actors: {},
+          symbol: "script_1",
+          script: [],
+        },
+      ],
+    },
+  );
+
+  expect(() =>
+    sb.callScript("script1", {
+      "$variable[V0]$": {
+        type: "variable",
+        value: "11111111-1111-1111-1111-111111111111",
+      },
+    }),
+  ).toThrow('Array reference argument "V0" must be an array variable');
+});
+
+test("Should pass an array-reference argument root to another script", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      argLookup: {
+        variable: new Map([
+          [
+            "V1",
+            {
+              type: "argument",
+              indirect: true,
+              array: true,
+              symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+            },
+          ],
+        ]),
+        actor: new Map(),
+      },
+      customEvents: [
+        {
+          id: "script1",
+          name: "Array Script",
+          description: "",
+          variables: {
+            V0: {
+              id: "V0",
+              name: "Array",
+              passByReference: "array",
+            },
+          },
+          actors: {},
+          symbol: "script_1",
+          script: [],
+        },
+      ],
+    },
+  );
+
+  sb.callScript("script1", {
+    "$variable[V0]$": {
+      type: "variable",
+      value: "V1",
+    },
+  });
+
+  expect(output).toContain(
+    "        VM_PUSH_VALUE           .SCRIPT_ARG_INDIRECT_0_VARIABLE",
   );
 });
 

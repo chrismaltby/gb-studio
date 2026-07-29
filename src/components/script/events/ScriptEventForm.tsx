@@ -2,14 +2,12 @@ import React, { useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import { customEventSelectors } from "store/features/entities/entitiesSelectors";
 import {
-  ScriptNormalized,
-  ScriptEventFieldSchema,
   ScriptEventNormalized,
   ScriptEventParentType,
 } from "shared/lib/entities/entitiesTypes";
 import ScriptEventFields from "./ScriptEventFields";
-import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
+import { getScriptEventFields } from "./scriptEventFormFields";
 
 interface ScriptEventFormProps {
   scriptEvent: ScriptEventNormalized;
@@ -21,63 +19,6 @@ interface ScriptEventFormProps {
   altBg: boolean;
   renderEvents: (key: string, label: string) => React.ReactNode;
 }
-
-const getScriptEventFields = (
-  command: string,
-  value: { customEventId?: string; engineFieldKey?: string },
-  customEvents: Record<string, ScriptNormalized>,
-  scriptEventDefs: Record<string, ScriptEventDef>,
-) => {
-  const eventCommands =
-    (scriptEventDefs[command] && scriptEventDefs[command]?.fields) || [];
-  if (value.customEventId && customEvents[value.customEventId]) {
-    const customEvent = customEvents[value.customEventId];
-    const description = customEvent?.description
-      ? [
-          {
-            label: customEvent.description
-              .split("\n")
-              .map((text, index) => (
-                <div key={index}>{text || <div>&nbsp;</div>}</div>
-              )),
-          },
-          {
-            type: "break",
-          },
-        ]
-      : [];
-    const usedVariables =
-      Object.values(customEvent?.variables || []).map((v) => {
-        return {
-          label: `${v?.name || ""}`,
-          key: `$variable[${v?.id || ""}]$`,
-          type: "value",
-          defaultValue: {
-            type: "variable",
-            value: "LAST_VARIABLE",
-          },
-        };
-      }) || [];
-    const usedActors =
-      Object.values(customEvent?.actors || []).map((a) => {
-        return {
-          label: `${a?.name || ""}`,
-          defaultValue: "player",
-          key: `$actor[${a?.id || ""}]$`,
-          type: "actor",
-        };
-      }) || [];
-
-    return ([] as ScriptEventFieldSchema[]).concat(
-      eventCommands,
-      description,
-      usedVariables,
-      usedActors,
-    );
-  }
-
-  return eventCommands;
-};
 
 const ScriptEventForm = ({
   scriptEvent,

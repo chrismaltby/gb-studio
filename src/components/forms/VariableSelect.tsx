@@ -25,6 +25,7 @@ import { UnitsSelectButtonInputOverlay } from "./UnitsSelectButtonInputOverlay";
 import { UnitType } from "shared/lib/entities/entitiesTypes";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SingleValue } from "react-select";
+import type { VariableType } from "shared/lib/resources/types";
 
 interface VariableSelectProps extends SelectCommonProps {
   id?: string;
@@ -36,6 +37,7 @@ interface VariableSelectProps extends SelectCommonProps {
   units?: UnitType;
   unitsAllowed?: UnitType[];
   onChangeUnits?: (newUnits: UnitType) => void;
+  allowedVariableTypes?: VariableType[];
 }
 
 export const VariableSelectWrapper = styled.div`
@@ -136,6 +138,7 @@ const VariableSelectComponent = ({
   units,
   unitsAllowed,
   onChangeUnits,
+  allowedVariableTypes,
   ...selectProps
 }: VariableSelectProps) => {
   const context = useContext(ScriptEditorContext);
@@ -160,7 +163,17 @@ const VariableSelectComponent = ({
       context,
       variablesLookup,
       customEvent,
-    );
+    ).filter((variable) => {
+      if (!allowedVariableTypes) {
+        return true;
+      }
+      const variableType =
+        variablesLookup[variable.id]?.type ??
+        (customEvent?.variables[variable.id]?.passByReference === "array"
+          ? "array"
+          : "number");
+      return allowedVariableTypes.includes(variableType);
+    });
     const groupedVariables = groupVariables(variables);
     return groupedVariables.map((g) => {
       const options = g.variables.map((v) => ({
@@ -172,7 +185,7 @@ const VariableSelectComponent = ({
         options,
       };
     });
-  }, [variablesLookup, context, customEvent]);
+  }, [variablesLookup, context, customEvent, allowedVariableTypes]);
 
   const currentValue = useMemo(() => {
     return findSelectOption(options, value);
@@ -248,6 +261,17 @@ const VariableSelectComponent = ({
 
     const action = entitiesActions.addVariable();
     dispatch(action);
+    if (
+      allowedVariableTypes?.length === 1 &&
+      allowedVariableTypes[0] === "array"
+    ) {
+      dispatch(
+        entitiesActions.setVariableType({
+          variableId: action.payload.variableId,
+          type: "array",
+        }),
+      );
+    }
     dispatch(
       entitiesActions.renameVariable({
         variableId: action.payload.variableId,

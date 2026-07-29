@@ -77,6 +77,7 @@ import {
   assertUnreachable,
   dirToAngle,
   fadeSpeeds,
+  getVariableId,
   getPalette,
   scriptValueToPixels,
   scriptValueToSubpixels,
@@ -1966,6 +1967,65 @@ class ScriptBuilder extends ScriptBuilderBase {
   // --------------------------------------------------------------------------
   // Call Script
 
+  _resolveArrayReferenceArgument = (
+    variable: string | ScriptValue | ScriptBuilderFunctionArg,
+    argumentId: string,
+  ): { alias: string; indirect: boolean } => {
+    let rootVariable: ScriptBuilderVariable;
+    if (typeof variable === "string" || this._isFunctionArg(variable)) {
+      rootVariable = variable;
+    } else if (this._isVariableReference(variable)) {
+      if (variable.index) {
+        throw new Error(
+          `Array reference argument "${argumentId}" must reference the root of an array`,
+        );
+      }
+      rootVariable = variable.value;
+    } else {
+      throw new Error(
+        `Array reference argument "${argumentId}" must be an array variable`,
+      );
+    }
+
+    const resolvedVariable = this._resolveVariableRef(rootVariable);
+    if (this._isFunctionArg(resolvedVariable)) {
+      if (!resolvedVariable.indirect || !resolvedVariable.array) {
+        throw new Error(
+          `Array reference argument "${argumentId}" must be an array variable`,
+        );
+      }
+      return {
+        alias: resolvedVariable.symbol,
+        indirect: true,
+      };
+    }
+
+    if (
+      typeof resolvedVariable !== "string" &&
+      typeof resolvedVariable !== "number"
+    ) {
+      throw new Error(
+        `Array reference argument "${argumentId}" must be an array variable`,
+      );
+    }
+
+    const variableId = getVariableId(
+      String(resolvedVariable),
+      this.options.entity,
+    );
+    const variableDefinition = this.options.variablesLookup[variableId];
+    if (variableDefinition?.type !== "array") {
+      throw new Error(
+        `Array reference argument "${argumentId}" must be an array variable`,
+      );
+    }
+
+    return {
+      alias: this.getVariableAlias(rootVariable),
+      indirect: false,
+    };
+  };
+
   callScript = (
     scriptId: string,
     input: Record<string, string | ScriptValue | ScriptBuilderFunctionArg>,
@@ -1996,6 +2056,10 @@ class ScriptBuilder extends ScriptBuilderBase {
       for (const variableArg of variableArgs) {
         if (variableArg) {
           const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
+
+          if (variableArg.passByReference === "array") {
+            continue;
+          }
 
           if (
             typeof variableValue !== "string" &&
@@ -2053,7 +2117,20 @@ class ScriptBuilder extends ScriptBuilderBase {
       for (const variableArg of clone(variableArgs).reverse()) {
         if (variableArg) {
           const variableValue = input?.[`$variable[${variableArg.id}]$`] || "";
-          if (variableArg.passByReference) {
+          if (variableArg.passByReference === "array") {
+            const arrayReference = this._resolveArrayReferenceArgument(
+              variableValue,
+              variableArg.id,
+            );
+            if (arrayReference.indirect) {
+              this._stackPush(arrayReference.alias);
+            } else {
+              this._stackPushReference(
+                arrayReference.alias,
+                `Variable ${variableArg.id}`,
+              );
+            }
+          } else if (variableArg.passByReference) {
             // Pass by Reference ----------
 
             if (typeof variableValue === "string") {

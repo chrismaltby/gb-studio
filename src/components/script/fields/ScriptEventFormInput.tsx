@@ -581,8 +581,31 @@ const ScriptEventFormInput = ({
       fallbackValue = defaultVariableForContext(context.type);
     }
     const fallbackVariableId =
-      availableVariables.find(({ id }) => id === fallbackValue)?.id ??
-      availableVariables[0]?.id ??
+      availableVariables.find(({ id }) => {
+        if (id !== fallbackValue) {
+          return false;
+        }
+        const variableType =
+          variablesLookup[id]?.type ??
+          (customEvent?.variables[id]?.passByReference === "array"
+            ? "array"
+            : "number");
+        return (
+          !field.allowedVariableTypes ||
+          field.allowedVariableTypes.includes(variableType)
+        );
+      })?.id ??
+      availableVariables.find(({ id }) => {
+        const variableType =
+          variablesLookup[id]?.type ??
+          (customEvent?.variables[id]?.passByReference === "array"
+            ? "array"
+            : "number");
+        return (
+          !field.allowedVariableTypes ||
+          field.allowedVariableTypes.includes(variableType)
+        );
+      })?.id ??
       "";
     const variableValue = isScriptValueVariable(value) ? value : undefined;
     const variableId =
@@ -602,7 +625,15 @@ const ScriptEventFormInput = ({
             name={id}
             value={variableId}
             entityId={entityId}
+            allowedVariableTypes={field.allowedVariableTypes}
             onChange={(newValue) => {
+              if (field.valueAsScriptValue) {
+                onChangeField({
+                  type: "variable",
+                  value: newValue,
+                });
+                return;
+              }
               const isIndexable =
                 variablesLookup[newValue]?.type === "array" ||
                 customEvent?.variables[newValue]?.passByReference === "array";
@@ -618,7 +649,7 @@ const ScriptEventFormInput = ({
             }}
             allowRename={allowRename}
           />
-          {isIndexableVariable && (
+          {field.allowVariableIndex !== false && isIndexableVariable && (
             <VariableIndexSelect
               name={`${id}_index`}
               entityId={entityId}
