@@ -66,6 +66,8 @@ const APIMock = {
   dialog: {
     confirmUnsavedChangesTrackerDialog: () => Promise.resolve(2),
     migrateWarning: () => Promise.resolve(true),
+    confirmDeleteConstant: jest.fn(() => Promise.resolve(false)),
+    confirmDeleteCustomEvent: jest.fn(() => Promise.resolve(0)),
   },
   clipboard: {
     readText: () => {},

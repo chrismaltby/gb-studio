@@ -25,6 +25,7 @@ import {
 } from "shared/lib/scripts/walk";
 import { constantInScriptValue } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
+import { createWorkerRequestHandler } from "./createWorkerClient";
 
 export type ConstantUse = {
   id: string;
@@ -60,31 +61,41 @@ export type ConstantUse = {
     }
 );
 
-export interface ConstantUseResult {
-  id: string;
-  uses: ConstantUse[];
+export interface ConstantUsesInput {
+  constantId: string;
+  scenes: SceneNormalized[];
+  scriptEventsLookup: Record<string, ScriptEventNormalized>;
+  actorsLookup: Record<string, ActorNormalized>;
+  triggersLookup: Record<string, TriggerNormalized>;
+  scriptEventDefs: ScriptEventDefs;
+  actorPrefabsLookup: Record<string, ActorPrefabNormalized>;
+  triggerPrefabsLookup: Record<string, TriggerPrefabNormalized>;
+  customEventsLookup: Record<string, ScriptNormalized>;
+  l10NData: L10NLookup;
 }
 
 // eslint-disable-next-line no-restricted-globals
 const workerCtx: Worker = self as unknown as Worker;
 
-workerCtx.onmessage = async (evt) => {
-  const id = evt.data.id;
-  const constantId: string = evt.data.constantId;
-  const scenes: SceneNormalized[] = evt.data.scenes;
+workerCtx.onmessage = createWorkerRequestHandler<
+  ConstantUsesInput,
+  ConstantUse[]
+>(workerCtx, (input) => {
+  const constantId = input.constantId;
+  const scenes = input.scenes;
   const scriptEventsLookup: Record<string, ScriptEventNormalized> =
-    evt.data.scriptEventsLookup;
-  const actorsLookup: Record<string, ActorNormalized> = evt.data.actorsLookup;
+    input.scriptEventsLookup;
+  const actorsLookup: Record<string, ActorNormalized> = input.actorsLookup;
   const triggersLookup: Record<string, TriggerNormalized> =
-    evt.data.triggersLookup;
-  const scriptEventDefs: ScriptEventDefs = evt.data.scriptEventDefs;
+    input.triggersLookup;
+  const scriptEventDefs = input.scriptEventDefs;
   const actorPrefabsLookup: Record<string, ActorPrefabNormalized> =
-    evt.data.actorPrefabsLookup;
+    input.actorPrefabsLookup;
   const triggerPrefabsLookup: Record<string, TriggerPrefabNormalized> =
-    evt.data.triggerPrefabsLookup;
+    input.triggerPrefabsLookup;
   const customEventsLookup: Record<string, ScriptNormalized> =
-    evt.data.customEventsLookup;
-  const l10NData: L10NLookup = evt.data.l10NData;
+    input.customEventsLookup;
+  const l10NData = input.l10NData;
 
   setL10NData(l10NData);
 
@@ -248,5 +259,5 @@ workerCtx.onmessage = async (evt) => {
     );
   });
 
-  workerCtx.postMessage({ id, uses } as ConstantUseResult);
-};
+  return uses;
+});

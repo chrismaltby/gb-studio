@@ -13,13 +13,6 @@ import throttleMiddleware from "store/features/throttle/throttleMiddleware";
 import trackerDocumentMiddleware from "store/features/trackerDocument/trackerDocumentMiddleware";
 import type { RootState } from "store/storeTypes";
 
-jest.mock("components/world/inspector/constants/ConstantInspector", () => ({
-  worker: {
-    addEventListener: jest.fn(),
-    postMessage: jest.fn(),
-  },
-}));
-
 jest.mock("store/features/clipboard/clipboardHelpers", () => ({
   pasteAny: jest.fn(),
   rawCopy: jest.fn(),
@@ -56,5 +49,28 @@ describe.each(appMiddleware)("%s middleware", (_name, middleware) => {
     expect(result).toBe(downstreamResult);
     expect(next).toHaveBeenCalledTimes(1);
     expect(next.mock.calls[0]?.[0]).toBe(action);
+  });
+});
+
+describe("electron middleware entity removal actions", () => {
+  it.each([
+    {
+      type: "entities/removeConstant",
+      payload: { constantId: "constant-1" },
+    },
+    {
+      type: "entities/removeCustomEvent",
+      payload: { customEventId: "script-1", deleteReferences: false },
+    },
+  ])("forwards $type synchronously", (action) => {
+    const store = makeStore();
+    const downstreamResult = {};
+    const next = jest.fn(() => downstreamResult);
+
+    const result = electronMiddleware(store)(next)(action);
+
+    expect(result).toBe(downstreamResult);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(action);
   });
 });

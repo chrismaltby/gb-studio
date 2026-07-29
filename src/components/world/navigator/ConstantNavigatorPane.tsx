@@ -204,7 +204,7 @@ export const ConstantNavigatorPane = ({
         <MenuItem
           key="delete"
           onClick={() =>
-            dispatch(entitiesActions.removeConstant({ constantId: item.id }))
+            dispatch(entitiesActions.confirmRemoveConstant(item.id))
           }
         >
           {l10n("MENU_DELETE_CONSTANT")}

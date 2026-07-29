@@ -28,10 +28,7 @@ import styled from "styled-components";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { ConstantReference } from "components/forms/ReferencesSelect";
-import type {
-  ConstantUse,
-  ConstantUseResult,
-} from "components/world/inspector/constants/ConstantUses.worker";
+import type { ConstantUse } from "renderer/lib/workers/ConstantUses.worker";
 import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -46,10 +43,8 @@ import {
 } from "shared/lib/helpers/8bit";
 import { WorldInspector } from "components/world/inspector/WorldInspector";
 import useWindowSize from "ui/hooks/use-window-size";
-
-export const worker = new Worker(
-  new URL("./ConstantUses.worker.ts", import.meta.url),
-);
+import { findConstantUses } from "renderer/lib/workers/constantUses";
+import { isWorkerRequestAbortError } from "renderer/lib/workers/createWorkerClient";
 
 interface ConstantInspectorProps {
   id: string;
@@ -119,16 +114,6 @@ export const ConstantInspector = ({ id }: ConstantInspectorProps) => {
 
   const dispatch = useAppDispatch();
 
-  const onWorkerComplete = useCallback(
-    (e: MessageEvent<ConstantUseResult>) => {
-      if (e.data.id === id) {
-        setFetching(false);
-        setConstantUses(e.data.uses);
-      }
-    },
-    [id],
-  );
-
   const usesHeight = useMemo(() => {
     const top = entry?.target.getBoundingClientRect().top;
     if (top === undefined || winHeight === undefined) {
@@ -138,33 +123,42 @@ export const ConstantInspector = ({ id }: ConstantInspectorProps) => {
   }, [entry?.target, winHeight]);
 
   useEffect(() => {
-    worker.addEventListener("message", onWorkerComplete);
-    return () => {
-      worker.removeEventListener("message", onWorkerComplete);
-    };
-  }, [onWorkerComplete]);
-
-  useEffect(() => {
     if (constant) {
       setName(constant.name);
     }
   }, [constant]);
 
   useEffect(() => {
-    setFetching(true);
-    worker.postMessage({
-      id,
-      constantId: id,
-      scenes,
-      actorsLookup,
-      triggersLookup,
-      actorPrefabsLookup,
-      triggerPrefabsLookup,
-      scriptEventsLookup,
-      scriptEventDefs,
-      customEventsLookup,
-      l10NData: getL10NData(),
-    });
+    const abortController = new AbortController();
+    const loadUses = async () => {
+      setFetching(true);
+      try {
+        const uses = await findConstantUses(
+          {
+            constantId: id,
+            scenes,
+            actorsLookup,
+            triggersLookup,
+            actorPrefabsLookup,
+            triggerPrefabsLookup,
+            scriptEventsLookup,
+            scriptEventDefs,
+            customEventsLookup,
+            l10NData: getL10NData(),
+          },
+          { signal: abortController.signal },
+        );
+        setConstantUses(uses);
+        setFetching(false);
+      } catch (error) {
+        if (!isWorkerRequestAbortError(error)) {
+          console.error(error);
+          setFetching(false);
+        }
+      }
+    };
+    void loadUses();
+    return () => abortController.abort();
   }, [
     scenes,
     actorsLookup,
@@ -234,7 +228,7 @@ export const ConstantInspector = ({ id }: ConstantInspectorProps) => {
     if (!constant) {
       return;
     }
-    dispatch(entitiesActions.removeConstant({ constantId: constant.id }));
+    dispatch(entitiesActions.confirmRemoveConstant(constant.id));
   }, [dispatch, constant]);
 
   if (!constant && !isEngineConstant) {
