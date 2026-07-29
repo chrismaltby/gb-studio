@@ -27,6 +27,10 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SingleValue } from "react-select";
 import type { VariableType } from "shared/lib/resources/types";
 
+type VariableOption = Option & {
+  variableName: string;
+};
+
 interface VariableSelectProps extends SelectCommonProps {
   id?: string;
   name: string;
@@ -158,44 +162,53 @@ const VariableSelectComponent = ({
   const canRename =
     allowRename && !valueIsTemp && context.entityType !== "customEvent";
 
+  const variables = useMemo(
+    () =>
+      namedVariablesByContext(context, variablesLookup, customEvent).filter(
+        (variable) => {
+          if (!allowedVariableTypes) {
+            return true;
+          }
+          const variableType =
+            variablesLookup[variable.id]?.type ??
+            (customEvent?.variables[variable.id]?.passByReference === "array"
+              ? "array"
+              : "number");
+          return allowedVariableTypes.includes(variableType);
+        },
+      ),
+    [variablesLookup, context, customEvent, allowedVariableTypes],
+  );
+
   const options = useMemo<OptGroup[]>(() => {
-    const variables = namedVariablesByContext(
-      context,
-      variablesLookup,
-      customEvent,
-    ).filter((variable) => {
-      if (!allowedVariableTypes) {
-        return true;
-      }
-      const variableType =
-        variablesLookup[variable.id]?.type ??
-        (customEvent?.variables[variable.id]?.passByReference === "array"
-          ? "array"
-          : "number");
-      return allowedVariableTypes.includes(variableType);
-    });
     const groupedVariables = groupVariables(variables);
     return groupedVariables.map((g) => {
       const options = g.variables.map((v) => ({
         value: v.id,
-        label: `${v.name}`,
+        label: v.displayName,
+        variableName: v.name,
       }));
       return {
         label: g.name,
         options,
       };
     });
-  }, [variablesLookup, context, customEvent, allowedVariableTypes]);
+  }, [variables]);
+
+  const currentVariable = useMemo(
+    () => variables.find((variable) => variable.id === value),
+    [value, variables],
+  );
 
   const currentValue = useMemo(() => {
     return findSelectOption(options, value);
   }, [options, value]);
 
-  const currentLabel = currentValue ? `$${currentValue.label}` : "";
+  const currentLabel = currentVariable ? `$${currentVariable.name}` : "";
 
   const onRenameStart = () => {
     if (currentValue) {
-      setEditValue(currentValue.label);
+      setEditValue(currentVariable?.name ?? currentValue.label);
       setRenameId(currentValue.value);
       setRenameVisible(true);
     }
@@ -304,7 +317,9 @@ const VariableSelectComponent = ({
           }}
           onCreateOption={onCreateVariable}
           formatOptionLabel={(option, { context }) =>
-            context === "value" ? `$${option.label}` : option.label
+            context === "value"
+              ? `$${(option as VariableOption).variableName ?? option.label}`
+              : option.label
           }
           {...selectProps}
         />

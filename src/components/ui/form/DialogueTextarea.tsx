@@ -186,12 +186,12 @@ const searchVariables =
       .filter(
         (v) =>
           v.code.indexOf(upperSearch) > -1 ||
-          v.name.toUpperCase().indexOf(upperSearch) > -1,
+          v.displayName.toUpperCase().indexOf(upperSearch) > -1,
       )
       .slice(0, 5)
       .map((v) => ({
         id: v.code,
-        display: `${wrapper}${v.name}`,
+        display: `${wrapper}${v.displayName}`,
       }));
   };
 

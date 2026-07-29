@@ -74,6 +74,19 @@ export const globalVariableCode = (variable: string) => {
   return variable.padStart(2, "0");
 };
 
+export const variableDisplayName = (
+  name: string,
+  arraySize?: number | null,
+): string => {
+  if (arraySize === null) {
+    return `${name}[]`;
+  }
+  if (arraySize !== undefined) {
+    return `${name}[${arraySize}]`;
+  }
+  return name;
+};
+
 /******************************************************************************
  * Next Variable ID
  */

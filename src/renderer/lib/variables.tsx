@@ -10,6 +10,7 @@ import {
   localVariableName,
   tempVariableCode,
   tempVariableName,
+  variableDisplayName,
 } from "shared/lib/variables/variableNames";
 import { Variable } from "shared/lib/resources/types";
 import { sortByName } from "shared/lib/helpers/sort";
@@ -28,7 +29,8 @@ type VariablesLookup = { [name: string]: Variable | undefined };
 export interface NamedVariable {
   id: string; // The id to use in dropdown value
   code: string; // The code to use in dialogue (when wrapped by $ or #)
-  name: string; // The user defined name or default when not named
+  name: string; // The plain name used when rendering mention tags
+  displayName: string; // The name, including array size, shown in lists
   group: string; // Group name that variable belongs to
 }
 
@@ -63,12 +65,22 @@ export const namedCustomEventVariables = (
   variablesLookup: VariablesLookup,
 ): NamedVariable[] => {
   return ([] as NamedVariable[]).concat(
-    customEventVariables.map((variable) => ({
-      id: customEventVariableCode(variable),
-      code: customEventVariableCode(variable),
-      name: customEventVariableName(variable, customEvent),
-      group: l10n("SIDEBAR_PARAMETERS"),
-    })),
+    customEventVariables.map((variable) => {
+      const id = customEventVariableCode(variable);
+      const name = customEventVariableName(variable, customEvent);
+      return {
+        id,
+        code: id,
+        name,
+        displayName: variableDisplayName(
+          name,
+          customEvent.variables[id]?.passByReference === "array"
+            ? null
+            : undefined,
+        ),
+        group: l10n("SIDEBAR_PARAMETERS"),
+      };
+    }),
     namedGlobalVariables(variablesLookup),
   );
 };
@@ -78,18 +90,26 @@ const namedEntityVariables = (
   variablesLookup: VariablesLookup,
 ): NamedVariable[] => {
   return ([] as NamedVariable[]).concat(
-    localVariables.map((variable) => ({
-      id: localVariableCode(variable),
-      code: localVariableCode(variable),
-      name: localVariableName(variable, entityId, variablesLookup),
-      group: l10n("FIELD_LOCAL"),
-    })),
-    tempVariables.map((variable) => ({
-      id: tempVariableCode(variable),
-      code: tempVariableCode(variable),
-      name: tempVariableName(variable),
-      group: l10n("FIELD_TEMPORARY"),
-    })),
+    localVariables.map((variable) => {
+      const name = localVariableName(variable, entityId, variablesLookup);
+      return {
+        id: localVariableCode(variable),
+        code: localVariableCode(variable),
+        name,
+        displayName: name,
+        group: l10n("FIELD_LOCAL"),
+      };
+    }),
+    tempVariables.map((variable) => {
+      const name = tempVariableName(variable);
+      return {
+        id: tempVariableCode(variable),
+        code: tempVariableCode(variable),
+        name,
+        displayName: name,
+        group: l10n("FIELD_TEMPORARY"),
+      };
+    }),
     namedGlobalVariables(variablesLookup),
   );
 };
@@ -101,12 +121,19 @@ const namedGlobalVariables = (
 ): NamedVariable[] =>
   (Object.values(variablesLookup) as Variable[])
     .filter(isGlobalVariable)
-    .map((variable, index) => ({
-      id: variable.id,
-      code: globalVariableCode(variable.id),
-      name: variableName(variable, index),
-      group: l10n("FIELD_GLOBAL"),
-    }))
+    .map((variable, index) => {
+      const name = variableName(variable, index);
+      return {
+        id: variable.id,
+        code: globalVariableCode(variable.id),
+        name,
+        displayName: variableDisplayName(
+          name,
+          variable.type === "array" ? variable.size : undefined,
+        ),
+        group: l10n("FIELD_GLOBAL"),
+      };
+    })
     .sort(sortByName);
 
 export const groupVariables = (variables: NamedVariable[]): VariableGroup[] => {

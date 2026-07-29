@@ -154,6 +154,7 @@ test("Should only show array variables when arrays are required", () => {
       value="array"
       allowedVariableTypes={["array"]}
       onChange={() => {}}
+      allowRename
       menuIsOpen
       menuPortalTarget={null}
     />,
@@ -161,10 +162,14 @@ test("Should only show array variables when arrays are required", () => {
     {},
   );
 
-  expect(screen.getByRole("option", { name: "Array" })).toBeInTheDocument();
+  expect(screen.getByRole("option", { name: "Array[4]" })).toBeInTheDocument();
+  expect(screen.getByText("$Array")).toBeInTheDocument();
   expect(
     screen.queryByRole("option", { name: "Scalar" }),
   ).not.toBeInTheDocument();
+
+  fireEvent.click(screen.getByTitle("FIELD_RENAME"));
+  expect(screen.getByRole("textbox")).toHaveValue("Array");
 });
 
 test("Should use default custom event variable name with not renamed", () => {

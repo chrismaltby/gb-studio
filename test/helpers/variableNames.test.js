@@ -9,12 +9,19 @@ import {
   customEventVariableCode,
   customEventVariableName,
   getNextVariableId,
+  variableDisplayName,
 } from "../../src/shared/lib/variables/variableNames";
 
 test("Should get variable code for global", () => {
   expect(globalVariableCode("0")).toBe("00");
   expect(globalVariableCode("25")).toBe("25");
   expect(globalVariableCode("250")).toBe("250");
+});
+
+test("Should append array capacity to variable display names", () => {
+  expect(variableDisplayName("Health")).toBe("Health");
+  expect(variableDisplayName("Inventory", 5)).toBe("Inventory[5]");
+  expect(variableDisplayName("Items", null)).toBe("Items[]");
 });
 
 test("Should get variable name for global when provided", () => {

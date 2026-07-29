@@ -18,6 +18,7 @@ import ItemTypes from "renderer/lib/dnd/itemTypes";
 import { assertUnreachable } from "shared/lib/helpers/assert";
 import { useFlatListReparentDnD } from "ui/hooks/use-flatlist-reparent-dnd";
 import { getParentPath } from "shared/lib/helpers/virtualFilesystem";
+import { variableDisplayName } from "shared/lib/variables/variableNames";
 
 interface VariableNavigatorPaneProps {
   height: number;
@@ -52,8 +53,13 @@ export const VariableNavigatorPane = ({
     if (searchTerm.length > 0) {
       const searchTermUpperCase = searchTerm.toLocaleUpperCase();
 
-      const matchingUserVariables = userVariables.filter((constant) =>
-        constant.name.toLocaleUpperCase().includes(searchTermUpperCase),
+      const matchingUserVariables = userVariables.filter((variable) =>
+        variableDisplayName(
+          variable.name,
+          variable.type === "array" ? variable.size : undefined,
+        )
+          .toLocaleUpperCase()
+          .includes(searchTermUpperCase),
       );
 
       const items: EntityNavigatorItem<Variable>[] = [];
@@ -144,7 +150,10 @@ export const VariableNavigatorPane = ({
           <div onClick={() => toggleFolderOpen(item.id)}>{item.filename}</div>
         );
       }
-      return item.filename;
+      return variableDisplayName(
+        item.filename,
+        item.entity?.type === "array" ? item.entity.size : undefined,
+      );
     },
     [toggleFolderOpen],
   );
