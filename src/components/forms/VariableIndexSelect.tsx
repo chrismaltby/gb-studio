@@ -24,7 +24,7 @@ export const VariableIndexSelect = ({
   onChange,
 }: VariableIndexSelectProps) => (
   <VariableIndexInputGroup>
-    <VariableIndexBracket>[</VariableIndexBracket>
+    <VariableIndexBracket $type="open" />
     <ValueSelect
       name={name}
       entityId={entityId}
@@ -33,6 +33,6 @@ export const VariableIndexSelect = ({
       onChange={onChange}
       innerValue
     />
-    <VariableIndexBracket>]</VariableIndexBracket>
+    <VariableIndexBracket $type="close" />
   </VariableIndexInputGroup>
 );

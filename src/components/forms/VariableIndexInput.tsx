@@ -1,9 +1,9 @@
 import { VariableSelectWrapper } from "components/forms/VariableSelect";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { InputGroupPrepend } from "ui/form/InputGroup";
 import { StyledInput } from "ui/form/style";
 
-export const VariableIndexBracket = styled.div`
+export const VariableIndexBracket = styled.div<{ $type: "open" | "close" }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,6 +13,23 @@ export const VariableIndexBracket = styled.div`
   font-size: 12px;
   font-weight: bold;
   color: ${(props) => props.theme.colors.input.text};
+
+  &:after {
+    content: "";
+    width: 2px;
+    height: 100%;
+
+    ${(props) =>
+      props.$type === "open"
+        ? css`
+            border: 2px solid ${(props) => props.theme.colors.brackets.color};
+            border-right: 0;
+          `
+        : css`
+            border: 2px solid ${(props) => props.theme.colors.brackets.color};
+            border-left: 0;
+          `}
+  }
 `;
 
 export const VariableIndexInputGroup = styled.div`

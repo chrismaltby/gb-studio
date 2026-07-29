@@ -1197,7 +1197,7 @@ const ValueSelect = ({
             />
             {isIndexableVariable && (
               <VariableIndexInputGroup>
-                <VariableIndexBracket>[</VariableIndexBracket>
+                <VariableIndexBracket $type="open" />
                 <ValueSelect
                   name={`${name}_index`}
                   entityId={entityId}
@@ -1212,7 +1212,7 @@ const ValueSelect = ({
                   }}
                   innerValue
                 />
-                <VariableIndexBracket>]</VariableIndexBracket>
+                <VariableIndexBracket $type="close" />
               </VariableIndexInputGroup>
             )}
           </IndexedVariableInputGroup>
