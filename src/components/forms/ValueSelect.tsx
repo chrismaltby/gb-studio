@@ -3,8 +3,9 @@ import { PropertySelect } from "components/forms/PropertySelect";
 import { VariableSelect } from "components/forms/VariableSelect";
 import {
   IndexedVariableInputGroup,
-  VariableIndexSelect,
-} from "components/forms/VariableIndexSelect";
+  VariableIndexBracket,
+  VariableIndexInputGroup,
+} from "components/forms/VariableIndexInput";
 import {
   isInfix,
   isUnaryOperation,
@@ -990,9 +991,9 @@ const ValueSelect = ({
                     ? value.value
                     : "",
                 )}
-                min={innerValue ? undefined : min}
-                max={innerValue ? undefined : max}
-                step={innerValue ? undefined : step}
+                min={min}
+                max={max}
+                step={step}
                 placeholder={innerValue ? "0" : String(placeholder ?? "0")}
                 onChange={(e) => {
                   onChange({
@@ -1195,19 +1196,24 @@ const ValueSelect = ({
               }}
             />
             {isIndexableVariable && (
-              <VariableIndexSelect
-                name={`${name}_index`}
-                entityId={entityId}
-                value={value.index}
-                max={
-                  selectedVariable?.type === "array"
-                    ? selectedVariable.size - 1
-                    : undefined
-                }
-                onChange={(index) => {
-                  onChange({ ...value, index });
-                }}
-              />
+              <VariableIndexInputGroup>
+                <VariableIndexBracket>[</VariableIndexBracket>
+                <ValueSelect
+                  name={`${name}_index`}
+                  entityId={entityId}
+                  value={value.index}
+                  max={
+                    selectedVariable?.type === "array"
+                      ? selectedVariable.size - 1
+                      : undefined
+                  }
+                  onChange={(index) => {
+                    onChange({ ...value, index });
+                  }}
+                  innerValue
+                />
+                <VariableIndexBracket>]</VariableIndexBracket>
+              </VariableIndexInputGroup>
             )}
           </IndexedVariableInputGroup>
         </ValueWrapper>

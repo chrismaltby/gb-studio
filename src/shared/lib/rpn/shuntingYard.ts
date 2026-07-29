@@ -22,11 +22,16 @@ const shuntingYard = (input: Token[]): RPNToken[] => {
 
   for (const token of input) {
     // If the current Token is a value or a variable, put them into the output stream.
-    if (
-      token.type === "VAL" ||
-      token.type === "VAR" ||
-      token.type === "CONST"
-    ) {
+    if (token.type === "VAR") {
+      output.push({
+        type: "VAR",
+        symbol: token.symbol,
+        ...(token.index && { index: shuntingYard(token.index) }),
+      });
+      prevToken = token;
+      continue;
+    }
+    if (token.type === "VAL" || token.type === "CONST") {
       output.push(token);
       prevToken = token;
       continue;

@@ -1245,14 +1245,10 @@ export const updateCustomEventArgs = (
         if (isVariableField(scriptEvent.command, arg, args, scriptEventDefs)) {
           const variable = args[arg];
           if (isScriptValueVariable(variable)) {
-            if (isVariableCustomEvent(variable.value)) {
-              addVariable(variable.value);
-            }
-            if (
-              variable.index?.type === "variable" &&
-              isVariableCustomEvent(variable.index.value)
-            ) {
-              addVariable(variable.index.value);
+            for (const variableId of extractScriptValueVariables(variable)) {
+              if (isVariableCustomEvent(variableId)) {
+                addVariable(variableId);
+              }
             }
           } else if (
             isUnionVariableValue(variable) &&

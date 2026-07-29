@@ -1,8 +1,10 @@
 import type { ScriptEvent } from "shared/lib/resources/types";
 import { lexText } from "shared/lib/compiler/lexText";
-import tokenizer from "shared/lib/rpn/tokenizer";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
-import { extractScriptValueVariables } from "shared/lib/scriptValue/helpers";
+import {
+  expressionToScriptValue,
+  extractScriptValueVariables,
+} from "shared/lib/scriptValue/helpers";
 import {
   isScriptValue,
   isScriptValueVariable,
@@ -59,14 +61,7 @@ const extractExpressionVariableIds = (value: unknown): string[] => {
   }
 
   try {
-    return tokenizer(value)
-      .filter((token) => token.type === "VAR")
-      .flatMap((token) => [
-        token.symbol.replaceAll("$", ""),
-        ...(token.index?.type === "VAR"
-          ? [token.index.symbol.replaceAll("$", "")]
-          : []),
-      ]);
+    return extractScriptValueVariables(expressionToScriptValue(value));
   } catch {
     return [];
   }
@@ -125,10 +120,7 @@ export const extractVariableIdsFromScriptEvent = (
       if (typeof value === "string") {
         addVariableId(value);
       } else if (isScriptValueVariable(value)) {
-        addVariableId(value.value);
-        if (value.index?.type === "variable") {
-          addVariableId(value.index.value);
-        }
+        extractScriptValueVariables(value).forEach(addVariableId);
       } else if (isUnionVariableValue(value)) {
         addVariableId(value.value);
       }

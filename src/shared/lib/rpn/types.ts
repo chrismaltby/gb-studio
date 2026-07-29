@@ -69,19 +69,7 @@ interface TokenVal {
 interface TokenVar {
   type: "VAR";
   symbol: string;
-  index?:
-    | {
-        type: "VAL";
-        value: number;
-      }
-    | {
-        type: "VAR";
-        symbol: string;
-      }
-    | {
-        type: "CONST";
-        symbol: string;
-      };
+  index?: Token[];
 }
 
 interface TokenConst {
@@ -109,8 +97,14 @@ export type Token =
   | TokenOperator
   | TokenSeperator;
 
+interface RPNTokenVar {
+  type: "VAR";
+  symbol: string;
+  index?: RPNToken[];
+}
+
 export type RPNToken =
-  TokenVal | TokenVar | TokenConst | TokenFunction | TokenOperator;
+  TokenVal | RPNTokenVar | TokenConst | TokenFunction | TokenOperator;
 
 const rpnTokenTypes = ["VAL", "VAR", "FUN", "OP"] as const;
 

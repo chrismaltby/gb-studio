@@ -3,185 +3,73 @@
  */
 
 import React from "react";
-import { UnknownAction, Store } from "@reduxjs/toolkit";
 import { fireEvent, render, screen } from "../../react-utils";
 import { VariableIndexSelect } from "components/forms/VariableIndexSelect";
-import { RootState } from "store/storeTypes";
 
-jest.mock("shared/lib/lang/l10n", () => ({
+jest.mock("components/forms/ValueSelect", () => ({
   __esModule: true,
-  default: (key: string) => key,
-}));
-
-jest.mock("ui/buttons/DropdownButton", () => ({
-  DropdownButton: ({
-    label,
-    children,
-    variant,
-    onKeyDown,
+  default: ({
+    value,
+    onChange,
+    innerValue,
   }: {
-    label: React.ReactNode;
-    children: React.ReactNode;
-    variant: string;
-    onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => boolean;
+    value: unknown;
+    onChange: (value: unknown) => void;
+    innerValue: boolean;
   }) => (
     <button
       type="button"
-      data-testid="index-type-button"
-      data-variant={variant}
-      onKeyDown={onKeyDown}
+      data-testid="index-value"
+      data-value={JSON.stringify(value)}
+      data-inner-value={String(innerValue)}
+      onClick={() =>
+        onChange({
+          type: "add",
+          valueA: { type: "variable", value: "index" },
+          valueB: { type: "number", value: 1 },
+        })
+      }
     >
-      <span>{label}</span>
-      {children}
+      Index
     </button>
   ),
 }));
 
-jest.mock("components/forms/VariableSelect", () => ({
-  VariableSelect: ({
-    value,
-    onChange,
-  }: {
-    value: string;
-    onChange: (value: string) => void;
-  }) => (
-    <button type="button" onClick={() => onChange("variable-2")}>
-      Variable {value}
-    </button>
-  ),
-}));
-
-jest.mock("components/forms/ConstantSelect", () => ({
-  ConstantSelect: ({
-    value,
-    onChange,
-  }: {
-    value: string;
-    onChange: (value: string) => void;
-  }) => (
-    <button type="button" onClick={() => onChange("constant-2")}>
-      Constant {value}
-    </button>
-  ),
-}));
-
-const state = {
-  project: {
-    present: {
-      entities: {
-        variables: {
-          ids: ["variable-1"],
-          entities: {
-            "variable-1": {
-              id: "variable-1",
-              name: "Index",
-              symbol: "index",
-              type: "number",
-            },
-          },
-        },
-        constants: {
-          ids: ["constant-1"],
-          entities: {
-            "constant-1": {
-              id: "constant-1",
-              name: "Start",
-              symbol: "start",
-              value: 1,
-            },
-          },
-        },
-        customEvents: {
-          ids: [],
-          entities: {},
-        },
-      },
-    },
-  },
-  engine: {
-    consts: {},
-  },
-} as unknown as RootState;
-
-const store = {
-  getState: () => state,
-  dispatch: () => {},
-  subscribe: () => {},
-} as unknown as Store<RootState, UnknownAction>;
-
-test("switches an array index to the first available constant", () => {
-  const onChange = jest.fn();
-
-  render(
-    <VariableIndexSelect
-      name="index"
-      entityId="entity-1"
-      value={{ type: "number", value: 0 }}
-      onChange={onChange}
-    />,
-    store,
-  );
-
-  fireEvent.click(screen.getByText("FIELD_CONSTANT"));
-
-  expect(onChange).toHaveBeenCalledWith({
-    type: "constant",
-    value: "constant-1",
-  });
-  expect(screen.getByTestId("index-type-button")).toHaveAttribute(
-    "data-variant",
-    "normal",
-  );
-  expect(screen.getByText("n")).toBeInTheDocument();
-  expect(screen.getByText("$")).toBeInTheDocument();
-  expect(screen.getByText("c")).toBeInTheDocument();
-});
-
-test("updates a selected constant index", () => {
-  const onChange = jest.fn();
-
+test("renders the index using the ScriptValue editor", () => {
   render(
     <VariableIndexSelect
       name="index"
       entityId="entity-1"
       value={{ type: "constant", value: "constant-1" }}
-      onChange={onChange}
+      onChange={jest.fn()}
     />,
-    store,
   );
 
-  fireEvent.click(screen.getByText("Constant constant-1"));
-
-  expect(onChange).toHaveBeenCalledWith({
-    type: "constant",
-    value: "constant-2",
-  });
+  expect(screen.getByTestId("index-value")).toHaveAttribute(
+    "data-value",
+    JSON.stringify({ type: "constant", value: "constant-1" }),
+  );
+  expect(screen.getByTestId("index-value")).toHaveAttribute(
+    "data-inner-value",
+    "true",
+  );
 });
 
-test.each([
-  ["n", false, { type: "number", value: 0 }],
-  ["$", true, { type: "variable", value: "L0" }],
-  ["c", false, { type: "constant", value: "constant-1" }],
-] as const)(
-  "changes the array index type using the %s accelerator",
-  (key, shiftKey, expectedValue) => {
-    const onChange = jest.fn();
+test("accepts a complex ScriptValue index", () => {
+  const onChange = jest.fn();
+  render(
+    <VariableIndexSelect
+      name="index"
+      entityId="entity-1"
+      onChange={onChange}
+    />,
+  );
 
-    render(
-      <VariableIndexSelect
-        name="index"
-        entityId="entity-1"
-        value={{ type: "number", value: 0 }}
-        onChange={onChange}
-      />,
-      store,
-    );
+  fireEvent.click(screen.getByTestId("index-value"));
 
-    fireEvent.keyDown(screen.getByTestId("index-type-button"), {
-      key,
-      shiftKey,
-    });
-
-    expect(onChange).toHaveBeenCalledWith(expectedValue);
-  },
-);
+  expect(onChange).toHaveBeenCalledWith({
+    type: "add",
+    valueA: { type: "variable", value: "index" },
+    valueB: { type: "number", value: 1 },
+  });
+});

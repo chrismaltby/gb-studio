@@ -1,7 +1,9 @@
 import { lexText, Token as TextToken } from "shared/lib/compiler/lexText";
-import { Token as ExpressionToken } from "shared/lib/rpn/types";
-import tokenizer from "shared/lib/rpn/tokenizer";
 import { normalizeVariableId } from "shared/lib/variables/variableIds";
+import {
+  expressionToScriptValue,
+  variableInScriptValue,
+} from "shared/lib/scriptValue/helpers";
 
 /**
  * Extracts a variable ID from a dialogue token by removing any leading zeros.
@@ -9,18 +11,17 @@ import { normalizeVariableId } from "shared/lib/variables/variableIds";
  * @returns {string | undefined} - The variable ID without leading zeros, or undefined if the token is not of type 'variable'.
  */
 export const dialogueTokenToVariableId = (token: TextToken) =>
-  token.type === "variable"
-    ? normalizeVariableId(token.variableId)
-    : undefined;
+  token.type === "variable" ? normalizeVariableId(token.variableId) : undefined;
 
 /**
  * Extracts a variable ID from an expression token by removing dollar signs and any leading zeros.
  * @param {ExpressionToken} token - The token to process, expected to be of type 'VAR'.
  * @returns {string | undefined} - The variable ID without '$' symbols or leading zeros, or undefined if the token is not of type 'VAR'.
  */
-export const expressionTokenToVariableId = (token: ExpressionToken) =>
-  token.type === "VAR" &&
-  normalizeVariableId(token.symbol.replace(/\$/g, ""));
+export const expressionTokenToVariableId = (
+  token: import("shared/lib/rpn/types").Token,
+) =>
+  token.type === "VAR" && normalizeVariableId(token.symbol.replace(/\$/g, ""));
 
 /**
  * Checks if a given variable ID exists in a dialogue text input.
@@ -48,12 +49,5 @@ export const variableInExpressionText = (
   variableId: string,
   input: string,
 ): boolean => {
-  const expressionTokens = tokenizer(input);
-  const isMatch = (token: ExpressionToken) =>
-    expressionTokenToVariableId(token) === variableId ||
-    (token.type === "VAR" &&
-      token.index?.type === "VAR" &&
-      normalizeVariableId(token.index.symbol.replace(/\$/g, "")) ===
-        variableId);
-  return expressionTokens.some(isMatch);
+  return variableInScriptValue(variableId, expressionToScriptValue(input));
 };

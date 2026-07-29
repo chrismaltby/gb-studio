@@ -25,7 +25,11 @@ test("extracts variable IDs from schema-driven event arguments", () => {
       direct: {
         type: "variable",
         value: "12",
-        index: { type: "variable", value: "26" },
+        index: {
+          type: "add",
+          valueA: { type: "variable", value: "26" },
+          valueB: { type: "number", value: 1 },
+        },
       },
       union: { type: "variable", value: "13" },
       value: {
@@ -35,7 +39,7 @@ test("extracts variable IDs from schema-driven event arguments", () => {
       },
       text: "%d$016$ #17# %t$18$ %f$19$",
       textarea: ["No variable", "$20$"],
-      expression: "$21$[2] + $22$[$27$]",
+      expression: "$21$[$22$[$27$] + $31$]",
       table: {
         variables: ["23"],
         rows: [{ values: [{ type: "number", value: 1 }] }],
@@ -49,7 +53,11 @@ test("extracts variable IDs from schema-driven event arguments", () => {
       "$variable[V2]$": {
         type: "variable",
         value: "29",
-        index: { type: "variable", value: "30" },
+        index: {
+          type: "add",
+          valueA: { type: "variable", value: "30" },
+          valueB: { type: "variable", value: "32" },
+        },
       },
     },
   };
@@ -77,6 +85,8 @@ test("extracts variable IDs from schema-driven event arguments", () => {
       "28",
       "29",
       "30",
+      "31",
+      "32",
     ].sort(),
   );
 });

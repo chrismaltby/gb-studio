@@ -104,36 +104,10 @@ export type RPNOperation = {
   valueB: ScriptValue;
 };
 
-export type VariableIndex =
-  | {
-      type: "number";
-      value: number;
-    }
-  | {
-      type: "variable";
-      value: string;
-    }
-  | {
-      type: "constant";
-      value: string;
-    };
-
 export type ScriptValueVariable = {
   type: "variable";
   value: string;
-  index?: VariableIndex;
-};
-
-export const isVariableIndex = (value: unknown): value is VariableIndex => {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
-  const index = value as VariableIndex;
-  return (
-    (index.type === "number" && typeof index.value === "number") ||
-    ((index.type === "variable" || index.type === "constant") &&
-      typeof index.value === "string")
-  );
+  index?: ScriptValue;
 };
 
 export const isScriptValueVariable = (
@@ -203,6 +177,11 @@ export type ConstScriptValueAtom =
     };
 
 export type ScriptValue = RPNOperation | RPNUnaryOperation | ScriptValueAtom;
+
+export type VariableIndex = ScriptValue;
+
+export const isVariableIndex = (value: unknown): value is ScriptValue =>
+  isScriptValue(value);
 
 export type ConstScriptValue = ConstScriptValueAtom;
 
@@ -416,7 +395,7 @@ export type PrecompiledValueRPNOperation =
   | {
       type: "variable";
       value: string;
-      index?: VariableIndex;
+      index?: ScriptValue;
     }
   | {
       type: "direction";

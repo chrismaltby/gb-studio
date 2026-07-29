@@ -14,7 +14,6 @@ import {
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import { L10NLookup, setL10NData } from "shared/lib/lang/l10n";
-import tokenizer from "shared/lib/rpn/tokenizer";
 import {
   ScriptEventDefs,
   isScriptValueField,
@@ -24,7 +23,10 @@ import {
   walkNormalizedCustomEventScripts,
   walkNormalizedScenesScripts,
 } from "shared/lib/scripts/walk";
-import { constantInScriptValue } from "shared/lib/scriptValue/helpers";
+import {
+  constantInScriptValue,
+  expressionToScriptValue,
+} from "shared/lib/scriptValue/helpers";
 import {
   isScriptValue,
   isScriptValueVariable,
@@ -133,21 +135,14 @@ workerCtx.onmessage = createWorkerRequestHandler<
       (isVariableField(scriptEvent.command, arg, args, scriptEventDefs) ||
         isCustomEventVariableArg) &&
       isScriptValueVariable(argValue) &&
-      argValue.index?.type === "constant" &&
-      argValue.index.value === constantId
+      argValue.index &&
+      constantInScriptValue(constantId, argValue.index)
     ) {
       return true;
     }
     if (field?.type === "matharea" && typeof argValue === "string") {
-      const expressionTokens = tokenizer(argValue);
       if (
-        expressionTokens.some(
-          (token) =>
-            (token.type === "CONST" && token.symbol === constantId) ||
-            (token.type === "VAR" &&
-              token.index?.type === "CONST" &&
-              token.index.symbol === constantId),
-        )
+        constantInScriptValue(constantId, expressionToScriptValue(argValue))
       ) {
         return true;
       }

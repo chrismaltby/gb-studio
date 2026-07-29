@@ -10,10 +10,13 @@ import {
   PrecompiledValueRPNOperation,
   ScriptValue,
   VariableIndex,
+  isUnaryOperation,
+  isValueOperation,
 } from "shared/lib/scriptValue/types";
 import {
   optimiseScriptValue,
   precompileScriptValue,
+  rpnTokensToScriptValue,
   sortFetchOperations,
 } from "shared/lib/scriptValue/helpers";
 import { normalizeVariableId } from "shared/lib/variables/variableIds";
@@ -317,18 +320,7 @@ abstract class ScriptBuilderBase {
             variable = {
               type: "variable",
               value: variable,
-              index:
-                token.index.type === "VAL"
-                  ? { type: "number", value: token.index.value }
-                  : token.index.type === "CONST"
-                    ? {
-                        type: "constant",
-                        value: token.index.symbol,
-                      }
-                    : {
-                        type: "variable",
-                        value: token.index.symbol.replace(/\$/g, ""),
-                      },
+              index: rpnTokensToScriptValue(token.index),
             };
           }
           rpn = rpn.refVariable(variable);
@@ -2351,7 +2343,8 @@ extern void __mute_mask_${symbol};
       const baseVariable = this._resolveVariableRef(resolved.value);
       return (
         (this._isFunctionArg(baseVariable) && baseVariable.indirect) ||
-        resolved.index?.type === "variable"
+        (resolved.index !== undefined &&
+          this._getVariableIndexValue(resolved.index) === undefined)
       );
     }
     return this._isFunctionArg(resolved) && resolved.indirect;
@@ -2585,13 +2578,39 @@ extern void __mute_mask_${symbol};
   };
 
   _getVariableIndexValue = (index: VariableIndex): number | undefined => {
-    if (index.type === "number") {
-      return index.value;
-    }
-    if (index.type === "constant") {
-      return this.getConstantValue(index.value);
+    const replaceConstants = (value: ScriptValue): ScriptValue => {
+      if (value.type === "constant") {
+        return {
+          type: "number",
+          value: this.getConstantValue(value.value),
+        };
+      }
+      if (isValueOperation(value)) {
+        return {
+          ...value,
+          valueA: replaceConstants(value.valueA),
+          valueB: replaceConstants(value.valueB),
+        };
+      }
+      if (isUnaryOperation(value)) {
+        return {
+          ...value,
+          value: replaceConstants(value.value),
+        };
+      }
+      return value;
+    };
+    const optimisedIndex = optimiseScriptValue(replaceConstants(index));
+    if (optimisedIndex.type === "number") {
+      return optimisedIndex.value;
     }
     return undefined;
+  };
+
+  _performScriptValueRPN = (rpn: RPNHandler, value: ScriptValue) => {
+    const [rpnOps, fetchOps] = precompileScriptValue(value);
+    const localsLookup = this._performFetchOperations(fetchOps);
+    this._performValueRPN(rpn, rpnOps, localsLookup);
   };
 
   getVariableAlias = (variable: ScriptBuilderVariable = ""): string => {
@@ -2623,7 +2642,7 @@ extern void __mute_mask_${symbol};
         if (staticIndex !== undefined) {
           rpn.int16(staticIndex);
         } else {
-          rpn.refVariable(this._resolveVariableRef(variable.index.value));
+          this._performScriptValueRPN(rpn, variable.index);
         }
         rpn.operator(".ADD").refSet(pointer).stop();
         return pointer;
@@ -2652,12 +2671,9 @@ extern void __mute_mask_${symbol};
         return `^/(${variableAlias} + ${staticIndex})/`;
       }
       const pointer = this._declareLocal("array_ptr", 1, true);
-      this._rpn()
-        .int16(variableAlias)
-        .refVariable(this._resolveVariableRef(variable.index.value))
-        .operator(".ADD")
-        .refSet(pointer)
-        .stop();
+      const rpn = this._rpn().int16(variableAlias);
+      this._performScriptValueRPN(rpn, variable.index);
+      rpn.operator(".ADD").refSet(pointer).stop();
       return pointer;
     }
 

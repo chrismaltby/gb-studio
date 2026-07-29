@@ -1024,6 +1024,51 @@ test("should convert constant indexed variables in expressions", () => {
   });
 });
 
+test("should convert array index expressions", () => {
+  expect(
+    expressionToScriptValue(
+      "$11111111-1111-1111-1111-111111111111$[$22222222-2222-2222-2222-222222222222$ + 1]",
+    ),
+  ).toEqual({
+    type: "variable",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "22222222-2222-2222-2222-222222222222",
+      },
+      valueB: { type: "number", value: 1 },
+    },
+  });
+});
+
+test("should convert nested indexed variables in array index expressions", () => {
+  expect(
+    expressionToScriptValue(
+      "$11111111-1111-1111-1111-111111111111$[$22222222-2222-2222-2222-222222222222$[$33333333-3333-3333-3333-333333333333$] + $44444444-4444-4444-4444-444444444444$]",
+    ),
+  ).toEqual({
+    type: "variable",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "22222222-2222-2222-2222-222222222222",
+        index: {
+          type: "variable",
+          value: "33333333-3333-3333-3333-333333333333",
+        },
+      },
+      valueB: {
+        type: "variable",
+        value: "44444444-4444-4444-4444-444444444444",
+      },
+    },
+  });
+});
+
 test("should find constants used as variable indices", () => {
   expect(
     constantInScriptValue("33333333-3333-3333-3333-333333333333", {

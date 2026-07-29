@@ -1339,6 +1339,179 @@ test("Should read an indexed array variable from a ScriptValue", async () => {
   );
 });
 
+test("Should read an array using an index expression", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+        "22222222-2222-2222-2222-222222222222": {
+          id: "22222222-2222-2222-2222-222222222222",
+          name: "Index",
+          symbol: "var_index",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  sb.variableSetToScriptValue("0", {
+    type: "variable",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "22222222-2222-2222-2222-222222222222",
+      },
+      valueB: { type: "number", value: 1 },
+    },
+  });
+
+  expect(output.join("\n")).toContain(".R_INT16    VAR_ARRAY");
+  expect(output.join("\n")).toContain(".R_REF      VAR_INDEX");
+  expect(output.join("\n").match(/\.R_OPERATOR \.ADD/g)).toHaveLength(2);
+  expect(output.join("\n")).toContain("VM_PUSH_VALUE_IND");
+});
+
+test("Should read an array using a nested indexed variable expression", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 8,
+        },
+        "22222222-2222-2222-2222-222222222222": {
+          id: "22222222-2222-2222-2222-222222222222",
+          name: "Other",
+          symbol: "var_other",
+          type: "array",
+          size: 8,
+        },
+        "33333333-3333-3333-3333-333333333333": {
+          id: "33333333-3333-3333-3333-333333333333",
+          name: "Index",
+          symbol: "var_index",
+          type: "number",
+        },
+        "44444444-4444-4444-4444-444444444444": {
+          id: "44444444-4444-4444-4444-444444444444",
+          name: "Offset",
+          symbol: "var_offset",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  sb.variableSetToScriptValue("0", {
+    type: "variable",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "22222222-2222-2222-2222-222222222222",
+        index: {
+          type: "variable",
+          value: "33333333-3333-3333-3333-333333333333",
+        },
+      },
+      valueB: {
+        type: "variable",
+        value: "44444444-4444-4444-4444-444444444444",
+      },
+    },
+  });
+
+  expect(output.join("\n")).toContain(".R_INT16    VAR_OTHER");
+  expect(output.join("\n")).toContain(".R_INT16    VAR_ARRAY");
+  expect(output.join("\n")).toContain(".R_REF      VAR_INDEX");
+  expect(output.join("\n")).toContain(".R_REF      VAR_OFFSET");
+  expect(output.join("\n")).toContain(".R_REF_IND");
+  expect(output.join("\n")).toContain("VM_PUSH_VALUE_IND");
+});
+
+test("Should fold a static array index expression", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+    },
+  );
+
+  expect(
+    sb.getVariableAlias({
+      type: "variable",
+      value: "11111111-1111-1111-1111-111111111111",
+      index: {
+        type: "add",
+        valueA: { type: "number", value: 1 },
+        valueB: { type: "number", value: 2 },
+      },
+    }),
+  ).toBe("^/(VAR_ARRAY + 3)/");
+});
+
+test("Should reject an out of bounds constant index expression", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+      constantsLookup: {
+        "22222222-2222-2222-2222-222222222222": {
+          id: "22222222-2222-2222-2222-222222222222",
+          name: "Index",
+          symbol: "index",
+          value: 3,
+        },
+      },
+    },
+  );
+
+  expect(() =>
+    sb.getVariableAlias({
+      type: "variable",
+      value: "11111111-1111-1111-1111-111111111111",
+      index: {
+        type: "add",
+        valueA: {
+          type: "constant",
+          value: "22222222-2222-2222-2222-222222222222",
+        },
+        valueB: { type: "number", value: 1 },
+      },
+    }),
+  ).toThrow('Array index 4 is out of bounds for variable "Array" with size 4');
+});
+
 test("Should set a camera property from an indexed ScriptValue", async () => {
   const { sb, output } = await createTestScriptBuilder(
     {},

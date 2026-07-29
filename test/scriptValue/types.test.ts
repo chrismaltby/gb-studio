@@ -17,6 +17,16 @@ test("should typeguard constant variable indices", () => {
   ).toEqual(true);
 });
 
+test("should typeguard complex variable indices", () => {
+  expect(
+    isVariableIndex({
+      type: "add",
+      valueA: { type: "variable", value: "index" },
+      valueB: { type: "number", value: 1 },
+    }),
+  ).toEqual(true);
+});
+
 test("should typeguard script values with constant variable indices", () => {
   expect(
     isScriptValue({
