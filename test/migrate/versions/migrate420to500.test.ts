@@ -173,3 +173,52 @@ test("adds number type to existing legacy variables", () => {
     },
   ]);
 });
+
+test.each([
+  ["when the current definition is missing", {}],
+  [
+    "when the current definition has changed",
+    {
+      EVENT_INC_VALUE: {
+        fieldsLookup: {
+          variable: { type: "actor" },
+        },
+      },
+    },
+  ],
+] as const)(
+  "uses the 4.2 event definition snapshot %s",
+  (_description, currentScriptEventDefs) => {
+    const resources = {
+      ...dummyCompressedProjectResources,
+      scripts: [
+        {
+          ...dummyScriptResource,
+          script: [
+            {
+              id: "event1",
+              command: "EVENT_INC_VALUE",
+              args: {
+                variable: "21",
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const migrated = migrateFrom420r10To500r1Variables(
+      resources as unknown as CompressedProjectResources,
+      {
+        scriptEventDefs: currentScriptEventDefs as unknown as ScriptEventDefs,
+      },
+    );
+
+    expect(migrated.variables.variables).toContainEqual({
+      id: "21",
+      name: "",
+      symbol: "var_21",
+      type: "number",
+    });
+  },
+);

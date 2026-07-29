@@ -1,5 +1,4 @@
 import type { ScriptEvent } from "shared/lib/resources/types";
-import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import { lexText } from "shared/lib/compiler/lexText";
 import tokenizer from "shared/lib/rpn/tokenizer";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
@@ -9,6 +8,18 @@ import {
   isScriptValueVariable,
 } from "shared/lib/scriptValue/types";
 import { normalizeVariableId } from "shared/lib/variables/variableIds";
+
+export type ScriptEventDefsForVariableExtraction = Record<
+  string,
+  {
+    fieldsLookup: Record<
+      string,
+      {
+        type?: string;
+      }
+    >;
+  }
+>;
 
 const isUnionVariableValue = (
   value: unknown,
@@ -83,7 +94,7 @@ const extractReferencedVariableIds = (value: unknown): string[] => {
 
 export const extractVariableIdsFromScriptEvent = (
   scriptEvent: Pick<ScriptEvent, "id" | "command" | "args">,
-  scriptEventDefs: ScriptEventDefs,
+  scriptEventDefs: ScriptEventDefsForVariableExtraction,
 ): string[] => {
   const variableIds = new Set<string>();
   const args = scriptEvent.args;

@@ -38,6 +38,7 @@
     "fetch-deps": "git submodule update --init --recursive && ts-node --project tsconfig.scripts.json src/scripts/fetchDependencies.ts",
     "fetch-contributors": "ts-node --project tsconfig.scripts.json src/scripts/fetchContributors.ts",
     "fetch-patrons": "ts-node --project tsconfig.scripts.json src/scripts/fetchPatrons.ts",
+    "snapshotScriptEventDefs": "cross-env NODE_ENV=test NODE_PATH=src ts-node --project tsconfig.scripts.json src/scripts/snapshotScriptEventDefs.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "knip": "knip",

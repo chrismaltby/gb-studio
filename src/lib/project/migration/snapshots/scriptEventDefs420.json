@@ -1,0 +1,232 @@
+{
+  "EVENT_ACTOR_GET_DIRECTION": {
+    "direction": "variable"
+  },
+  "EVENT_ACTOR_GET_POSITION": {
+    "vectorX": "variable",
+    "vectorY": "variable"
+  },
+  "EVENT_ACTOR_MOVE_RELATIVE": {
+    "x": "value",
+    "y": "value"
+  },
+  "EVENT_ACTOR_MOVE_TO": {
+    "x": "value",
+    "y": "value"
+  },
+  "EVENT_ACTOR_MOVE_TO_VALUE": {
+    "vectorX": "variable",
+    "vectorY": "variable"
+  },
+  "EVENT_ACTOR_SET_COLLISION_BOX": {
+    "x": "value",
+    "y": "value",
+    "width": "value",
+    "height": "value"
+  },
+  "EVENT_ACTOR_SET_DIRECTION": {
+    "direction": "value"
+  },
+  "EVENT_ACTOR_SET_FRAME": {
+    "frame": "value"
+  },
+  "EVENT_ACTOR_SET_FRAME_TO_VALUE": {
+    "variable": "variable"
+  },
+  "EVENT_ACTOR_SET_POSITION": {
+    "x": "value",
+    "y": "value"
+  },
+  "EVENT_ACTOR_SET_POSITION_RELATIVE": {
+    "x": "value",
+    "y": "value"
+  },
+  "EVENT_ACTOR_SET_POSITION_TO_VALUE": {
+    "vectorX": "variable",
+    "vectorY": "variable"
+  },
+  "EVENT_ADD_FLAGS": {
+    "variable": "variable"
+  },
+  "EVENT_CAMERA_MOVE_TO": {
+    "x": "value",
+    "y": "value"
+  },
+  "EVENT_CAMERA_PROPERTY_SET": {
+    "value": "value"
+  },
+  "EVENT_CAMERA_SET_BOUNDS": {
+    "x": "value",
+    "y": "value",
+    "width": "value",
+    "height": "value"
+  },
+  "EVENT_CAMERA_SET_POSITION": {
+    "x": "value",
+    "y": "value"
+  },
+  "EVENT_CAMERA_SHAKE": {
+    "magnitude": "value"
+  },
+  "EVENT_CHOICE": {
+    "variable": "variable",
+    "trueText": "textarea",
+    "falseText": "textarea"
+  },
+  "EVENT_CLEAR_FLAGS": {
+    "variable": "variable"
+  },
+  "EVENT_COMMENT": {
+    "text": "textarea"
+  },
+  "EVENT_DATA_TABLE": {
+    "indexVariable": "variable",
+    "data": "dataTable"
+  },
+  "EVENT_DEC_VALUE": {
+    "variable": "variable"
+  },
+  "EVENT_DEFINE_LABEL": {
+    "label": "text"
+  },
+  "EVENT_ENGINE_FIELD_STORE": {
+    "value": "variable"
+  },
+  "EVENT_GBVM_SCRIPT": {
+    "references": "references"
+  },
+  "EVENT_GOTO_LABEL": {
+    "label": "text"
+  },
+  "EVENT_IF": {
+    "condition": "value"
+  },
+  "EVENT_IF_ACTOR_AT_POSITION": {
+    "x": "value",
+    "y": "value"
+  },
+  "EVENT_IF_ACTOR_DIRECTION": {
+    "direction": "value"
+  },
+  "EVENT_IF_ACTOR_DISTANCE_FROM_ACTOR": {
+    "distance": "value"
+  },
+  "EVENT_IF_EXPRESSION": {
+    "expression": "matharea"
+  },
+  "EVENT_IF_FALSE": {
+    "variable": "variable"
+  },
+  "EVENT_IF_FLAGS_COMPARE": {
+    "variable": "variable"
+  },
+  "EVENT_IF_TRUE": {
+    "variable": "variable"
+  },
+  "EVENT_IF_VALUE": {
+    "variable": "variable"
+  },
+  "EVENT_IF_VALUE_COMPARE": {
+    "vectorX": "variable",
+    "vectorY": "variable"
+  },
+  "EVENT_INC_VALUE": {
+    "variable": "variable"
+  },
+  "EVENT_LAUNCH_PROJECTILE": {
+    "angleVariable": "variable"
+  },
+  "EVENT_LAUNCH_PROJECTILE_SLOT": {
+    "angleVariable": "variable"
+  },
+  "EVENT_LINK_TRANSFER": {
+    "sendVariable": "variable",
+    "receiveVariable": "variable"
+  },
+  "EVENT_LOOP_FOR": {
+    "variable": "variable",
+    "from": "value",
+    "to": "value",
+    "value": "value"
+  },
+  "EVENT_LOOP_WHILE": {
+    "condition": "value"
+  },
+  "EVENT_MENU": {
+    "variable": "variable",
+    "option1": "textarea",
+    "option2": "textarea",
+    "option3": "textarea",
+    "option4": "textarea",
+    "option5": "textarea",
+    "option6": "textarea",
+    "option7": "textarea",
+    "option8": "textarea"
+  },
+  "EVENT_OVERLAY_SET_SCANLINE_CUTOFF": {
+    "y": "value"
+  },
+  "EVENT_PEEK_DATA": {
+    "variableDest": "variable",
+    "variableSource": "variable"
+  },
+  "EVENT_RATE_LIMIT": {
+    "variable": "variable"
+  },
+  "EVENT_REPLACE_TILE_XY": {
+    "x": "value",
+    "y": "value",
+    "tileIndex": "value"
+  },
+  "EVENT_REPLACE_TILE_XY_SEQUENCE": {
+    "x": "value",
+    "y": "value",
+    "tileIndex": "value",
+    "frames": "value",
+    "variable": "variable"
+  },
+  "EVENT_SET_FALSE": {
+    "variable": "variable"
+  },
+  "EVENT_SET_FLAGS": {
+    "variable": "variable"
+  },
+  "EVENT_SET_TRUE": {
+    "variable": "variable"
+  },
+  "EVENT_SET_VALUE": {
+    "variable": "variable",
+    "value": "value"
+  },
+  "EVENT_SWITCH": {
+    "variable": "variable"
+  },
+  "EVENT_SWITCH_SCENE": {
+    "x": "value",
+    "y": "value"
+  },
+  "EVENT_TEXT": {
+    "text": "textarea"
+  },
+  "EVENT_TEXT_DRAW": {
+    "text": "textarea"
+  },
+  "EVENT_THREAD_START": {
+    "variable": "variable"
+  },
+  "EVENT_THREAD_STOP": {
+    "variable": "variable"
+  },
+  "EVENT_VARIABLE_MATH": {
+    "vectorX": "variable",
+    "vectorY": "variable"
+  },
+  "EVENT_VARIABLE_MATH_EVALUATE": {
+    "variable": "variable",
+    "expression": "matharea"
+  },
+  "EVENT_WAIT": {
+    "time": "value",
+    "frames": "value"
+  }
+}

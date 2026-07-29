@@ -6,6 +6,15 @@ import {
 import { genSymbol } from "shared/lib/helpers/symbols";
 import { Variable } from "shared/lib/resources/types";
 import { extractVariableIdsFromScriptEvent } from "shared/lib/variables/extractVariableReferences";
+import scriptEventDefs420Snapshot from "lib/project/migration/snapshots/scriptEventDefs420.json";
+import {
+  scriptEventDefsFromSnapshot,
+  ScriptEventDefsSnapshot,
+} from "lib/project/migration/snapshots/scriptEventDefs";
+
+const scriptEventDefs420 = scriptEventDefsFromSnapshot(
+  scriptEventDefs420Snapshot as ScriptEventDefsSnapshot,
+);
 
 type LegacyVariable = {
   id: string;
@@ -32,10 +41,15 @@ export const migrateFrom420r10To500r1Variables: ProjectResourcesMigrationFn = (
   );
   const usedLegacyVariableIds = new Set<string>();
 
+  const scriptEventDefs = {
+    ...context.scriptEventDefs,
+    ...scriptEventDefs420,
+  };
+
   const migratedResources = migrateEvents(resources, (scriptEvent) => {
     const variableIds = extractVariableIdsFromScriptEvent(
       scriptEvent,
-      context.scriptEventDefs,
+      scriptEventDefs,
     );
     for (const variableId of variableIds) {
       const variableNumber = Number(variableId);
