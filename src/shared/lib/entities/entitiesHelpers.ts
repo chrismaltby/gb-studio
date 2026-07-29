@@ -61,7 +61,7 @@ import {
   extractScriptValueVariables,
 } from "shared/lib/scriptValue/helpers";
 import {
-  isIndexedVariable,
+  isScriptValueVariable,
   ScriptValue,
   isScriptValue,
 } from "shared/lib/scriptValue/types";
@@ -1244,22 +1244,22 @@ export const updateCustomEventArgs = (
 
         if (isVariableField(scriptEvent.command, arg, args, scriptEventDefs)) {
           const variable = args[arg];
-          if (
+          if (isScriptValueVariable(variable)) {
+            if (isVariableCustomEvent(variable.value)) {
+              addVariable(variable.value);
+            }
+            if (
+              variable.index?.type === "variable" &&
+              isVariableCustomEvent(variable.index.value)
+            ) {
+              addVariable(variable.index.value);
+            }
+          } else if (
             isUnionVariableValue(variable) &&
             variable.value &&
             isVariableCustomEvent(variable.value)
           ) {
             addVariable(variable.value);
-          } else if (isIndexedVariable(variable)) {
-            if (isVariableCustomEvent(variable.value)) {
-              addVariable(variable.value);
-            }
-            if (
-              variable.index.type === "variable" &&
-              isVariableCustomEvent(variable.index.value)
-            ) {
-              addVariable(variable.index.value);
-            }
           } else if (
             typeof variable === "string" &&
             isVariableCustomEvent(variable)

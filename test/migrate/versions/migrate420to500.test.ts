@@ -72,7 +72,7 @@ test("creates entries for referenced unnamed legacy global variables", () => {
               "$variable[V0]$": { type: "variable", value: "15" },
               "$variable[V1]$": "18",
               "$variable[V2]$": {
-                type: "indexed",
+                type: "variable",
                 value: "19",
                 index: { type: "variable", value: "20" },
               },

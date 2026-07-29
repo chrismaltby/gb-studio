@@ -4,7 +4,10 @@ import { lexText } from "shared/lib/compiler/lexText";
 import tokenizer from "shared/lib/rpn/tokenizer";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
 import { extractScriptValueVariables } from "shared/lib/scriptValue/helpers";
-import { isIndexedVariable, isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  isScriptValue,
+  isScriptValueVariable,
+} from "shared/lib/scriptValue/types";
 import { normalizeVariableId } from "shared/lib/variables/variableIds";
 
 const isUnionVariableValue = (
@@ -101,11 +104,6 @@ export const extractVariableIdsFromScriptEvent = (
     if (isCustomEventVariableArg) {
       if (typeof value === "string") {
         addVariableId(value);
-      } else if (isIndexedVariable(value)) {
-        addVariableId(value.value);
-        if (value.index.type === "variable") {
-          addVariableId(value.index.value);
-        }
       } else if (isScriptValue(value)) {
         extractScriptValueVariables(value).forEach(addVariableId);
       }
@@ -115,9 +113,9 @@ export const extractVariableIdsFromScriptEvent = (
     if (field?.type === "variable" || (field && isUnionVariableValue(value))) {
       if (typeof value === "string") {
         addVariableId(value);
-      } else if (isIndexedVariable(value)) {
+      } else if (isScriptValueVariable(value)) {
         addVariableId(value.value);
-        if (value.index.type === "variable") {
+        if (value.index?.type === "variable") {
           addVariableId(value.index.value);
         }
       } else if (isUnionVariableValue(value)) {

@@ -30,7 +30,7 @@ import {
   ScriptBuilderComparisonOperator,
   ScriptBuilderDataTable,
   ScriptBuilderFunctionArg,
-  ScriptBuilderIndexedVariable,
+  ScriptBuilderVariableReference,
   ScriptBuilderLocalSymbol,
   ScriptBuilderMoveType,
   ScriptBuilderOptions,
@@ -315,7 +315,7 @@ abstract class ScriptBuilderBase {
           }
           if (token.index) {
             variable = {
-              type: "indexed",
+              type: "variable",
               value: variable,
               index:
                 token.index.type === "VAL"
@@ -400,7 +400,7 @@ abstract class ScriptBuilderBase {
         return { type: "number", value: this.getActorIndex(id) };
       }
     }
-    if (this._isIndexedVariable(id)) {
+    if (this._isVariableReference(id)) {
       return { type: "reference", symbol: this.getVariableAlias(id) };
     }
     return { type: "reference", symbol: id.symbol };
@@ -455,14 +455,11 @@ abstract class ScriptBuilderBase {
   _scriptValueVariable = (
     value: string,
     index?: VariableIndex,
-  ): ScriptBuilderVariable =>
-    index
-      ? {
-          type: "indexed",
-          value,
-          index,
-        }
-      : value;
+  ): ScriptBuilderVariable => ({
+    type: "variable",
+    value,
+    index,
+  });
 
   _stackPushReference = (
     addr: ScriptBuilderStackVariable,
@@ -2342,19 +2339,19 @@ extern void __mute_mask_${symbol};
     );
   };
 
-  _isIndexedVariable = (x: unknown): x is ScriptBuilderIndexedVariable => {
-    return isObject(x) && x.type === "indexed";
+  _isVariableReference = (x: unknown): x is ScriptBuilderVariableReference => {
+    return isObject(x) && x.type === "variable";
   };
 
   _isIndirectVariable = (x: ScriptBuilderVariable): boolean => {
-    const resolved = this._isIndexedVariable(x)
+    const resolved = this._isVariableReference(x)
       ? x
       : this._resolveVariableRef(x);
-    if (this._isIndexedVariable(resolved)) {
+    if (this._isVariableReference(resolved)) {
       const baseVariable = this._resolveVariableRef(resolved.value);
       return (
         (this._isFunctionArg(baseVariable) && baseVariable.indirect) ||
-        resolved.index.type === "variable"
+        resolved.index?.type === "variable"
       );
     }
     return this._isFunctionArg(resolved) && resolved.indirect;
@@ -2598,7 +2595,10 @@ extern void __mute_mask_${symbol};
   };
 
   getVariableAlias = (variable: ScriptBuilderVariable = ""): string => {
-    if (this._isIndexedVariable(variable)) {
+    if (this._isVariableReference(variable)) {
+      if (!variable.index) {
+        return this.getVariableAlias(variable.value);
+      }
       const staticIndex = this._getVariableIndexValue(variable.index);
       const resolvedVariable = this._resolveVariableRef(variable.value);
       if (this._isFunctionArg(resolvedVariable)) {

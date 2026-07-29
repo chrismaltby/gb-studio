@@ -6,11 +6,7 @@ import {
 import l10n from "shared/lib/lang/l10n";
 import type { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { scriptValueToString } from "shared/lib/scriptValue/format";
-import {
-  isIndexedVariable,
-  isScriptValue,
-  type ScriptValue,
-} from "shared/lib/scriptValue/types";
+import { isScriptValue, type ScriptValue } from "shared/lib/scriptValue/types";
 import { lexText } from "shared/lib/compiler/lexText";
 
 const propertyNameForId = (value: string) => {
@@ -187,21 +183,9 @@ export const getAutoLabel = (
     } else if (isActorField(command, key, args, scriptEventDefs)) {
       return `||actor:${value}||`;
     } else if (isVariableField(command, key, args, scriptEventDefs)) {
-      if (isIndexedVariable(value)) {
-        return scriptValueToAutoLabel({
-          type: "variable",
-          value: value.value,
-          index: value.index,
-        });
+      if (isScriptValue(value)) {
+        return scriptValueToAutoLabel(value);
       }
-      if (isIndexedVariable(value)) {
-        return scriptValueToAutoLabel({
-          type: "variable",
-          value: value.value,
-          index: value.index,
-        });
-      }
-
       return `||variable:${value}||`;
     } else if (isPropertyField(command, key, args, scriptEventDefs)) {
       const propertyParts = String(value).split(":");

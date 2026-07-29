@@ -942,7 +942,7 @@ test("Should increment an array variable with a static index", async () => {
   );
 
   sb.variableInc({
-    type: "indexed",
+    type: "variable",
     value: "11111111-1111-1111-1111-111111111111",
     index: { type: "number", value: 2 },
   });
@@ -957,6 +957,75 @@ test("Should increment an array variable with a static index", async () => {
     "            .R_STOP",
     "",
   ]);
+});
+
+test("Should resolve a scalar variable object without an index", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Number",
+          symbol: "var_number",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  expect(
+    sb.getVariableAlias({
+      type: "variable",
+      value: "11111111-1111-1111-1111-111111111111",
+    }),
+  ).toBe("VAR_NUMBER");
+});
+
+test("Should pass an indexed variable object to an array-reference script argument", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+      customEvents: [
+        {
+          id: "script1",
+          name: "Array Script",
+          description: "",
+          variables: {
+            V0: {
+              id: "V0",
+              name: "Array",
+              passByReference: "array",
+            },
+          },
+          actors: {},
+          symbol: "script_1",
+          script: [],
+        },
+      ],
+    },
+  );
+
+  sb.callScript("script1", {
+    "$variable[V0]$": {
+      type: "variable",
+      value: "11111111-1111-1111-1111-111111111111",
+      index: { type: "number", value: 2 },
+    },
+  });
+
+  expect(output).toContain(
+    "        VM_PUSH_REFERENCE       ^/(VAR_ARRAY + 2)/ ; Variable V0",
+  );
 });
 
 test("Should increment an array variable with a constant index", async () => {
@@ -984,7 +1053,7 @@ test("Should increment an array variable with a constant index", async () => {
   );
 
   sb.variableInc({
-    type: "indexed",
+    type: "variable",
     value: "11111111-1111-1111-1111-111111111111",
     index: {
       type: "constant",
@@ -1027,7 +1096,7 @@ test("Should increment an array variable with a variable index", async () => {
   );
 
   sb.variableInc({
-    type: "indexed",
+    type: "variable",
     value: "11111111-1111-1111-1111-111111111111",
     index: {
       type: "variable",
@@ -1211,7 +1280,7 @@ test("Should reject indexed references to number variables", async () => {
 
   expect(() =>
     sb.getVariableAlias({
-      type: "indexed",
+      type: "variable",
       value: "11111111-1111-1111-1111-111111111111",
       index: { type: "number", value: 0 },
     }),
@@ -1238,7 +1307,7 @@ test.each([-1, 4])(
 
     expect(() =>
       sb.getVariableAlias({
-        type: "indexed",
+        type: "variable",
         value: "11111111-1111-1111-1111-111111111111",
         index: { type: "number", value: index },
       }),
@@ -1274,7 +1343,7 @@ test("Should reject constant array indices outside the declared size", async () 
 
   expect(() =>
     sb.getVariableAlias({
-      type: "indexed",
+      type: "variable",
       value: "11111111-1111-1111-1111-111111111111",
       index: {
         type: "constant",
@@ -1406,7 +1475,7 @@ test("Should write an indexed array through a by-reference script argument", asy
 
   sb.variableSetToScriptValue(
     {
-      type: "indexed",
+      type: "variable",
       value: "V0",
       index: { type: "number", value: 3 },
     },
@@ -1443,7 +1512,7 @@ test("Should reject indexing a script argument passed by value", async () => {
 
   expect(() =>
     sb.getVariableAlias({
-      type: "indexed",
+      type: "variable",
       value: "V0",
       index: { type: "number", value: 1 },
     }),
@@ -1473,7 +1542,7 @@ test("Should reject indexing a scalar script argument passed by reference", asyn
 
   expect(() =>
     sb.getVariableAlias({
-      type: "indexed",
+      type: "variable",
       value: "V0",
       index: { type: "number", value: 1 },
     }),
@@ -1504,7 +1573,7 @@ test("Should not reuse the array pointer local while setting an indexed variable
 
   sb.variableSetToScriptValue(
     {
-      type: "indexed",
+      type: "variable",
       value: "11111111-1111-1111-1111-111111111111",
       index: {
         type: "variable",

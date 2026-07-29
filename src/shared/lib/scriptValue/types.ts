@@ -118,10 +118,10 @@ export type VariableIndex =
       value: string;
     };
 
-export type IndexedVariable = {
-  type: "indexed";
+export type ScriptValueVariable = {
+  type: "variable";
   value: string;
-  index: VariableIndex;
+  index?: VariableIndex;
 };
 
 export const isVariableIndex = (value: unknown): value is VariableIndex => {
@@ -136,15 +136,17 @@ export const isVariableIndex = (value: unknown): value is VariableIndex => {
   );
 };
 
-export const isIndexedVariable = (value: unknown): value is IndexedVariable => {
+export const isScriptValueVariable = (
+  value: unknown,
+): value is ScriptValueVariable => {
   if (!value || typeof value !== "object") {
     return false;
   }
-  const variable = value as IndexedVariable;
+  const variable = value as ScriptValueVariable;
   return (
-    variable.type === "indexed" &&
+    variable.type === "variable" &&
     typeof variable.value === "string" &&
-    isVariableIndex(variable.index)
+    (variable.index === undefined || isVariableIndex(variable.index))
   );
 };
 
@@ -157,11 +159,7 @@ export type ScriptValueAtom =
       type: "numberSymbol";
       value: string;
     }
-  | {
-      type: "variable";
-      value: string;
-      index?: VariableIndex;
-    }
+  | ScriptValueVariable
   | {
       type: "constant";
       value: string;
@@ -270,10 +268,7 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   }
   // Is Variable
   if (scriptValue.type === "variable") {
-    return (
-      typeof scriptValue.value === "string" &&
-      (scriptValue.index === undefined || isVariableIndex(scriptValue.index))
-    );
+    return isScriptValueVariable(scriptValue);
   }
   // Is Constant
   if (scriptValue.type === "constant") {

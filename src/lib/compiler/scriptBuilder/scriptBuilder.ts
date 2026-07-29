@@ -2061,8 +2061,8 @@ class ScriptBuilder extends ScriptBuilderBase {
               this._stackPushConst(variableAlias, `Variable ${variableArg.id}`);
             } else if (variableValue && variableValue.type === "variable") {
               // Arg is a union variable
-              const variableAlias = this.getVariableAlias(variableValue.value);
-              if (this._isIndirectVariable(variableValue.value)) {
+              const variableAlias = this.getVariableAlias(variableValue);
+              if (this._isIndirectVariable(variableValue)) {
                 this._stackPush(variableAlias);
               } else {
                 // Arg union value is variable id
@@ -2094,8 +2094,8 @@ class ScriptBuilder extends ScriptBuilderBase {
               );
             } else if (variableValue && variableValue.type === "variable") {
               // Arg is a union variable
-              const variableAlias = this.getVariableAlias(variableValue.value);
-              if (this._isIndirectVariable(variableValue.value)) {
+              const variableAlias = this.getVariableAlias(variableValue);
+              if (this._isIndirectVariable(variableValue)) {
                 // Arg union value is indirect variable id
                 this._stackPushInd(variableAlias);
               } else {

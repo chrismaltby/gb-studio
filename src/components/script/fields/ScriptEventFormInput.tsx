@@ -73,7 +73,7 @@ import ValueSelect, {
   ValueSelectInputOverrideTypes,
 } from "components/forms/ValueSelect";
 import {
-  isIndexedVariable,
+  isScriptValueVariable,
   isVariableIndex,
   isConstScriptValue,
   isScriptValue,
@@ -584,16 +584,16 @@ const ScriptEventFormInput = ({
       availableVariables.find(({ id }) => id === fallbackValue)?.id ??
       availableVariables[0]?.id ??
       "";
-    const indexedVariable = isIndexedVariable(value) ? value : undefined;
+    const variableValue = isScriptValueVariable(value) ? value : undefined;
     const variableId =
-      indexedVariable?.value ??
+      variableValue?.value ??
       (typeof value === "string" ? value : fallbackVariableId);
     const variable = variablesLookup[variableId];
     const isIndexableVariable =
       variable?.type === "array" ||
       customEvent?.variables[variableId]?.passByReference === "array";
-    const variableIndex = isVariableIndex(indexedVariable?.index)
-      ? indexedVariable.index
+    const variableIndex = isVariableIndex(variableValue?.index)
+      ? variableValue.index
       : { type: "number" as const, value: 0 };
     return (
       <OffscreenSkeletonInput>
@@ -608,7 +608,7 @@ const ScriptEventFormInput = ({
                 customEvent?.variables[newValue]?.passByReference === "array";
               if (isIndexable) {
                 onChangeField({
-                  type: "indexed",
+                  type: "variable",
                   value: newValue,
                   index: variableIndex,
                 });
@@ -626,7 +626,7 @@ const ScriptEventFormInput = ({
               max={variable?.type === "array" ? variable.size - 1 : undefined}
               onChange={(newValue) => {
                 onChangeField({
-                  type: "indexed",
+                  type: "variable",
                   value: variableId,
                   index: newValue,
                 });

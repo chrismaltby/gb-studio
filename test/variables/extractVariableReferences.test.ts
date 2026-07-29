@@ -23,7 +23,7 @@ test("extracts variable IDs from schema-driven event arguments", () => {
     command: "EVENT_PLUGIN_TEST",
     args: {
       direct: {
-        type: "indexed",
+        type: "variable",
         value: "12",
         index: { type: "variable", value: "26" },
       },
@@ -47,7 +47,7 @@ test("extracts variable IDs from schema-driven event arguments", () => {
       "$variable[V0]$": { type: "variable", value: "25" },
       "$variable[V1]$": "28",
       "$variable[V2]$": {
-        type: "indexed",
+        type: "variable",
         value: "29",
         index: { type: "variable", value: "30" },
       },

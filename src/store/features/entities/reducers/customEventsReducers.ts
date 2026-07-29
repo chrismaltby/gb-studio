@@ -29,10 +29,7 @@ import {
 } from "store/features/entities/helpers";
 import { walkNormalizedScript } from "shared/lib/scripts/walk";
 
-const removeVariableIndexes = (
-  value: unknown,
-  variableId: string,
-): unknown => {
+const removeVariableIndexes = (value: unknown, variableId: string): unknown => {
   if (Array.isArray(value)) {
     return value.map((item) => removeVariableIndexes(item, variableId));
   }
@@ -41,13 +38,6 @@ const removeVariableIndexes = (
   }
 
   const objectValue = value as Record<string, unknown>;
-  if (
-    objectValue.type === "indexed" &&
-    objectValue.value === variableId
-  ) {
-    return variableId;
-  }
-
   return Object.fromEntries(
     Object.entries(objectValue)
       .filter(
@@ -58,10 +48,7 @@ const removeVariableIndexes = (
             objectValue.value === variableId
           ),
       )
-      .map(([key, child]) => [
-        key,
-        removeVariableIndexes(child, variableId),
-      ]),
+      .map(([key, child]) => [key, removeVariableIndexes(child, variableId)]),
   );
 };
 
@@ -108,8 +95,7 @@ const editCustomEventVariablePassByReference: CaseReducer<
     passByReference: ScriptVariable["passByReference"];
   }>
 > = (state, action) => {
-  const customEvent =
-    state.customEvents.entities[action.payload.customEventId];
+  const customEvent = state.customEvents.entities[action.payload.customEventId];
   const variable = customEvent?.variables[action.payload.variableId];
   if (!customEvent || !variable) {
     return;
@@ -118,10 +104,7 @@ const editCustomEventVariablePassByReference: CaseReducer<
   const wasArrayReference = variable.passByReference === "array";
   variable.passByReference = action.payload.passByReference;
 
-  if (
-    wasArrayReference &&
-    action.payload.passByReference !== "array"
-  ) {
+  if (wasArrayReference && action.payload.passByReference !== "array") {
     walkNormalizedScript(
       customEvent.script,
       state.scriptEvents.entities,

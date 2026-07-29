@@ -25,7 +25,10 @@ import {
   walkNormalizedScenesScripts,
 } from "shared/lib/scripts/walk";
 import { constantInScriptValue } from "shared/lib/scriptValue/helpers";
-import { isIndexedVariable, isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  isScriptValue,
+  isScriptValueVariable,
+} from "shared/lib/scriptValue/types";
 import { createWorkerRequestHandler } from "./createWorkerClient";
 
 export type ConstantUse = {
@@ -129,8 +132,8 @@ workerCtx.onmessage = createWorkerRequestHandler<
     if (
       (isVariableField(scriptEvent.command, arg, args, scriptEventDefs) ||
         isCustomEventVariableArg) &&
-      isIndexedVariable(argValue) &&
-      argValue.index.type === "constant" &&
+      isScriptValueVariable(argValue) &&
+      argValue.index?.type === "constant" &&
       argValue.index.value === constantId
     ) {
       return true;

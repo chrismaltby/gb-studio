@@ -55,7 +55,7 @@ describe("Custom Events", () => {
               command: "EVENT_SET_VALUE",
               args: {
                 variable: {
-                  type: "indexed",
+                  type: "variable",
                   value: "V1",
                   index: { type: "number", value: 0 },
                 },
@@ -94,7 +94,10 @@ describe("Custom Events", () => {
           ?.passByReference,
       ).toBe(true);
       expect(newState.scriptEvents.entities.scriptEvent1?.args).toEqual({
-        variable: "V1",
+        variable: {
+          type: "variable",
+          value: "V1",
+        },
         value: {
           type: "variable",
           value: "V1",
@@ -158,9 +161,9 @@ describe("Custom Events", () => {
         newState.customEvents.entities.customEvent1?.variables.V0
           ?.passByReference,
       ).toBe("array");
-      expect(
-        newState.scriptEvents.entities.scriptEvent1?.args?.variable,
-      ).toBe("V0");
+      expect(newState.scriptEvents.entities.scriptEvent1?.args?.variable).toBe(
+        "V0",
+      );
     });
   });
 

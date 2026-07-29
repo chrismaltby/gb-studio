@@ -61,16 +61,16 @@ export type ScriptBuilderFunctionArg = {
 
 type ScriptBuilderSimpleVariable = string | number;
 
-export type ScriptBuilderIndexedVariable = {
-  type: "indexed";
+export type ScriptBuilderVariableReference = {
+  type: "variable";
   value: ScriptBuilderSimpleVariable | ScriptBuilderFunctionArg;
-  index: VariableIndex;
+  index?: VariableIndex;
 };
 
 export type ScriptBuilderVariable =
   | ScriptBuilderSimpleVariable
   | ScriptBuilderFunctionArg
-  | ScriptBuilderIndexedVariable;
+  | ScriptBuilderVariableReference;
 
 export type CameraProperty =
   | "camera_x"

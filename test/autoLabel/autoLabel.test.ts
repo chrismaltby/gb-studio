@@ -129,7 +129,7 @@ describe("autoLabel with indexed variables", () => {
         "EVENT_TEST",
         {
           variable: {
-            type: "indexed",
+            type: "variable",
             value: "10",
             index: { type: "number", value: 3 },
           },
@@ -144,7 +144,7 @@ describe("autoLabel with indexed variables", () => {
       "EVENT_TEST",
       {
         variable: {
-          type: "indexed",
+          type: "variable",
           value: "10",
           index: { type: "variable", value: "V0" },
         },
@@ -161,7 +161,7 @@ describe("autoLabel with indexed variables", () => {
       "EVENT_TEST",
       {
         variable: {
-          type: "indexed",
+          type: "variable",
           value: "10",
           index: {
             type: "constant",
