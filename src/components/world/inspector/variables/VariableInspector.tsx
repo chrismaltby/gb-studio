@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -30,7 +30,7 @@ import styled from "styled-components";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { VariableReference } from "components/forms/ReferencesSelect";
-import type { VariableUse, VariableUseResult } from "./VariableUses.worker";
+import type { VariableUse } from "renderer/lib/workers/VariableUses.worker";
 import {
   globalVariableCode,
   globalVariableDefaultName,
@@ -43,8 +43,8 @@ import { findSelectOption, Option, Select } from "ui/form/Select";
 import { SingleValue } from "react-select";
 import { NumberInput } from "ui/form/NumberInput";
 import { VariableType } from "shared/lib/resources/types";
-
-const worker = new Worker(new URL("./VariableUses.worker.ts", import.meta.url));
+import { findVariableUses } from "renderer/lib/workers/variableUses";
+import { isWorkerRequestAbortError } from "renderer/lib/workers/createWorkerClient";
 
 interface VariableInspectorProps {
   id: string;
@@ -105,38 +105,37 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
     { value: "array", label: l10n("FIELD_ARRAY") },
   ];
 
-  const onWorkerComplete = useCallback(
-    (e: MessageEvent<VariableUseResult>) => {
-      if (e.data.id === id) {
+  useEffect(() => {
+    const abortController = new AbortController();
+    const loadUses = async () => {
+      setFetching(true);
+      try {
+        const uses = await findVariableUses(
+          {
+            variableId: id,
+            scenes,
+            actorsLookup,
+            triggersLookup,
+            actorPrefabsLookup,
+            triggerPrefabsLookup,
+            scriptEventsLookup,
+            scriptEventDefs,
+            customEventsLookup,
+            l10NData: getL10NData(),
+          },
+          { signal: abortController.signal },
+        );
+        setVariableUses(uses);
         setFetching(false);
-        setVariableUses(e.data.uses);
+      } catch (error) {
+        if (!isWorkerRequestAbortError(error)) {
+          console.error(error);
+          setFetching(false);
+        }
       }
-    },
-    [id],
-  );
-
-  useEffect(() => {
-    worker.addEventListener("message", onWorkerComplete);
-    return () => {
-      worker.removeEventListener("message", onWorkerComplete);
     };
-  }, [onWorkerComplete]);
-
-  useEffect(() => {
-    setFetching(true);
-    worker.postMessage({
-      id,
-      variableId: id,
-      scenes,
-      actorsLookup,
-      triggersLookup,
-      actorPrefabsLookup,
-      triggerPrefabsLookup,
-      scriptEventsLookup,
-      scriptEventDefs,
-      customEventsLookup,
-      l10NData: getL10NData(),
-    });
+    void loadUses();
+    return () => abortController.abort();
   }, [
     scenes,
     actorsLookup,

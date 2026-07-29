@@ -1,6 +1,7 @@
 import API from "renderer/lib/api";
 import { findConstantUses } from "renderer/lib/workers/constantUses";
 import { findScriptUses } from "renderer/lib/workers/scriptUses";
+import { findVariableUses } from "renderer/lib/workers/variableUses";
 import rootReducer from "store/rootReducer";
 import entitiesActions from "store/features/entities/entitiesActions";
 import type { RootState } from "store/storeTypes";
@@ -10,7 +11,11 @@ import type {
 } from "shared/lib/entities/entitiesTypes";
 import type { AppDispatch } from "store/configureStore";
 import { dummyCustomEventNormalized } from "../../../dummydata";
+import errorActions from "store/features/error/errorActions";
 
+jest.mock("renderer/lib/workers/variableUses", () => ({
+  findVariableUses: jest.fn(),
+}));
 jest.mock("renderer/lib/workers/constantUses", () => ({
   findConstantUses: jest.fn(),
 }));
@@ -20,6 +25,12 @@ jest.mock("renderer/lib/workers/scriptUses", () => ({
 
 const baseState = rootReducer(undefined, { type: "@@INIT" }) as RootState;
 
+const variable = {
+  id: "variable-1",
+  name: "Health",
+  symbol: "VAR_HEALTH",
+  type: "number" as const,
+};
 const constant = {
   id: "constant-1",
   name: "Maximum",
@@ -33,16 +44,21 @@ const customEvent = {
 };
 
 const makeState = ({
+  includeVariable = true,
   includeConstant = true,
   includeCustomEvent = true,
   scriptEvents = [],
 }: {
+  includeVariable?: boolean;
   includeConstant?: boolean;
   includeCustomEvent?: boolean;
   scriptEvents?: ScriptEventNormalized[];
 } = {}): RootState => {
   const entities: EntitiesState = {
     ...baseState.project.present.entities,
+    variables: includeVariable
+      ? { ids: [variable.id], entities: { [variable.id]: variable } }
+      : { ids: [], entities: {} },
     constants: includeConstant
       ? { ids: [constant.id], entities: { [constant.id]: constant } }
       : { ids: [], entities: {} },
@@ -74,6 +90,7 @@ const makeState = ({
 
 const runThunk = async (
   thunk: ReturnType<
+    | typeof entitiesActions.confirmRemoveVariable
     | typeof entitiesActions.confirmRemoveConstant
     | typeof entitiesActions.confirmRemoveCustomEvent
   >,
@@ -96,10 +113,87 @@ const variableUse = {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.mocked(findVariableUses).mockResolvedValue([]);
   jest.mocked(findConstantUses).mockResolvedValue([]);
   jest.mocked(findScriptUses).mockResolvedValue([]);
+  jest.mocked(API.dialog.confirmDeleteVariable).mockResolvedValue(false);
   jest.mocked(API.dialog.confirmDeleteConstant).mockResolvedValue(false);
   jest.mocked(API.dialog.confirmDeleteCustomEvent).mockResolvedValue(0);
+});
+
+describe("confirmRemoveVariable", () => {
+  it("does nothing when the variable does not exist", async () => {
+    const dispatch = await runThunk(
+      entitiesActions.confirmRemoveVariable(variable.id),
+      makeState({ includeVariable: false }),
+    );
+
+    expect(findVariableUses).not.toHaveBeenCalled();
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it("removes immediately when there are no uses", async () => {
+    const dispatch = await runThunk(
+      entitiesActions.confirmRemoveVariable(variable.id),
+      makeState(),
+    );
+
+    expect(findVariableUses).toHaveBeenCalledWith(
+      expect.objectContaining({ variableId: variable.id }),
+    );
+    expect(API.dialog.confirmDeleteVariable).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(
+      entitiesActions.removeVariable({ variableId: variable.id }),
+    );
+  });
+
+  it.each([
+    ["confirm", 0, 1],
+    ["cancel", 1, 0],
+  ])(
+    "%s after showing its uses",
+    async (_label, cancel, expectedDispatches) => {
+      jest.mocked(findVariableUses).mockResolvedValue([variableUse as never]);
+      jest.mocked(API.dialog.confirmDeleteVariable).mockResolvedValue(cancel);
+
+      const dispatch = await runThunk(
+        entitiesActions.confirmRemoveVariable(variable.id),
+        makeState(),
+      );
+
+      expect(API.dialog.confirmDeleteVariable).toHaveBeenCalledWith("Health", [
+        "Opening",
+      ]);
+      expect(dispatch).toHaveBeenCalledTimes(expectedDispatches);
+    },
+  );
+
+  it("reports scan failures and keeps the variable", async () => {
+    jest
+      .mocked(findVariableUses)
+      .mockRejectedValue(new Error("Unable to scan variables"));
+
+    const dispatch = await runThunk(
+      entitiesActions.confirmRemoveVariable(variable.id),
+      makeState(),
+    );
+
+    expect(API.dialog.confirmDeleteVariable).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(
+      errorActions.setGlobalError({
+        message: "Unable to scan variables",
+        filename: "",
+        line: 0,
+        col: 0,
+        stackTrace: expect.any(String),
+      }),
+    );
+    expect(dispatch).not.toHaveBeenCalledWith(
+      entitiesActions.removeVariable({ variableId: variable.id }),
+    );
+  });
 });
 
 describe("confirmRemoveConstant", () => {

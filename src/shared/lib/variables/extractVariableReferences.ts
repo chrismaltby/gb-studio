@@ -98,6 +98,20 @@ export const extractVariableIdsFromScriptEvent = (
     const field = scriptEventDefs[scriptEvent.command]?.fieldsLookup[key];
     const isCustomEventVariableArg = key.startsWith("$variable[");
 
+    if (isCustomEventVariableArg) {
+      if (typeof value === "string") {
+        addVariableId(value);
+      } else if (isIndexedVariable(value)) {
+        addVariableId(value.value);
+        if (value.index.type === "variable") {
+          addVariableId(value.index.value);
+        }
+      } else if (isScriptValue(value)) {
+        extractScriptValueVariables(value).forEach(addVariableId);
+      }
+      continue;
+    }
+
     if (field?.type === "variable" || (field && isUnionVariableValue(value))) {
       if (typeof value === "string") {
         addVariableId(value);
@@ -111,7 +125,7 @@ export const extractVariableIdsFromScriptEvent = (
       }
     }
 
-    if (field?.type === "value" || isCustomEventVariableArg) {
+    if (field?.type === "value") {
       if (isScriptValue(value)) {
         extractScriptValueVariables(value).forEach(addVariableId);
       }

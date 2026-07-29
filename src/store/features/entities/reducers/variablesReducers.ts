@@ -129,6 +129,13 @@ const renameVariableFlags: CaseReducer<
   }
 };
 
+const removeVariable: CaseReducer<
+  EntitiesState,
+  PayloadAction<{ variableId: string }>
+> = (state, action) => {
+  variablesAdapter.removeOne(state.variables, action.payload.variableId);
+};
+
 const reparentVariablesFolder: CaseReducer<
   EntitiesState,
   PayloadAction<{
@@ -171,6 +178,7 @@ const variablesReducers = {
 
   renameVariable,
   renameVariableFlags,
+  removeVariable,
   setVariableType,
   setVariableSize,
   reparentVariablesFolder,

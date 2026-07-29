@@ -249,6 +249,11 @@ const APISetup = {
       usesNames: string[],
     ): Promise<number | false> =>
       ipcRenderer.invoke("dialog:confirm-delete-constant", name, usesNames),
+    confirmDeleteVariable: (
+      name: string,
+      usesNames: string[],
+    ): Promise<number | false> =>
+      ipcRenderer.invoke("dialog:confirm-delete-variable", name, usesNames),
     confirmUnsavedChangesTrackerDialog: (name: string): Promise<number> =>
       ipcRenderer.invoke("dialog:confirm-tracker-unsaved", name),
     migrateWarning: (path: string) =>

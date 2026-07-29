@@ -70,6 +70,12 @@ test("creates entries for referenced unnamed legacy global variables", () => {
             command: "EVENT_PLUGIN_VARIABLE",
             args: {
               "$variable[V0]$": { type: "variable", value: "15" },
+              "$variable[V1]$": "18",
+              "$variable[V2]$": {
+                type: "indexed",
+                value: "19",
+                index: { type: "variable", value: "20" },
+              },
             },
           },
         ],
@@ -114,6 +120,9 @@ test("creates entries for referenced unnamed legacy global variables", () => {
     "15",
     "16",
     "17",
+    "18",
+    "19",
+    "20",
   ]);
   expect(migratedVariables[0]).toEqual({
     id: "3",

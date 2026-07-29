@@ -3,7 +3,7 @@ import { selectGlobalVariablesAll } from "store/features/entities/entitiesSelect
 import { FlatList } from "ui/lists/FlatList";
 import editorActions from "store/features/editor/editorActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import l10n from "shared/lib/lang/l10n";
 import entitiesActions from "store/features/entities/entitiesActions";
 import { Variable } from "shared/lib/resources/types";
@@ -123,9 +123,18 @@ export const VariableNavigatorPane = ({
         <MenuItem key="rename" onClick={() => setRenameId(item.id)}>
           {l10n("FIELD_RENAME")}
         </MenuItem>,
+        <MenuDivider key="div-delete" />,
+        <MenuItem
+          key="delete"
+          onClick={() =>
+            dispatch(entitiesActions.confirmRemoveVariable(item.id))
+          }
+        >
+          {l10n("MENU_DELETE_VARIABLE")}
+        </MenuItem>,
       ];
     },
-    [],
+    [dispatch],
   );
 
   const renderLabel = useCallback(

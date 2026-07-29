@@ -244,6 +244,32 @@ test("Should retain unnamed variable when all flags are removed", () => {
   });
 });
 
+test("Should explicitly remove a variable", () => {
+  const state: EntitiesState = {
+    ...initialState,
+    variables: {
+      ids: ["array1"],
+      entities: {
+        array1: {
+          id: "array1",
+          name: "Inventory",
+          symbol: "var_inventory",
+          type: "array",
+          size: 4,
+        },
+      },
+    },
+  };
+
+  const newState = reducer(
+    state,
+    actions.removeVariable({ variableId: "array1" }),
+  );
+
+  expect(newState.variables.entities.array1).toBeUndefined();
+  expect(newState.variables.ids).not.toContain("array1");
+});
+
 test("Should not remove variable when all flags removed but variable was named", () => {
   const state: EntitiesState = {
     ...initialState,

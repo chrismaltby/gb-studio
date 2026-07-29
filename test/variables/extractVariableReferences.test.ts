@@ -45,6 +45,12 @@ test("extracts variable IDs from schema-driven event arguments", () => {
         { type: "sound", id: "sound1" },
       ],
       "$variable[V0]$": { type: "variable", value: "25" },
+      "$variable[V1]$": "28",
+      "$variable[V2]$": {
+        type: "indexed",
+        value: "29",
+        index: { type: "variable", value: "30" },
+      },
     },
   };
 
@@ -68,6 +74,9 @@ test("extracts variable IDs from schema-driven event arguments", () => {
       "25",
       "26",
       "27",
+      "28",
+      "29",
+      "30",
     ].sort(),
   );
 });

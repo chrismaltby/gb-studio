@@ -143,6 +143,7 @@ import { msToHumanTime } from "shared/lib/helpers/time";
 import confirmDeletePreset from "lib/electron/dialog/confirmDeletePreset";
 import confirmApplyPreset from "lib/electron/dialog/confirmApplyPreset";
 import confirmDeleteConstant from "lib/electron/dialog/confirmDeleteConstant";
+import confirmDeleteVariable from "lib/electron/dialog/confirmDeleteVariable";
 import {
   addPluginToProject,
   addUserRepo,
@@ -1127,6 +1128,13 @@ ipcMain.handle(
   "dialog:confirm-delete-constant",
   async (_event, name: string, usesNames: string[]) => {
     return confirmDeleteConstant(name, usesNames);
+  },
+);
+
+ipcMain.handle(
+  "dialog:confirm-delete-variable",
+  async (_event, name: string, usesNames: string[]) => {
+    return confirmDeleteVariable(name, usesNames);
   },
 );
 

@@ -55,6 +55,10 @@ describe.each(appMiddleware)("%s middleware", (_name, middleware) => {
 describe("electron middleware entity removal actions", () => {
   it.each([
     {
+      type: "entities/removeVariable",
+      payload: { variableId: "variable-1" },
+    },
+    {
       type: "entities/removeConstant",
       payload: { constantId: "constant-1" },
     },

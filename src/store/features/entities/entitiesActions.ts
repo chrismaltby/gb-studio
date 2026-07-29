@@ -5,6 +5,7 @@ import API from "renderer/lib/api";
 import {
   constantName,
   customEventName,
+  variableName,
 } from "shared/lib/entities/entitiesHelpers";
 import { getL10NData } from "shared/lib/lang/l10n";
 import {
@@ -13,15 +14,71 @@ import {
   constantSelectors,
   customEventSelectors,
   sceneSelectors,
+  selectGlobalVariablesAll,
   scriptEventSelectors,
   triggerPrefabSelectors,
   triggerSelectors,
+  variableSelectors,
 } from "store/features/entities/entitiesSelectors";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
+import errorActions from "store/features/error/errorActions";
 import type { AppThunk } from "store/storeTypes";
+import type { VariableUse } from "renderer/lib/workers/VariableUses.worker";
 import { actions } from "./entitiesState";
 
 const removeUnusedPalettes = createAction("entities/removeUnusedPalettes");
+
+const confirmRemoveVariable =
+  (variableId: string): AppThunk<Promise<void>> =>
+  async (dispatch, getState) => {
+    const state = getState();
+    const variable = variableSelectors.selectById(state, variableId);
+    if (!variable) {
+      return;
+    }
+
+    let uses: VariableUse[];
+    try {
+      const { findVariableUses } =
+        await import("renderer/lib/workers/variableUses");
+      uses = await findVariableUses({
+        variableId,
+        scenes: sceneSelectors.selectAll(state),
+        actorsLookup: actorSelectors.selectEntities(state),
+        triggersLookup: triggerSelectors.selectEntities(state),
+        actorPrefabsLookup: actorPrefabSelectors.selectEntities(state),
+        triggerPrefabsLookup: triggerPrefabSelectors.selectEntities(state),
+        scriptEventsLookup: scriptEventSelectors.selectEntities(state),
+        customEventsLookup: customEventSelectors.selectEntities(state),
+        l10NData: getL10NData(),
+        scriptEventDefs: selectScriptEventDefs(state),
+      });
+    } catch (error) {
+      dispatch(
+        errorActions.setGlobalError({
+          message: error instanceof Error ? error.message : String(error),
+          filename: "",
+          line: 0,
+          col: 0,
+          stackTrace: error instanceof Error ? (error.stack ?? "") : "",
+        }),
+      );
+      return;
+    }
+
+    if (uses.length > 0) {
+      const allVariables = selectGlobalVariablesAll(state);
+      const cancel = await API.dialog.confirmDeleteVariable(
+        variableName(variable, allVariables.indexOf(variable)),
+        uses.map((use) => use.name),
+      );
+      if (cancel) {
+        return;
+      }
+    }
+
+    dispatch(actions.removeVariable({ variableId }));
+  };
 
 const confirmRemoveConstant =
   (constantId: string): AppThunk<Promise<void>> =>
@@ -127,6 +184,7 @@ const confirmRemoveCustomEvent =
 const allActions = {
   ...actions,
   removeUnusedPalettes,
+  confirmRemoveVariable,
   confirmRemoveConstant,
   confirmRemoveCustomEvent,
 };
