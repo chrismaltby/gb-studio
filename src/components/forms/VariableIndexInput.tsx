@@ -35,7 +35,7 @@ export const VariableIndexBracket = styled.div<{ $type: "open" | "close" }>`
 export const VariableIndexInputGroup = styled.div`
   display: flex;
   width: auto;
-  min-width: min-content;
+  min-width: min(160px, 100%);
   flex: 1 1 160px;
 
   > ${InputGroupPrepend} + * .CustomSelect__control,
@@ -45,10 +45,10 @@ export const VariableIndexInputGroup = styled.div`
   }
 `;
 
-export const IndexedVariableInputGroup = styled.div`
+export const VariableInputGroup = styled.div`
   display: flex;
-  width: 100%;
-  min-width: 200px;
+  min-width: min(160px, 100%);
+  flex: 3 1 160px;
 
   > ${InputGroupPrepend} + ${VariableSelectWrapper} .CustomSelect__control {
     border-top-left-radius: 0;
@@ -57,8 +57,16 @@ export const IndexedVariableInputGroup = styled.div`
 
   > ${VariableSelectWrapper} {
     width: auto;
-    flex: 3 1 160px;
+    flex: 1 1 160px;
   }
+`;
+
+export const IndexedVariableInputGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 5px;
+  width: 100%;
+  min-width: 0;
 
   > ${VariableIndexInputGroup} {
     flex: 2 1 160px;

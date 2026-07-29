@@ -7,6 +7,7 @@ import {
 } from "./VariableIndexInput";
 
 export { IndexedVariableInputGroup } from "./VariableIndexInput";
+export { VariableInputGroup } from "./VariableIndexInput";
 
 interface VariableIndexSelectProps {
   name: string;

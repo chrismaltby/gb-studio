@@ -27,6 +27,7 @@ import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
 import {
   IndexedVariableInputGroup,
+  VariableInputGroup,
   VariableIndexSelect,
 } from "components/forms/VariableIndexSelect";
 import { FontSelect } from "components/forms/FontSelect";
@@ -623,34 +624,36 @@ const ScriptEventFormInput = ({
     return (
       <OffscreenSkeletonInput>
         <IndexedVariableInputGroup>
-          <VariableSelect
-            name={id}
-            value={variableId}
-            entityId={entityId}
-            allowedVariableTypes={field.allowedVariableTypes}
-            onChange={(newValue) => {
-              if (field.valueAsScriptValue) {
-                onChangeField({
-                  type: "variable",
-                  value: newValue,
-                });
-                return;
-              }
-              const isIndexable =
-                variablesLookup[newValue]?.type === "array" ||
-                customEvent?.variables[newValue]?.passByReference === "array";
-              if (isIndexable) {
-                onChangeField({
-                  type: "variable",
-                  value: newValue,
-                  index: variableIndex,
-                });
-              } else {
-                onChangeField(newValue);
-              }
-            }}
-            allowRename={allowRename}
-          />
+          <VariableInputGroup>
+            <VariableSelect
+              name={id}
+              value={variableId}
+              entityId={entityId}
+              allowedVariableTypes={field.allowedVariableTypes}
+              onChange={(newValue) => {
+                if (field.valueAsScriptValue) {
+                  onChangeField({
+                    type: "variable",
+                    value: newValue,
+                  });
+                  return;
+                }
+                const isIndexable =
+                  variablesLookup[newValue]?.type === "array" ||
+                  customEvent?.variables[newValue]?.passByReference === "array";
+                if (isIndexable) {
+                  onChangeField({
+                    type: "variable",
+                    value: newValue,
+                    index: variableIndex,
+                  });
+                } else {
+                  onChangeField(newValue);
+                }
+              }}
+              allowRename={allowRename}
+            />
+          </VariableInputGroup>
           {field.allowVariableIndex !== false && isIndexableVariable && (
             <VariableIndexSelect
               name={`${id}_index`}

@@ -5,6 +5,7 @@ import {
   IndexedVariableInputGroup,
   VariableIndexBracket,
   VariableIndexInputGroup,
+  VariableInputGroup,
 } from "components/forms/VariableIndexInput";
 import {
   isInfix,
@@ -1170,31 +1171,34 @@ const ValueSelect = ({
           $isIndexedVariable={isIndexableVariable}
         >
           <IndexedVariableInputGroup ref={dropRef}>
-            <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
-            <VariableSelect
-              name={name}
-              entityId={entityId}
-              value={value.value}
-              allowRename
-              onChange={(newValue) => {
-                const newVariable = variablesLookup[newValue];
-                const isIndexable =
-                  newVariable?.type === "array" ||
-                  customEvent?.variables[newValue]?.passByReference === "array";
-                onChange({
-                  type: "variable",
-                  value: newValue,
-                  ...(isIndexable
-                    ? {
-                        index: value.index ?? {
-                          type: "number" as const,
-                          value: 0,
-                        },
-                      }
-                    : {}),
-                });
-              }}
-            />
+            <VariableInputGroup>
+              <InputGroupPrepend>{dropdownButton}</InputGroupPrepend>
+              <VariableSelect
+                name={name}
+                entityId={entityId}
+                value={value.value}
+                allowRename
+                onChange={(newValue) => {
+                  const newVariable = variablesLookup[newValue];
+                  const isIndexable =
+                    newVariable?.type === "array" ||
+                    customEvent?.variables[newValue]?.passByReference ===
+                      "array";
+                  onChange({
+                    type: "variable",
+                    value: newValue,
+                    ...(isIndexable
+                      ? {
+                          index: value.index ?? {
+                            type: "number" as const,
+                            value: 0,
+                          },
+                        }
+                      : {}),
+                  });
+                }}
+              />
+            </VariableInputGroup>
             {isIndexableVariable && (
               <VariableIndexInputGroup>
                 <VariableIndexBracket $type="open" />
