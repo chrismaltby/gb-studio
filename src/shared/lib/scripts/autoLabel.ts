@@ -6,8 +6,74 @@ import {
 import l10n from "shared/lib/lang/l10n";
 import type { ScriptEventHandlers } from "lib/scriptEventsHandlers/handlerTypes";
 import { scriptValueToString } from "shared/lib/scriptValue/format";
-import { isIndexedVariable, isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  isIndexedVariable,
+  isScriptValue,
+  type ScriptValue,
+} from "shared/lib/scriptValue/types";
 import { lexText } from "shared/lib/compiler/lexText";
+
+const propertyNameForId = (value: string) => {
+  if (value === "xpos") {
+    return l10n("FIELD_X_POSITION").replace(/ /g, "");
+  }
+  if (value === "ypos") {
+    return l10n("FIELD_Y_POSITION").replace(/ /g, "");
+  }
+  if (value === "pxpos") {
+    return l10n("FIELD_PX_POSITION").replace(/ /g, "");
+  }
+  if (value === "pypos") {
+    return l10n("FIELD_PY_POSITION").replace(/ /g, "");
+  }
+  if (value === "direction") {
+    return l10n("FIELD_DIRECTION").replace(/ /g, "");
+  }
+  if (value === "frame") {
+    return l10n("FIELD_ANIMATION_FRAME").replace(/ /g, "");
+  }
+  if (value === "xdeadzone") {
+    return l10n("FIELD_DEADZONE_X").replace(/ /g, "");
+  }
+  if (value === "ydeadzone") {
+    return l10n("FIELD_DEADZONE_Y").replace(/ /g, "");
+  }
+  if (value === "xoffset") {
+    return l10n("FIELD_OFFSET_X").replace(/ /g, "");
+  }
+  if (value === "yoffset") {
+    return l10n("FIELD_OFFSET_Y").replace(/ /g, "");
+  }
+  if (value === "xscroll") {
+    return l10n("FIELD_SCROLL_X").replace(/ /g, "");
+  }
+  if (value === "yscroll") {
+    return l10n("FIELD_SCROLL_Y").replace(/ /g, "");
+  }
+  return value;
+};
+
+const directionForValue = (value: string) => {
+  if (value === "left") {
+    return l10n("FIELD_DIRECTION_LEFT");
+  }
+  if (value === "right") {
+    return l10n("FIELD_DIRECTION_RIGHT");
+  }
+  if (value === "down") {
+    return l10n("FIELD_DIRECTION_DOWN");
+  }
+  return l10n("FIELD_DIRECTION_UP");
+};
+
+export const scriptValueToAutoLabel = (value: ScriptValue): string =>
+  scriptValueToString(value, {
+    variableNameForId: (id) => `||variable:${id}||`,
+    constantNameForId: (id) => `||constant:${id}||`,
+    actorNameForId: (id) => `||actor:${id}||`,
+    propertyNameForId,
+    directionForValue,
+  });
 
 export const getAutoLabel = (
   command: string,
@@ -61,59 +127,6 @@ export const getAutoLabel = (
         : fieldLookup[key]?.defaultValue;
     const fieldPlaceholder = fieldLookup[key]?.placeholder;
     const value = argValue ?? fieldDefault ?? fieldPlaceholder ?? argValue;
-
-    const propertyNameForId = (value: string) => {
-      if (value === "xpos") {
-        return l10n("FIELD_X_POSITION").replace(/ /g, "");
-      }
-      if (value === "ypos") {
-        return l10n("FIELD_Y_POSITION").replace(/ /g, "");
-      }
-      if (value === "pxpos") {
-        return l10n("FIELD_PX_POSITION").replace(/ /g, "");
-      }
-      if (value === "pypos") {
-        return l10n("FIELD_PY_POSITION").replace(/ /g, "");
-      }
-      if (value === "direction") {
-        return l10n("FIELD_DIRECTION").replace(/ /g, "");
-      }
-      if (value === "frame") {
-        return l10n("FIELD_ANIMATION_FRAME").replace(/ /g, "");
-      }
-      if (value === "xdeadzone") {
-        return l10n("FIELD_DEADZONE_X").replace(/ /g, "");
-      }
-      if (value === "ydeadzone") {
-        return l10n("FIELD_DEADZONE_Y").replace(/ /g, "");
-      }
-      if (value === "xoffset") {
-        return l10n("FIELD_OFFSET_X").replace(/ /g, "");
-      }
-      if (value === "yoffset") {
-        return l10n("FIELD_OFFSET_Y").replace(/ /g, "");
-      }
-      if (value === "xscroll") {
-        return l10n("FIELD_SCROLL_X").replace(/ /g, "");
-      }
-      if (value === "yscroll") {
-        return l10n("FIELD_SCROLL_Y").replace(/ /g, "");
-      }
-      return value;
-    };
-
-    const directionForValue = (value: unknown) => {
-      if (value === "left") {
-        return l10n("FIELD_DIRECTION_LEFT");
-      }
-      if (value === "right") {
-        return l10n("FIELD_DIRECTION_RIGHT");
-      }
-      if (value === "down") {
-        return l10n("FIELD_DIRECTION_DOWN");
-      }
-      return l10n("FIELD_DIRECTION_UP");
-    };
 
     const animSpeedForValue = (speed: unknown): string => {
       if (typeof speed !== "number") {
@@ -170,25 +183,25 @@ export const getAutoLabel = (
         fieldType === "engineFieldValue") &&
       isScriptValue(value)
     ) {
-      return scriptValueToString(value, {
-        variableNameForId: (id) => `||variable:${id}||`,
-        constantNameForId: (id) => `||constant:${id}||`,
-        actorNameForId: (id) => `||actor:${id}||`,
-        propertyNameForId,
-        directionForValue,
-      });
+      return scriptValueToAutoLabel(value);
     } else if (isActorField(command, key, args, scriptEventDefs)) {
       return `||actor:${value}||`;
     } else if (isVariableField(command, key, args, scriptEventDefs)) {
       if (isIndexedVariable(value)) {
-        const index =
-          value.index.type === "variable"
-            ? `||variable:${value.index.value}||`
-            : value.index.type === "constant"
-              ? `||constant:${value.index.value}||`
-              : String(value.index.value);
-        return `||variable:${value.value}||[${index}]`;
+        return scriptValueToAutoLabel({
+          type: "variable",
+          value: value.value,
+          index: value.index,
+        });
       }
+      if (isIndexedVariable(value)) {
+        return scriptValueToAutoLabel({
+          type: "variable",
+          value: value.value,
+          index: value.index,
+        });
+      }
+
       return `||variable:${value}||`;
     } else if (isPropertyField(command, key, args, scriptEventDefs)) {
       const propertyParts = String(value).split(":");
@@ -206,7 +219,7 @@ export const getAutoLabel = (
     } else if (fieldType === "scene") {
       return `||scene:${value}||`;
     } else if (fieldType === "direction") {
-      return directionForValue(value);
+      return directionForValue(String(value));
     } else if (fieldType === "animSpeed") {
       return animSpeedForValue(value);
     } else if (fieldType === "sprite") {
