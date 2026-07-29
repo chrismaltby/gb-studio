@@ -1,10 +1,33 @@
 import {
   isInfix,
+  isVariableIndex,
   isScriptValue,
   isValueAtomType,
   isValueNumber,
   isValueOperatorType,
 } from "../../src/shared/lib/scriptValue/types";
+
+test("should typeguard constant variable indices", () => {
+  expect(
+    isVariableIndex({
+      type: "constant",
+      value: "33333333-3333-3333-3333-333333333333",
+    }),
+  ).toEqual(true);
+});
+
+test("should typeguard script values with constant variable indices", () => {
+  expect(
+    isScriptValue({
+      type: "variable",
+      value: "11111111-1111-1111-1111-111111111111",
+      index: {
+        type: "constant",
+        value: "33333333-3333-3333-3333-333333333333",
+      },
+    }),
+  ).toEqual(true);
+});
 
 test("should detect number as script value atom type", () => {
   expect(isValueAtomType("number")).toEqual(true);

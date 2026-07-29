@@ -272,12 +272,17 @@ export const expressionToScriptValue = (expression: string): ScriptValue => {
                     type: "number",
                     value: operation.index.value,
                   }
-                : {
-                    type: "variable",
-                    value: normalizeVariableId(
-                      operation.index.symbol.replace(/\$/g, ""),
-                    ),
-                  },
+                : operation.index.type === "CONST"
+                  ? {
+                      type: "constant",
+                      value: operation.index.symbol,
+                    }
+                  : {
+                      type: "variable",
+                      value: normalizeVariableId(
+                        operation.index.symbol.replace(/\$/g, ""),
+                      ),
+                    },
           }),
         });
       } else if (operation.type === "VAL") {

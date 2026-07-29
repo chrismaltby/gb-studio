@@ -112,6 +112,10 @@ export type VariableIndex =
   | {
       type: "variable";
       value: string;
+    }
+  | {
+      type: "constant";
+      value: string;
     };
 
 export type IndexedVariable = {
@@ -127,7 +131,8 @@ export const isVariableIndex = (value: unknown): value is VariableIndex => {
   const index = value as VariableIndex;
   return (
     (index.type === "number" && typeof index.value === "number") ||
-    (index.type === "variable" && typeof index.value === "string")
+    ((index.type === "variable" || index.type === "constant") &&
+      typeof index.value === "string")
   );
 };
 

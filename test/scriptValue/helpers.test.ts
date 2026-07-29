@@ -5,6 +5,7 @@ import {
 import {
   addScriptValueConst,
   addScriptValueToScriptValue,
+  constantInScriptValue,
   expressionToScriptValue,
   extractScriptValueVariables,
   multiplyScriptValueConst,
@@ -1006,6 +1007,34 @@ test("should convert variable indexed variables in expressions", () => {
       value: "22222222-2222-2222-2222-222222222222",
     },
   });
+});
+
+test("should convert constant indexed variables in expressions", () => {
+  expect(
+    expressionToScriptValue(
+      "$11111111-1111-1111-1111-111111111111$[@33333333-3333-3333-3333-333333333333@]",
+    ),
+  ).toEqual({
+    type: "variable",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: {
+      type: "constant",
+      value: "33333333-3333-3333-3333-333333333333",
+    },
+  });
+});
+
+test("should find constants used as variable indices", () => {
+  expect(
+    constantInScriptValue("33333333-3333-3333-3333-333333333333", {
+      type: "variable",
+      value: "11111111-1111-1111-1111-111111111111",
+      index: {
+        type: "constant",
+        value: "33333333-3333-3333-3333-333333333333",
+      },
+    }),
+  ).toBe(true);
 });
 
 test("should convert expression ($L0$ + 8) to script value", () => {

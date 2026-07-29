@@ -1605,6 +1605,7 @@ const compile = async (
           variablesLookup,
           variableAliasLookup,
           constantsLookup,
+          engineConstants: engineSchema.consts,
           entityType,
           entityIndex,
           entityScriptKey: scriptKey,

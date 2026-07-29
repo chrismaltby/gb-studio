@@ -101,7 +101,10 @@ describe("autoLabel with indexed variables", () => {
       };
       return names[String(id)] ?? String(id);
     },
-    constantNameForId: String,
+    constantNameForId: (id: unknown) =>
+      id === "33333333-3333-3333-3333-333333333333"
+        ? "START_INDEX"
+        : String(id),
     actorNameForId: String,
     sceneNameForId: String,
     spriteNameForId: String,
@@ -150,6 +153,26 @@ describe("autoLabel with indexed variables", () => {
     );
     expect(replaceAutoLabelLocalValues(label, indexedMockLookups)).toBe(
       "Increment PlayerHealth[Score]",
+    );
+  });
+
+  test("formats constant indices", () => {
+    const label = getAutoLabel(
+      "EVENT_TEST",
+      {
+        variable: {
+          type: "indexed",
+          value: "10",
+          index: {
+            type: "constant",
+            value: "33333333-3333-3333-3333-333333333333",
+          },
+        },
+      },
+      scriptEventDefs,
+    );
+    expect(replaceAutoLabelLocalValues(label, indexedMockLookups)).toBe(
+      "Increment PlayerHealth[START_INDEX]",
     );
   });
 });

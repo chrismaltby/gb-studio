@@ -77,6 +77,10 @@ interface TokenVar {
     | {
         type: "VAR";
         symbol: string;
+      }
+    | {
+        type: "CONST";
+        symbol: string;
       };
 }
 

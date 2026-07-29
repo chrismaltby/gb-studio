@@ -104,6 +104,7 @@ export interface ScriptBuilderOptions<
   variablesLookup: VariablesLookup;
   variableAliasLookup: Record<string, VariableMapData>;
   constantsLookup: Record<string, Constant>;
+  engineConstants: Record<string, number>;
   scenes: PrecompiledScene[];
   sprites: PrecompiledSprite[];
   backgrounds: PrecompiledBackground[];

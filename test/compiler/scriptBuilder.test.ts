@@ -959,6 +959,51 @@ test("Should increment an array variable with a static index", async () => {
   ]);
 });
 
+test("Should increment an array variable with a constant index", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+      constantsLookup: {
+        "33333333-3333-3333-3333-333333333333": {
+          id: "33333333-3333-3333-3333-333333333333",
+          name: "Index",
+          symbol: "index",
+          value: 2,
+        },
+      },
+    },
+  );
+
+  sb.variableInc({
+    type: "indexed",
+    value: "11111111-1111-1111-1111-111111111111",
+    index: {
+      type: "constant",
+      value: "33333333-3333-3333-3333-333333333333",
+    },
+  });
+
+  expect(output).toEqual([
+    "        ; Variable Increment By 1",
+    "        VM_RPN",
+    "            .R_REF      ^/(VAR_ARRAY + 2)/",
+    "            .R_INT8     1",
+    "            .R_OPERATOR .ADD",
+    "            .R_REF_SET  ^/(VAR_ARRAY + 2)/",
+    "            .R_STOP",
+    "",
+  ]);
+});
+
 test("Should increment an array variable with a variable index", async () => {
   const { sb, output } = await createTestScriptBuilder(
     {},
@@ -1031,6 +1076,34 @@ test("Should evaluate expressions containing array offsets", async () => {
   expect(output.join("\n")).toContain(".R_REF      ^/(VAR_ARRAY + 1)/");
   expect(output.join("\n")).toContain(".R_REF      VAR_INDEX");
   expect(output.join("\n")).toContain(".R_REF_IND");
+});
+
+test("Should evaluate expressions containing engine constant array offsets", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+      engineConstants: {
+        ARRAY_INDEX: 3,
+      },
+    },
+  );
+
+  sb.variableEvaluateExpression(
+    "0",
+    "$11111111-1111-1111-1111-111111111111$[@engine::ARRAY_INDEX@]",
+  );
+
+  expect(output.join("\n")).toContain(".R_REF      ^/(VAR_ARRAY + 3)/");
+  expect(output.join("\n")).not.toContain("ARRAY_PTR");
 });
 
 test("Should read an indexed array variable from a ScriptValue", async () => {
@@ -1175,6 +1248,42 @@ test.each([-1, 4])(
   },
 );
 
+test("Should reject constant array indices outside the declared size", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+      constantsLookup: {
+        "33333333-3333-3333-3333-333333333333": {
+          id: "33333333-3333-3333-3333-333333333333",
+          name: "Index",
+          symbol: "index",
+          value: 4,
+        },
+      },
+    },
+  );
+
+  expect(() =>
+    sb.getVariableAlias({
+      type: "indexed",
+      value: "11111111-1111-1111-1111-111111111111",
+      index: {
+        type: "constant",
+        value: "33333333-3333-3333-3333-333333333333",
+      },
+    }),
+  ).toThrow('Array index 4 is out of bounds for variable "Array" with size 4');
+});
+
 test("Should read an indexed array through a by-reference script argument", async () => {
   const { sb, output } = await createTestScriptBuilder(
     {},
@@ -1219,6 +1328,59 @@ test("Should read an indexed array through a by-reference script argument", asyn
   expect(script).toContain("VM_SET_INDIRECT");
   expect(script).toContain(".SCRIPT_ARG_INDIRECT_1_VARIABLE - 1");
   expect(script).not.toContain("^/(.SCRIPT_ARG_INDIRECT_0_VARIABLE + 3)/");
+});
+
+test("Should read a constant index through an array-reference script argument", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      argLookup: {
+        variable: new Map([
+          [
+            "V0",
+            {
+              type: "argument",
+              indirect: true,
+              array: true,
+              symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+            },
+          ],
+          [
+            "V1",
+            {
+              type: "argument",
+              indirect: true,
+              array: false,
+              symbol: ".SCRIPT_ARG_INDIRECT_1_VARIABLE",
+            },
+          ],
+        ]),
+        actor: new Map(),
+      },
+      constantsLookup: {
+        "33333333-3333-3333-3333-333333333333": {
+          id: "33333333-3333-3333-3333-333333333333",
+          name: "Index",
+          symbol: "index",
+          value: 3,
+        },
+      },
+    },
+  );
+
+  sb.variableSetToScriptValue("V1", {
+    type: "variable",
+    value: "V0",
+    index: {
+      type: "constant",
+      value: "33333333-3333-3333-3333-333333333333",
+    },
+  });
+
+  const script = output.join("\n");
+  expect(script).toContain(".R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE");
+  expect(script).toContain(".R_INT16    3");
+  expect(script).not.toContain("VAR_INDEX");
 });
 
 test("Should write an indexed array through a by-reference script argument", async () => {

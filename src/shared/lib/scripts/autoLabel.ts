@@ -184,7 +184,9 @@ export const getAutoLabel = (
         const index =
           value.index.type === "variable"
             ? `||variable:${value.index.value}||`
-            : String(value.index.value);
+            : value.index.type === "constant"
+              ? `||constant:${value.index.value}||`
+              : String(value.index.value);
         return `||variable:${value.value}||[${index}]`;
       }
       return `||variable:${value}||`;

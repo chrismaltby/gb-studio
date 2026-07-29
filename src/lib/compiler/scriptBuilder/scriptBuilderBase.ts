@@ -128,6 +128,7 @@ abstract class ScriptBuilderBase {
       variablesLookup: options.variablesLookup || {},
       variableAliasLookup: options.variableAliasLookup || {},
       constantsLookup: options.constantsLookup || {},
+      engineConstants: options.engineConstants || {},
       engineFields: options.engineFields || {},
       engineFieldValues: options.engineFieldValues || [],
       scenes: options.scenes || [],
@@ -319,10 +320,15 @@ abstract class ScriptBuilderBase {
               index:
                 token.index.type === "VAL"
                   ? { type: "number", value: token.index.value }
-                  : {
-                      type: "variable",
-                      value: token.index.symbol.replace(/\$/g, ""),
-                    },
+                  : token.index.type === "CONST"
+                    ? {
+                        type: "constant",
+                        value: token.index.symbol,
+                      }
+                    : {
+                        type: "variable",
+                        value: token.index.symbol.replace(/\$/g, ""),
+                      },
             };
           }
           rpn = rpn.refVariable(variable);
@@ -2581,8 +2587,19 @@ extern void __mute_mask_${symbol};
     }
   };
 
+  _getVariableIndexValue = (index: VariableIndex): number | undefined => {
+    if (index.type === "number") {
+      return index.value;
+    }
+    if (index.type === "constant") {
+      return this.getConstantValue(index.value);
+    }
+    return undefined;
+  };
+
   getVariableAlias = (variable: ScriptBuilderVariable = ""): string => {
     if (this._isIndexedVariable(variable)) {
+      const staticIndex = this._getVariableIndexValue(variable.index);
       const resolvedVariable = this._resolveVariableRef(variable.value);
       if (this._isFunctionArg(resolvedVariable)) {
         if (!resolvedVariable.indirect) {
@@ -2595,18 +2612,16 @@ extern void __mute_mask_${symbol};
             `Cannot index variable argument "${resolvedVariable.symbol}" because it is not an array reference`,
           );
         }
-        if (variable.index.type === "number" && variable.index.value < 0) {
-          throw new Error(
-            `Array index ${variable.index.value} cannot be negative`,
-          );
+        if (staticIndex !== undefined && staticIndex < 0) {
+          throw new Error(`Array index ${staticIndex} cannot be negative`);
         }
-        if (variable.index.type === "number" && variable.index.value === 0) {
+        if (staticIndex === 0) {
           return resolvedVariable.symbol;
         }
         const pointer = this._declareLocal("array_ptr", 1, true);
         const rpn = this._rpn().ref(resolvedVariable.symbol);
-        if (variable.index.type === "number") {
-          rpn.int16(variable.index.value);
+        if (staticIndex !== undefined) {
+          rpn.int16(staticIndex);
         } else {
           rpn.refVariable(this._resolveVariableRef(variable.index.value));
         }
@@ -2624,18 +2639,17 @@ extern void __mute_mask_${symbol};
           );
         }
         if (
-          variable.index.type === "number" &&
-          (variable.index.value < 0 ||
-            variable.index.value >= variableDefinition.size)
+          staticIndex !== undefined &&
+          (staticIndex < 0 || staticIndex >= variableDefinition.size)
         ) {
           throw new Error(
-            `Array index ${variable.index.value} is out of bounds for variable "${variableDefinition.name || variableId}" with size ${variableDefinition.size}`,
+            `Array index ${staticIndex} is out of bounds for variable "${variableDefinition.name || variableId}" with size ${variableDefinition.size}`,
           );
         }
       }
       const variableAlias = this.getVariableAlias(variable.value);
-      if (variable.index.type === "number") {
-        return `^/(${variableAlias} + ${variable.index.value})/`;
+      if (staticIndex !== undefined) {
+        return `^/(${variableAlias} + ${staticIndex})/`;
       }
       const pointer = this._declareLocal("array_ptr", 1, true);
       this._rpn()
@@ -2762,6 +2776,22 @@ extern void __mute_mask_${symbol};
       return "0";
     }
     return constant.symbol.toLocaleUpperCase();
+  };
+
+  getConstantValue = (id: string): number => {
+    if (id.startsWith("engine::")) {
+      const engineConstantId = id.replace(/^engine::/, "");
+      const value = this.options.engineConstants[engineConstantId];
+      if (value === undefined) {
+        throw new Error(`Cannot find engine constant "${engineConstantId}"`);
+      }
+      return value;
+    }
+    const constant = this.options.constantsLookup[id];
+    if (!constant) {
+      throw new Error(`Cannot find constant "${id}"`);
+    }
+    return constant.value;
   };
 
   _getAvailableSymbol = (name: string, register = true) => {

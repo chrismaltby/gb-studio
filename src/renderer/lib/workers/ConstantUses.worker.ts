@@ -18,13 +18,14 @@ import tokenizer from "shared/lib/rpn/tokenizer";
 import {
   ScriptEventDefs,
   isScriptValueField,
+  isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import {
   walkNormalizedCustomEventScripts,
   walkNormalizedScenesScripts,
 } from "shared/lib/scripts/walk";
 import { constantInScriptValue } from "shared/lib/scriptValue/helpers";
-import { isScriptValue } from "shared/lib/scriptValue/types";
+import { isIndexedVariable, isScriptValue } from "shared/lib/scriptValue/types";
 import { createWorkerRequestHandler } from "./createWorkerClient";
 
 export type ConstantUse = {
@@ -111,24 +112,38 @@ workerCtx.onmessage = createWorkerRequestHandler<
       return false;
     }
     const argValue = args[arg];
+    const isCustomEventVariableArg = arg.startsWith("$variable[");
     const field = scriptEventDefs[scriptEvent.command]?.fieldsLookup?.[arg];
-    if (!field) {
+    if (!field && !isCustomEventVariableArg) {
       return false;
     }
-    if (isScriptValueField(scriptEvent.command, arg, args, scriptEventDefs)) {
-      if (
-        isScriptValue(argValue) &&
-        constantInScriptValue(constantId, argValue)
-      ) {
+    if (
+      (isScriptValueField(scriptEvent.command, arg, args, scriptEventDefs) ||
+        isCustomEventVariableArg) &&
+      isScriptValue(argValue)
+    ) {
+      if (constantInScriptValue(constantId, argValue)) {
         return true;
       }
-    } else if (field.type === "matharea" && typeof argValue === "string") {
+    }
+    if (
+      (isVariableField(scriptEvent.command, arg, args, scriptEventDefs) ||
+        isCustomEventVariableArg) &&
+      isIndexedVariable(argValue) &&
+      argValue.index.type === "constant" &&
+      argValue.index.value === constantId
+    ) {
+      return true;
+    }
+    if (field?.type === "matharea" && typeof argValue === "string") {
       const expressionTokens = tokenizer(argValue);
       if (
         expressionTokens.some(
           (token) =>
-            token.type === "CONST" &&
-            token.symbol.replace(/@/g, "") === constantId,
+            (token.type === "CONST" && token.symbol === constantId) ||
+            (token.type === "VAR" &&
+              token.index?.type === "CONST" &&
+              token.index.symbol === constantId),
         )
       ) {
         return true;

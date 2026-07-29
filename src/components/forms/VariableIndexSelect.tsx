@@ -1,9 +1,11 @@
+import { ConstantSelect } from "components/forms/ConstantSelect";
 import { VariableSelect } from "components/forms/VariableSelect";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import React, { useContext, useMemo } from "react";
 import l10n from "shared/lib/lang/l10n";
 import type { VariableIndex } from "shared/lib/scriptValue/types";
 import {
+  constantSelectors,
   customEventSelectors,
   variableSelectors,
 } from "store/features/entities/entitiesSelectors";
@@ -41,6 +43,10 @@ export const VariableIndexSelect = ({
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId),
   );
+  const constants = useAppSelector((state) =>
+    constantSelectors.selectAll(state),
+  );
+  const engineConstants = useAppSelector((state) => state.engine.consts);
   const defaultVariableId = useMemo(
     () =>
       namedVariablesByContext(context, variablesLookup, customEvent).find(
@@ -48,12 +54,19 @@ export const VariableIndexSelect = ({
       )?.id,
     [context, customEvent, variablesLookup],
   );
+  const defaultConstantId =
+    constants[0]?.id ??
+    (engineConstants && Object.keys(engineConstants).length > 0
+      ? `engine::${Object.keys(engineConstants).sort()[0]}`
+      : undefined);
 
   const onChangeType = (type: VariableIndex["type"]) => {
     if (type === "number") {
       onChange({ type: "number", value: 0 });
-    } else if (defaultVariableId) {
+    } else if (type === "variable" && defaultVariableId) {
       onChange({ type: "variable", value: defaultVariableId });
+    } else if (type === "constant" && defaultConstantId) {
+      onChange({ type: "constant", value: defaultConstantId });
     }
   };
 
@@ -66,7 +79,9 @@ export const VariableIndexSelect = ({
         variant="transparent"
         size="small"
         showArrow={false}
-        label={value.type === "number" ? "#" : "$"}
+        label={
+          value.type === "number" ? "#" : value.type === "variable" ? "$" : "@"
+        }
       >
         <MenuItem
           icon={value.type === "number" ? <CheckIcon /> : <BlankIcon />}
@@ -79,6 +94,12 @@ export const VariableIndexSelect = ({
           onClick={() => onChangeType("variable")}
         >
           {l10n("FIELD_VARIABLE")}
+        </MenuItem>
+        <MenuItem
+          icon={value.type === "constant" ? <CheckIcon /> : <BlankIcon />}
+          onClick={() => onChangeType("constant")}
+        >
+          {l10n("FIELD_CONSTANT")}
         </MenuItem>
       </DropdownButton>
       {value.type === "number" ? (
@@ -99,13 +120,21 @@ export const VariableIndexSelect = ({
             });
           }}
         />
-      ) : (
+      ) : value.type === "variable" ? (
         <VariableSelect
           name={name}
           entityId={entityId}
           value={value.value}
           onChange={(newValue) => {
             onChange({ type: "variable", value: newValue });
+          }}
+        />
+      ) : (
+        <ConstantSelect
+          name={name}
+          value={value.value}
+          onChange={(newValue) => {
+            onChange({ type: "constant", value: newValue });
           }}
         />
       )}
