@@ -45,6 +45,7 @@ import { NumberInput } from "ui/form/NumberInput";
 import { VariableType } from "shared/lib/resources/types";
 import { findVariableUses } from "renderer/lib/workers/variableUses";
 import { isWorkerRequestAbortError } from "renderer/lib/workers/createWorkerClient";
+import { FixedSpacer } from "components/ui/spacing/Spacing";
 
 interface VariableInspectorProps {
   id: string;
@@ -55,7 +56,7 @@ interface UsesWrapperProps {
 
 const UsesWrapper = styled.div<UsesWrapperProps>`
   position: absolute;
-  top: ${(props) => (props.$showSymbols ? `125px` : `92px`)};
+  top: ${(props) => (props.$showSymbols ? `135px` : `102px`)};
   left: 0;
   bottom: 0;
   right: 0;
@@ -270,9 +271,10 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
               </FormField>
             )}
           </FormRow>
+          <FixedSpacer height={50} />
         </FormContainer>
         <UsesWrapper ref={observe} $showSymbols={showSymbols}>
-          <SplitPaneHeader collapsed={false}>
+          <SplitPaneHeader collapsed={false} borderTop>
             {l10n("SIDEBAR_VARIABLE_USES")}
           </SplitPaneHeader>
           {fetching ? (
