@@ -60,16 +60,18 @@ export const StyledTabBar = styled.div<StyledTabBarProps>`
   ${(props) =>
     props.$variant === "scriptEvent"
       ? css`
-          border: 0;
-          border-bottom: 0;
-          margin-bottom: -5px;
-          margin-left: 5px;
-          margin-top: 5px;
-          height: 25px;
-          flex-basis: 100%;
-          padding-left: 12px;
-          background: ${(props) =>
-            props.theme.colors.scripting.form.background};
+          && {
+            border: 0;
+            border-bottom: 0;
+            margin-bottom: -5px;
+            margin-left: 5px;
+            margin-top: 5px;
+            height: 25px;
+            flex-basis: 100%;
+            padding-left: 12px;
+            background: ${(props) =>
+              props.theme.colors.scripting.form.background};
+          }
         `
       : ""}
 
