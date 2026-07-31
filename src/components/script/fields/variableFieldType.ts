@@ -7,6 +7,11 @@ import type {
 
 type VariableFieldType = NonNullable<ScriptEventFieldSchema["variableType"]>;
 
+export interface VariableFieldCandidate {
+  id: string;
+  type: VariableType;
+}
+
 const arrayVariableTypes: VariableType[] = ["array"];
 
 export const allowedVariableTypesForFieldType = (
@@ -37,4 +42,27 @@ export const variableValueForType = (
     };
   }
   return variableId;
+};
+
+export const defaultVariableValueForType = (
+  type: VariableFieldType,
+  candidates: VariableFieldCandidate[],
+  preferredVariableId?: string,
+): string | ScriptValueVariable | undefined => {
+  const allowedTypes = allowedVariableTypesForFieldType(type);
+  const compatibleCandidates = candidates.filter(
+    (candidate) => !allowedTypes || allowedTypes.includes(candidate.type),
+  );
+  const candidate =
+    compatibleCandidates.find(({ id }) => id === preferredVariableId) ??
+    compatibleCandidates[0];
+  if (!candidate) {
+    return undefined;
+  }
+  return variableValueForType(
+    type,
+    candidate.id,
+    { type: "number", value: 0 },
+    candidate.type === "array",
+  );
 };

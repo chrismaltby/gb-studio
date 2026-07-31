@@ -33,12 +33,16 @@ import { useAppDispatch, useAppSelector } from "store/hooks";
 import { UnitSelectLabelButton } from "components/forms/UnitsSelectLabelButton";
 import {
   actorSelectors,
+  customEventSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesSelectors";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import { ScriptEventUserPresets } from "./ScriptEventUserPresets";
 import throttle from "lodash/throttle";
 import isEqual from "lodash/isEqual";
+import { EVENT_CALL_CUSTOM_EVENT } from "consts";
+import { useVariableFieldContext } from "components/script/fields/useVariableFieldContext";
+import { applyCustomEventArgDefaults } from "./customEventArgs";
 
 interface ScriptEventFormFieldProps {
   scriptEvent: ScriptEventNormalized;
@@ -133,6 +137,12 @@ const ScriptEventFormField = memo(
     const dispatch = useAppDispatch();
 
     const context = useContext(ScriptEditorContext);
+    const customEventsLookup = useAppSelector((state) =>
+      customEventSelectors.selectEntities(state),
+    );
+    const { candidates: variableCandidates } =
+      useVariableFieldContext(entityId);
+    const preferredVariableId = variableCandidates[0]?.id;
 
     const lastUpdateSource = useRef<"user" | "store">("store");
 
@@ -239,7 +249,22 @@ const ScriptEventFormField = memo(
             )
             .then((updatedArgs) => {
               if (updatedArgs) {
-                setArgsValues(updatedArgs);
+                const customEventId = updatedArgs.customEventId;
+                const customEvent =
+                  scriptEvent.command === EVENT_CALL_CUSTOM_EVENT &&
+                  typeof customEventId === "string"
+                    ? customEventsLookup[customEventId]
+                    : undefined;
+                setArgsValues(
+                  customEvent
+                    ? applyCustomEventArgDefaults(
+                        customEvent,
+                        updatedArgs,
+                        variableCandidates,
+                        preferredVariableId,
+                      )
+                    : updatedArgs,
+                );
               }
             });
         }
@@ -248,12 +273,15 @@ const ScriptEventFormField = memo(
     }, [
       context.entityType,
       context.instanceId,
+      customEventsLookup,
       dispatch,
       field.hasPostUpdateFn,
       field.key,
+      preferredVariableId,
       scriptEvent.command,
       scriptEvent.id,
       setArgsValues,
+      variableCandidates,
     ]);
 
     // Set local state value + queue a store update

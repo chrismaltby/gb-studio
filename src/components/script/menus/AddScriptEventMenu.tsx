@@ -31,7 +31,6 @@ import {
   spriteSheetSelectors,
   tilesetSelectors,
   fontSelectors,
-  variableSelectors,
 } from "store/features/entities/entitiesSelectors";
 import { useDebounce } from "ui/hooks/use-debounce";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
@@ -46,7 +45,9 @@ import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { StyledButton } from "ui/buttons/style";
 import { StyledMenu, StyledMenuItem } from "ui/menu/style";
 import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
-import { namedVariablesByContext } from "renderer/lib/variables";
+import { useVariableFieldContext } from "components/script/fields/useVariableFieldContext";
+import { applyCustomEventArgDefaults } from "components/script/events/customEventArgs";
+import type { VariableFieldCandidate } from "components/script/fields/variableFieldType";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -272,7 +273,11 @@ const eventToOption =
   };
 
 const customEventToOption =
-  (scriptEventDefs: ScriptEventDefs) =>
+  (
+    scriptEventDefs: ScriptEventDefs,
+    variableCandidates: VariableFieldCandidate[],
+    preferredVariableId?: string,
+  ) =>
   (event: ScriptNormalized): EventOption => {
     return {
       label: event.name,
@@ -281,9 +286,12 @@ const customEventToOption =
       value: `call_script_${event.id}`,
       isFavorite: false,
       event: scriptEventDefs[EVENT_CALL_CUSTOM_EVENT] as ScriptEventDef,
-      defaultArgs: {
-        customEventId: event.id,
-      },
+      defaultArgs: applyCustomEventArgDefaults(
+        event,
+        { customEventId: event.id },
+        variableCandidates,
+        preferredVariableId,
+      ),
     } as EventOption;
   };
 
@@ -595,18 +603,10 @@ const AddScriptEventMenu = ({
   const customEventsLookup = useAppSelector((state) =>
     customEventSelectors.selectAll(state),
   );
-  const variablesLookup = useAppSelector((state) =>
-    variableSelectors.selectEntities(state),
+  const { candidates: variableCandidates } = useVariableFieldContext(
+    context.entityId,
   );
-  const currentCustomEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, context.entityId),
-  );
-  const defaultVariableId = useMemo(
-    () =>
-      namedVariablesByContext(context, variablesLookup, currentCustomEvent)[0]
-        ?.id ?? "",
-    [context, currentCustomEvent, variablesLookup],
-  );
+  const defaultVariableId = variableCandidates[0]?.id ?? "";
   const disabledSceneTypeIds = useAppSelector(
     (state) => state.project.present.settings.disabledSceneTypeIds,
   );
@@ -633,7 +633,13 @@ const AddScriptEventMenu = ({
 
     const allEvents = ([] as EventOption[]).concat(
       eventList.map(eventToOption(favoriteEvents)),
-      customEventsLookup.map(customEventToOption(scriptEventDefs)),
+      customEventsLookup.map(
+        customEventToOption(
+          scriptEventDefs,
+          variableCandidates,
+          defaultVariableId,
+        ),
+      ),
     );
 
     fuseRef.current = new Fuse(allEvents, {
@@ -728,6 +734,8 @@ const AddScriptEventMenu = ({
     favoriteEvents,
     favoritesCache,
     scriptEventDefs,
+    variableCandidates,
+    defaultVariableId,
   ]);
 
   const updateOptions = useCallback(() => {

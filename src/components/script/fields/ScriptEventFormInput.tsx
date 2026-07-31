@@ -24,19 +24,13 @@ import { Reference, ReferencesSelect } from "components/forms/ReferencesSelect";
 import { SceneSelect } from "components/forms/SceneSelect";
 import { SoundEffectSelect } from "components/forms/SoundEffectSelect";
 import { SpriteSheetSelect } from "components/forms/SpriteSheetSelect";
-import { VariableSelect } from "components/forms/VariableSelect";
-import {
-  IndexedVariableInputGroup,
-  VariableInputGroup,
-  VariableIndexSelect,
-} from "components/forms/VariableIndexSelect";
 import { FontSelect } from "components/forms/FontSelect";
 import {
   castEventToBool,
   castEventToFloat,
 } from "renderer/lib/helpers/castEventValue";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   MovementType,
@@ -76,7 +70,6 @@ import ValueSelect, {
   ValueSelectInputOverrideTypes,
 } from "components/forms/ValueSelect";
 import {
-  isScriptValueVariable,
   isConstScriptValue,
   isScriptValue,
 } from "shared/lib/scriptValue/types";
@@ -90,16 +83,7 @@ import { OverlaySpeedSelect } from "components/forms/OverlaySpeedSelect";
 import { ActorDirection, CollisionGroup } from "shared/lib/resources/types";
 import { DataTableInput } from "components/forms/DataTableInput";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
-import {
-  customEventSelectors,
-  variableSelectors,
-} from "store/features/entities/entitiesSelectors";
-import { namedVariablesByContext } from "renderer/lib/variables";
-import {
-  allowedVariableTypesForFieldType,
-  variableTypeAllowsIndex,
-  variableValueForType,
-} from "./variableFieldType";
+import { VariableFieldInput } from "./VariableFieldInput";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -169,17 +153,7 @@ const ScriptEventFormInput = ({
     (state) => state.project.present.settings.defaultSpritePaletteIds || [],
   );
   const engineFieldsLookup = useAppSelector((state) => state.engine.lookup);
-  const variablesLookup = useAppSelector((state) =>
-    variableSelectors.selectEntities(state),
-  );
-  const customEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, entityId),
-  );
   const context = useContext(ScriptEditorContext);
-  const availableVariables = useMemo(
-    () => namedVariablesByContext(context, variablesLookup, customEvent),
-    [context, customEvent, variablesLookup],
-  );
 
   const onChangeField = useCallback(
     (e: unknown) => {
@@ -583,94 +557,15 @@ const ScriptEventFormInput = ({
       </OffscreenSkeletonInput>
     );
   } else if (type === "variable") {
-    const fieldVariableType = field.variableType ?? "any";
-    const allowedVariableTypes =
-      allowedVariableTypesForFieldType(fieldVariableType);
-    let fallbackValue = defaultValue;
-    if (fallbackValue === "LAST_VARIABLE") {
-      fallbackValue = defaultVariableForContext(context.type);
-    }
-    const fallbackVariableId =
-      availableVariables.find(({ id }) => {
-        if (id !== fallbackValue) {
-          return false;
-        }
-        const candidateVariableType =
-          variablesLookup[id]?.type ??
-          (customEvent?.variables[id]?.passByReference === "array"
-            ? "array"
-            : "number");
-        return (
-          !allowedVariableTypes ||
-          allowedVariableTypes.includes(candidateVariableType)
-        );
-      })?.id ??
-      availableVariables.find(({ id }) => {
-        const candidateVariableType =
-          variablesLookup[id]?.type ??
-          (customEvent?.variables[id]?.passByReference === "array"
-            ? "array"
-            : "number");
-        return (
-          !allowedVariableTypes ||
-          allowedVariableTypes.includes(candidateVariableType)
-        );
-      })?.id ??
-      "";
-    const variableValue = isScriptValueVariable(value) ? value : undefined;
-    const variableId =
-      variableValue?.value ??
-      (typeof value === "string" ? value : fallbackVariableId);
-    const variable = variablesLookup[variableId];
-    const isIndexableVariable =
-      variable?.type === "array" ||
-      customEvent?.variables[variableId]?.passByReference === "array";
-    const variableIndex = isScriptValue(variableValue?.index)
-      ? variableValue.index
-      : { type: "number" as const, value: 0 };
     return (
-      <OffscreenSkeletonInput>
-        <IndexedVariableInputGroup>
-          <VariableInputGroup>
-            <VariableSelect
-              name={id}
-              value={variableId}
-              entityId={entityId}
-              allowedVariableTypes={allowedVariableTypes}
-              onChange={(newValue) => {
-                const isIndexable =
-                  variablesLookup[newValue]?.type === "array" ||
-                  customEvent?.variables[newValue]?.passByReference === "array";
-                onChangeField(
-                  variableValueForType(
-                    fieldVariableType,
-                    newValue,
-                    variableIndex,
-                    isIndexable,
-                  ),
-                );
-              }}
-              allowRename={allowRename}
-            />
-          </VariableInputGroup>
-          {variableTypeAllowsIndex(fieldVariableType) &&
-            isIndexableVariable && (
-              <VariableIndexSelect
-                name={`${id}_index`}
-                entityId={entityId}
-                value={variableIndex}
-                max={variable?.type === "array" ? variable.size - 1 : undefined}
-                onChange={(newValue) => {
-                  onChangeField({
-                    type: "variable",
-                    value: variableId,
-                    index: newValue,
-                  });
-                }}
-              />
-            )}
-        </IndexedVariableInputGroup>
-      </OffscreenSkeletonInput>
+      <VariableFieldInput
+        id={id}
+        entityId={entityId}
+        field={field}
+        value={value}
+        allowRename={allowRename}
+        onChange={onChangeField}
+      />
     );
   } else if (type === "direction") {
     if (field.allowMultiple) {

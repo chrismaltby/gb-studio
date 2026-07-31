@@ -1,5 +1,6 @@
 import {
   allowedVariableTypesForFieldType,
+  defaultVariableValueForType,
   variableTypeAllowsIndex,
   variableValueForType,
 } from "components/script/fields/variableFieldType";
@@ -41,5 +42,30 @@ describe("variable field types", () => {
       type: "variable",
       value: "array",
     });
+  });
+
+  test("defaults to the first compatible variable", () => {
+    const candidates = [
+      { id: "scalar", type: "number" as const },
+      { id: "array", type: "array" as const },
+    ];
+
+    expect(defaultVariableValueForType("arrayReference", candidates)).toEqual({
+      type: "variable",
+      value: "array",
+    });
+    expect(defaultVariableValueForType("arrayElement", candidates)).toEqual({
+      type: "variable",
+      value: "array",
+      index: { type: "number", value: 0 },
+    });
+  });
+
+  test("does not invent a default when no compatible variable exists", () => {
+    expect(
+      defaultVariableValueForType("arrayReference", [
+        { id: "scalar", type: "number" },
+      ]),
+    ).toBeUndefined();
   });
 });
