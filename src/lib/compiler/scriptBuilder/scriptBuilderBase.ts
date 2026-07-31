@@ -2719,9 +2719,7 @@ extern void __mute_mask_${symbol};
         );
         const variableDefinition = this.options.variablesLookup[variableId];
         if (variableDefinition?.type !== "array") {
-          throw new Error(
-            `Cannot index non-array variable "${variableDefinition?.name || variableId}"`,
-          );
+          return this.getVariableAlias(variable.value);
         }
         if (
           staticIndex !== undefined &&

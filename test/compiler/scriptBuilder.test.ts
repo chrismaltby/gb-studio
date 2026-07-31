@@ -1592,7 +1592,7 @@ test("Should set an engine field from an indexed ScriptValue", async () => {
   );
 });
 
-test("Should reject indexed references to number variables", async () => {
+test("Should replace indexed references to number variables with variable symbol, ignoring index", async () => {
   const { sb } = await createTestScriptBuilder(
     {},
     {
@@ -1607,13 +1607,13 @@ test("Should reject indexed references to number variables", async () => {
     },
   );
 
-  expect(() =>
+  expect(
     sb.getVariableAlias({
       type: "variable",
       value: "11111111-1111-1111-1111-111111111111",
       index: { type: "number", value: 0 },
     }),
-  ).toThrow('Cannot index non-array variable "Number"');
+  ).toEqual("VAR_NUMBER");
 });
 
 test.each([-1, 4])(
