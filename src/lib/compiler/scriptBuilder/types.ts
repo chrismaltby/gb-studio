@@ -23,7 +23,7 @@ import type { PrecompiledMusicTrack } from "../compileMusic";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import type { SettingsState } from "store/features/settings/settingsState";
 import type ScriptBuilderBase from "./scriptBuilderBase";
-import type { VariableIndex } from "shared/lib/scriptValue/types";
+import type { ScriptValue } from "shared/lib/scriptValue/types";
 
 export type ScriptOutput = string[];
 
@@ -64,7 +64,7 @@ type ScriptBuilderSimpleVariable = string | number;
 export type ScriptBuilderVariableReference = {
   type: "variable";
   value: ScriptBuilderSimpleVariable | ScriptBuilderFunctionArg;
-  index?: VariableIndex;
+  index?: ScriptValue;
 };
 
 export type ScriptBuilderVariable =

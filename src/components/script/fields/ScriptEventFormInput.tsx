@@ -77,7 +77,6 @@ import ValueSelect, {
 } from "components/forms/ValueSelect";
 import {
   isScriptValueVariable,
-  isVariableIndex,
   isConstScriptValue,
   isScriptValue,
 } from "shared/lib/scriptValue/types";
@@ -618,7 +617,7 @@ const ScriptEventFormInput = ({
     const isIndexableVariable =
       variable?.type === "array" ||
       customEvent?.variables[variableId]?.passByReference === "array";
-    const variableIndex = isVariableIndex(variableValue?.index)
+    const variableIndex = isScriptValue(variableValue?.index)
       ? variableValue.index
       : { type: "number" as const, value: 0 };
     return (

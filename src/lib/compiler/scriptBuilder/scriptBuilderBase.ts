@@ -9,7 +9,6 @@ import {
   PrecompiledValueFetch,
   PrecompiledValueRPNOperation,
   ScriptValue,
-  VariableIndex,
   isUnaryOperation,
   isValueOperation,
 } from "shared/lib/scriptValue/types";
@@ -446,7 +445,7 @@ abstract class ScriptBuilderBase {
 
   _scriptValueVariable = (
     value: string,
-    index?: VariableIndex,
+    index?: ScriptValue,
   ): ScriptBuilderVariable => ({
     type: "variable",
     value,
@@ -2577,7 +2576,7 @@ extern void __mute_mask_${symbol};
     }
   };
 
-  _getVariableIndexValue = (index: VariableIndex): number | undefined => {
+  _getVariableIndexValue = (index: ScriptValue): number | undefined => {
     const replaceConstants = (value: ScriptValue): ScriptValue => {
       if (value.type === "constant") {
         return {

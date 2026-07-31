@@ -120,7 +120,7 @@ export const isScriptValueVariable = (
   return (
     variable.type === "variable" &&
     typeof variable.value === "string" &&
-    (variable.index === undefined || isVariableIndex(variable.index))
+    (variable.index === undefined || isScriptValue(variable.index))
   );
 };
 
@@ -177,11 +177,6 @@ export type ConstScriptValueAtom =
     };
 
 export type ScriptValue = RPNOperation | RPNUnaryOperation | ScriptValueAtom;
-
-export type VariableIndex = ScriptValue;
-
-export const isVariableIndex = (value: unknown): value is ScriptValue =>
-  isScriptValue(value);
 
 export type ConstScriptValue = ConstScriptValueAtom;
 
