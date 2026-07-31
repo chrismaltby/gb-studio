@@ -1,6 +1,7 @@
 import {
   PrecompiledValueFetch,
   ScriptValue,
+  ScriptValueAtom,
 } from "../../src/shared/lib/scriptValue/types";
 import {
   addScriptValueConst,
@@ -8,6 +9,7 @@ import {
   constantInScriptValue,
   expressionToScriptValue,
   extractScriptValueVariables,
+  mapScriptValue,
   multiplyScriptValueConst,
   optimiseScriptValue,
   precompileScriptValue,
@@ -1456,6 +1458,76 @@ test("should sort fetch operations so that properties on same target/prop are gr
       },
     },
   ]);
+});
+
+describe("mapScriptValue", () => {
+  test("maps variable references used as array indices", () => {
+    const input: ScriptValue = {
+      type: "variable",
+      value: "array",
+      index: {
+        type: "variable",
+        value: "index",
+      },
+    };
+
+    const result = mapScriptValue(input, (value): ScriptValueAtom =>
+      value.type === "variable" && value.value === "index"
+        ? { ...value, value: "mappedIndex" }
+        : value,
+    );
+
+    expect(result).toEqual({
+      type: "variable",
+      value: "array",
+      index: {
+        type: "variable",
+        value: "mappedIndex",
+      },
+    });
+  });
+
+  test("maps actor properties used inside array index expressions", () => {
+    const input: ScriptValue = {
+      type: "variable",
+      value: "array",
+      index: {
+        type: "add",
+        valueA: {
+          type: "property",
+          target: "sourceActor",
+          property: "xpos",
+        },
+        valueB: {
+          type: "number",
+          value: 1,
+        },
+      },
+    };
+
+    const result = mapScriptValue(input, (value): ScriptValueAtom =>
+      value.type === "property" && value.target === "sourceActor"
+        ? { ...value, target: "mappedActor" }
+        : value,
+    );
+
+    expect(result).toEqual({
+      type: "variable",
+      value: "array",
+      index: {
+        type: "add",
+        valueA: {
+          type: "property",
+          target: "mappedActor",
+          property: "xpos",
+        },
+        valueB: {
+          type: "number",
+          value: 1,
+        },
+      },
+    });
+  });
 });
 
 describe("walkScriptValue", () => {

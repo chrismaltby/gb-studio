@@ -15,7 +15,6 @@ import {
   isPropertyField,
   isVariableField,
   isActorField,
-  isScriptValueField,
   isDataTableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 import {
@@ -32,13 +31,8 @@ import type {
   SpriteModeSetting,
 } from "shared/lib/resources/types";
 import { mapUncommentedScript } from "shared/lib/scripts/walk";
+import { ConstScriptValue, ScriptValue } from "shared/lib/scriptValue/types";
 import {
-  ConstScriptValue,
-  isScriptValue,
-  ScriptValue,
-} from "shared/lib/scriptValue/types";
-import {
-  mapScriptValueLeafNodes,
   optimiseScriptValue,
   precompileScriptValue,
   addScriptValueConst,
@@ -2384,43 +2378,6 @@ class ScriptBuilder extends ScriptBuilderBase {
             typeof argValue === "string"
           ) {
             e.args[arg] = getArg("actor", argValue); // input[`$variable[${argValue}]$`];
-          }
-          // Update script value fields
-          if (
-            isScriptValueField(
-              e.command,
-              arg,
-              e.args,
-              this.options.scriptEventHandlers,
-            )
-          ) {
-            if (isScriptValue(argValue)) {
-              e.args[arg] = mapScriptValueLeafNodes(argValue, (val) => {
-                if (val.type === "variable") {
-                  if (isVariableCustomEvent(val.value)) {
-                    return {
-                      ...val,
-                      value: getArg("variable", val.value),
-                    };
-                  }
-                } else if (val.type === "property" && val.target !== "camera") {
-                  const scriptArg = getArg("actor", val.target);
-                  if (scriptArg && typeof scriptArg === "string") {
-                    return {
-                      ...val,
-                      value: scriptArg,
-                    };
-                  } else if (scriptArg && typeof scriptArg !== "string") {
-                    return {
-                      ...val,
-                      target: scriptArg.symbol,
-                      value: scriptArg,
-                    };
-                  }
-                }
-                return val;
-              });
-            }
           }
           // Update data table fields
           if (

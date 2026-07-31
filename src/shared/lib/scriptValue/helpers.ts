@@ -11,8 +11,6 @@ import {
   ValueOperatorType,
   ValueUnaryOperatorType,
   isValueUnaryOperatorType,
-  RPNOperation,
-  RPNUnaryOperation,
   ScriptValueAtom,
   OptimisedScriptValue,
 } from "./types";
@@ -437,33 +435,28 @@ export const someInScriptValue = (
   return false;
 };
 
-export type MappedScriptValue<T> =
-  | T
-  | (Omit<RPNUnaryOperation, "value"> & { value: MappedScriptValue<T> })
-  | (Omit<RPNOperation, "valueA" | "valueB"> & {
-      valueA: MappedScriptValue<T>;
-      valueB: MappedScriptValue<T>;
-    });
-
-export const mapScriptValueLeafNodes = <T>(
+export const mapScriptValue = (
   input: ScriptValue,
-  fn: (val: ScriptValueAtom) => T,
-): MappedScriptValue<T> => {
+  fn: (val: ScriptValueAtom) => ScriptValueAtom,
+): ScriptValue => {
   if (isValueOperation(input)) {
-    const mappedA = input.valueA && mapScriptValueLeafNodes(input.valueA, fn);
-    const mappedB = input.valueB && mapScriptValueLeafNodes(input.valueB, fn);
     return {
       ...input,
-      valueA: mappedA,
-      valueB: mappedB,
+      valueA: mapScriptValue(input.valueA, fn),
+      valueB: mapScriptValue(input.valueB, fn),
     };
   }
   if (isUnaryOperation(input)) {
-    const mapped = input.value && mapScriptValueLeafNodes(input.value, fn);
     return {
       ...input,
-      value: mapped,
+      value: mapScriptValue(input.value, fn),
     };
+  }
+  if (input.type === "variable" && input.index) {
+    return fn({
+      ...input,
+      index: mapScriptValue(input.index, fn),
+    });
   }
   return fn(input);
 };

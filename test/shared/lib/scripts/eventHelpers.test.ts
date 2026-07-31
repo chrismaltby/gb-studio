@@ -170,6 +170,55 @@ module.exports = {
     });
   });
 
+  test("should replace actor ids used inside array indices", async () => {
+    const scriptEventHandler = await loadScriptEventHandlerFromTrustedString(
+      `
+const id = "EVENT_TEST";
+
+const fields = [{
+  key: "variable",
+  type: "variable",
+}];
+
+module.exports = {
+  id,
+  fields,
+};
+`,
+      "",
+      noOpFileReader,
+    );
+
+    const args = remapActorReferencesInEventArgs(
+      "EVENT_TEST",
+      {
+        variable: {
+          type: "variable",
+          value: "array1",
+          index: {
+            type: "property",
+            target: "actor1",
+            property: "xpos",
+          },
+        },
+      },
+      { actor1: "actor2" },
+      { EVENT_TEST: scriptEventHandler },
+    );
+
+    expect(args).toEqual({
+      variable: {
+        type: "variable",
+        value: "array1",
+        index: {
+          type: "property",
+          target: "actor2",
+          property: "xpos",
+        },
+      },
+    });
+  });
+
   test("should not modify property references without an actor mapping", async () => {
     const scriptEventHandler = await loadScriptEventHandlerFromTrustedString(
       `

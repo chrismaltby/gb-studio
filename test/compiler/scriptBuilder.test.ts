@@ -6280,6 +6280,71 @@ _script1::
 `);
   });
 
+  test("Should resolve an actor arg used inside an array index", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          "11111111-1111-1111-1111-111111111111": {
+            id: "11111111-1111-1111-1111-111111111111",
+            name: "Results",
+            symbol: "var_results",
+            type: "array",
+            size: 20,
+          },
+        },
+        customEvents: [
+          {
+            id: "script1",
+            name: "Test Script",
+            description: "",
+            variables: {},
+            actors: {
+              "0": {
+                id: "0",
+                name: "Target",
+              },
+            },
+            symbol: "script1",
+            script: [
+              {
+                command: "EVENT_SET_VALUE",
+                args: {
+                  variable: {
+                    type: "variable",
+                    value: "11111111-1111-1111-1111-111111111111",
+                    index: {
+                      type: "property",
+                      target: "0",
+                      property: "xpos",
+                    },
+                  },
+                  value: {
+                    type: "number",
+                    value: 99,
+                  },
+                },
+                id: "event1",
+              },
+            ],
+          },
+        ],
+      },
+    );
+
+    sb.compileCustomEventScript("script1");
+    const script = sb.options.additionalScripts["script1"]?.compiledScript;
+
+    expect(script).toContain("-- Fetch .SCRIPT_ARG_0_ACTOR actorPosition");
+    expect(script).toContain(
+      "VM_SET_CONST            .LOCAL_TMP2_VALUE_TMP, 99",
+    );
+    expect(script).toContain(
+      "VM_SET_INDIRECT         .LOCAL_TMP0_ARRAY_PTR, .LOCAL_TMP2_VALUE_TMP",
+    );
+    expect(script).not.toContain("-- Fetch 0 actorPosition");
+  });
+
   test("Should compile a custom event script with camera property in script value", async () => {
     const { sb } = await createTestScriptBuilder(
       {},

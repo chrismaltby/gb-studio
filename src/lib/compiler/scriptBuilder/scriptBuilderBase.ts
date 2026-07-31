@@ -380,21 +380,34 @@ abstract class ScriptBuilderBase {
     return font.symbol.toUpperCase();
   };
 
-  resolveActorId(id: ScriptBuilderVariable): ResolvedActorId {
-    if (typeof id === "number") {
-      return { type: "number", value: id };
+  _resolveActorRef = <T extends ScriptBuilderVariable>(
+    actor: T,
+  ): T | ScriptBuilderFunctionArg => {
+    if (typeof actor === "string") {
+      return this.options.argLookup.actor.get(actor) ?? actor;
     }
-    if (typeof id === "string") {
-      if (id.startsWith(".")) {
-        return { type: "reference", symbol: id };
+    return actor;
+  };
+
+  resolveActorId(id: ScriptBuilderVariable): ResolvedActorId {
+    const resolvedId = this._resolveActorRef(id);
+    if (typeof resolvedId === "number") {
+      return { type: "number", value: resolvedId };
+    }
+    if (typeof resolvedId === "string") {
+      if (resolvedId.startsWith(".")) {
+        return { type: "reference", symbol: resolvedId };
       } else {
-        return { type: "number", value: this.getActorIndex(id) };
+        return { type: "number", value: this.getActorIndex(resolvedId) };
       }
     }
-    if (this._isVariableReference(id)) {
-      return { type: "reference", symbol: this.getVariableAlias(id) };
+    if (this._isVariableReference(resolvedId)) {
+      return {
+        type: "reference",
+        symbol: this.getVariableAlias(resolvedId),
+      };
     }
-    return { type: "reference", symbol: id.symbol };
+    return { type: "reference", symbol: resolvedId.symbol };
   }
 
   _vmLock = () => {
@@ -1065,7 +1078,9 @@ abstract class ScriptBuilderBase {
         property === "actorDirection" ||
         property === "actorFrame"
       ) {
-        const targetValue = fetchOp.value.target || "player";
+        const targetValue = this._resolveActorRef(
+          fetchOp.value.target || "player",
+        );
         const targetSymbol =
           typeof targetValue === "string" ? targetValue : targetValue.symbol;
         let localVar = "";

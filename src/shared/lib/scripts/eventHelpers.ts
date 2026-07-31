@@ -10,7 +10,7 @@ import {
   ScriptEventArgsOverride,
 } from "shared/lib/resources/types";
 import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
-import { mapScriptValueLeafNodes } from "shared/lib/scriptValue/helpers";
+import { mapScriptValue } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
 import type { ScriptValue } from "shared/lib/scriptValue/types";
 
@@ -20,7 +20,7 @@ const remapActorReferencesInScriptValue = (
   scriptValue: ScriptValue,
   actorMapping: Record<string, string>,
 ) => {
-  return mapScriptValueLeafNodes(scriptValue, (value) => {
+  return mapScriptValue(scriptValue, (value) => {
     if (value.type !== "property") {
       return value;
     }
@@ -34,7 +34,7 @@ const remapActorReferencesInScriptValue = (
       ...value,
       target: replacement,
     };
-  }) as ScriptValue;
+  });
 };
 
 export const remapActorReferencesInEventArgs = (
