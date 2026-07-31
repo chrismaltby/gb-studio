@@ -45,21 +45,37 @@ import { NumberInput } from "ui/form/NumberInput";
 import { VariableType } from "shared/lib/resources/types";
 import { findVariableUses } from "renderer/lib/workers/variableUses";
 import { isWorkerRequestAbortError } from "renderer/lib/workers/createWorkerClient";
-import { FixedSpacer } from "ui/spacing/Spacing";
 
 interface VariableInspectorProps {
   id: string;
 }
-interface UsesWrapperProps {
-  $showSymbols: boolean;
-}
 
-const UsesWrapper = styled.div<UsesWrapperProps>`
-  position: absolute;
-  top: ${(props) => (props.$showSymbols ? `135px` : `102px`)};
-  left: 0;
-  bottom: 0;
-  right: 0;
+const VariableSidebar = styled(Sidebar)`
+  display: flex;
+  flex-direction: column;
+
+  & > :first-child {
+    flex-shrink: 0;
+  }
+`;
+
+const VariableSidebarColumn = styled(SidebarColumn)`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+
+  & > :first-child {
+    flex-shrink: 0;
+  }
+`;
+
+const UsesWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 `;
 
 const UseMessage = styled.div`
@@ -213,7 +229,7 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
   };
 
   return (
-    <Sidebar onClick={selectSidebar}>
+    <VariableSidebar onClick={selectSidebar}>
       <FormHeader>
         <EditableText
           name="name"
@@ -240,7 +256,7 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
         </DropdownButton>
       </FormHeader>
 
-      <SidebarColumn>
+      <VariableSidebarColumn>
         <FormContainer>
           {showSymbols && (
             <>
@@ -271,9 +287,8 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
               </FormField>
             )}
           </FormRow>
-          <FixedSpacer height={50} />
         </FormContainer>
-        <UsesWrapper ref={observe} $showSymbols={showSymbols}>
+        <UsesWrapper ref={observe}>
           <SplitPaneHeader collapsed={false} borderTop>
             {l10n("SIDEBAR_VARIABLE_USES")}
           </SplitPaneHeader>
@@ -315,7 +330,7 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
             </>
           )}
         </UsesWrapper>
-      </SidebarColumn>
-    </Sidebar>
+      </VariableSidebarColumn>
+    </VariableSidebar>
   );
 };
