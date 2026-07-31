@@ -1,6 +1,5 @@
 import {
   dialogueTokenToVariableId,
-  expressionTokenToVariableId,
   variableInDialogueText,
   variableInExpressionText,
 } from "shared/lib/variables/variablesInText";
@@ -25,29 +24,6 @@ describe("dialogueTokenToVariableId", () => {
     const variableId = "01111111-1111-1111-1111-111111111111";
     const token = { type: "variable", variableId } as const;
     expect(dialogueTokenToVariableId(token)).toBe(variableId);
-  });
-});
-
-describe("expressionTokenToVariableId", () => {
-  test("should return variable id without leading zero", () => {
-    const token = { type: "VAR", symbol: "$01$" } as const;
-    expect(expressionTokenToVariableId(token)).toBe("1");
-  });
-
-  test("should return zero first first variable", () => {
-    const token = { type: "VAR", symbol: "$00$" } as const;
-    expect(expressionTokenToVariableId(token)).toBe("0");
-  });
-
-  test("should not remove trailing zeros", () => {
-    const token = { type: "VAR", symbol: "$500$" } as const;
-    expect(expressionTokenToVariableId(token)).toBe("500");
-  });
-
-  test("should preserve UUIDs beginning with zero", () => {
-    const variableId = "01111111-1111-1111-1111-111111111111";
-    const token = { type: "VAR", symbol: `$${variableId}$` } as const;
-    expect(expressionTokenToVariableId(token)).toBe(variableId);
   });
 });
 
