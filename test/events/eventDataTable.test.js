@@ -1,4 +1,16 @@
-import { compile } from "../../src/lib/events/eventDataTable";
+import { compile, fields } from "../../src/lib/events/eventDataTable";
+
+test("Should provide a valid data table default with a variable placeholder", () => {
+  expect(fields.find(({ key }) => key === "data")?.defaultValue).toEqual({
+    variables: ["LAST_VARIABLE"],
+    rows: [
+      {
+        label: "",
+        values: [{ type: "number", value: 0 }],
+      },
+    ],
+  });
+});
 
 test("Should compile variable data table lookups", () => {
   const mockVariableDataTableLookup = jest.fn();

@@ -51,6 +51,18 @@ jest.mock("components/forms/ConstantValueSelect", () => ({
   ),
 }));
 
+jest.mock("components/script/fields/useVariableFieldContext", () => ({
+  useVariableFieldContext: () => ({
+    candidates: [
+      { id: "variable-1", type: "number" },
+      { id: "variable-2", type: "number" },
+      { id: "array-1", type: "array" },
+    ],
+    customEvent: undefined,
+    variablesLookup: {},
+  }),
+}));
+
 jest.mock("ui/layout/Portal", () => ({
   Portal: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
@@ -107,7 +119,7 @@ beforeEach(() => {
   HTMLElement.prototype.scrollTo = jest.fn();
 });
 
-test("Should add a column using the next variable id", () => {
+test("Should add a column using the first unused scalar variable", () => {
   const onChange = jest.fn();
 
   render(
@@ -115,7 +127,7 @@ test("Should add a column using the next variable id", () => {
       entityId="entity1"
       value={{
         label: "Scores",
-        variables: ["0"],
+        variables: ["variable-1"],
         rows: [
           {
             label: "Row 1",
@@ -132,7 +144,7 @@ test("Should add a column using the next variable id", () => {
 
   expect(onChange).toHaveBeenCalledWith({
     label: "Scores",
-    variables: ["0", "1"],
+    variables: ["variable-1", "variable-2"],
     rows: [
       {
         label: "Row 1",
@@ -140,6 +152,63 @@ test("Should add a column using the next variable id", () => {
           { type: "number", value: 1 },
           { type: "number", value: 0 },
         ],
+      },
+    ],
+  });
+});
+
+test("Should leave a new column empty when all scalar variables are used", () => {
+  const onChange = jest.fn();
+
+  render(
+    <DataTableInput
+      entityId="entity1"
+      value={{
+        variables: ["variable-1", "variable-2"],
+        rows: [
+          {
+            values: [
+              { type: "number", value: 1 },
+              { type: "number", value: 2 },
+            ],
+          },
+        ],
+      }}
+      onChange={onChange}
+    />,
+    store,
+  );
+
+  fireEvent.click(screen.getByTitle("FIELD_ADD_COLUMN"));
+
+  expect(onChange).toHaveBeenCalledWith({
+    variables: ["variable-1", "variable-2", ""],
+    rows: [
+      {
+        values: [
+          { type: "number", value: 1 },
+          { type: "number", value: 2 },
+          { type: "number", value: 0 },
+        ],
+      },
+    ],
+  });
+});
+
+test("Should persist the first available scalar variable for a default table", () => {
+  const onChange = jest.fn();
+
+  render(
+    <DataTableInput entityId="entity1" value={undefined} onChange={onChange} />,
+    store,
+  );
+
+  expect(onChange).toHaveBeenCalledWith({
+    variables: ["variable-1"],
+    rows: [
+      {
+        label: "",
+        values: [{ type: "number", value: 0 }],
       },
     ],
   });

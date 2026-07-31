@@ -19,17 +19,20 @@ const fields = [
     description: l10n("FIELD_DATA_TABLE_DESC"),
     type: "dataTable",
     flexBasis: "100%",
-    defaultValue: [
-      {
-        variable: "0",
-        values: [
-          {
-            type: "number",
-            value: 0,
-          },
-        ],
-      },
-    ],
+    defaultValue: {
+      variables: ["LAST_VARIABLE"],
+      rows: [
+        {
+          label: "",
+          values: [
+            {
+              type: "number",
+              value: 0,
+            },
+          ],
+        },
+      ],
+    },
   },
 ];
 

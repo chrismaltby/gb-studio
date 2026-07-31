@@ -40,6 +40,7 @@ import type { ScriptEventDef } from "lib/scriptEventsHandlers/handlerTypes";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { mapScriptValue } from "shared/lib/scriptValue/helpers";
 import { isScriptValue } from "shared/lib/scriptValue/types";
+import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
 import { HighlightWords } from "ui/util/HighlightWords";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { StyledButton } from "ui/buttons/style";
@@ -86,6 +87,7 @@ interface EventOptGroup {
 interface InstanciateOptions {
   defaultSceneId: string;
   defaultVariableId: string;
+  defaultDataTableVariableId: string;
   defaultMusicId: string;
   defaultActorId: string;
   defaultSpriteId: string;
@@ -106,6 +108,7 @@ const instanciateScriptEvent = (
   {
     defaultSceneId,
     defaultVariableId,
+    defaultDataTableVariableId,
     defaultMusicId,
     defaultActorId,
     defaultSpriteId,
@@ -207,6 +210,17 @@ const instanciateScriptEvent = (
                 return node;
               })
             : defaultValue;
+        }
+
+        if (field.type === "dataTable" && isScriptDataTable(defaultValue)) {
+          replaceValue = {
+            ...defaultValue,
+            variables: defaultValue.variables.map((variableId) =>
+              variableId === "LAST_VARIABLE"
+                ? defaultDataTableVariableId
+                : variableId,
+            ),
+          };
         }
 
         if (field.type === "union") {
@@ -607,6 +621,8 @@ const AddScriptEventMenu = ({
     context.entityId,
   );
   const defaultVariableId = variableCandidates[0]?.id ?? "";
+  const defaultDataTableVariableId =
+    variableCandidates.find(({ type }) => type === "number")?.id ?? "";
   const disabledSceneTypeIds = useAppSelector(
     (state) => state.project.present.settings.disabledSceneTypeIds,
   );
@@ -864,6 +880,7 @@ const AddScriptEventMenu = ({
             instanciateScriptEvent(newEvent, {
               defaultActorId: "player",
               defaultVariableId,
+              defaultDataTableVariableId,
               defaultMusicId: String(lastMusicId),
               defaultSceneId: String(lastSceneId),
               defaultSpriteId: String(lastSpriteId),
@@ -893,6 +910,7 @@ const AddScriptEventMenu = ({
       insertId,
       before,
       defaultVariableId,
+      defaultDataTableVariableId,
       lastMusicId,
       lastSceneId,
       lastSpriteId,

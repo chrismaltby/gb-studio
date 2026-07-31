@@ -71,34 +71,3 @@ export const variableDisplayName = (
   }
   return name;
 };
-
-/******************************************************************************
- * Next Variable ID
- */
-
-export const getNextVariableId = (variable: string): string => {
-  const localMatch = variable.match(/^L([0-5])$/);
-  if (localMatch) {
-    const nextNumber = Number(localMatch[1]) + 1;
-    return nextNumber > 5 ? "0" : `L${nextNumber}`;
-  }
-
-  const argsMatch = variable.match(/^V([0-9])$/);
-  if (argsMatch) {
-    const nextNumber = Number(argsMatch[1]) + 1;
-    return nextNumber > 9 ? "0" : `V${nextNumber}`;
-  }
-
-  const tempMatch = variable.match(/^T([0-1])$/);
-  if (tempMatch) {
-    const nextNumber = Number(tempMatch[1]) + 1;
-    return nextNumber > 1 ? "0" : `T${nextNumber}`;
-  }
-
-  const numberMatch = variable.match(/^\d+$/);
-  if (numberMatch) {
-    return String(Number(variable) + 1);
-  }
-
-  return "0";
-};

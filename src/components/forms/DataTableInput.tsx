@@ -4,7 +4,15 @@ import {
   VariableSelect,
   VariableSelectWrapper,
 } from "components/forms/VariableSelect";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useVariableFieldContext } from "components/script/fields/useVariableFieldContext";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import API from "renderer/lib/api";
 import l10n from "shared/lib/lang/l10n";
 import {
@@ -12,7 +20,6 @@ import {
   ScriptDataTableRow,
 } from "shared/lib/scriptDataTable/types";
 import { ConstScriptValue } from "shared/lib/scriptValue/types";
-import { getNextVariableId } from "shared/lib/variables/variableNames";
 import { constantSelectors } from "store/features/entities/entitiesSelectors";
 import { useAppStore } from "store/hooks";
 import styled from "styled-components";
@@ -286,15 +293,15 @@ interface DataTableRowProps {
   onRemoveRow: (rowIndex: number) => void;
 }
 
-const defaultValue: ScriptDataTable = {
-  variables: ["0"],
+const defaultValue = (variableId: string): ScriptDataTable => ({
+  variables: [variableId],
   rows: [
     {
       label: "",
       values: [{ type: "number", value: 0 }],
     },
   ],
-};
+});
 
 const ROW_CUT_OFF = 6;
 
@@ -330,6 +337,7 @@ const DataTableColumnHeader = React.memo(
             name={`variable_${colIndex}`}
             entityId={entityId}
             onChange={(newValue) => onUpdateVariable(colIndex, newValue)}
+            allowedVariableTypes={["number"]}
             allowRename
           />
         </InputGroup>
@@ -391,11 +399,23 @@ export const DataTableInput = ({
   isNested,
 }: DataTableInputProps) => {
   const store = useAppStore();
+  const { candidates: variableCandidates } = useVariableFieldContext(entityId);
+  const availableVariableIds = useMemo(
+    () =>
+      variableCandidates
+        .filter(({ type }) => type === "number")
+        .map(({ id }) => id),
+    [variableCandidates],
+  );
+  const initialTable = useMemo(
+    () => defaultValue(availableVariableIds[0] ?? ""),
+    [availableVariableIds],
+  );
   const [rowLimit, setRowLimit] = useState(!isNested);
   const [zoom, setZoom] = useState(false);
   const [csvError, setCSVError] = useState<string | null>(null);
 
-  const table = value ?? defaultValue;
+  const table = value ?? initialTable;
   const maxRow = rowLimit ? ROW_CUT_OFF : table.rows.length;
 
   const tableRef = useRef(table);
@@ -420,18 +440,21 @@ export const DataTableInput = ({
   const addColumn = useCallback(() => {
     pendingScrollRef.current = "column";
 
-    const lastVariable = table.variables[table.variables.length - 1];
-    const nextVariable = getNextVariableId(lastVariable ?? "0");
-    onChange({
-      ...table,
-      variables: [...table.variables, nextVariable],
-      rows: table.rows.map((row) => ({
-        ...row,
-        values: [...row.values, { type: "number" as const, value: 0 }],
-      })),
+    updateTable((currentTable) => {
+      const nextVariable =
+        availableVariableIds.find(
+          (variableId) => !currentTable.variables.includes(variableId),
+        ) ?? "";
+      return {
+        ...currentTable,
+        variables: [...currentTable.variables, nextVariable],
+        rows: currentTable.rows.map((row) => ({
+          ...row,
+          values: [...row.values, { type: "number" as const, value: 0 }],
+        })),
+      };
     });
-    setCSVError(null);
-  }, [onChange, table]);
+  }, [availableVariableIds, updateTable]);
 
   const addRow = useCallback(() => {
     pendingScrollRef.current = "row";
@@ -557,6 +580,12 @@ export const DataTableInput = ({
       behavior: "smooth",
     });
   }, [table.variables.length, table.rows.length]);
+
+  useEffect(() => {
+    if (value === undefined) {
+      onChange(initialTable);
+    }
+  }, [initialTable, onChange, value]);
 
   const importCSV = useCallback(async () => {
     const state = store.getState();
