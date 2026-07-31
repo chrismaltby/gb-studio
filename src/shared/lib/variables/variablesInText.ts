@@ -1,4 +1,5 @@
 import { lexText, Token as TextToken } from "shared/lib/compiler/lexText";
+import { Token as ExpressionToken } from "shared/lib/rpn/types";
 import { normalizeVariableId } from "shared/lib/variables/variableIds";
 import {
   expressionToScriptValue,
@@ -18,9 +19,7 @@ export const dialogueTokenToVariableId = (token: TextToken) =>
  * @param {ExpressionToken} token - The token to process, expected to be of type 'VAR'.
  * @returns {string | undefined} - The variable ID without '$' symbols or leading zeros, or undefined if the token is not of type 'VAR'.
  */
-export const expressionTokenToVariableId = (
-  token: import("shared/lib/rpn/types").Token,
-) =>
+export const expressionTokenToVariableId = (token: ExpressionToken) =>
   token.type === "VAR" && normalizeVariableId(token.symbol.replace(/\$/g, ""));
 
 /**
