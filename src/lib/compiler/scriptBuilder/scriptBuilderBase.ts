@@ -13,6 +13,7 @@ import {
   isValueOperation,
 } from "shared/lib/scriptValue/types";
 import {
+  mapScriptValue,
   optimiseScriptValue,
   precompileScriptValue,
   rpnTokensToScriptValue,
@@ -309,19 +310,24 @@ abstract class ScriptBuilderBase {
           if (ref.match(/^V[0-9]$/)) {
             const key = ref;
             const arg = this.options.argLookup.variable.get(key);
-            if (!arg) {
-              throw new Error("Cant find arg");
+            if (arg) {
+              variable = arg;
             }
-            variable = arg;
           }
-          if (token.index) {
+          if (this._isMissingVariableReference(ref)) {
+            rpn = rpn.int16(0);
+          } else if (token.index) {
             variable = {
               type: "variable",
               value: variable,
-              index: rpnTokensToScriptValue(token.index),
+              index: this._replaceMissingVariableReferences(
+                rpnTokensToScriptValue(token.index),
+              ),
             };
+            rpn = rpn.refVariable(variable);
+          } else {
+            rpn = rpn.refVariable(variable);
           }
-          rpn = rpn.refVariable(variable);
         } else if (token.type === "FUN") {
           const op = funToScriptOperator(token.function);
           rpn = rpn.operator(op);
@@ -1167,6 +1173,30 @@ abstract class ScriptBuilderBase {
     return variable;
   };
 
+  _isMissingVariableReference = (variable: string): boolean => {
+    if (variable.match(/^V[0-9]$/)) {
+      return !this.options.argLookup.variable.get(variable);
+    }
+    if (isVariableLocal(variable) || isVariableTemp(variable)) {
+      return false;
+    }
+    if (!/^[a-z0-9-]{36}$/i.test(variable)) {
+      return false;
+    }
+    const variableId = getVariableId(
+      normalizeVariableId(variable),
+      this.options.entity,
+    );
+    return !this.options.variablesLookup[variableId];
+  };
+
+  _replaceMissingVariableReferences = (value: ScriptValue): ScriptValue =>
+    mapScriptValue(value, (node) =>
+      node.type === "variable" && this._isMissingVariableReference(node.value)
+        ? { type: "number", value: 0 }
+        : node,
+    );
+
   _performValueRPN = (
     rpn: RPNHandler,
     rpnOps: PrecompiledValueRPNOperation[],
@@ -1642,6 +1672,15 @@ abstract class ScriptBuilderBase {
     let text = "";
     const indirectVars: { arg: string; local: string }[] = [];
     const usedVariableAliases: string[] = [];
+    let missingVariableAlias = "";
+    const addMissingVariableAlias = () => {
+      if (!missingVariableAlias) {
+        const localRef = this._declareLocal("missing_variable", 1, true);
+        this._setConst(localRef, 0);
+        missingVariableAlias = this._rawOffsetStackAddr(localRef);
+      }
+      usedVariableAliases.push(missingVariableAlias);
+    };
 
     textTokens.forEach((token) => {
       if (token.type === "text") {
@@ -1659,8 +1698,12 @@ abstract class ScriptBuilderBase {
         token.type === "speedVariable" ||
         token.type === "fontVariable"
       ) {
-        const variable = this._resolveVariableRef(token.variableId);
-        if (this._isFunctionArg(variable)) {
+        const variable = this._isMissingVariableReference(token.variableId)
+          ? undefined
+          : this._resolveVariableRef(token.variableId);
+        if (!variable) {
+          addMissingVariableAlias();
+        } else if (this._isFunctionArg(variable)) {
           if (this._isIndirectVariable(variable)) {
             const localRef = this._declareLocal(
               `text_arg${indirectVars.length}`,
@@ -1741,6 +1784,15 @@ abstract class ScriptBuilderBase {
     let text = "";
     const indirectVars: { arg: string; local: string }[] = [];
     const usedVariableAliases: string[] = [];
+    let missingVariableAlias = "";
+    const addMissingVariableAlias = () => {
+      if (!missingVariableAlias) {
+        const localRef = this._declareLocal("missing_variable", 1, true);
+        this._setConst(localRef, 0);
+        missingVariableAlias = this._rawOffsetStackAddr(localRef);
+      }
+      usedVariableAliases.push(missingVariableAlias);
+    };
 
     textTokens.forEach((token) => {
       if (token.type === "text") {
@@ -1759,13 +1811,14 @@ abstract class ScriptBuilderBase {
         token.type === "fontVariable"
       ) {
         const variable = token.variableId;
-        if (variable.match(/^V[0-9]$/)) {
+        if (this._isMissingVariableReference(variable)) {
+          addMissingVariableAlias();
+        } else if (variable.match(/^V[0-9]$/)) {
           const key = variable;
           const arg = this.options.argLookup.variable.get(key);
           if (!arg) {
-            throw new Error("Cant find arg");
-          }
-          if (this._isIndirectVariable(arg)) {
+            addMissingVariableAlias();
+          } else if (this._isIndirectVariable(arg)) {
             const localRef = this._declareLocal(
               `text_arg${indirectVars.length}`,
               1,

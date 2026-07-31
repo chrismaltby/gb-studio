@@ -13,6 +13,7 @@ import { VariableSelect } from "components/forms/VariableSelect";
 import l10n from "shared/lib/lang/l10n";
 import { portalRoot } from "ui/layout/Portal";
 import { ConstantSelect } from "components/forms/ConstantSelect";
+import { normalizeVariableId } from "shared/lib/variables/variableIds";
 
 const varRegex = /\$([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$/g;
 const constRegex = /@([a-z0-9-]{36}|engine::[^@]+)@/g;
@@ -312,7 +313,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
     }
   }, []);
 
-  const variablesLookup = useMemo(() => keyBy(variables, "code"), [variables]);
+  const variablesLookup = useMemo(() => keyBy(variables, "id"), [variables]);
 
   const debouncedEvaluate = useRef<(value: string) => void>(
     debounce((val) => {
@@ -435,12 +436,14 @@ export const MathTextarea: FC<MathTextareaProps> = ({
           markup="$__id__$"
           data={searchVariables(variables)}
           regex={/\$([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$/}
-          displayTransform={(variable) =>
-            "$" + (variablesLookup[variable]?.name || variable + "$")
-          }
+          displayTransform={(variable) => {
+            const namedVariable =
+              variablesLookup[normalizeVariableId(variable)];
+            return namedVariable ? `$${namedVariable.name}` : "0";
+          }}
           hoverTransform={(variable) =>
             `${l10n("FIELD_VARIABLE")}: ${
-              variablesLookup[variable]?.name || variable
+              variablesLookup[normalizeVariableId(variable)]?.name || "0"
             }`
           }
           onClick={(e, id, index) => {
@@ -453,7 +456,7 @@ export const MathTextarea: FC<MathTextareaProps> = ({
 
             setEditMode({
               type: "variable",
-              id: id.replace(/^0/, ""),
+              id: normalizeVariableId(id),
               index,
               x: rect2.left - rect.left,
               y: rect2.top - rect.top,

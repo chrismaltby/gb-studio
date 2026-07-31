@@ -1294,6 +1294,15 @@ test("Should evaluate expressions containing array offsets", async () => {
   expect(output.join("\n")).toContain(".R_REF_IND");
 });
 
+test("Should replace missing variables in expressions with zero", async () => {
+  const { sb, output } = await createTestScriptBuilder();
+  const missingVariableId = "abcdef01-2345-6789-abcd-ef0123456789";
+
+  sb.variableEvaluateExpression("0", `$${missingVariableId}$ + 1`);
+
+  expect(output.join("\n")).toContain(".R_INT16    0");
+});
+
 test("Should evaluate expressions containing engine constant array offsets", async () => {
   const { sb, output } = await createTestScriptBuilder(
     {},
@@ -5661,6 +5670,25 @@ _MY_SCRIPT::
         VM_STOP
 `,
     );
+  });
+
+  test("Should replace missing dialogue variables with zero", async () => {
+    const dummyCompiledFont = await getDummyCompiledFont();
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        fonts: [dummyCompiledFont],
+      },
+    );
+    const missingVariableId = "abcdef01-2345-6789-abcd-ef0123456789";
+
+    sb.textDialogue(`Missing $${missingVariableId}$`);
+
+    const script = sb.toScriptString("MY_SCRIPT", false);
+    expect(script).toContain("VM_SET_CONST");
+    expect(script).toContain("MISSING_VARIABLE, 0");
+    expect(script).toContain('.asciz "Missing %d"');
+    expect(script).not.toContain(missingVariableId);
   });
 
   test("Should be able to open dialogue boxes with direct args", async () => {

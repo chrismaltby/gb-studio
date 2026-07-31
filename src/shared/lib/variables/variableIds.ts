@@ -1,2 +1,6 @@
-export const normalizeVariableId = (variableId: string): string =>
-  /^\d+$/.test(variableId) ? String(Number(variableId)) : variableId;
+export const normalizeVariableId = (variableId: string): string => {
+  if (!/^\d+$/.test(variableId)) {
+    return variableId;
+  }
+  return variableId.replace(/^0+(?=\d)/, "");
+};

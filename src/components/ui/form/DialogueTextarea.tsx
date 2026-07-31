@@ -28,6 +28,7 @@ import {
 } from "shared/lib/text/textCodes";
 import { TextWaitTimeSelect } from "components/forms/TextWaitTimeSelect";
 import { FontAsset } from "shared/lib/resources/types";
+import { normalizeVariableId } from "shared/lib/variables/variableIds";
 
 const varRegex = /\$([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$/g;
 const charRegex = /#([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)#/g;
@@ -361,7 +362,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
   );
 
   const variablesLookup = useMemo(() => {
-    return keyBy(variables, "code");
+    return keyBy(variables, "id");
   }, [variables]);
 
   const fontItems: ExtendedSuggestionDataItem[] = useMemo(() => {
@@ -664,12 +665,14 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
           markup="$__id__$"
           data={searchVariables(variables, "$")}
           regex={/\$([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$/}
-          displayTransform={(variable: string) =>
-            "$" + (variablesLookup[variable]?.name || variable + "$")
-          }
+          displayTransform={(variable: string) => {
+            const namedVariable =
+              variablesLookup[normalizeVariableId(variable)];
+            return namedVariable ? `$${namedVariable.name}` : "0";
+          }}
           hoverTransform={(variable) =>
             `${l10n("FIELD_VARIABLE")}: ${
-              variablesLookup[variable]?.name || variable
+              variablesLookup[normalizeVariableId(variable)]?.name || "0"
             }`
           }
           onClick={(e, id, index) => {
@@ -681,7 +684,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
             const rect2 = e.currentTarget.getBoundingClientRect();
             setEditMode({
               type: "var",
-              id: id.replace(/^0/, ""),
+              id: normalizeVariableId(id),
               index,
               x: rect2.left - rect.left,
               y: rect2.top - rect.top,
@@ -695,12 +698,14 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
           markup="#__id__#"
           data={searchVariables(variables, "#")}
           regex={/#([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)#/}
-          displayTransform={(variable: string) =>
-            "#" + (variablesLookup[variable]?.name || variable + "#")
-          }
+          displayTransform={(variable: string) => {
+            const namedVariable =
+              variablesLookup[normalizeVariableId(variable)];
+            return namedVariable ? `#${namedVariable.name}` : "0";
+          }}
           hoverTransform={(variable) =>
             `${l10n("FIELD_CHARACTER")}: ${
-              variablesLookup[variable]?.name || variable
+              variablesLookup[normalizeVariableId(variable)]?.name || "0"
             }`
           }
           onClick={(e, id, index) => {
@@ -712,7 +717,7 @@ export const DialogueTextarea: FC<DialogueTextareaProps> = ({
             const rect2 = e.currentTarget.getBoundingClientRect();
             setEditMode({
               type: "char",
-              id: id.replace(/^0/, ""),
+              id: normalizeVariableId(id),
               index,
               x: rect2.left - rect.left,
               y: rect2.top - rect.top,
