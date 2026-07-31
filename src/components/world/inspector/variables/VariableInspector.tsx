@@ -45,7 +45,7 @@ import { NumberInput } from "ui/form/NumberInput";
 import { VariableType } from "shared/lib/resources/types";
 import { findVariableUses } from "renderer/lib/workers/variableUses";
 import { isWorkerRequestAbortError } from "renderer/lib/workers/createWorkerClient";
-import { FixedSpacer } from "components/ui/spacing/Spacing";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 interface VariableInspectorProps {
   id: string;
