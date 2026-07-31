@@ -19,7 +19,6 @@ import { variableName } from "shared/lib/entities/entitiesHelpers";
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));
 
-export const allVariables = arrayNStrings(512);
 const localVariables = arrayNStrings(6);
 const tempVariables = arrayNStrings(2);
 const customEventVariables = arrayNStrings(10);
@@ -145,24 +144,4 @@ export const groupVariables = (variables: NamedVariable[]): VariableGroup[] => {
       variables: groupVariables,
     };
   });
-};
-
-/*****************************************************************************/
-
-export const prevVariable = (variable = "0") => {
-  const start = variable[0];
-  if (start === "T" || start === "L") {
-    const value = parseInt(variable.substr(1), 10) - 1;
-    return `${start}${value}`;
-  }
-  return String(parseInt(variable, 10) - 1);
-};
-
-export const nextVariable = (variable = "0") => {
-  const start = variable[0];
-  if (start === "T" || start === "L") {
-    const value = parseInt(variable.substr(1), 10) + 1;
-    return `${start}${value}`;
-  }
-  return String(parseInt(variable, 10) + 1);
 };

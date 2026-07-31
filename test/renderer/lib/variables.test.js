@@ -2,43 +2,7 @@
  * @jest-environment jsdom
  */
 
-import {
-  nextVariable,
-  prevVariable,
-  namedCustomEventVariables,
-} from "../../../src/renderer/lib/variables";
-
-test("Should get next variable for global", () => {
-  expect(nextVariable("0")).toBe("1");
-  expect(nextVariable("512")).toBe("513");
-});
-
-test("Should get next variable for local", () => {
-  expect(nextVariable("L0")).toBe("L1");
-  expect(nextVariable("L3")).toBe("L4");
-});
-
-test("Should get next variable for temporary", () => {
-  expect(nextVariable("T0")).toBe("T1");
-});
-
-test("Should use first global if no input provided", () => {
-  expect(nextVariable()).toBe("1");
-});
-
-test("Should get prev variable for global", () => {
-  expect(prevVariable("1")).toBe("0");
-  expect(prevVariable("513")).toBe("512");
-});
-
-test("Should get prev variable for local", () => {
-  expect(prevVariable("L1")).toBe("L0");
-  expect(prevVariable("L4")).toBe("L3");
-});
-
-test("Should get prev variable for temporary", () => {
-  expect(prevVariable("T1")).toBe("T0");
-});
+import { namedCustomEventVariables } from "../../../src/renderer/lib/variables";
 
 test("Should be able to extract named variables from custom event", () => {
   expect(
