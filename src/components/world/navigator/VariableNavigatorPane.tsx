@@ -172,7 +172,7 @@ export const VariableNavigatorPane = ({
       } else if (item.type === "entity") {
         dispatch(
           entitiesActions.reparentVariable({
-            constantId: item.id,
+            variableId: item.id,
             toPath: dropFolder,
           }),
         );

@@ -153,13 +153,13 @@ const reparentVariablesFolder: CaseReducer<
 const reparentVariable: CaseReducer<
   EntitiesState,
   PayloadAction<{
-    constantId: string;
+    variableId: string;
     toPath: string;
   }>
 > = (state, action) => {
   applyReparentEntityToCollection(
     state.variables.entities,
-    action.payload.constantId,
+    action.payload.variableId,
     action.payload.toPath,
   );
 };
