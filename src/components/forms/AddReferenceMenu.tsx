@@ -13,10 +13,10 @@ import {
   fontSelectors,
   musicSelectors,
   sceneSelectors,
+  selectGlobalVariablesAll,
   soundSelectors,
   spriteSheetSelectors,
   tilesetSelectors,
-  variableSelectors,
 } from "store/features/entities/entitiesSelectors";
 import {
   ScriptNormalized,
@@ -27,10 +27,10 @@ import { Reference, ReferenceType } from "./ReferencesSelect";
 import {
   customEventName,
   sceneName,
+  variableName,
 } from "shared/lib/entities/entitiesHelpers";
 import { List, RowComponentProps } from "react-window";
-import { allVariables } from "renderer/lib/variables";
-import { globalVariableDefaultName } from "shared/lib/variables/variableNames";
+import { variableDisplayName } from "shared/lib/variables/variableNames";
 import l10n from "shared/lib/lang/l10n";
 import { IMEUnstyledInput } from "ui/form/IMEInput";
 import { StyledMenu } from "ui/menu/style";
@@ -102,14 +102,15 @@ const sceneToOption = (scene: SceneNormalized, index: number): EventOption => {
   };
 };
 
-const variableToOption = (variable: {
-  id: string;
-  namedVariable?: Variable;
-}): EventOption => {
+export const variableToOption = (
+  variable: Variable,
+  index: number,
+): EventOption => {
   return {
-    label: variable.namedVariable
-      ? variable.namedVariable.name
-      : globalVariableDefaultName(variable.id),
+    label: variableDisplayName(
+      variableName(variable, index),
+      variable.type === "array" ? variable.size : undefined,
+    ),
     value: variable.id,
     referenceType: "variable",
   };
@@ -313,6 +314,9 @@ const sortAlphabeticallyByLabel = (
   return collator.compare(a.label, b.label);
 };
 
+export const variablesToOptions = (variables: Variable[]): EventOption[] =>
+  variables.map(variableToOption).sort(sortAlphabeticallyByLabel);
+
 const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
   const firstLoad = useRef(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -336,9 +340,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
   const customEvents = useAppSelector((state) =>
     customEventSelectors.selectAll(state),
   );
-  const variablesLookup = useAppSelector((state) =>
-    variableSelectors.selectEntities(state),
-  );
+  const variables = useAppSelector(selectGlobalVariablesAll);
   const emotes = useAppSelector((state) => emoteSelectors.selectAll(state));
   const tilesets = useAppSelector((state) => tilesetSelectors.selectAll(state));
   const fonts = useAppSelector((state) => fontSelectors.selectAll(state));
@@ -390,13 +392,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
       },
       {
         label: l10n("FIELD_VARIABLES"),
-        options: allVariables
-          .map((id: string) => ({
-            id,
-            namedVariable: variablesLookup[id],
-          }))
-          .map(variableToOption)
-          .sort(sortAlphabeticallyByLabel),
+        options: variablesToOptions(variables),
       },
     ]);
     setAllOptions(allOptions);
@@ -407,7 +403,7 @@ const AddReferenceMenu = ({ onBlur, onAdd }: AddReferenceMenuProps) => {
   }, [
     backgrounds,
     tracks,
-    variablesLookup,
+    variables,
     sprites,
     emotes,
     fonts,

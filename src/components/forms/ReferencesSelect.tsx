@@ -128,6 +128,9 @@ export const ReferencesSelect = ({
   onChange,
 }: ReferencesSelectProps) => {
   const dispatch = useAppDispatch();
+  const variablesLookup = useAppSelector((state) =>
+    variableSelectors.selectEntities(state),
+  );
 
   const [isOpen, setOpen] = useState(false);
   const [pinDirection, setPinDirection] = useState<
@@ -164,7 +167,9 @@ export const ReferencesSelect = ({
 
   const backgroundRefs = value.filter((ref) => ref.type === "background");
   const spriteRefs = value.filter((ref) => ref.type === "sprite");
-  const variableRefs = value.filter((ref) => ref.type === "variable");
+  const variableRefs = value.filter(
+    (ref) => ref.type === "variable" && variablesLookup[ref.id],
+  );
   const musicRefs = value.filter((ref) => ref.type === "music");
   const soundRefs = value.filter((ref) => ref.type === "sound");
   const customEventRefs = value.filter((ref) => ref.type === "script");
@@ -659,7 +664,7 @@ export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
   const variable = useAppSelector((state) =>
     variableSelectors.selectById(state, id),
   );
-  const symbol = variable?.symbol?.toUpperCase() ?? `VAR_${id}`;
+  const symbol = variable?.symbol?.toUpperCase() ?? "";
   const variableName = variable?.name ?? "";
 
   const [renameVisible, setRenameVisible] = useState(false);
@@ -702,6 +707,10 @@ export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
     e.currentTarget.select();
   }, []);
 
+  if (!variable) {
+    return null;
+  }
+
   return (
     <ReferenceGroup
       header={
@@ -728,7 +737,7 @@ export const VariableReference = ({ id, onRemove }: ReferenceProps) => {
               <CopyableReferenceSymbol
                 onCopy={onCopy}
                 symbol={symbol}
-                name={variable?.name}
+                name={variable.name}
               />
             </ReferenceName>
             <FlexGrow />

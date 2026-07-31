@@ -145,6 +145,41 @@ test("should include fonts referenced in gbvm script blocks", async () => {
   expect(usedAssets.referencedFonts[1]?.id).toBe("font3");
 });
 
+test("should ignore a missing UUID variable reference", async () => {
+  const missingId = "abcdef01-2345-6789-abcd-ef0123456789";
+  const projectData = {
+    ...dummyProjectResources,
+    scenes: [
+      {
+        ...dummySceneResource,
+        id: "scene1",
+        script: [
+          {
+            id: "event1",
+            command: "EVENT_GBVM_SCRIPT",
+            args: {
+              script: "",
+              references: [{ type: "variable", id: missingId }],
+            },
+          },
+        ],
+      },
+    ] as SceneResource[],
+  } as ProjectResources;
+  const scriptEventHandlers = await getTestScriptHandlers();
+
+  const usedAssets = determineUsedAssets({
+    projectData,
+    customEventsLookup: {} as Record<string, Script>,
+    scriptEventHandlers,
+    warnings: () => {},
+  });
+
+  expect(
+    usedAssets.referencedVariables.find(({ id }) => id === missingId),
+  ).toBeUndefined();
+});
+
 test("should include fonts referenced in dialogue", async () => {
   const projectData = {
     ...dummyProjectResources,

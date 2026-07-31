@@ -925,6 +925,16 @@ test("Should get default alias for variable with empty name", () => {
   expect(sb.getVariableAlias("13")).toEqual("VAR_VARIABLE_13");
 });
 
+test("Should reject a missing UUID variable without exposing its id", () => {
+  const output: string[] = [];
+  const sb = new ScriptBuilder(output, {
+    variablesLookup: {},
+  } as unknown as ScriptBuilderOptions);
+  expect(() =>
+    sb.getVariableAlias("abcdef01-2345-6789-abcd-ef0123456789"),
+  ).toThrow("Cannot find referenced variable");
+});
+
 test("Should increment an array variable with a static index", async () => {
   const { sb, output } = await createTestScriptBuilder(
     {},

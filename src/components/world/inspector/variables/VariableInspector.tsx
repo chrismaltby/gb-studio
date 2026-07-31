@@ -5,6 +5,7 @@ import {
   customEventSelectors,
   sceneSelectors,
   scriptEventSelectors,
+  selectGlobalVariablesAll,
   triggerPrefabSelectors,
   triggerSelectors,
   variableSelectors,
@@ -31,10 +32,7 @@ import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { SymbolEditorWrapper } from "components/forms/symbols/SymbolEditorWrapper";
 import { VariableReference } from "components/forms/ReferencesSelect";
 import type { VariableUse } from "renderer/lib/workers/VariableUses.worker";
-import {
-  globalVariableCode,
-  globalVariableDefaultName,
-} from "shared/lib/variables/variableNames";
+import { globalVariableCode } from "shared/lib/variables/variableNames";
 import l10n, { getL10NData } from "shared/lib/lang/l10n";
 import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import { useAppDispatch, useAppSelector } from "store/hooks";
@@ -45,6 +43,7 @@ import { NumberInput } from "ui/form/NumberInput";
 import { VariableType } from "shared/lib/resources/types";
 import { findVariableUses } from "renderer/lib/workers/variableUses";
 import { isWorkerRequestAbortError } from "renderer/lib/workers/createWorkerClient";
+import { defaultLocalisedVariableName } from "shared/lib/entities/entitiesHelpers";
 
 interface VariableInspectorProps {
   id: string;
@@ -88,6 +87,9 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
   const { observe, height } = useDimensions();
   const variable = useAppSelector((state) =>
     variableSelectors.selectById(state, id),
+  );
+  const variableIndex = useAppSelector((state) =>
+    selectGlobalVariablesAll(state).findIndex((variable) => variable.id === id),
   );
   const [variableUses, setVariableUses] = useState<VariableUse[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
@@ -233,7 +235,7 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
       <FormHeader>
         <EditableText
           name="name"
-          placeholder={globalVariableDefaultName(id)}
+          placeholder={defaultLocalisedVariableName(variableIndex)}
           value={variable?.name || ""}
           onChange={onRename}
         />

@@ -73,7 +73,6 @@ import {
   toVariableNumber,
 } from "shared/lib/entities/entitiesHelpers";
 import {
-  globalVariableDefaultName,
   localVariableName,
   tempVariableName,
 } from "shared/lib/variables/variableNames";
@@ -2767,8 +2766,11 @@ extern void __mute_mask_${symbol};
       const num = toVariableNumber(variable);
       name = tempVariableName(num);
     } else {
+      if (!isLocal && !/^\d+$/.test(variable)) {
+        throw new Error("Cannot find referenced variable");
+      }
       const num = toVariableNumber(variable || "0");
-      name = namedVariable?.name || globalVariableDefaultName(num);
+      name = namedVariable?.name || `Variable ${num}`;
     }
 
     const alias = "VAR_" + toASMVar(name);

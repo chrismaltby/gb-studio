@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import {
   globalVariableCode,
-  globalVariableName,
   tempVariableCode,
   tempVariableName,
   localVariableCode,
@@ -22,28 +21,6 @@ test("Should append array capacity to variable display names", () => {
   expect(variableDisplayName("Health")).toBe("Health");
   expect(variableDisplayName("Inventory", 5)).toBe("Inventory[5]");
   expect(variableDisplayName("Items", null)).toBe("Items[]");
-});
-
-test("Should get variable name for global when provided", () => {
-  expect(
-    globalVariableName("50", {
-      50: {
-        id: "50",
-        name: "My Variable Name",
-      },
-    }),
-  ).toBe("My Variable Name");
-});
-
-test("Should get default variable name for global when no custom name provided", () => {
-  expect(
-    globalVariableName("51", {
-      50: {
-        id: "50",
-        name: "My Variable Name",
-      },
-    }),
-  ).toBe("Variable 51");
 });
 
 test("Should get variable code for temporary", () => {

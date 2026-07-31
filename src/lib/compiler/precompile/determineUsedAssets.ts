@@ -91,7 +91,7 @@ export const determineUsedAssets = ({
       const variable = variablesLookup[id];
       if (variable) {
         usedVariablesLookup[id] = variable;
-      } else {
+      } else if (/^\d+$/.test(id)) {
         usedVariablesLookup[id] = {
           id,
           name: `VAR_${id}`,
