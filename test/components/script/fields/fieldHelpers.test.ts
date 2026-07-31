@@ -1,9 +1,10 @@
 import {
   allowedVariableTypesForFieldType,
+  defaultValueForUnionType,
   defaultVariableValueForType,
   variableTypeAllowsIndex,
   variableValueForType,
-} from "components/script/fields/variableFieldType";
+} from "components/script/fields/fieldHelpers";
 
 const index = { type: "number" as const, value: 2 };
 
@@ -66,6 +67,38 @@ describe("variable field types", () => {
       defaultVariableValueForType("arrayReference", [
         { id: "scalar", type: "number" },
       ]),
+    ).toBeUndefined();
+  });
+});
+
+describe("union field defaults", () => {
+  const field = {
+    type: "union",
+    defaultType: "number",
+    types: ["number", "variable"],
+    defaultValue: {
+      number: 0,
+      variable: "LAST_VARIABLE",
+    },
+  };
+
+  test("resolves variable placeholders to a real variable id", () => {
+    expect(
+      defaultValueForUnionType(
+        field,
+        "variable",
+        "9fa94043-5b72-4ae4-a36f-56bc5a9cc875",
+      ),
+    ).toBe("9fa94043-5b72-4ae4-a36f-56bc5a9cc875");
+  });
+
+  test("preserves defaults for other union members", () => {
+    expect(defaultValueForUnionType(field, "number", "variable-id")).toBe(0);
+  });
+
+  test("returns undefined when the union member has no default", () => {
+    expect(
+      defaultValueForUnionType(field, "direction", "variable-id"),
     ).toBeUndefined();
   });
 });

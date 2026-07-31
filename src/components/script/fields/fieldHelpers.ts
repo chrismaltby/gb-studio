@@ -66,3 +66,16 @@ export const defaultVariableValueForType = (
     candidate.type === "array",
   );
 };
+
+export const defaultValueForUnionType = (
+  field: ScriptEventFieldSchema,
+  type: string,
+  defaultVariableId: string,
+): unknown => {
+  const defaultValue =
+    typeof field.defaultValue === "object" && field.defaultValue !== null
+      ? (field.defaultValue as Record<string, unknown>)[type]
+      : undefined;
+
+  return defaultValue === "LAST_VARIABLE" ? defaultVariableId : defaultValue;
+};

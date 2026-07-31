@@ -48,7 +48,10 @@ import { StyledMenu, StyledMenuItem } from "ui/menu/style";
 import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import { useVariableFieldContext } from "components/script/fields/useVariableFieldContext";
 import { applyCustomEventArgDefaults } from "components/script/events/customEventArgs";
-import type { VariableFieldCandidate } from "components/script/fields/variableFieldType";
+import {
+  defaultValueForUnionType,
+  type VariableFieldCandidate,
+} from "components/script/fields/fieldHelpers";
 
 interface AddScriptEventMenuProps {
   parentType: ScriptEventParentType;
@@ -87,7 +90,7 @@ interface EventOptGroup {
 interface InstanciateOptions {
   defaultSceneId: string;
   defaultVariableId: string;
-  defaultDataTableVariableId: string;
+  defaultScalarVariableId: string;
   defaultMusicId: string;
   defaultActorId: string;
   defaultSpriteId: string;
@@ -108,7 +111,7 @@ const instanciateScriptEvent = (
   {
     defaultSceneId,
     defaultVariableId,
-    defaultDataTableVariableId,
+    defaultScalarVariableId,
     defaultMusicId,
     defaultActorId,
     defaultSpriteId,
@@ -159,9 +162,11 @@ const instanciateScriptEvent = (
         }
 
         if (field.type === "union") {
-          defaultValue = (field?.defaultValue as Record<string, unknown>)?.[
-            field.defaultType || ""
-          ];
+          defaultValue = defaultValueForUnionType(
+            field,
+            field.defaultType || "",
+            defaultScalarVariableId,
+          );
         }
         if (defaultValue === "LAST_SCENE") {
           replaceValue = defaultSceneId;
@@ -217,7 +222,7 @@ const instanciateScriptEvent = (
             ...defaultValue,
             variables: defaultValue.variables.map((variableId) =>
               variableId === "LAST_VARIABLE"
-                ? defaultDataTableVariableId
+                ? defaultScalarVariableId
                 : variableId,
             ),
           };
@@ -621,7 +626,7 @@ const AddScriptEventMenu = ({
     context.entityId,
   );
   const defaultVariableId = variableCandidates[0]?.id ?? "";
-  const defaultDataTableVariableId =
+  const defaultScalarVariableId =
     variableCandidates.find(({ type }) => type === "number")?.id ?? "";
   const disabledSceneTypeIds = useAppSelector(
     (state) => state.project.present.settings.disabledSceneTypeIds,
@@ -880,7 +885,7 @@ const AddScriptEventMenu = ({
             instanciateScriptEvent(newEvent, {
               defaultActorId: "player",
               defaultVariableId,
-              defaultDataTableVariableId,
+              defaultScalarVariableId,
               defaultMusicId: String(lastMusicId),
               defaultSceneId: String(lastSceneId),
               defaultSpriteId: String(lastSpriteId),
@@ -910,7 +915,7 @@ const AddScriptEventMenu = ({
       insertId,
       before,
       defaultVariableId,
-      defaultDataTableVariableId,
+      defaultScalarVariableId,
       lastMusicId,
       lastSceneId,
       lastSpriteId,

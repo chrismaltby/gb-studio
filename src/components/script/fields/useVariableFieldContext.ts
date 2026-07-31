@@ -6,7 +6,7 @@ import {
   variableSelectors,
 } from "store/features/entities/entitiesSelectors";
 import { useAppSelector } from "store/hooks";
-import type { VariableFieldCandidate } from "./variableFieldType";
+import type { VariableFieldCandidate } from "./fieldHelpers";
 
 export const useVariableFieldContext = (entityId: string) => {
   const context = useContext(ScriptEditorContext);

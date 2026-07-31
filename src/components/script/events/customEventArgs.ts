@@ -1,8 +1,8 @@
 import type { ScriptNormalized } from "shared/lib/entities/entitiesTypes";
 import {
   defaultVariableValueForType,
-  VariableFieldCandidate,
-} from "components/script/fields/variableFieldType";
+  type VariableFieldCandidate,
+} from "components/script/fields/fieldHelpers";
 
 export const applyCustomEventArgDefaults = (
   customEvent: ScriptNormalized,

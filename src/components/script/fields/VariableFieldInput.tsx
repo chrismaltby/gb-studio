@@ -14,7 +14,7 @@ import {
   allowedVariableTypesForFieldType,
   variableTypeAllowsIndex,
   variableValueForType,
-} from "./variableFieldType";
+} from "./fieldHelpers";
 import { useVariableFieldContext } from "./useVariableFieldContext";
 
 interface VariableFieldInputProps {

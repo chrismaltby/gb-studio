@@ -30,7 +30,7 @@ import {
   castEventToFloat,
 } from "renderer/lib/helpers/castEventValue";
 import l10n, { L10NKey } from "shared/lib/lang/l10n";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import { useAppSelector } from "store/hooks";
 import {
   MovementType,
@@ -57,8 +57,6 @@ import {
 } from "ui/icons/Icons";
 import { MenuItem } from "ui/menu/Menu";
 import { OffscreenSkeletonInput } from "ui/skeleton/Skeleton";
-import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
-import { defaultVariableForContext } from "shared/lib/scripts/context";
 import ScriptEventFormMathArea from "./ScriptEventFormMatharea";
 import ScriptEventFormTextArea from "./ScriptEventFormTextarea";
 import { AngleInput } from "ui/form/AngleInput";
@@ -84,6 +82,7 @@ import { ActorDirection, CollisionGroup } from "shared/lib/resources/types";
 import { DataTableInput } from "components/forms/DataTableInput";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
 import { VariableFieldInput } from "./VariableFieldInput";
+import { defaultValueForUnionType } from "./fieldHelpers";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -95,6 +94,7 @@ interface ScriptEventFormInputProps {
   value: unknown;
   args: Record<string, unknown>;
   allowRename?: boolean;
+  defaultVariableId: string;
   onChange: (newValue: unknown, valueIndex?: number | undefined) => void;
   onInsertEventAfter: () => void;
 }
@@ -144,6 +144,7 @@ const ScriptEventFormInput = ({
   defaultValue,
   onChange,
   onInsertEventAfter,
+  defaultVariableId,
   allowRename = true,
 }: ScriptEventFormInputProps) => {
   const defaultBackgroundPaletteIds = useAppSelector(
@@ -153,8 +154,6 @@ const ScriptEventFormInput = ({
     (state) => state.project.present.settings.defaultSpritePaletteIds || [],
   );
   const engineFieldsLookup = useAppSelector((state) => state.engine.lookup);
-  const context = useContext(ScriptEditorContext);
-
   const onChangeField = useCallback(
     (e: unknown) => {
       onChange(e, index);
@@ -214,18 +213,8 @@ const ScriptEventFormInput = ({
           ? (value as { type: string }).type
           : undefined;
       if (newType !== valueType) {
-        let replaceValue = null;
-        const defaultUnionValue =
-          typeof field.defaultValue === "object"
-            ? (field.defaultValue as { [key: string]: string | undefined })[
-                newType
-              ]
-            : undefined;
-        if (defaultUnionValue === "LAST_VARIABLE") {
-          replaceValue = defaultVariableForContext(context.type);
-        } else if (defaultUnionValue !== undefined) {
-          replaceValue = defaultUnionValue;
-        }
+        const replaceValue =
+          defaultValueForUnionType(field, newType, defaultVariableId) ?? null;
         onChange(
           {
             type: newType,
@@ -235,7 +224,7 @@ const ScriptEventFormInput = ({
         );
       }
     },
-    [context, field.defaultValue, index, onChange, value],
+    [defaultVariableId, field, index, onChange, value],
   );
 
   if (type === "textarea") {
@@ -956,6 +945,7 @@ const ScriptEventFormInput = ({
             args={args}
             onChange={onChangeUnionField}
             onInsertEventAfter={onInsertEventAfter}
+            defaultVariableId={defaultVariableId}
           />
         </div>
         <ConnectButton>

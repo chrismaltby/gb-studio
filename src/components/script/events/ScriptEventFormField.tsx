@@ -143,6 +143,8 @@ const ScriptEventFormField = memo(
     const { candidates: variableCandidates } =
       useVariableFieldContext(entityId);
     const preferredVariableId = variableCandidates[0]?.id;
+    const defaultVariableId =
+      variableCandidates.find(({ type }) => type === "number")?.id ?? "";
 
     const lastUpdateSource = useRef<"user" | "store">("store");
 
@@ -477,6 +479,7 @@ const ScriptEventFormField = memo(
                 args={scriptEvent?.args || {}}
                 onChange={onChange}
                 onInsertEventAfter={onInsertEventAfter}
+                defaultVariableId={defaultVariableId}
               />
               <ButtonRow>
                 {valueIndex !== 0 && (
@@ -502,6 +505,7 @@ const ScriptEventFormField = memo(
           args={scriptEvent?.args || {}}
           onChange={onChange}
           onInsertEventAfter={onInsertEventAfter}
+          defaultVariableId={defaultVariableId}
         />
       );
 
