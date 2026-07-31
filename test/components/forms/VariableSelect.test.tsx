@@ -9,7 +9,114 @@ import { UnknownAction, Store } from "@reduxjs/toolkit";
 import { RootState } from "store/storeTypes";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import entitiesActions from "store/features/entities/entitiesActions";
+import editorActions from "store/features/editor/editorActions";
 import { clearL10NData, setL10NData } from "shared/lib/lang/l10n";
+
+test("Should jump to a UUID global variable on Alt-click", () => {
+  const variableId = "9fa94043-5b72-4ae4-a36f-56bc5a9cc875";
+  const state = {
+    editor: {
+      type: "actor",
+    },
+    project: {
+      present: {
+        entities: {
+          customEvents: {
+            entities: {},
+            ids: [],
+          },
+          variables: {
+            entities: {
+              [variableId]: {
+                id: variableId,
+                name: "Player Health",
+                symbol: "var_player_health",
+                type: "number",
+              },
+            },
+            ids: [variableId],
+          },
+        },
+      },
+    },
+  };
+  const dispatch = jest.fn();
+  const store = {
+    getState: () => state,
+    dispatch,
+    subscribe: () => {},
+  } as unknown as Store<RootState, UnknownAction>;
+
+  render(
+    <VariableSelect
+      name="test"
+      entityId=""
+      value={variableId}
+      onChange={() => {}}
+    />,
+    store,
+    {},
+  );
+
+  fireEvent.click(screen.getByText("$Player Health"), { altKey: true });
+
+  expect(dispatch).toHaveBeenCalledWith(
+    editorActions.selectVariable({ variableId }),
+  );
+});
+
+test("Should not jump to a contextual variable on Alt-click", () => {
+  const state = {
+    editor: {
+      type: "actor",
+    },
+    project: {
+      present: {
+        entities: {
+          customEvents: {
+            entities: {},
+            ids: [],
+          },
+          variables: {
+            entities: {},
+            ids: [],
+          },
+        },
+      },
+    },
+  };
+  const dispatch = jest.fn();
+  const store = {
+    getState: () => state,
+    dispatch,
+    subscribe: () => {},
+  } as unknown as Store<RootState, UnknownAction>;
+
+  render(
+    <ScriptEditorContext.Provider
+      value={{
+        type: "entity",
+        entityType: "actor",
+        entityId: "actor1",
+        sceneId: "scene1",
+        scriptKey: "script",
+      }}
+    >
+      <VariableSelect
+        name="test"
+        entityId="actor1"
+        value="L0"
+        onChange={() => {}}
+      />
+    </ScriptEditorContext.Provider>,
+    store,
+    {},
+  );
+
+  fireEvent.click(screen.getByText("$Local 0"), { altKey: true });
+
+  expect(dispatch).not.toHaveBeenCalled();
+});
 
 test("Should use default variable name with not renamed", () => {
   setL10NData({ FIELD_VARIABLE: "Variable" });

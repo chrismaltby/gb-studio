@@ -255,14 +255,8 @@ const VariableSelectComponent = ({
   const onJumpToVariable = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
-    if (e.altKey) {
-      if (
-        value &&
-        context.entityType !== "customEvent" &&
-        Number.isInteger(Number(value))
-      ) {
-        dispatch(editorActions.selectVariable({ variableId: value }));
-      }
+    if (e.altKey && value && variablesLookup[value]) {
+      dispatch(editorActions.selectVariable({ variableId: value }));
     }
   };
 
