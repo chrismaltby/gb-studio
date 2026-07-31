@@ -95,6 +95,11 @@ import {
   variableSelectors,
 } from "store/features/entities/entitiesSelectors";
 import { namedVariablesByContext } from "renderer/lib/variables";
+import {
+  allowedVariableTypesForFieldType,
+  variableTypeAllowsIndex,
+  variableValueForType,
+} from "./variableFieldType";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -578,6 +583,9 @@ const ScriptEventFormInput = ({
       </OffscreenSkeletonInput>
     );
   } else if (type === "variable") {
+    const fieldVariableType = field.variableType ?? "any";
+    const allowedVariableTypes =
+      allowedVariableTypesForFieldType(fieldVariableType);
     let fallbackValue = defaultValue;
     if (fallbackValue === "LAST_VARIABLE") {
       fallbackValue = defaultVariableForContext(context.type);
@@ -587,25 +595,25 @@ const ScriptEventFormInput = ({
         if (id !== fallbackValue) {
           return false;
         }
-        const variableType =
+        const candidateVariableType =
           variablesLookup[id]?.type ??
           (customEvent?.variables[id]?.passByReference === "array"
             ? "array"
             : "number");
         return (
-          !field.allowedVariableTypes ||
-          field.allowedVariableTypes.includes(variableType)
+          !allowedVariableTypes ||
+          allowedVariableTypes.includes(candidateVariableType)
         );
       })?.id ??
       availableVariables.find(({ id }) => {
-        const variableType =
+        const candidateVariableType =
           variablesLookup[id]?.type ??
           (customEvent?.variables[id]?.passByReference === "array"
             ? "array"
             : "number");
         return (
-          !field.allowedVariableTypes ||
-          field.allowedVariableTypes.includes(variableType)
+          !allowedVariableTypes ||
+          allowedVariableTypes.includes(candidateVariableType)
         );
       })?.id ??
       "";
@@ -628,46 +636,39 @@ const ScriptEventFormInput = ({
               name={id}
               value={variableId}
               entityId={entityId}
-              allowedVariableTypes={field.allowedVariableTypes}
+              allowedVariableTypes={allowedVariableTypes}
               onChange={(newValue) => {
-                if (field.valueAsScriptValue) {
-                  onChangeField({
-                    type: "variable",
-                    value: newValue,
-                  });
-                  return;
-                }
                 const isIndexable =
                   variablesLookup[newValue]?.type === "array" ||
                   customEvent?.variables[newValue]?.passByReference === "array";
-                if (isIndexable) {
-                  onChangeField({
-                    type: "variable",
-                    value: newValue,
-                    index: variableIndex,
-                  });
-                } else {
-                  onChangeField(newValue);
-                }
+                onChangeField(
+                  variableValueForType(
+                    fieldVariableType,
+                    newValue,
+                    variableIndex,
+                    isIndexable,
+                  ),
+                );
               }}
               allowRename={allowRename}
             />
           </VariableInputGroup>
-          {field.allowVariableIndex !== false && isIndexableVariable && (
-            <VariableIndexSelect
-              name={`${id}_index`}
-              entityId={entityId}
-              value={variableIndex}
-              max={variable?.type === "array" ? variable.size - 1 : undefined}
-              onChange={(newValue) => {
-                onChangeField({
-                  type: "variable",
-                  value: variableId,
-                  index: newValue,
-                });
-              }}
-            />
-          )}
+          {variableTypeAllowsIndex(fieldVariableType) &&
+            isIndexableVariable && (
+              <VariableIndexSelect
+                name={`${id}_index`}
+                entityId={entityId}
+                value={variableIndex}
+                max={variable?.type === "array" ? variable.size - 1 : undefined}
+                onChange={(newValue) => {
+                  onChangeField({
+                    type: "variable",
+                    value: variableId,
+                    index: newValue,
+                  });
+                }}
+              />
+            )}
         </IndexedVariableInputGroup>
       </OffscreenSkeletonInput>
     );

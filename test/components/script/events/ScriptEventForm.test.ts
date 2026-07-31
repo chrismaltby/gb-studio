@@ -30,8 +30,6 @@ test("Should use an unindexed array-only field for array reference arguments", (
     key: "$variable[V0]$",
     type: "variable",
     defaultValue: "LAST_VARIABLE",
-    allowedVariableTypes: ["array"],
-    allowVariableIndex: false,
-    valueAsScriptValue: true,
+    variableType: "arrayReference",
   });
 });

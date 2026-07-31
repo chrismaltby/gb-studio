@@ -28,7 +28,6 @@ import type {
   Avatar,
   EngineFieldValue,
   Variable,
-  VariableType,
   ScriptEvent,
   Script,
   Note,
@@ -322,7 +321,5 @@ export interface ScriptEventFieldSchema {
   labelVariant?: string;
   filters?: Record<string, unknown>;
   prefix?: string;
-  allowedVariableTypes?: VariableType[];
-  allowVariableIndex?: boolean;
-  valueAsScriptValue?: boolean;
+  variableType?: "any" | "arrayElement" | "arrayReference";
 }

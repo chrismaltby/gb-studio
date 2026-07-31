@@ -37,9 +37,7 @@ export const getScriptEventFields = (
             key: `$variable[${v.id || ""}]$`,
             type: "variable",
             defaultValue: "LAST_VARIABLE",
-            allowedVariableTypes: ["array"],
-            allowVariableIndex: false,
-            valueAsScriptValue: true,
+            variableType: "arrayReference",
           } satisfies ScriptEventFieldSchema;
         }
         return {
