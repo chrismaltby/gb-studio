@@ -1,6 +1,8 @@
 import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
-import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
-import type { ScriptEventDefsForVariableExtraction } from "shared/lib/variables/extractVariableReferences";
+import type {
+  ScriptEventDefs,
+  ScriptEventDefsFieldTypeLookup,
+} from "shared/lib/scripts/scriptDefHelpers";
 
 export type ScriptEventDefsSnapshot = Record<string, Record<string, string>>;
 
@@ -46,8 +48,8 @@ export const scriptEventDefsToSnapshot = (
 
 export const scriptEventDefsFromSnapshot = (
   snapshot: ScriptEventDefsSnapshot,
-): ScriptEventDefsForVariableExtraction => {
-  const scriptEventDefs: ScriptEventDefsForVariableExtraction = {};
+): ScriptEventDefsFieldTypeLookup => {
+  const scriptEventDefs: ScriptEventDefsFieldTypeLookup = {};
 
   for (const [id, fields] of Object.entries(snapshot)) {
     scriptEventDefs[id] = {

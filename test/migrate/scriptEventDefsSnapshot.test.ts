@@ -62,7 +62,7 @@ test("finds selected field types nested inside groups", () => {
   });
 });
 
-test("reconstructs the minimal field lookup used by variable extraction", () => {
+test("reconstructs a partial field type lookup", () => {
   const snapshot = scriptEventDefsToSnapshot(scriptEventDefs, [
     "variable",
     "value",

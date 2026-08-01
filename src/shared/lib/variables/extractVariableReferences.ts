@@ -10,18 +10,7 @@ import {
   isScriptValueVariable,
 } from "shared/lib/scriptValue/types";
 import { normalizeVariableId } from "shared/lib/variables/variableIds";
-
-export type ScriptEventDefsForVariableExtraction = Record<
-  string,
-  {
-    fieldsLookup: Record<
-      string,
-      {
-        type?: string;
-      }
-    >;
-  }
->;
+import type { ScriptEventDefsFieldTypeLookup } from "shared/lib/scripts/scriptDefHelpers";
 
 const isUnionVariableValue = (
   value: unknown,
@@ -89,7 +78,7 @@ const extractReferencedVariableIds = (value: unknown): string[] => {
 
 export const extractVariableIdsFromScriptEvent = (
   scriptEvent: Pick<ScriptEvent, "id" | "command" | "args">,
-  scriptEventDefs: ScriptEventDefsForVariableExtraction,
+  scriptEventDefs: ScriptEventDefsFieldTypeLookup,
 ): string[] => {
   const variableIds = new Set<string>();
   const args = scriptEvent.args;
@@ -141,7 +130,9 @@ export const extractVariableIdsFromScriptEvent = (
     }
 
     if (field?.type === "dataTable" && isScriptDataTable(value)) {
-      value.variables.forEach(addVariableId);
+      value.variables
+        .flatMap(extractScriptValueVariables)
+        .forEach(addVariableId);
     }
 
     if (field?.type === "references") {

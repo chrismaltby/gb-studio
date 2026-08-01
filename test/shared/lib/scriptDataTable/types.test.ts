@@ -4,7 +4,10 @@ test("Should accept valid script data tables", () => {
   expect(
     isScriptDataTable({
       label: "Data Table",
-      variables: ["0", "V0"],
+      variables: [
+        { type: "variable", value: "0" },
+        { type: "variable", value: "V0" },
+      ],
       rows: [
         {
           label: "Row 1",
@@ -22,10 +25,43 @@ test("Should accept valid script data tables", () => {
   ).toBe(true);
 });
 
-test("Should reject script data tables with invalid variable ids", () => {
+test("Should accept fixed array elements as data table variables", () => {
   expect(
     isScriptDataTable({
-      variables: [0],
+      variables: [
+        {
+          type: "variable",
+          value: "array-1",
+          index: { type: "number", value: 2 },
+        },
+      ],
+      rows: [],
+    }),
+  ).toBe(true);
+});
+
+test.each(["variable", "constant"])(
+  "Should reject %s array indexes in data table variables",
+  (indexType) => {
+    expect(
+      isScriptDataTable({
+        variables: [
+          {
+            type: "variable",
+            value: "array-1",
+            index: { type: indexType, value: "index-1" },
+          },
+        ],
+        rows: [],
+      }),
+    ).toBe(false);
+  },
+);
+
+test("Should reject legacy string data table variables", () => {
+  expect(
+    isScriptDataTable({
+      variables: ["0"],
       rows: [],
     }),
   ).toBe(false);
@@ -34,7 +70,7 @@ test("Should reject script data tables with invalid variable ids", () => {
 test("Should reject script data tables with invalid row values", () => {
   expect(
     isScriptDataTable({
-      variables: ["0"],
+      variables: [{ type: "variable", value: "0" }],
       rows: [
         {
           values: [{ foo: "bar" }],

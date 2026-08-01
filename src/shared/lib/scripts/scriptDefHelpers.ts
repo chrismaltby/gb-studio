@@ -8,6 +8,13 @@ import { ScriptEventArgs } from "shared/lib/resources/types";
 
 export type ScriptEventDefs = Record<string, ScriptEventDef>;
 
+export type ScriptEventDefsFieldTypeLookup = Record<
+  string,
+  {
+    fieldsLookup: Record<string, { type?: string }>;
+  }
+>;
+
 const SECTION_TAB_KEY = "__section";
 
 export const isFieldVisible = (

@@ -506,21 +506,23 @@ describe("createScriptEventsMigrator", () => {
         },
       ],
     };
-    const migrator = createScriptEventsMigrator((scriptEvent) => {
+    const migrator = createScriptEventsMigrator((scriptEvent, context) => {
       return {
         ...scriptEvent,
         command: "MIGRATED_" + scriptEvent.command,
         args: {
           ...scriptEvent.args,
           migrated: true,
+          receivedContext: context === migrationContext,
         },
       };
     });
 
-    const output = migrator(input);
+    const output = migrator(input, migrationContext);
 
     expect(output.scenes[0]?.script[0]?.command).toEqual("MIGRATED_EVENT_TEST");
     expect(output.scenes[0]?.script[0]?.args?.migrated).toEqual(true);
+    expect(output.scenes[0]?.script[0]?.args?.receivedContext).toEqual(true);
     expect(output.scenes[0]?.actors[0]?.script[0]?.command).toEqual(
       "MIGRATED_EVENT_TEST2",
     );
@@ -863,7 +865,7 @@ describe("pipeScriptEventMigrationFns", () => {
       pipeScriptEventMigrationFns([fn1, fn2]),
     );
 
-    const output = combinedMigrations(input);
+    const output = combinedMigrations(input, migrationContext);
 
     expect(output.scenes[0]?.script[0]?.command).toEqual(
       "SECONDMIGRATION_MIGRATED_EVENT_TEST",

@@ -2,7 +2,7 @@ import { compile, fields } from "../../src/lib/events/eventDataTable";
 
 test("Should provide a valid data table default with a variable placeholder", () => {
   expect(fields.find(({ key }) => key === "data")?.defaultValue).toEqual({
-    variables: ["LAST_VARIABLE"],
+    variables: [{ type: "variable", value: "LAST_VARIABLE" }],
     rows: [
       {
         label: "",
@@ -19,7 +19,7 @@ test("Should compile variable data table lookups", () => {
     {
       indexVariable: "0",
       data: {
-        variables: ["1"],
+        variables: [{ type: "variable", value: "1" }],
         rows: [
           {
             label: "Row 1",
@@ -34,7 +34,7 @@ test("Should compile variable data table lookups", () => {
   );
 
   expect(mockVariableDataTableLookup).toHaveBeenCalledWith("0", {
-    variables: ["1"],
+    variables: [{ type: "variable", value: "1" }],
     rows: [
       {
         label: "Row 1",

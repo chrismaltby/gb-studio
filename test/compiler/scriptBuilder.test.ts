@@ -4094,7 +4094,10 @@ test("Should compile variable data table lookups into data table output", async 
   const { sb } = await createTestScriptBuilder();
 
   sb.variableDataTableLookup("0", {
-    variables: ["1", "2"],
+    variables: [
+      { type: "variable", value: "1" },
+      { type: "variable", value: "2" },
+    ],
     rows: [
       {
         label: "Alpha",
@@ -4122,7 +4125,39 @@ test("Should compile variable data table lookups into data table output", async 
   expect(script).toContain("VAR_VARIABLE_2");
 });
 
+test("Should compile data table lookups into fixed array elements", async () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [arrayId]: {
+          id: arrayId,
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+    },
+  );
+
+  sb.variableDataTableLookup("0", {
+    variables: [
+      {
+        type: "variable",
+        value: arrayId,
+        index: { type: "number", value: 2 },
+      },
+    ],
+    rows: [{ values: [{ type: "number", value: 10 }] }],
+  });
+
+  expect(output.join("\n")).toContain("^/(VAR_ARRAY + 2)/");
+});
+
 test("Should remap custom event variable arguments used in data table columns", async () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
   const output: string[] = [];
   const additionalScripts: Record<
     string,
@@ -4152,6 +4187,11 @@ test("Should remap custom event variable arguments used in data table columns", 
             name: "Variable A",
             passByReference: false,
           },
+          V1: {
+            id: "V1",
+            name: "Array Variable",
+            passByReference: "array",
+          },
         },
         actors: {},
         symbol: "script_1",
@@ -4161,13 +4201,22 @@ test("Should remap custom event variable arguments used in data table columns", 
             args: {
               indexVariable: "0",
               data: {
-                variables: ["V0", "1"],
+                variables: [
+                  { type: "variable", value: "V0" },
+                  {
+                    type: "variable",
+                    value: "V1",
+                    index: { type: "number", value: 2 },
+                  },
+                  { type: "variable", value: "1" },
+                ],
                 rows: [
                   {
                     label: "Row 1",
                     values: [
                       { type: "number", value: 5 },
                       { type: "number", value: 6 },
+                      { type: "number", value: 7 },
                     ],
                   },
                 ],
@@ -4178,10 +4227,20 @@ test("Should remap custom event variable arguments used in data table columns", 
         ],
       },
     ],
+    variablesLookup: {
+      [arrayId]: {
+        id: arrayId,
+        name: "Array",
+        symbol: "var_array",
+        type: "array",
+        size: 4,
+      },
+    },
   } as unknown as ScriptBuilderOptions);
 
   sb.callScript("script1", {
     "$variable[V0]$": "2",
+    "$variable[V1]$": arrayId,
   });
 
   expect(output).toContain("        VM_PUSH_VALUE           VAR_VARIABLE_2");
@@ -4190,6 +4249,14 @@ test("Should remap custom event variable arguments used in data table columns", 
   );
   expect(additionalScripts["script_1"]?.compiledScript).toContain(
     ".SCRIPT_ARG_0_VARIABLE",
+  );
+  expect(additionalScripts["script_1"]?.compiledScript).toContain(
+    [
+      "            .R_REF      .SCRIPT_ARG_INDIRECT_1_VARIABLE",
+      "            .R_INT16    2",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP1_ARRAY_PTR",
+    ].join("\n"),
   );
 });
 

@@ -220,10 +220,10 @@ const instanciateScriptEvent = (
         if (field.type === "dataTable" && isScriptDataTable(defaultValue)) {
           replaceValue = {
             ...defaultValue,
-            variables: defaultValue.variables.map((variableId) =>
-              variableId === "LAST_VARIABLE"
-                ? defaultScalarVariableId
-                : variableId,
+            variables: defaultValue.variables.map((variable) =>
+              variable.value === "LAST_VARIABLE"
+                ? { ...variable, value: defaultScalarVariableId }
+                : variable,
             ),
           };
         }

@@ -1,5 +1,9 @@
 import cloneDeep from "lodash/cloneDeep";
-import { migrateFrom420r10To500r1Variables } from "lib/project/migration/versions/420to500";
+import {
+  migrate420r10To500r1,
+  migrateFrom420r10To500r1DataTables,
+  migrateFrom420r10To500r1Variables,
+} from "lib/project/migration/versions/420to500";
 import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import type { CompressedProjectResources } from "shared/lib/resources/types";
 import {
@@ -94,7 +98,7 @@ test("creates entries for referenced unnamed legacy global variables", () => {
   };
   const originalResources = cloneDeep(resources);
 
-  const migrated = migrateFrom420r10To500r1Variables(
+  const migrated = migrate420r10To500r1.migrationFn(
     resources as unknown as CompressedProjectResources,
     {
       scriptEventDefs,
@@ -141,8 +145,85 @@ test("creates entries for referenced unnamed legacy global variables", () => {
   expect(
     new Set(migratedVariables.map((variable) => variable.symbol)).size,
   ).toBe(migratedVariables.length);
+  expect(migrated.scripts[0].script[0]).toMatchObject({
+    args: {
+      dataTable: {
+        variables: [{ type: "variable", value: "13" }],
+      },
+    },
+  });
   expect(resources).toEqual(originalResources);
 });
+
+test("converts legacy data table variables to script values", () => {
+  const scriptEvent = {
+    id: "event1",
+    command: "EVENT_PLUGIN_VARIABLE",
+    args: {
+      dataTable: {
+        label: "Table",
+        variables: ["1", "2"],
+        rows: [{ values: [{ type: "number" as const, value: 1 }] }],
+      },
+    },
+  };
+
+  expect(
+    migrateFrom420r10To500r1DataTables(scriptEvent, { scriptEventDefs }),
+  ).toEqual({
+    ...scriptEvent,
+    args: {
+      dataTable: {
+        label: "Table",
+        variables: [
+          { type: "variable", value: "1" },
+          { type: "variable", value: "2" },
+        ],
+        rows: [{ values: [{ type: "number", value: 1 }] }],
+      },
+    },
+  });
+});
+
+test.each([
+  ["when the current definition is missing", {}],
+  [
+    "when the current definition has changed",
+    {
+      EVENT_DATA_TABLE: {
+        fieldsLookup: {
+          data: { type: "actor" },
+        },
+      },
+    },
+  ],
+] as const)(
+  "uses the 4.2 event definition snapshot for data tables %s",
+  (_description, currentScriptEventDefs) => {
+    const scriptEvent = {
+      id: "event1",
+      command: "EVENT_DATA_TABLE",
+      args: {
+        data: {
+          variables: ["1"],
+          rows: [{ values: [{ type: "number" as const, value: 1 }] }],
+        },
+      },
+    };
+
+    expect(
+      migrateFrom420r10To500r1DataTables(scriptEvent, {
+        scriptEventDefs: currentScriptEventDefs as unknown as ScriptEventDefs,
+      }),
+    ).toMatchObject({
+      args: {
+        data: {
+          variables: [{ type: "variable", value: "1" }],
+        },
+      },
+    });
+  },
+);
 
 test("adds number type to existing legacy variables", () => {
   const resources = {

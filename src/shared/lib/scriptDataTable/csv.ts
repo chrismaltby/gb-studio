@@ -4,7 +4,29 @@ import { Constant } from "shared/lib/resources/types";
 import {
   isScriptDataTable,
   ScriptDataTable,
+  ScriptDataTableVariable,
 } from "shared/lib/scriptDataTable/types";
+
+const scriptDataTableVariableToCSV = (
+  variable: ScriptDataTableVariable,
+): string =>
+  variable.index
+    ? `${variable.value}[${variable.index.value}]`
+    : variable.value;
+
+const csvToScriptDataTableVariable = (
+  value: string,
+): ScriptDataTableVariable => {
+  const match = value.match(/^(.*)\[(-?\d+)\]$/);
+  if (!match) {
+    return { type: "variable", value };
+  }
+  return {
+    type: "variable",
+    value: match[1],
+    index: { type: "number", value: Number(match[2]) },
+  };
+};
 
 const escapeCSVValue = (value: string): string => {
   if (value.includes(",") || value.includes('"') || value.includes("\n")) {
@@ -89,7 +111,10 @@ export const scriptDataTableToCSV = (
       constantName(constant, constantIndex),
     ]),
   );
-  const header = [data.label ?? "", ...data.variables]
+  const header = [
+    data.label ?? "",
+    ...data.variables.map(scriptDataTableVariableToCSV),
+  ]
     .map(escapeCSVValue)
     .join(",");
   const rows = data.rows.map((row, index) => {
@@ -127,7 +152,9 @@ export const csvToScriptDataTable = (
   }
 
   const [header, ...rows] = csvRows;
-  const variables = header.slice(1).map((v) => v.trim());
+  const variables = header
+    .slice(1)
+    .map((v) => csvToScriptDataTableVariable(v.trim()));
 
   const dataRows = rows.map(([label = "", ...values]) => {
     return {

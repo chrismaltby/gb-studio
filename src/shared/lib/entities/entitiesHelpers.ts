@@ -1292,8 +1292,10 @@ export const updateCustomEventArgs = (
           const value = isScriptDataTable(args[arg]) ? args[arg] : undefined;
           if (value) {
             for (const variable of value.variables) {
-              if (isVariableCustomEvent(variable)) {
-                addVariable(variable);
+              for (const variableId of extractScriptValueVariables(variable)) {
+                if (isVariableCustomEvent(variableId)) {
+                  addVariable(variableId);
+                }
               }
             }
           }

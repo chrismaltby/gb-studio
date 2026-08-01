@@ -232,7 +232,7 @@ describe("Electron Main Process", () => {
       {},
       {
         label: "Scores",
-        variables: ["0"],
+        variables: [{ type: "variable", value: "0" }],
         rows: [
           {
             label: "Row 1",
@@ -264,7 +264,7 @@ describe("Electron Main Process", () => {
     expect(mockedReadFile).toHaveBeenCalledWith("/tmp/data.csv", "utf8");
     expect(result).toEqual({
       label: "Scores",
-      variables: ["0"],
+      variables: [{ type: "variable", value: "0" }],
       rows: [
         {
           label: "Row 1",

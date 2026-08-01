@@ -2392,8 +2392,8 @@ class ScriptBuilder extends ScriptBuilderBase {
               e.args[arg] = {
                 ...argValue,
                 variables: argValue.variables.map((v) => {
-                  if (isVariableCustomEvent(v)) {
-                    return getArg("variable", v);
+                  if (isVariableCustomEvent(v.value)) {
+                    return { ...v, value: getArg("variable", v.value) };
                   }
                   return v;
                 }),

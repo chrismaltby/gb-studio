@@ -9,7 +9,10 @@ describe("scriptDataTableToCSV", () => {
       scriptDataTableToCSV(
         {
           label: 'Data "Table"',
-          variables: ["0", "1"],
+          variables: [
+            { type: "variable", value: "0" },
+            { type: "variable", value: "1" },
+          ],
           rows: [
             {
               label: "Row, 1",
@@ -30,7 +33,7 @@ describe("scriptDataTableToCSV", () => {
       scriptDataTableToCSV(
         {
           label: "Data Table",
-          variables: ["0"],
+          variables: [{ type: "variable", value: "0" }],
           rows: [
             {
               label: 'Row "1"\nNext Line',
@@ -42,9 +45,44 @@ describe("scriptDataTableToCSV", () => {
       ),
     ).toEqual('Data Table,0\n"Row ""1""\nNext Line",12');
   });
+
+  test("Should serialize fixed array element columns", () => {
+    expect(
+      scriptDataTableToCSV(
+        {
+          variables: [
+            {
+              type: "variable",
+              value: "array-1",
+              index: { type: "number", value: 2 },
+            },
+          ],
+          rows: [{ values: [{ type: "number", value: 12 }] }],
+        },
+        [],
+      ),
+    ).toEqual(",array-1[2]\nRow 1,12");
+  });
 });
 
 describe("csvToScriptDataTable", () => {
+  test("Should parse fixed array element columns", () => {
+    expect(csvToScriptDataTable(",array-1[2]\nRow 1,12", [])).toEqual({
+      variables: [
+        {
+          type: "variable",
+          value: "array-1",
+          index: { type: "number", value: 2 },
+        },
+      ],
+      rows: [
+        {
+          label: "Row 1",
+          values: [{ type: "number", value: 12 }],
+        },
+      ],
+    });
+  });
   test("Should parse numbers, user constants and engine constants from CSV", () => {
     expect(
       csvToScriptDataTable(
@@ -53,7 +91,10 @@ describe("csvToScriptDataTable", () => {
       ),
     ).toEqual({
       label: "Data Table",
-      variables: ["V0", "1"],
+      variables: [
+        { type: "variable", value: "V0" },
+        { type: "variable", value: "1" },
+      ],
       rows: [
         {
           label: "Row 1",
@@ -81,7 +122,12 @@ describe("csvToScriptDataTable", () => {
       ),
     ).toEqual({
       label: "my data table",
-      variables: ["L0", "L1", "T0", "L4"],
+      variables: [
+        { type: "variable", value: "L0" },
+        { type: "variable", value: "L1" },
+        { type: "variable", value: "T0" },
+        { type: "variable", value: "L4" },
+      ],
       rows: [
         {
           label: "foo",
@@ -118,7 +164,10 @@ describe("csvToScriptDataTable", () => {
     expect(csvToScriptDataTable("Data Table,V0,V1\nRow 1,1,2,3,4", [])).toEqual(
       {
         label: "Data Table",
-        variables: ["V0", "V1"],
+        variables: [
+          { type: "variable", value: "V0" },
+          { type: "variable", value: "V1" },
+        ],
         rows: [
           {
             label: "Row 1",

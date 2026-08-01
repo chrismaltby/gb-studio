@@ -10,24 +10,35 @@ import { DataTableInput } from "../../../src/components/forms/DataTableInput";
 import API from "renderer/lib/api";
 
 jest.mock("components/forms/VariableSelect", () => ({
-  VariableSelect: ({
+  VariableSelectWrapper: "div",
+}));
+
+jest.mock("components/forms/VariableElementSelect", () => ({
+  VariableElementSelect: ({
     value,
     colIndex,
     onChange,
   }: {
-    value: string;
+    value: {
+      type: "variable";
+      value: string;
+      index?: { type: "number"; value: number };
+    };
     colIndex?: number;
-    onChange: (value: string) => void;
+    onChange: (nextValue: {
+      type: "variable";
+      value: string;
+      index?: { type: "number"; value: number };
+    }) => void;
   }) => (
     <button
       type="button"
       data-testid={`variable-select-${colIndex ?? 0}`}
-      onClick={() => onChange(`${value}_updated`)}
+      onClick={() => onChange({ ...value, value: `${value.value}_updated` })}
     >
-      {value}
+      {`${value.value}${value.index ? `[${value.index.value}]` : ""}`}
     </button>
   ),
-  VariableSelectWrapper: "div",
 }));
 
 jest.mock("components/forms/ConstantValueSelect", () => ({
@@ -59,7 +70,15 @@ jest.mock("components/script/fields/useVariableFieldContext", () => ({
       { id: "array-1", type: "array" },
     ],
     customEvent: undefined,
-    variablesLookup: {},
+    variablesLookup: {
+      "array-1": {
+        id: "array-1",
+        name: "MyArray",
+        symbol: "var_my_array",
+        type: "array",
+        size: 5,
+      },
+    },
   }),
 }));
 
@@ -127,7 +146,7 @@ test("Should add a column using the first unused scalar variable", () => {
       entityId="entity1"
       value={{
         label: "Scores",
-        variables: ["variable-1"],
+        variables: [{ type: "variable", value: "variable-1" }],
         rows: [
           {
             label: "Row 1",
@@ -144,7 +163,10 @@ test("Should add a column using the first unused scalar variable", () => {
 
   expect(onChange).toHaveBeenCalledWith({
     label: "Scores",
-    variables: ["variable-1", "variable-2"],
+    variables: [
+      { type: "variable", value: "variable-1" },
+      { type: "variable", value: "variable-2" },
+    ],
     rows: [
       {
         label: "Row 1",
@@ -157,14 +179,143 @@ test("Should add a column using the first unused scalar variable", () => {
   });
 });
 
-test("Should leave a new column empty when all scalar variables are used", () => {
+test("Should preserve fixed array offsets selected for a column", () => {
   const onChange = jest.fn();
 
   render(
     <DataTableInput
       entityId="entity1"
       value={{
-        variables: ["variable-1", "variable-2"],
+        variables: [
+          {
+            type: "variable",
+            value: "array-1",
+            index: { type: "number", value: 2 },
+          },
+        ],
+        rows: [{ values: [{ type: "number", value: 7 }] }],
+      }}
+      onChange={onChange}
+    />,
+    store,
+  );
+
+  const select = screen.getByTestId("variable-select-0");
+  expect(select).toHaveTextContent("array-1[2]");
+
+  fireEvent.click(select);
+  expect(onChange).toHaveBeenCalledWith({
+    variables: [
+      {
+        type: "variable",
+        value: "array-1_updated",
+        index: { type: "number", value: 2 },
+      },
+    ],
+    rows: [{ values: [{ type: "number", value: 7 }] }],
+  });
+});
+
+test("Should use the next array element for a new column", () => {
+  const onChange = jest.fn();
+
+  render(
+    <DataTableInput
+      entityId="entity1"
+      value={{
+        variables: [
+          {
+            type: "variable",
+            value: "array-1",
+            index: { type: "number", value: 0 },
+          },
+        ],
+        rows: [{ values: [{ type: "number", value: 7 }] }],
+      }}
+      onChange={onChange}
+    />,
+    store,
+  );
+
+  fireEvent.click(screen.getByTitle("FIELD_ADD_COLUMN"));
+
+  expect(onChange).toHaveBeenCalledWith({
+    variables: [
+      {
+        type: "variable",
+        value: "array-1",
+        index: { type: "number", value: 0 },
+      },
+      {
+        type: "variable",
+        value: "array-1",
+        index: { type: "number", value: 1 },
+      },
+    ],
+    rows: [
+      {
+        values: [
+          { type: "number", value: 7 },
+          { type: "number", value: 0 },
+        ],
+      },
+    ],
+  });
+});
+
+test("Should continue through consecutive array elements", () => {
+  const onChange = jest.fn();
+
+  render(
+    <DataTableInput
+      entityId="entity1"
+      value={{
+        variables: [
+          {
+            type: "variable",
+            value: "array-1",
+            index: { type: "number", value: 0 },
+          },
+          {
+            type: "variable",
+            value: "array-1",
+            index: { type: "number", value: 1 },
+          },
+        ],
+        rows: [
+          {
+            values: [
+              { type: "number", value: 7 },
+              { type: "number", value: 8 },
+            ],
+          },
+        ],
+      }}
+      onChange={onChange}
+    />,
+    store,
+  );
+
+  fireEvent.click(screen.getByTitle("FIELD_ADD_COLUMN"));
+
+  expect(onChange.mock.calls[0][0].variables[2]).toEqual({
+    type: "variable",
+    value: "array-1",
+    index: { type: "number", value: 2 },
+  });
+});
+
+test("Should reuse the first variable when all scalar variables are used", () => {
+  const onChange = jest.fn();
+
+  render(
+    <DataTableInput
+      entityId="entity1"
+      value={{
+        variables: [
+          { type: "variable", value: "variable-1" },
+          { type: "variable", value: "variable-2" },
+        ],
         rows: [
           {
             values: [
@@ -182,7 +333,11 @@ test("Should leave a new column empty when all scalar variables are used", () =>
   fireEvent.click(screen.getByTitle("FIELD_ADD_COLUMN"));
 
   expect(onChange).toHaveBeenCalledWith({
-    variables: ["variable-1", "variable-2", ""],
+    variables: [
+      { type: "variable", value: "variable-1" },
+      { type: "variable", value: "variable-2" },
+      { type: "variable", value: "variable-1" },
+    ],
     rows: [
       {
         values: [
@@ -204,7 +359,7 @@ test("Should persist the first available scalar variable for a default table", (
   );
 
   expect(onChange).toHaveBeenCalledWith({
-    variables: ["variable-1"],
+    variables: [{ type: "variable", value: "variable-1" }],
     rows: [
       {
         label: "",
@@ -222,7 +377,10 @@ test("Should add a row and disable the row limit", () => {
       entityId="entity1"
       value={{
         label: "Scores",
-        variables: ["0", "1"],
+        variables: [
+          { type: "variable", value: "0" },
+          { type: "variable", value: "1" },
+        ],
         rows: Array.from({ length: 6 }, (_, index) => ({
           label: `Row ${index + 1}`,
           values: [
@@ -240,7 +398,10 @@ test("Should add a row and disable the row limit", () => {
 
   expect(onChange).toHaveBeenCalledWith({
     label: "Scores",
-    variables: ["0", "1"],
+    variables: [
+      { type: "variable", value: "0" },
+      { type: "variable", value: "1" },
+    ],
     rows: [
       ...Array.from({ length: 6 }, (_, index) => ({
         label: `Row ${index + 1}`,
@@ -264,7 +425,7 @@ test("Should import CSV tables through the renderer API", async () => {
   const onChange = jest.fn();
   mockedAPI.dataTable.importCSV.mockResolvedValueOnce({
     label: "Imported",
-    variables: ["V0"],
+    variables: [{ type: "variable", value: "V0" }],
     rows: [
       {
         label: "Imported Row",
@@ -291,7 +452,7 @@ test("Should import CSV tables through the renderer API", async () => {
 
   expect(onChange).toHaveBeenCalledWith({
     label: "Imported",
-    variables: ["V0"],
+    variables: [{ type: "variable", value: "V0" }],
     rows: [
       {
         label: "Imported Row",
@@ -307,7 +468,7 @@ test("Should export CSV tables through the renderer API", () => {
       entityId="entity1"
       value={{
         label: "Scores",
-        variables: ["0"],
+        variables: [{ type: "variable", value: "0" }],
         rows: [
           {
             label: "Row 1",
@@ -325,7 +486,7 @@ test("Should export CSV tables through the renderer API", () => {
   expect(mockedAPI.dataTable.exportCSV).toHaveBeenCalledWith(
     {
       label: "Scores",
-      variables: ["0"],
+      variables: [{ type: "variable", value: "0" }],
       rows: [
         {
           label: "Row 1",
@@ -351,7 +512,7 @@ test("Should show CSV import errors and clear them after editing", async () => {
       entityId="entity1"
       value={{
         label: "Scores",
-        variables: ["0"],
+        variables: [{ type: "variable", value: "0" }],
         rows: [
           {
             label: "Row 1",

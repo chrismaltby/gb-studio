@@ -41,7 +41,14 @@ test("extracts variable IDs from schema-driven event arguments", () => {
       textarea: ["No variable", "$20$"],
       expression: "$21$[$22$[$27$] + $31$]",
       table: {
-        variables: ["23"],
+        variables: [
+          { type: "variable", value: "23" },
+          {
+            type: "variable",
+            value: "33",
+            index: { type: "number", value: 2 },
+          },
+        ],
         rows: [{ values: [{ type: "number", value: 1 }] }],
       },
       references: [
@@ -87,6 +94,7 @@ test("extracts variable IDs from schema-driven event arguments", () => {
       "30",
       "31",
       "32",
+      "33",
     ].sort(),
   );
 });

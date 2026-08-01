@@ -1,7 +1,10 @@
 import {
+  createScriptEventsMigrator,
   migrateEvents,
+  pipeMigrationFns,
   ProjectResourcesMigration,
   ProjectResourcesMigrationFn,
+  ScriptEventMigrationFn,
 } from "lib/project/migration/helpers";
 import { genSymbol } from "shared/lib/helpers/symbols";
 import { Variable } from "shared/lib/resources/types";
@@ -11,16 +14,75 @@ import {
   scriptEventDefsFromSnapshot,
   ScriptEventDefsSnapshot,
 } from "lib/project/migration/snapshots/scriptEventDefs";
+import type { ScriptEventDefsFieldTypeLookup } from "shared/lib/scripts/scriptDefHelpers";
 
 const scriptEventDefs420 = scriptEventDefsFromSnapshot(
   scriptEventDefs420Snapshot as ScriptEventDefsSnapshot,
 );
+
+const scriptEventDefsForMigration = (
+  currentScriptEventDefs: ScriptEventDefsFieldTypeLookup = {},
+): ScriptEventDefsFieldTypeLookup => ({
+  ...currentScriptEventDefs,
+  ...scriptEventDefs420,
+});
 
 type LegacyVariable = {
   id: string;
   name: string;
   symbol: string;
   flags?: Record<string, string>;
+};
+
+type LegacyScriptDataTable = {
+  label?: string;
+  variables: string[];
+  rows: unknown[];
+};
+
+const isLegacyScriptDataTable = (
+  value: unknown,
+): value is LegacyScriptDataTable =>
+  typeof value === "object" &&
+  value !== null &&
+  "variables" in value &&
+  Array.isArray(value.variables) &&
+  value.variables.every((variable) => typeof variable === "string") &&
+  "rows" in value &&
+  Array.isArray(value.rows);
+
+export const migrateFrom420r10To500r1DataTables: ScriptEventMigrationFn = (
+  scriptEvent,
+  context,
+) => {
+  if (!scriptEvent.args) {
+    return scriptEvent;
+  }
+  const scriptEventDefs = scriptEventDefsForMigration(context?.scriptEventDefs);
+  const fieldsLookup = scriptEventDefs[scriptEvent.command]?.fieldsLookup;
+  let changed = false;
+  const args = Object.fromEntries(
+    Object.entries(scriptEvent.args).map(([key, value]) => {
+      if (fieldsLookup?.[key]?.type !== "dataTable") {
+        return [key, value];
+      }
+      if (!isLegacyScriptDataTable(value)) {
+        return [key, value];
+      }
+      changed = true;
+      return [
+        key,
+        {
+          ...value,
+          variables: value.variables.map((variable) => ({
+            type: "variable" as const,
+            value: variable,
+          })),
+        },
+      ];
+    }),
+  );
+  return changed ? { ...scriptEvent, args } : scriptEvent;
 };
 
 // Create global variable entry for all variable references
@@ -41,29 +103,30 @@ export const migrateFrom420r10To500r1Variables: ProjectResourcesMigrationFn = (
   );
   const usedLegacyVariableIds = new Set<string>();
 
-  const scriptEventDefs = {
-    ...context.scriptEventDefs,
-    ...scriptEventDefs420,
-  };
+  const scriptEventDefs = scriptEventDefsForMigration(context.scriptEventDefs);
 
-  const migratedResources = migrateEvents(resources, (scriptEvent) => {
-    const variableIds = extractVariableIdsFromScriptEvent(
-      scriptEvent,
-      scriptEventDefs,
-    );
-    for (const variableId of variableIds) {
-      const variableNumber = Number(variableId);
-      if (
-        /^\d+$/.test(variableId) &&
-        variableNumber >= 0 &&
-        variableNumber < 512 &&
-        !existingVariableIds.has(variableId)
-      ) {
-        usedLegacyVariableIds.add(variableId);
+  const migratedResources = migrateEvents(
+    resources,
+    (scriptEvent) => {
+      const variableIds = extractVariableIdsFromScriptEvent(
+        scriptEvent,
+        scriptEventDefs,
+      );
+      for (const variableId of variableIds) {
+        const variableNumber = Number(variableId);
+        if (
+          /^\d+$/.test(variableId) &&
+          variableNumber >= 0 &&
+          variableNumber < 512 &&
+          !existingVariableIds.has(variableId)
+        ) {
+          usedLegacyVariableIds.add(variableId);
+        }
       }
-    }
-    return scriptEvent;
-  });
+      return scriptEvent;
+    },
+    context,
+  );
 
   const existingSymbols = new Set(
     globalVariables.map((variable) => variable.symbol),
@@ -93,5 +156,8 @@ export const migrateFrom420r10To500r1Variables: ProjectResourcesMigrationFn = (
 export const migrate420r10To500r1: ProjectResourcesMigration = {
   from: { version: "4.2.0", release: "10" },
   to: { version: "5.0.0", release: "1" },
-  migrationFn: migrateFrom420r10To500r1Variables,
+  migrationFn: pipeMigrationFns([
+    createScriptEventsMigrator(migrateFrom420r10To500r1DataTables),
+    migrateFrom420r10To500r1Variables,
+  ]),
 };

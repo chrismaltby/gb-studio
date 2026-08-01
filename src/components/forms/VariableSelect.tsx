@@ -50,19 +50,21 @@ export const VariableSelectWrapper = styled.div`
   min-width: 78px;
 `;
 
-const Select: typeof CreatableSelect = styled(CreatableSelect)`
+export const VariableCreatableSelect: typeof CreatableSelect = styled(
+  CreatableSelect,
+)`
   .CustomSelect__control {
   }
 `;
 
-const VariableRenameInput = styled(IMEInput)`
+export const VariableRenameInput = styled(IMEInput)`
   &&&& {
     padding-right: 32px;
     height: 28px;
   }
 `;
 
-const VariableRenameButton = styled.button`
+export const VariableRenameButton = styled.button`
   position: absolute;
   top: 3px;
   right: 20px;
@@ -103,7 +105,7 @@ const VariableRenameButton = styled.button`
   }
 `;
 
-const VariableRenameCompleteButton = styled.button`
+export const VariableRenameCompleteButton = styled.button`
   position: absolute;
   top: 3px;
   right: 3px;
@@ -301,7 +303,7 @@ const VariableSelectComponent = ({
           autoFocus
         />
       ) : (
-        <Select
+        <VariableCreatableSelect
           value={currentValue}
           options={options}
           onChange={(newValue: SingleValue<Option>) => {

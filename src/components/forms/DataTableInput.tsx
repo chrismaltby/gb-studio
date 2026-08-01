@@ -1,9 +1,7 @@
 import { ConstantSelectWrapper } from "components/forms/ConstantSelect";
 import ConstantValueSelect from "components/forms/ConstantValueSelect";
-import {
-  VariableSelect,
-  VariableSelectWrapper,
-} from "components/forms/VariableSelect";
+import { VariableSelectWrapper } from "components/forms/VariableSelect";
+import { VariableElementSelect } from "components/forms/VariableElementSelect";
 import { useVariableFieldContext } from "components/script/fields/useVariableFieldContext";
 import React, {
   useCallback,
@@ -18,8 +16,10 @@ import l10n from "shared/lib/lang/l10n";
 import {
   ScriptDataTable,
   ScriptDataTableRow,
+  ScriptDataTableVariable,
 } from "shared/lib/scriptDataTable/types";
 import { ConstScriptValue } from "shared/lib/scriptValue/types";
+import type { Variable } from "shared/lib/resources/types";
 import { constantSelectors } from "store/features/entities/entitiesSelectors";
 import { useAppStore } from "store/hooks";
 import styled from "styled-components";
@@ -271,11 +271,14 @@ interface DataTableInputProps {
 }
 
 interface DataTableColumnHeaderProps {
-  variable: string;
+  variable: ScriptDataTableVariable;
   colIndex: number;
   canRemoveColumn: boolean;
   entityId: string;
-  onUpdateVariable: (colIndex: number, variable: string) => void;
+  onUpdateVariable: (
+    colIndex: number,
+    variable: ScriptDataTableVariable,
+  ) => void;
   onRemoveColumn: (colIndex: number) => void;
 }
 
@@ -294,7 +297,7 @@ interface DataTableRowProps {
 }
 
 const defaultValue = (variableId: string): ScriptDataTable => ({
-  variables: [variableId],
+  variables: [{ type: "variable", value: variableId }],
   rows: [
     {
       label: "",
@@ -302,6 +305,46 @@ const defaultValue = (variableId: string): ScriptDataTable => ({
     },
   ],
 });
+
+const nextColumnVariable = (
+  variables: ScriptDataTableVariable[],
+  availableVariableIds: string[],
+  variablesLookup: Record<string, Variable | undefined>,
+): ScriptDataTableVariable => {
+  const previousVariable = variables.at(-1);
+  if (previousVariable?.index?.type === "number") {
+    const variable = variablesLookup[previousVariable.value];
+    if (variable?.type === "array") {
+      for (
+        let index = previousVariable.index.value + 1;
+        index < variable.size;
+        index++
+      ) {
+        const alreadyUsed = variables.some(
+          (candidate) =>
+            candidate.value === previousVariable.value &&
+            candidate.index?.type === "number" &&
+            candidate.index.value === index,
+        );
+        if (!alreadyUsed) {
+          return {
+            type: "variable",
+            value: previousVariable.value,
+            index: { type: "number", value: index },
+          };
+        }
+      }
+    }
+  }
+  const variableId =
+    availableVariableIds.find(
+      (candidateId) =>
+        !variables.some((variable) => variable.value === candidateId),
+    ) ??
+    availableVariableIds[0] ??
+    "";
+  return { type: "variable", value: variableId };
+};
 
 const ROW_CUT_OFF = 6;
 
@@ -332,12 +375,11 @@ const DataTableColumnHeader = React.memo(
               </Button>
             </InputGroupPrepend>
           )}
-          <VariableSelect
+          <VariableElementSelect
             value={variable}
             name={`variable_${colIndex}`}
             entityId={entityId}
             onChange={(newValue) => onUpdateVariable(colIndex, newValue)}
-            allowedVariableTypes={["number"]}
             allowRename
           />
         </InputGroup>
@@ -399,7 +441,8 @@ export const DataTableInput = ({
   isNested,
 }: DataTableInputProps) => {
   const store = useAppStore();
-  const { candidates: variableCandidates } = useVariableFieldContext(entityId);
+  const { candidates: variableCandidates, variablesLookup } =
+    useVariableFieldContext(entityId);
   const availableVariableIds = useMemo(
     () =>
       variableCandidates
@@ -441,12 +484,11 @@ export const DataTableInput = ({
     pendingScrollRef.current = "column";
 
     updateTable((currentTable) => {
-      const nextVariable =
-        availableVariableIds.find(
-          (variableId) => !currentTable.variables.includes(variableId),
-        ) ??
-        availableVariableIds[0] ??
-        "";
+      const nextVariable = nextColumnVariable(
+        currentTable.variables,
+        availableVariableIds,
+        variablesLookup,
+      );
       return {
         ...currentTable,
         variables: [...currentTable.variables, nextVariable],
@@ -456,7 +498,7 @@ export const DataTableInput = ({
         })),
       };
     });
-  }, [availableVariableIds, updateTable]);
+  }, [availableVariableIds, updateTable, variablesLookup]);
 
   const addRow = useCallback(() => {
     pendingScrollRef.current = "row";
@@ -479,7 +521,7 @@ export const DataTableInput = ({
   }, [onChange, table]);
 
   const updateVariable = useCallback(
-    (colIndex: number, newVariable: string) => {
+    (colIndex: number, newVariable: ScriptDataTableVariable) => {
       updateTable((currentTable) => ({
         ...currentTable,
         variables: currentTable.variables.map((variable, index) =>

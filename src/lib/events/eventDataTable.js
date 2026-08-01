@@ -20,7 +20,7 @@ const fields = [
     type: "dataTable",
     flexBasis: "100%",
     defaultValue: {
-      variables: ["LAST_VARIABLE"],
+      variables: [{ type: "variable", value: "LAST_VARIABLE" }],
       rows: [
         {
           label: "",

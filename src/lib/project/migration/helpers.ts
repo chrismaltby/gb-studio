@@ -12,10 +12,13 @@ import {
   walkTriggerScripts,
 } from "shared/lib/scripts/walk";
 
-export type ScriptEventMigrationFn = (scriptEvent: ScriptEvent) => ScriptEvent;
 export type ProjectResourcesMigrationContext = {
   scriptEventDefs: ScriptEventDefs;
 };
+export type ScriptEventMigrationFn = (
+  scriptEvent: ScriptEvent,
+  context?: ProjectResourcesMigrationContext,
+) => ScriptEvent;
 export type ProjectResourcesMigrationFn = (
   resources: CompressedProjectResources,
   context: ProjectResourcesMigrationContext,
@@ -67,25 +70,31 @@ const buildPrefabEventsLookup = (
 export const migrateEvents = (
   resources: CompressedProjectResources,
   migrateFn: ScriptEventMigrationFn,
+  context?: ProjectResourcesMigrationContext,
 ): CompressedProjectResources => {
   const prefabEventsLookup = buildPrefabEventsLookup(resources);
+  const migrateEvent = (scriptEvent: ScriptEvent) =>
+    migrateFn(scriptEvent, context);
   return {
     ...resources,
     scenes: mapScenesScript(
       resources.scenes,
       { includePrefabOverrides: true, prefabEventsLookup },
-      migrateFn,
+      migrateEvent,
     ),
-    actorPrefabs: mapActorsScript(resources.actorPrefabs, migrateFn),
-    triggerPrefabs: mapTriggersScript(resources.triggerPrefabs, migrateFn),
-    scripts: mapCustomScriptsScript(resources.scripts, migrateFn),
+    actorPrefabs: mapActorsScript(resources.actorPrefabs, migrateEvent),
+    triggerPrefabs: mapTriggersScript(resources.triggerPrefabs, migrateEvent),
+    scripts: mapCustomScriptsScript(resources.scripts, migrateEvent),
   };
 };
 
 export const createScriptEventsMigrator =
   (migrateFn: ScriptEventMigrationFn) =>
-  (resources: CompressedProjectResources): CompressedProjectResources =>
-    migrateEvents(resources, migrateFn);
+  (
+    resources: CompressedProjectResources,
+    context: ProjectResourcesMigrationContext,
+  ): CompressedProjectResources =>
+    migrateEvents(resources, migrateFn, context);
 
 export const pipeMigrationFns = (
   migrationFns: ProjectResourcesMigrationFn[],
@@ -103,9 +112,13 @@ export const pipeMigrationFns = (
 export const pipeScriptEventMigrationFns = (
   scriptEventMigrationFns: ScriptEventMigrationFn[],
 ): ScriptEventMigrationFn => {
-  return (scriptEvent: ScriptEvent): ScriptEvent =>
+  return (
+    scriptEvent: ScriptEvent,
+    context?: ProjectResourcesMigrationContext,
+  ): ScriptEvent =>
     scriptEventMigrationFns.reduce(
-      (currentScriptEvent, migrationFn) => migrationFn(currentScriptEvent),
+      (currentScriptEvent, migrationFn) =>
+        migrationFn(currentScriptEvent, context),
       scriptEvent,
     );
 };
