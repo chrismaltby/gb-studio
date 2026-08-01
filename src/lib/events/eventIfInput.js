@@ -8,18 +8,54 @@ const subGroups = {
 };
 
 const autoLabel = (fetchArg) => {
-  return l10n("EVENT_IF_INPUT_LABEL", {
-    input: fetchArg("input"),
-  });
+  const joypad = parseInt(fetchArg("joypad") ?? 0);
+  if (!joypad) {
+    return l10n("EVENT_IF_INPUT_LABEL", {
+      input: fetchArg("input"),
+    });
+  } else {
+    return l10n("EVENT_IF_INPUT_JOYPAD_LABEL", {
+      input: fetchArg("input"),
+      joypad: joypad + 1,
+    });
+  }
 };
 
 const fields = [
   {
-    key: "input",
-    label: l10n("FIELD_ANY_OF"),
-    description: l10n("FIELD_INPUT_MULTIPLE_DESC"),
-    type: "input",
-    defaultValue: ["a", "b"],
+    type: "group",
+    flexBasis: "100%",
+    alignBottom: true,
+    fields: [
+      {
+        key: "joypad",
+        label: l10n("FIELD_JOYPAD"),
+        description: l10n("FIELD_JOYPAD_DESC"),
+        type: "togglebuttons",
+        options: [
+          [0, "1", l10n("FIELD_JOYPAD_N", { joypad: 1 })],
+          [1, "2", l10n("FIELD_JOYPAD_N", { joypad: 2 })],
+          [2, "3", l10n("FIELD_JOYPAD_N", { joypad: 3 })],
+          [3, "4", l10n("FIELD_JOYPAD_N", { joypad: 4 })],
+        ],
+        defaultValue: 0,
+        conditions: [
+          {
+            sgbEnabled: true,
+          },
+        ],
+        alignBottom: true,
+        flexBasis: "25%",
+      },
+      {
+        key: "input",
+        label: l10n("FIELD_ANY_OF"),
+        description: l10n("FIELD_INPUT_MULTIPLE_DESC"),
+        type: "input",
+        defaultValue: ["a", "b"],
+        flexBasis: "75%",
+      },
+    ],
   },
   {
     key: "true",
@@ -61,7 +97,7 @@ const compile = (input, helpers) => {
   const { ifInput } = helpers;
   const truePath = input.true;
   const falsePath = input.__disableElse ? [] : input.false;
-  ifInput(input.input, truePath, falsePath);
+  ifInput(input.input, truePath, falsePath, input.joypad ?? 0);
 };
 
 module.exports = {

@@ -35,6 +35,7 @@ import {
   SFXPriority,
   ASMSFXPriority,
   ASMSpriteMode,
+  JoypadId,
 } from "./types";
 
 export const rpnUnaryOperators: ScriptBuilderRPNOperation[] = [
@@ -253,6 +254,21 @@ export const toScriptOperator = (
       return ".NEG";
   }
   assertUnreachable(operator);
+};
+
+export const toJoypadId = (joyId: number): JoypadId => {
+  switch (joyId) {
+    case 0:
+      return ".JOY0";
+    case 1:
+      return ".JOY1";
+    case 2:
+      return ".JOY2";
+    case 3:
+      return ".JOY3";
+    default:
+      return ".JOY0";
+  }
 };
 
 export const valueFunctionToScriptOperator = (

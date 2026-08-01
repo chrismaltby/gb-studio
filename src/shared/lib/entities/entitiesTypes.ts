@@ -251,6 +251,7 @@ interface ScriptEventFieldCondition {
   sceneType?: string | string[];
   entityType?: string | string[];
   entityTypeNot?: string | string[];
+  sgbEnabled?: boolean;
 }
 
 const distanceUnitTypes = ["tiles", "pixels"] as const;

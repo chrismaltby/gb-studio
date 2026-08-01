@@ -47,7 +47,10 @@ interface ScriptBuilderProjectile {
 }
 
 export type ScriptBuilderEntityType =
-  "scene" | "actor" | "trigger" | "customEvent";
+  | "scene"
+  | "actor"
+  | "trigger"
+  | "customEvent";
 
 export type ScriptBuilderStackVariable = string | number;
 
@@ -60,7 +63,8 @@ export type ScriptBuilderFunctionArg = {
 type ScriptBuilderSimpleVariable = string | number;
 
 export type ScriptBuilderVariable =
-  ScriptBuilderSimpleVariable | ScriptBuilderFunctionArg;
+  | ScriptBuilderSimpleVariable
+  | ScriptBuilderFunctionArg;
 
 export type CameraProperty =
   | "camera_x"
@@ -149,7 +153,15 @@ export interface ScriptBuilderOptions<
 export type ScriptBuilderMoveType = "horizontal" | "vertical" | "diagonal";
 
 export type ScriptBuilderComparisonOperator =
-  ".EQ" | ".NE" | ".GT" | ".GTE" | ".LT" | ".LTE" | ".AND" | ".OR" | ".NOT";
+  | ".EQ"
+  | ".NE"
+  | ".GT"
+  | ".GTE"
+  | ".LT"
+  | ".LTE"
+  | ".AND"
+  | ".OR"
+  | ".NOT";
 
 export type ScriptBuilderOverlayWaitFlag =
   | ".UI_WAIT_WINDOW"
@@ -214,7 +226,8 @@ export type ScriptBuilderUnionValue =
 export type ScriptBuilderPathFunction = () => void;
 
 export type ResolvedActorId =
-  { type: "number"; value: number } | { type: "reference"; symbol: string };
+  | { type: "number"; value: number }
+  | { type: "reference"; symbol: string };
 
 type VariablesLookup = { [name: string]: Variable | undefined };
 
@@ -228,7 +241,9 @@ export type ScriptBuilderLocalSymbol = {
 
 export type SFXPriority = "low" | "medium" | "high";
 export type ASMSFXPriority =
-  ".SFX_PRIORITY_MINIMAL" | ".SFX_PRIORITY_NORMAL" | ".SFX_PRIORITY_HIGH";
+  | ".SFX_PRIORITY_MINIMAL"
+  | ".SFX_PRIORITY_NORMAL"
+  | ".SFX_PRIORITY_HIGH";
 
 export type ASMSpriteMode = ".MODE_8X8" | ".MODE_8X16";
 
@@ -238,6 +253,8 @@ export type ScriptBuilderActorFlags =
   | ".ACTOR_FLAG_ANIM_NOLOOP"
   | ".ACTOR_FLAG_COLLISION"
   | ".ACTOR_FLAG_PERSISTENT";
+
+export type JoypadId = ".JOY0" | ".JOY1" | ".JOY2" | ".JOY3";
 
 export type RPNHandler = {
   ref: (variable: ScriptBuilderStackVariable) => RPNHandler;

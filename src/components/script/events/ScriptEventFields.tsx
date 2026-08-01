@@ -48,6 +48,7 @@ export const isFieldVisible = (
   context: ScriptEditorCtx,
   scene: Pick<SceneNormalized, "parallax" | "type"> | undefined,
   soundsLookup: Record<string, SoundAsset>,
+  sgbEnabled: boolean,
   ignoreConditions?: string[],
 ) => {
   if (!field.conditions) {
@@ -86,6 +87,8 @@ export const isFieldVisible = (
         return (
           context.entityType && !conditionArray.includes(context.entityType)
         );
+      } else if (condition.sgbEnabled !== undefined) {
+        return sgbEnabled === condition.sgbEnabled;
       }
       return true;
     },
@@ -113,6 +116,9 @@ const ScriptEventFields = ({
     (state) => sceneSelectors.selectById(state, context.sceneId),
     ["parallax", "type"] as const,
   );
+  const sgbEnabled = useAppSelector(
+    (state) => state.project.present.settings.sgbEnabled,
+  );
 
   const dispatch = useAppDispatch();
 
@@ -126,7 +132,14 @@ const ScriptEventFields = ({
         // Determine if field conditions are met and hide if not
         if (
           value &&
-          !isFieldVisible(field, value, context, scene, soundsLookup)
+          !isFieldVisible(
+            field,
+            value,
+            context,
+            scene,
+            soundsLookup,
+            sgbEnabled,
+          )
         ) {
           return null;
         }

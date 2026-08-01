@@ -88,6 +88,7 @@ import {
   toASMMoveFlags,
   toASMSoundPriority,
   toASMSpriteMode,
+  toJoypadId,
   unionFlags,
 } from "./helpers";
 import ScriptBuilderBase from "./scriptBuilderBase";
@@ -4112,12 +4113,16 @@ class ScriptBuilder extends ScriptBuilderBase {
     input: string,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    joypad: number = 0,
   ) => {
+    const { settings } = this.options;
     const inputRef = this._declareLocal("input", 1, true);
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
+    const isSGB = settings.sgbEnabled;
+
     this._addComment(`If Input`);
-    this._getMemInt8(inputRef, "^/(_joypads + 1)/");
+    this._inputGet(inputRef, isSGB ? toJoypadId(joypad) : ".JOY0");
     this._rpn() //
       .ref(inputRef)
       .int8(inputDec(input))

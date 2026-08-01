@@ -19,6 +19,7 @@ import { chunkTextOnWaitCodes } from "shared/lib/text/textCodes";
 import {
   ASMSFXPriority,
   ASMSpriteMode,
+  JoypadId,
   ResolvedActorId,
   RPNHandler,
   RPNMemType,
@@ -1916,6 +1917,13 @@ abstract class ScriptBuilderBase {
 
   _inputContextDetach = (buttonMask: number) => {
     this._addCmd("VM_INPUT_DETACH", buttonMask);
+  };
+
+  _inputGet = (
+    variable: ScriptBuilderStackVariable,
+    joypad: JoypadId = ".JOY0",
+  ) => {
+    this._addCmd("VM_INPUT_GET", variable, joypad);
   };
 
   _timerContextPrepare = (symbol: string, context: number) => {
