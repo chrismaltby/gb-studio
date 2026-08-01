@@ -187,6 +187,8 @@ import confirmConvertModReplaceDialog from "lib/electron/dialog/confirmConvertMo
 import { ScriptDataTable } from "shared/lib/scriptDataTable/types";
 import {
   csvToScriptDataTable,
+  DataTableCSVVariable,
+  ScriptDataTableImport,
   scriptDataTableToCSV,
 } from "shared/lib/scriptDataTable/csv";
 import {
@@ -1932,13 +1934,18 @@ ipcMain.handle(
 
 ipcMain.handle(
   "data-table:export-csv",
-  async (_event, table: ScriptDataTable, constants: Constant[]) => {
+  async (
+    _event,
+    table: ScriptDataTable,
+    constants: Constant[],
+    variables: DataTableCSVVariable[],
+  ) => {
     const savePath = dialog.showSaveDialogSync({
       defaultPath: `${table.label || "data"}.csv`,
       filters: [{ name: "CSV", extensions: ["csv"] }],
     });
     if (!savePath) return;
-    const data = scriptDataTableToCSV(table, constants);
+    const data = scriptDataTableToCSV(table, constants, variables);
     await writeFile(savePath, data);
   },
 );
@@ -1948,7 +1955,8 @@ ipcMain.handle(
   async (
     _event,
     constants: Constant[],
-  ): Promise<ScriptDataTable | undefined> => {
+    variables: DataTableCSVVariable[],
+  ): Promise<ScriptDataTableImport | undefined> => {
     const files = dialog.showOpenDialogSync({
       properties: ["openFile"],
       filters: [{ name: "CSV", extensions: ["csv"] }],
@@ -1957,7 +1965,7 @@ ipcMain.handle(
       return undefined;
     }
     const data = await readFile(files[0], "utf8");
-    return csvToScriptDataTable(data, constants);
+    return csvToScriptDataTable(data, constants, variables);
   },
 );
 

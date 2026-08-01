@@ -1,30 +1,49 @@
 import { constantName } from "shared/lib/entities/entitiesHelpers";
 import l10n from "shared/lib/lang/l10n";
-import { Constant } from "shared/lib/resources/types";
+import { Constant, VariableType } from "shared/lib/resources/types";
 import {
   isScriptDataTable,
   ScriptDataTable,
   ScriptDataTableVariable,
 } from "shared/lib/scriptDataTable/types";
 
+export type DataTableCSVVariable = {
+  id: string;
+  name: string;
+  type: VariableType;
+  size?: number;
+};
+
+export type NewDataTableCSVVariable = {
+  placeholder: string;
+  name: string;
+  type: VariableType;
+  size?: number;
+};
+
+export type ScriptDataTableImport = {
+  dataTable: ScriptDataTable;
+  newVariables: NewDataTableCSVVariable[];
+};
+
 const scriptDataTableVariableToCSV = (
   variable: ScriptDataTableVariable,
-): string =>
-  variable.index
-    ? `${variable.value}[${variable.index.value}]`
-    : variable.value;
+  variablesLookup: Record<string, DataTableCSVVariable | undefined>,
+): string => {
+  const variableName = variablesLookup[variable.value]?.name ?? variable.value;
+  return variable.index
+    ? `${variableName}[${variable.index.value}]`
+    : variableName;
+};
 
-const csvToScriptDataTableVariable = (
-  value: string,
-): ScriptDataTableVariable => {
+const parseCSVVariable = (value: string): { name: string; index?: number } => {
   const match = value.match(/^(.*)\[(-?\d+)\]$/);
   if (!match) {
-    return { type: "variable", value };
+    return { name: value };
   }
   return {
-    type: "variable",
-    value: match[1],
-    index: { type: "number", value: Number(match[2]) },
+    name: match[1],
+    index: Number(match[2]),
   };
 };
 
@@ -104,6 +123,7 @@ const parseCSV = (csv: string): string[][] => {
 export const scriptDataTableToCSV = (
   data: ScriptDataTable,
   constants: Constant[],
+  variables: DataTableCSVVariable[],
 ): string => {
   const constantsLookup = Object.fromEntries(
     constants.map((constant, constantIndex) => [
@@ -111,9 +131,14 @@ export const scriptDataTableToCSV = (
       constantName(constant, constantIndex),
     ]),
   );
+  const variablesLookup = Object.fromEntries(
+    variables.map((variable) => [variable.id, variable]),
+  );
   const header = [
     data.label ?? "",
-    ...data.variables.map(scriptDataTableVariableToCSV),
+    ...data.variables.map((variable) =>
+      scriptDataTableVariableToCSV(variable, variablesLookup),
+    ),
   ]
     .map(escapeCSVValue)
     .join(",");
@@ -138,7 +163,8 @@ export const scriptDataTableToCSV = (
 export const csvToScriptDataTable = (
   csv: string,
   constants: Constant[],
-): ScriptDataTable | undefined => {
+  availableVariables: DataTableCSVVariable[],
+): ScriptDataTableImport => {
   const reverseConstantsLookup = Object.fromEntries(
     constants.map((constant, constantIndex) => [
       constantName(constant, constantIndex),
@@ -152,9 +178,67 @@ export const csvToScriptDataTable = (
   }
 
   const [header, ...rows] = csvRows;
-  const variables = header
+  const parsedVariables = header
     .slice(1)
-    .map((v) => csvToScriptDataTableVariable(v.trim()));
+    .map((value) => parseCSVVariable(value.trim()));
+  const newVariablesLookup = new Map<string, NewDataTableCSVVariable>();
+  const variables = parsedVariables.map<ScriptDataTableVariable>(
+    ({ name, index }) => {
+      if (!name) {
+        throw new Error(l10n("ERROR_DATA_TABLE_CSV_INVALID"));
+      }
+      if (index !== undefined && index < 0) {
+        throw new Error(
+          l10n("ERROR_DATA_TABLE_CSV_ARRAY_INDEX", { name, index }),
+        );
+      }
+      const expectedType: VariableType =
+        index === undefined ? "number" : "array";
+      const existingVariable = availableVariables.find(
+        (variable) => variable.name === name,
+      );
+      if (existingVariable) {
+        if (existingVariable.type !== expectedType) {
+          throw new Error(l10n("ERROR_DATA_TABLE_CSV_VARIABLE_TYPE", { name }));
+        }
+        if (
+          index !== undefined &&
+          (index < 0 || index >= (existingVariable.size ?? 1))
+        ) {
+          throw new Error(
+            l10n("ERROR_DATA_TABLE_CSV_ARRAY_INDEX", { name, index }),
+          );
+        }
+        return {
+          type: "variable",
+          value: existingVariable.id,
+          index:
+            index === undefined ? undefined : { type: "number", value: index },
+        };
+      }
+
+      const previousNewVariable = newVariablesLookup.get(name);
+      if (previousNewVariable && previousNewVariable.type !== expectedType) {
+        throw new Error(l10n("ERROR_DATA_TABLE_CSV_VARIABLE_TYPE", { name }));
+      }
+      const newVariable = previousNewVariable ?? {
+        placeholder: `__new_variable_${newVariablesLookup.size}`,
+        name,
+        type: expectedType,
+        size: expectedType === "array" ? 1 : undefined,
+      };
+      if (index !== undefined) {
+        newVariable.size = Math.max(newVariable.size ?? 1, index + 1);
+      }
+      newVariablesLookup.set(name, newVariable);
+      return {
+        type: "variable",
+        value: newVariable.placeholder,
+        index:
+          index === undefined ? undefined : { type: "number", value: index },
+      };
+    },
+  );
 
   const dataRows = rows.map(([label = "", ...values]) => {
     return {
@@ -182,5 +266,8 @@ export const csvToScriptDataTable = (
     throw new Error(l10n("ERROR_DATA_TABLE_CSV_NO_ROW_DATA"));
   }
 
-  return dataTable;
+  return {
+    dataTable,
+    newVariables: Array.from(newVariablesLookup.values()),
+  };
 };

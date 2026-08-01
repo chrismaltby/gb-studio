@@ -69,8 +69,33 @@ jest.mock("components/script/fields/useVariableFieldContext", () => ({
       { id: "variable-2", type: "number" },
       { id: "array-1", type: "array" },
     ],
+    variables: [
+      {
+        id: "variable-1",
+        name: "Variable One",
+        displayName: "Variable One",
+      },
+      {
+        id: "variable-2",
+        name: "Variable Two",
+        displayName: "Variable Two",
+      },
+      { id: "array-1", name: "MyArray", displayName: "MyArray[5]" },
+    ],
     customEvent: undefined,
     variablesLookup: {
+      "variable-1": {
+        id: "variable-1",
+        name: "Variable One",
+        symbol: "var_one",
+        type: "number",
+      },
+      "variable-2": {
+        id: "variable-2",
+        name: "Variable Two",
+        symbol: "var_two",
+        type: "number",
+      },
       "array-1": {
         id: "array-1",
         name: "MyArray",
@@ -109,6 +134,7 @@ jest.mock("renderer/lib/api", () => ({
 
 const mockedAPI = jest.mocked(API);
 
+const dispatch = jest.fn();
 const store = {
   getState: () => ({
     project: {
@@ -127,7 +153,7 @@ const store = {
       },
     },
   }),
-  dispatch: () => {},
+  dispatch,
   subscribe: () => {},
 } as unknown as Store<RootState, UnknownAction>;
 
@@ -135,6 +161,7 @@ beforeEach(() => {
   mockedAPI.theme.onChange.mockReset();
   mockedAPI.dataTable.importCSV.mockReset();
   mockedAPI.dataTable.exportCSV.mockReset();
+  dispatch.mockReset();
   HTMLElement.prototype.scrollTo = jest.fn();
 });
 
@@ -424,12 +451,92 @@ test("Should add a row and disable the row limit", () => {
 test("Should import CSV tables through the renderer API", async () => {
   const onChange = jest.fn();
   mockedAPI.dataTable.importCSV.mockResolvedValueOnce({
+    dataTable: {
+      label: "Imported",
+      variables: [{ type: "variable", value: "variable-1" }],
+      rows: [
+        {
+          label: "Imported Row",
+          values: [{ type: "number", value: 7 }],
+        },
+      ],
+    },
+    newVariables: [],
+  });
+
+  render(
+    <DataTableInput entityId="entity1" value={undefined} onChange={onChange} />,
+    store,
+  );
+
+  fireEvent.click(screen.getByText("FIELD_IMPORT_CSV"));
+
+  await waitFor(() => {
+    expect(mockedAPI.dataTable.importCSV).toHaveBeenCalledWith(
+      [{ id: "constant-1", name: "PLAYER_MAX_HP" }],
+      expect.arrayContaining([
+        {
+          id: "variable-1",
+          name: "Variable One",
+          type: "number",
+          size: undefined,
+        },
+      ]),
+    );
+  });
+
+  expect(onChange).toHaveBeenCalledWith({
     label: "Imported",
-    variables: [{ type: "variable", value: "V0" }],
+    variables: [{ type: "variable", value: "variable-1" }],
     rows: [
       {
         label: "Imported Row",
         values: [{ type: "number", value: 7 }],
+      },
+    ],
+  });
+});
+
+test("Should create missing variables with the required array size", async () => {
+  const onChange = jest.fn();
+  mockedAPI.dataTable.importCSV.mockResolvedValueOnce({
+    dataTable: {
+      label: "Imported",
+      variables: [
+        {
+          type: "variable",
+          value: "__new_variable_0",
+          index: { type: "number", value: 0 },
+        },
+        {
+          type: "variable",
+          value: "__new_variable_0",
+          index: { type: "number", value: 4 },
+        },
+        { type: "variable", value: "__new_variable_1" },
+      ],
+      rows: [
+        {
+          label: "Imported Row",
+          values: [
+            { type: "number", value: 1 },
+            { type: "number", value: 2 },
+            { type: "number", value: 3 },
+          ],
+        },
+      ],
+    },
+    newVariables: [
+      {
+        placeholder: "__new_variable_0",
+        name: "NewArr",
+        type: "array",
+        size: 5,
+      },
+      {
+        placeholder: "__new_variable_1",
+        name: "NewScalar",
+        type: "number",
       },
     ],
   });
@@ -442,24 +549,76 @@ test("Should import CSV tables through the renderer API", async () => {
   fireEvent.click(screen.getByText("FIELD_IMPORT_CSV"));
 
   await waitFor(() => {
-    expect(mockedAPI.dataTable.importCSV).toHaveBeenCalledWith([
-      {
-        id: "constant-1",
-        name: "PLAYER_MAX_HP",
-      },
-    ]);
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "entities/setVariableSize",
+        payload: expect.objectContaining({ size: 5 }),
+      }),
+    );
   });
+
+  const renameActions = dispatch.mock.calls
+    .map(([action]) => action)
+    .filter(({ type }) => type === "entities/renameVariable");
+  const arrayId = renameActions.find(({ payload }) => payload.name === "NewArr")
+    ?.payload.variableId;
+  const scalarId = renameActions.find(
+    ({ payload }) => payload.name === "NewScalar",
+  )?.payload.variableId;
 
   expect(onChange).toHaveBeenCalledWith({
     label: "Imported",
-    variables: [{ type: "variable", value: "V0" }],
+    variables: [
+      {
+        type: "variable",
+        value: arrayId,
+        index: { type: "number", value: 0 },
+      },
+      {
+        type: "variable",
+        value: arrayId,
+        index: { type: "number", value: 4 },
+      },
+      { type: "variable", value: scalarId },
+    ],
     rows: [
       {
         label: "Imported Row",
-        values: [{ type: "number", value: 7 }],
+        values: [
+          { type: "number", value: 1 },
+          { type: "number", value: 2 },
+          { type: "number", value: 3 },
+        ],
       },
     ],
   });
+});
+
+test("Should cancel import when a variable has the wrong type", async () => {
+  const onChange = jest.fn();
+  mockedAPI.dataTable.importCSV.mockRejectedValueOnce(
+    new Error("ERROR_DATA_TABLE_CSV_VARIABLE_TYPE"),
+  );
+
+  render(
+    <DataTableInput
+      entityId="entity1"
+      value={{
+        variables: [{ type: "variable", value: "variable-1" }],
+        rows: [{ values: [{ type: "number", value: 0 }] }],
+      }}
+      onChange={onChange}
+    />,
+    store,
+  );
+
+  fireEvent.click(screen.getByText("FIELD_IMPORT_CSV"));
+
+  expect(
+    await screen.findByText("ERROR_DATA_TABLE_CSV_VARIABLE_TYPE"),
+  ).toBeInTheDocument();
+  expect(onChange).not.toHaveBeenCalled();
+  expect(dispatch).not.toHaveBeenCalled();
 });
 
 test("Should export CSV tables through the renderer API", () => {
@@ -468,7 +627,7 @@ test("Should export CSV tables through the renderer API", () => {
       entityId="entity1"
       value={{
         label: "Scores",
-        variables: [{ type: "variable", value: "0" }],
+        variables: [{ type: "variable", value: "variable-1" }],
         rows: [
           {
             label: "Row 1",
@@ -486,7 +645,7 @@ test("Should export CSV tables through the renderer API", () => {
   expect(mockedAPI.dataTable.exportCSV).toHaveBeenCalledWith(
     {
       label: "Scores",
-      variables: [{ type: "variable", value: "0" }],
+      variables: [{ type: "variable", value: "variable-1" }],
       rows: [
         {
           label: "Row 1",
@@ -494,12 +653,15 @@ test("Should export CSV tables through the renderer API", () => {
         },
       ],
     },
-    [
+    [{ id: "constant-1", name: "PLAYER_MAX_HP" }],
+    expect.arrayContaining([
       {
-        id: "constant-1",
-        name: "PLAYER_MAX_HP",
+        id: "variable-1",
+        name: "Variable One",
+        type: "number",
+        size: undefined,
       },
-    ],
+    ]),
   );
 });
 

@@ -13,6 +13,7 @@ import React, {
 } from "react";
 import API from "renderer/lib/api";
 import l10n from "shared/lib/lang/l10n";
+import { DataTableCSVVariable } from "shared/lib/scriptDataTable/csv";
 import {
   ScriptDataTable,
   ScriptDataTableRow,
@@ -21,6 +22,7 @@ import {
 import { ConstScriptValue } from "shared/lib/scriptValue/types";
 import type { Variable } from "shared/lib/resources/types";
 import { constantSelectors } from "store/features/entities/entitiesSelectors";
+import entitiesActions from "store/features/entities/entitiesActions";
 import { useAppStore } from "store/hooks";
 import styled from "styled-components";
 import { Alert } from "ui/alerts/Alert";
@@ -441,8 +443,11 @@ export const DataTableInput = ({
   isNested,
 }: DataTableInputProps) => {
   const store = useAppStore();
-  const { candidates: variableCandidates, variablesLookup } =
-    useVariableFieldContext(entityId);
+  const {
+    candidates: variableCandidates,
+    variables: namedVariables,
+    variablesLookup,
+  } = useVariableFieldContext(entityId);
   const availableVariableIds = useMemo(
     () =>
       variableCandidates
@@ -454,6 +459,30 @@ export const DataTableInput = ({
     () => defaultValue(availableVariableIds[0] ?? ""),
     [availableVariableIds],
   );
+  const csvVariables = useMemo<DataTableCSVVariable[]>(() => {
+    const candidatesLookup = Object.fromEntries(
+      variableCandidates.map((candidate) => [candidate.id, candidate]),
+    );
+    const variables = namedVariables.map((variable) => {
+      const candidate = candidatesLookup[variable.id];
+      const definition = variablesLookup[variable.id];
+      return {
+        id: variable.id,
+        name: definition ? variable.name : variable.id,
+        type: candidate?.type ?? "number",
+        size:
+          definition?.type === "array"
+            ? definition.size
+            : candidate?.type === "array"
+              ? 1
+              : undefined,
+        isGlobal: Boolean(definition),
+      };
+    });
+    return variables
+      .sort((a, b) => Number(a.isGlobal) - Number(b.isGlobal))
+      .map(({ isGlobal: _isGlobal, ...variable }) => variable);
+  }, [namedVariables, variableCandidates, variablesLookup]);
   const [rowLimit, setRowLimit] = useState(!isNested);
   const [zoom, setZoom] = useState(false);
   const [csvError, setCSVError] = useState<string | null>(null);
@@ -635,27 +664,64 @@ export const DataTableInput = ({
     const state = store.getState();
     const constants = constantSelectors.selectAll(state);
     try {
-      const importedTable = await API.dataTable.importCSV(constants);
+      const importedTable = await API.dataTable.importCSV(
+        constants,
+        csvVariables,
+      );
       if (importedTable) {
-        onChange(importedTable);
+        const { dataTable, newVariables } = importedTable;
+        const newVariableIds: Record<string, string> = {};
+        for (const variable of newVariables) {
+          const action = entitiesActions.addVariable();
+          const variableId = action.payload.variableId;
+          store.dispatch(action);
+          store.dispatch(
+            entitiesActions.renameVariable({
+              variableId,
+              name: variable.name,
+            }),
+          );
+          if (variable.type === "array") {
+            store.dispatch(
+              entitiesActions.setVariableType({
+                variableId,
+                type: "array",
+              }),
+            );
+            store.dispatch(
+              entitiesActions.setVariableSize({
+                variableId,
+                size: variable.size ?? 1,
+              }),
+            );
+          }
+          newVariableIds[variable.placeholder] = variableId;
+        }
+        onChange({
+          ...dataTable,
+          variables: dataTable.variables.map((variable) => ({
+            ...variable,
+            value: newVariableIds[variable.value] ?? variable.value,
+          })),
+        });
         setRowLimit(false);
       }
       setCSVError(null);
     } catch (e) {
       setCSVError((e as Error).message);
     }
-  }, [onChange, store]);
+  }, [csvVariables, onChange, store]);
 
   const exportCSV = useCallback(() => {
     const state = store.getState();
     const constants = constantSelectors.selectAll(state);
     try {
-      API.dataTable.exportCSV(table, constants);
+      API.dataTable.exportCSV(table, constants, csvVariables);
       setCSVError(null);
     } catch (e) {
       setCSVError((e as Error).message);
     }
-  }, [table, store]);
+  }, [csvVariables, table, store]);
 
   return (
     <Wrapper>

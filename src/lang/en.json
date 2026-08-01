@@ -2150,6 +2150,8 @@
   "ERROR_DATA_TABLE_CSV_INVALID": "Imported CSV is not valid.",
   "ERROR_DATA_TABLE_CSV_NO_VARIABLES": "Imported CSV contains no variables.",
   "ERROR_DATA_TABLE_CSV_NO_ROW_DATA": "Imported CSV contains no row data.",
+  "ERROR_DATA_TABLE_CSV_VARIABLE_TYPE": "Variable \"{name}\" has the wrong type for this data table column.",
+  "ERROR_DATA_TABLE_CSV_ARRAY_INDEX": "Array index {index} is out of range for variable \"{name}\".",
   "ERROR_SCENE_TARGET_LAYER_HIDDEN": "Could not edit as the target layer is hidden.",
 
   "// 13": "Splash -------------------------------------------------------",

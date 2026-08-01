@@ -232,7 +232,7 @@ describe("Electron Main Process", () => {
       {},
       {
         label: "Scores",
-        variables: [{ type: "variable", value: "0" }],
+        variables: [{ type: "variable", value: "variable-1" }],
         rows: [
           {
             label: "Row 1",
@@ -241,12 +241,13 @@ describe("Electron Main Process", () => {
         ],
       },
       [],
+      [{ id: "variable-1", name: "Score", type: "number" }],
     );
 
     expect(exportHandler).toBeDefined();
     expect(mockedWriteFile).toHaveBeenCalledWith(
       "/tmp/data.csv",
-      "Scores,0\nRow 1,10",
+      "Scores,Score\nRow 1,10",
     );
   });
 
@@ -256,21 +257,28 @@ describe("Electron Main Process", () => {
     mockedElectron.dialog.showOpenDialogSync.mockReturnValueOnce([
       "/tmp/data.csv",
     ]);
-    mockedReadFile.mockResolvedValueOnce("Scores,0\nRow 1,10" as never);
+    mockedReadFile.mockResolvedValueOnce("Scores,Score\nRow 1,10" as never);
 
-    const result = await importHandler?.({}, []);
+    const result = await importHandler?.(
+      {},
+      [],
+      [{ id: "variable-1", name: "Score", type: "number" }],
+    );
 
     expect(importHandler).toBeDefined();
     expect(mockedReadFile).toHaveBeenCalledWith("/tmp/data.csv", "utf8");
     expect(result).toEqual({
-      label: "Scores",
-      variables: [{ type: "variable", value: "0" }],
-      rows: [
-        {
-          label: "Row 1",
-          values: [{ type: "number", value: 10 }],
-        },
-      ],
+      dataTable: {
+        label: "Scores",
+        variables: [{ type: "variable", value: "variable-1" }],
+        rows: [
+          {
+            label: "Row 1",
+            values: [{ type: "number", value: 10 }],
+          },
+        ],
+      },
+      newVariables: [],
     });
   });
 });

@@ -16,20 +16,22 @@ export const useVariableFieldContext = (entityId: string) => {
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId),
   );
-  const candidates = useMemo<VariableFieldCandidate[]>(
-    () =>
-      namedVariablesByContext(context, variablesLookup, customEvent).map(
-        ({ id }) => ({
-          id,
-          type:
-            variablesLookup[id]?.type ??
-            (customEvent?.variables[id]?.passByReference === "array"
-              ? "array"
-              : "number"),
-        }),
-      ),
+  const variables = useMemo(
+    () => namedVariablesByContext(context, variablesLookup, customEvent),
     [context, customEvent, variablesLookup],
   );
+  const candidates = useMemo<VariableFieldCandidate[]>(
+    () =>
+      variables.map(({ id }) => ({
+        id,
+        type:
+          variablesLookup[id]?.type ??
+          (customEvent?.variables[id]?.passByReference === "array"
+            ? "array"
+            : "number"),
+      })),
+    [customEvent, variables, variablesLookup],
+  );
 
-  return { candidates, customEvent, variablesLookup };
+  return { candidates, customEvent, variables, variablesLookup };
 };
