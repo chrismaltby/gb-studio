@@ -444,7 +444,9 @@ export const DataTableInput = ({
       const nextVariable =
         availableVariableIds.find(
           (variableId) => !currentTable.variables.includes(variableId),
-        ) ?? "";
+        ) ??
+        availableVariableIds[0] ??
+        "";
       return {
         ...currentTable,
         variables: [...currentTable.variables, nextVariable],
