@@ -581,6 +581,7 @@ describe("TypeBox Schemas", () => {
       worldScrollY: 0,
       zoom: 1,
       sgbEnabled: false,
+      sgbMaxJoypads: 2,
       customHead: "head",
       defaultBackgroundPaletteIds: [
         "palette1",

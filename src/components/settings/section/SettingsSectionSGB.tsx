@@ -1,7 +1,10 @@
 import React, { useCallback } from "react";
 import Path from "path";
 import l10n from "shared/lib/lang/l10n";
-import { castEventToBool } from "renderer/lib/helpers/castEventValue";
+import {
+  castEventToBool,
+  castEventToInt,
+} from "renderer/lib/helpers/castEventValue";
 import { PaletteSelect } from "components/forms/PaletteSelect";
 import settingsActions from "store/features/settings/settingsActions";
 import { Checkbox } from "ui/form/Checkbox";
@@ -15,6 +18,7 @@ import { UIAssetPreview } from "components/forms/UIAssetPreviewButton";
 import { FormField } from "ui/form/layout/FormLayout";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import ToggleButtons from "components/ui/form/ToggleButtons";
 
 interface SettingsSectionSGBProps {
   searchTerm: string;
@@ -31,6 +35,9 @@ export const SettingsSectionSGB = ({ searchTerm }: SettingsSectionSGBProps) => {
   );
   const defaultBackgroundPaletteIds = useAppSelector(
     (state) => state.project.present.settings.defaultBackgroundPaletteIds,
+  );
+  const sgbMaxJoypads = useAppSelector(
+    (state) => state.project.present.settings.sgbMaxJoypads,
   );
 
   const colorEnabled = colorMode !== "mono";
@@ -67,6 +74,16 @@ export const SettingsSectionSGB = ({ searchTerm }: SettingsSectionSGBProps) => {
       );
     },
     [defaultBackgroundPaletteIds, dispatch],
+  );
+
+  const onChangeSGBMaxJoypads = useCallback(
+    (e: number) =>
+      dispatch(
+        settingsActions.editSettings({
+          sgbMaxJoypads: e,
+        }),
+      ),
+    [dispatch],
   );
 
   const openAsset = useCallback(
@@ -185,6 +202,38 @@ export const SettingsSectionSGB = ({ searchTerm }: SettingsSectionSGBProps) => {
                     onClick={() => {
                       openAsset("sgb/border.png");
                     }}
+                  />
+                </FormField>
+              </div>
+            </SettingRowInput>
+          </SearchableSettingRow>
+
+          <SearchableSettingRow
+            searchTerm={searchTerm}
+            searchMatches={[l10n("FIELD_SGB_MAX_JOYPADS")]}
+          >
+            <SettingRowLabel>
+              {l10n("FIELD_SGB_MAX_JOYPADS")}
+              <FormInfo>{l10n("FIELD_SGB_MAX_JOYPADS_DESC")}</FormInfo>
+            </SettingRowLabel>
+            <SettingRowInput>
+              <div>
+                <FormField name="sgbBorder">
+                  <ToggleButtons
+                    name={"sgbMaxJoypads"}
+                    value={sgbMaxJoypads}
+                    onChange={(e: number) => {
+                      if (e) {
+                        onChangeSGBMaxJoypads(e);
+                      }
+                    }}
+                    options={[
+                      [1, "1"],
+                      [2, "2"],
+                      [3, "3"],
+                      [4, "4"],
+                    ]}
+                    allowMultiple={false}
                   />
                 </FormField>
               </div>

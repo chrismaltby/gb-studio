@@ -4120,9 +4120,12 @@ class ScriptBuilder extends ScriptBuilderBase {
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     const isSGB = settings.sgbEnabled;
+    const maxJoypads = settings.sgbMaxJoypads;
+
+    const selectedJoypad = Math.min(joypad, maxJoypads);
 
     this._addComment(`If Input`);
-    this._inputGet(inputRef, isSGB ? toJoypadId(joypad) : ".JOY0");
+    this._inputGet(inputRef, isSGB ? toJoypadId(selectedJoypad) : ".JOY0");
     this._rpn() //
       .ref(inputRef)
       .int8(inputDec(input))

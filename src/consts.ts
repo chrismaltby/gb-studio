@@ -275,6 +275,7 @@ export const defaultProjectSettings: Settings = {
   worldScrollY: 0,
   zoom: 100,
   sgbEnabled: false,
+  sgbMaxJoypads: 2,
   customHead: "",
   defaultBackgroundPaletteIds: [
     "default-bg-1",

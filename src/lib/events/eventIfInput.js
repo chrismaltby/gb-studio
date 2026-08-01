@@ -31,13 +31,7 @@ const fields = [
         key: "joypad",
         label: l10n("FIELD_JOYPAD"),
         description: l10n("FIELD_JOYPAD_DESC"),
-        type: "togglebuttons",
-        options: [
-          [0, "1", l10n("FIELD_JOYPAD_N", { joypad: 1 })],
-          [1, "2", l10n("FIELD_JOYPAD_N", { joypad: 2 })],
-          [2, "3", l10n("FIELD_JOYPAD_N", { joypad: 3 })],
-          [3, "4", l10n("FIELD_JOYPAD_N", { joypad: 4 })],
-        ],
+        type: "joypads",
         defaultValue: 0,
         conditions: [
           {

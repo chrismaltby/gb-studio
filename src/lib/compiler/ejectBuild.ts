@@ -12,11 +12,13 @@ import ensureBuildTools from "./ensureBuildTools";
 import l10n from "shared/lib/lang/l10n";
 import type { EngineFieldSchema } from "store/features/engine/engineState";
 import { readEngineVersion, readEngineVersionLegacy } from "lib/project/engine";
-import { ProjectResources } from "shared/lib/resources/types";
+import { ProjectResources, SettingsResource } from "shared/lib/resources/types";
 import { isFilePathWithinFolder } from "lib/helpers/path";
 import { EngineSchema } from "lib/project/loadEngineSchema";
 import { pathToPosix } from "shared/lib/helpers/path";
 import { applyEnginePlugins } from "lib/compiler/enginePlugins";
+import { file } from "electron-settings";
+import { applyConstantSettings } from "lib/compiler/applyConstantSettings";
 
 const engineIgnore = [
   ".git",
@@ -153,6 +155,11 @@ const ejectBuild = async ({
     outputRoot,
     projectRoot,
     unusedFiles,
+  });
+
+  await applyConstantSettings({
+    settings,
+    outputRoot,
   });
 
   // Modify engineField defines for any engine fields that define a "file" field

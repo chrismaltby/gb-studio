@@ -904,6 +904,7 @@ export const SettingsResource = Type.Object({
   worldScrollY: Type.Number(),
   zoom: Type.Number(),
   sgbEnabled: Type.Boolean(),
+  sgbMaxJoypads: Type.Number(),
   customHead: Type.String(),
   defaultBackgroundPaletteIds: Type.Tuple([
     Type.String(),

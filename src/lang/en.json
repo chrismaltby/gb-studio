@@ -536,6 +536,8 @@
   "FIELD_DEFAULT_SGB_PALETTE_NOTE": "Super GB palette #1 is used as the default background and sprite palette for Super GB Mode.",
   "FIELD_COLOR_0_SGB_PALETTE_NOTE": "Note: Super GB palette #3 sets color 0 for all other Super GB palettes.",
   "FIELD_COLOR_0_PAIRS_SGB_PALETTE_NOTE": "Note: Super GB palettes share a single color 0. Setting palette #{index1} or #{index2} sets this color to color 0 of palette #{index1}.",
+  "FIELD_SGB_MAX_JOYPADS": "Active Joypads",
+  "FIELD_SGB_MAX_JOYPADS_DESC": "Super GB Mode allows up to 4 joypads connected to the device.",
   "FIELD_CART_BATTERYLESS": "Save game data to ROM (Supported Flash Carts Only)",
   "FIELD_CART_BATTERYLESS_MORE_INFO_1": "This feature causes game data to be saved into a ROM bank and is only compatible with specific (often bootleg) flash cartridges.",
   "FIELD_CART_BATTERYLESS_MORE_INFO_2": "If you are unsure, you likely want this setting disabled.",

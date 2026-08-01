@@ -330,6 +330,7 @@ export const dummyProjectData: ProjectData = {
     worldScrollY: 0,
     zoom: 100,
     sgbEnabled: false,
+    sgbMaxJoypads: 2,
     defaultBackgroundPaletteIds: ["", "", "", "", "", "", "", ""],
     defaultSpritePaletteIds: ["", "", "", "", "", "", "", ""],
     defaultSpritePaletteId: "",
@@ -624,6 +625,7 @@ export const dummySettingsResource: SettingsResource = {
   worldScrollY: 0,
   zoom: 1,
   sgbEnabled: false,
+  sgbMaxJoypads: 2,
   customHead: "head",
   defaultBackgroundPaletteIds: [
     "palette1",
@@ -785,6 +787,7 @@ export const dummyProjectResources: ProjectResources = {
     worldScrollY: 0,
     zoom: 100,
     sgbEnabled: false,
+    sgbMaxJoypads: 2,
     defaultBackgroundPaletteIds: ["", "", "", "", "", "", "", ""],
     defaultSpritePaletteIds: ["", "", "", "", "", "", "", ""],
     defaultSpritePaletteId: "",

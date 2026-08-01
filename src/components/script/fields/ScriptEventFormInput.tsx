@@ -84,6 +84,7 @@ import { OverlaySpeedSelect } from "components/forms/OverlaySpeedSelect";
 import { ActorDirection, CollisionGroup } from "shared/lib/resources/types";
 import { DataTableInput } from "components/forms/DataTableInput";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
+import JoypadPicker from "components/forms/JoypadPicker";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -398,6 +399,16 @@ const ScriptEventFormInput = ({
           allowMultiple={field.allowMultiple as true}
           allowNone={field.allowNone}
           onChange={onChangeField}
+        />
+      </div>
+    );
+  } else if (type === "joypads") {
+    return (
+      <div>
+        <JoypadPicker
+          id={id}
+          onChange={onChangeField}
+          value={(value ?? field.defaultValue) as number}
         />
       </div>
     );
