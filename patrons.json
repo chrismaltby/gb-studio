@@ -1,13 +1,6 @@
 {
   "goldTier": [
     {
-      "id": "483773",
-      "type": "user",
-      "attributes": {
-        "full_name": "BMo"
-      }
-    },
-    {
       "id": "111731287",
       "type": "user",
       "attributes": {
@@ -108,20 +101,6 @@
       }
     },
     {
-      "id": "71689",
-      "type": "user",
-      "attributes": {
-        "full_name": "Michael Towns (gamebuoygames)"
-      }
-    },
-    {
-      "id": "27034715",
-      "type": "user",
-      "attributes": {
-        "full_name": "Michel Iwaniec"
-      }
-    },
-    {
       "id": "64844487",
       "type": "user",
       "attributes": {
@@ -137,6 +116,13 @@
     }
   ],
   "pastPatrons": [
+    {
+      "id": "483773",
+      "type": "user",
+      "attributes": {
+        "full_name": "BMo"
+      }
+    },
     {
       "id": "852350",
       "type": "user",
@@ -215,11 +201,25 @@
       }
     },
     {
+      "id": "71689",
+      "type": "user",
+      "attributes": {
+        "full_name": "Michael Towns (gamebuoygames)"
+      }
+    },
+    {
       "attributes": {
         "full_name": "Michael Wild"
       },
       "id": "101678212",
       "type": "user"
+    },
+    {
+      "id": "27034715",
+      "type": "user",
+      "attributes": {
+        "full_name": "Michel Iwaniec"
+      }
     },
     {
       "attributes": {
