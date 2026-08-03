@@ -374,7 +374,7 @@ export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
                                       label={
                                         <span
                                           style={{
-                                            minWidth: 40,
+                                            minWidth: 50,
                                             textAlign: "left",
                                           }}
                                         >
