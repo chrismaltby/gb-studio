@@ -203,15 +203,20 @@ const Preferences = () => {
         <FormRow>
           <FormField
             name="emulatorPath"
-            label={l10n("FIELD_EXTERNAL_EMULATOR")}
-            info={l10n("FIELD_EXTERNAL_EMULATOR_INFO")}
+            label={l10n("FIELD_EMULATOR")}
+            info={l10n("FIELD_EMULATOR_INFO")}
           >
             <AppSelect
               value={emulatorPath}
               onChange={onChangeEmulatorPath}
               presetOptions={[
-                { value: "", label: l10n("FIELD_EXTERNAL_EMULATOR_NONE") },
-                { value: "system-default", label: l10n("FIELD_SYSTEM_DEFAULT") },
+                { value: "", label: l10n("FIELD_DEFAULT_WEB_TEMPLATE_BINJGB") },
+                {
+                  value: "system-default",
+                  label: l10n("FIELD_SYSTEM_DEFAULT_FOR_EXTENSION", {
+                    extension: ".gb/.gbc",
+                  }),
+                },
               ]}
             />
           </FormField>
