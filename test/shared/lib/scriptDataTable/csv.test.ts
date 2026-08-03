@@ -149,17 +149,216 @@ describe("csvToScriptDataTable", () => {
     });
   });
 
-  test("Should prioritise special variable codes over matching global names", () => {
+  test("Should resolve locals and custom-event parameters only by code", () => {
     expect(
       csvToScriptDataTable(
-        "Data Table,L0\nRow 1,1",
+        "Data Table,L0,V0\nRow 1,1,2",
         [],
         [
-          { id: "L0", name: "L0", type: "number" },
           { id: "global-1", name: "L0", type: "number" },
+          { id: "global-2", name: "V0", type: "number" },
+          { id: "L0", name: "Local Score", type: "number" },
+          { id: "V0", name: "Parameter Score", type: "number" },
         ],
       ).dataTable.variables,
-    ).toEqual([{ type: "variable", value: "L0" }]);
+    ).toEqual([
+      { type: "variable", value: "L0" },
+      { type: "variable", value: "V0" },
+    ]);
+  });
+
+  test("Should prioritise an exact variable ID over ambiguous name matches", () => {
+    expect(
+      csvToScriptDataTable(
+        "Data Table,variable-id\nRow 1,1",
+        [],
+        [
+          { id: "named-1", name: "variable-id", type: "number" },
+          { id: "variable-id", name: "Score", type: "number" },
+          { id: "named-2", name: "variable-id", type: "number" },
+        ],
+      ).dataTable.variables,
+    ).toEqual([{ type: "variable", value: "variable-id" }]);
+  });
+
+  test("Should reject an exact ID with the wrong type", () => {
+    expect(() =>
+      csvToScriptDataTable(
+        "Data Table,variable-id[0]\nRow 1,1",
+        [],
+        [
+          { id: "variable-id", name: "Score", type: "number" },
+          { id: "array-1", name: "variable-id", type: "array", size: 2 },
+        ],
+      ),
+    ).toThrow("ERROR_DATA_TABLE_CSV_VARIABLE_TYPE");
+  });
+
+  test("Should reject an out-of-range index for an exact ID", () => {
+    expect(() =>
+      csvToScriptDataTable(
+        "Data Table,array-id[2]\nRow 1,1",
+        [],
+        [
+          { id: "array-id", name: "Other", type: "array", size: 2 },
+          { id: "array-2", name: "array-id", type: "array", size: 4 },
+        ],
+      ),
+    ).toThrow("ERROR_DATA_TABLE_CSV_ARRAY_INDEX");
+  });
+
+  test("Should select the only scalar with a compatible matching name", () => {
+    expect(
+      csvToScriptDataTable(
+        "Data Table,Score\nRow 1,1",
+        [],
+        [
+          { id: "array-1", name: "Score", type: "array", size: 2 },
+          { id: "number-1", name: "Score", type: "number" },
+        ],
+      ).dataTable.variables,
+    ).toEqual([{ type: "variable", value: "number-1" }]);
+  });
+
+  test("Should select the only array with a compatible matching name", () => {
+    expect(
+      csvToScriptDataTable(
+        "Data Table,Score[1]\nRow 1,1",
+        [],
+        [
+          { id: "number-1", name: "Score", type: "number" },
+          { id: "array-1", name: "Score", type: "array", size: 2 },
+        ],
+      ).dataTable.variables,
+    ).toEqual([
+      {
+        type: "variable",
+        value: "array-1",
+        index: { type: "number", value: 1 },
+      },
+    ]);
+  });
+
+  test("Should select the only same-named array large enough for the index", () => {
+    expect(
+      csvToScriptDataTable(
+        "Data Table,Score[2]\nRow 1,1",
+        [],
+        [
+          { id: "array-small", name: "Score", type: "array", size: 2 },
+          { id: "array-large", name: "Score", type: "array", size: 3 },
+        ],
+      ).dataTable.variables,
+    ).toEqual([
+      {
+        type: "variable",
+        value: "array-large",
+        index: { type: "number", value: 2 },
+      },
+    ]);
+  });
+
+  test("Should use the first compatible global scalar name match", () => {
+    expect(
+      csvToScriptDataTable(
+        "Data Table,Score\nRow 1,1",
+        [],
+        [
+          { id: "global-score-1", name: "Score", type: "number" },
+          { id: "global-score-2", name: "Score", type: "number" },
+        ],
+      ).dataTable.variables,
+    ).toEqual([{ type: "variable", value: "global-score-1" }]);
+  });
+
+  test("Should use the first compatible global array name match", () => {
+    expect(
+      csvToScriptDataTable(
+        "Data Table,Score[1]\nRow 1,1",
+        [],
+        [
+          { id: "array-1", name: "Score", type: "array", size: 2 },
+          { id: "array-2", name: "Score", type: "array", size: 3 },
+        ],
+      ).dataTable.variables,
+    ).toEqual([
+      {
+        type: "variable",
+        value: "array-1",
+        index: { type: "number", value: 1 },
+      },
+    ]);
+  });
+
+  test("Should ignore local and custom-event parameter names when matching globals", () => {
+    expect(
+      csvToScriptDataTable(
+        "Data Table,Score,Lives\nRow 1,1,2",
+        [],
+        [
+          {
+            id: "L0",
+            name: "Score",
+            type: "number",
+          },
+          {
+            id: "V0",
+            name: "Lives",
+            type: "number",
+          },
+          {
+            id: "global-score",
+            name: "Score",
+            type: "number",
+          },
+          {
+            id: "global-lives",
+            name: "Lives",
+            type: "number",
+          },
+        ],
+      ).dataTable.variables,
+    ).toEqual([
+      { type: "variable", value: "global-score" },
+      { type: "variable", value: "global-lives" },
+    ]);
+  });
+
+  test("Should create globals rather than matching local or parameter names", () => {
+    expect(
+      csvToScriptDataTable(
+        "Data Table,Score,Lives\nRow 1,1,2",
+        [],
+        [
+          { id: "L0", name: "Score", type: "number" },
+          { id: "V0", name: "Lives", type: "number" },
+        ],
+      ),
+    ).toMatchObject({
+      dataTable: {
+        variables: [
+          { type: "variable", value: "__new_variable_0" },
+          { type: "variable", value: "__new_variable_1" },
+        ],
+      },
+      newVariables: [
+        { name: "Score", type: "number" },
+        { name: "Lives", type: "number" },
+      ],
+    });
+  });
+
+  test("Should report an out-of-range index when no same-named array is large enough", () => {
+    expect(() =>
+      csvToScriptDataTable(
+        "Data Table,Score[3]\nRow 1,1",
+        [],
+        [
+          { id: "array-1", name: "Score", type: "array", size: 2 },
+          { id: "array-2", name: "Score", type: "array", size: 3 },
+        ],
+      ),
+    ).toThrow("ERROR_DATA_TABLE_CSV_ARRAY_INDEX");
   });
 
   test("Should reject an array column matched to a scalar variable", () => {
@@ -219,6 +418,12 @@ describe("csvToScriptDataTable", () => {
         },
       ],
     });
+  });
+
+  test("Should reject missing columns that reuse a name with incompatible types", () => {
+    expect(() =>
+      csvToScriptDataTable("Data Table,Missing,Missing[0]\nRow 1,1,2", [], []),
+    ).toThrow("ERROR_DATA_TABLE_CSV_VARIABLE_TYPE");
   });
 
   test("Should pad jagged rows with zeros based on header variables", () => {
