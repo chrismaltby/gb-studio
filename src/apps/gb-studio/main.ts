@@ -63,6 +63,7 @@ import {
   EMULATOR_MUTED_SETTING_KEY,
   LOCALE_SETTING_KEY,
   musicTemplatesRoot,
+  SYSTEM_DEFAULT_APP,
   THEME_SETTING_KEY,
 } from "consts";
 import { getBackgroundInfo, getSceneTilemapInfo } from "lib/helpers/validation";
@@ -299,7 +300,7 @@ export const createPreferences = async () => {
   // Create the browser window.
   preferencesWindow = new BrowserWindow({
     width: 600,
-    height: 400,
+    height: 480,
     resizable: false,
     maximizable: false,
     fullscreenable: false,
@@ -1625,7 +1626,13 @@ ipcMain.handle(
             "COMPILER_STARTING_EMULATOR",
           )}...`,
         );
-        if (debuggerEnabled) {
+
+        const emulatorPath = options.debugEnabled
+          ? ""
+          : String((await settingsGet("emulatorPath")) || "");
+        const romPath = Path.join(outputRoot, "build", "rom", romFilename);
+
+        if (debuggerEnabled && emulatorPath === "") {
           const { memoryMap, globalVariables } = await readDebuggerSymbols(
             outputRoot,
             romStem,
@@ -1650,12 +1657,24 @@ ipcMain.handle(
             sceneMap: compiledData.sceneMap,
             gbvmScripts,
           });
+        } else if (emulatorPath !== "") {
+          if (playWindow) {
+            playWindow.close();
+          }
         }
-        createPlay(
-          `file://${outputRoot}/build/web/index.html`,
-          sgbEnabled && colorMode === "mono",
-          debuggerEnabled,
-        );
+
+        if (emulatorPath === "") {
+          createPlay(
+            `file://${outputRoot}/build/web/index.html`,
+            sgbEnabled && colorMode === "mono",
+            debuggerEnabled,
+          );
+        } else if (emulatorPath === SYSTEM_DEFAULT_APP) {
+          open(romPath);
+        } else {
+          const app = emulatorPath;
+          open(romPath, { app });
+        }
       }
 
       const buildTime = Date.now() - buildStartTime;

@@ -18,6 +18,7 @@ import styled from "styled-components";
 import { TrackerKeysPreview } from "components/music/tracker/keyboard/TrackerKeysPreview";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { MenuOverlay } from "ui/menu/Menu";
+import { SYSTEM_DEFAULT_APP } from "consts";
 
 interface Options {
   value: number;
@@ -49,6 +50,7 @@ const Preferences = () => {
   const [tmpPath, setTmpPath] = useState<string>("");
   const [imageEditorPath, setImageEditorPath] = useState<string>("");
   const [musicEditorPath, setMusicEditorPath] = useState<string>("");
+  const [emulatorPath, setEmulatorPath] = useState<string>("");
   const [zoomLevel, setZoomLevel] = useState<number>(0);
   const [trackerKeyBindings, setTrackerKeyBindings] = useState<number>(0);
   const [showTrackerKeyHelp, setShowTrackerKeyHelp] = useState(false);
@@ -60,6 +62,7 @@ const Preferences = () => {
       setTmpPath(await API.paths.getTmpPath());
       setImageEditorPath(await API.settings.getString("imageEditorPath", ""));
       setMusicEditorPath(await API.settings.getString("musicEditorPath", ""));
+      setEmulatorPath(await API.settings.getString("emulatorPath", ""));
       setZoomLevel(await API.settings.app.getUIScale());
       setTrackerKeyBindings(await API.settings.app.getTrackerKeyBindings());
     }
@@ -97,6 +100,11 @@ const Preferences = () => {
   const onChangeMusicEditorPath = (path: string) => {
     setMusicEditorPath(path);
     API.settings.set("musicEditorPath", path);
+  };
+
+  const onChangeEmulatorPath = (path: string) => {
+    setEmulatorPath(path);
+    API.settings.set("emulatorPath", path);
   };
 
   const onChangeZoomLevel = (zoomLevel: number) => {
@@ -192,6 +200,28 @@ const Preferences = () => {
           </FormField>
         </FormRow>
 
+        <FixedSpacer height={10} />
+        <FormRow>
+          <FormField
+            name="emulatorPath"
+            label={l10n("FIELD_EMULATOR")}
+            info={l10n("FIELD_EMULATOR_INFO")}
+          >
+            <AppSelect
+              value={emulatorPath}
+              onChange={onChangeEmulatorPath}
+              presetOptions={[
+                { value: "", label: l10n("FIELD_DEFAULT_WEB_TEMPLATE_BINJGB") },
+                {
+                  value: SYSTEM_DEFAULT_APP,
+                  label: l10n("FIELD_SYSTEM_DEFAULT_FOR_EXTENSION", {
+                    extension: ".gb/.gbc",
+                  }),
+                },
+              ]}
+            />
+          </FormField>
+        </FormRow>
         <FixedSpacer height={10} />
         <FormRow>
           <FormField name="zoomLevel" label={l10n("FIELD_UI_ELEMENTS_SCALING")}>
