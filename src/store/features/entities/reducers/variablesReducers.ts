@@ -167,10 +167,10 @@ const reparentVariable: CaseReducer<
 const variablesReducers = {
   addVariable: {
     reducer: addVariable,
-    prepare: () => {
+    prepare: (payload?: { variableId?: string }) => {
       return {
         payload: {
-          variableId: uuid(),
+          variableId: payload?.variableId ?? uuid(),
         },
       };
     },

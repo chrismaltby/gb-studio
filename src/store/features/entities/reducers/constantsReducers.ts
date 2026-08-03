@@ -121,10 +121,10 @@ const reparentConstant: CaseReducer<
 const constantsReducers = {
   addConstant: {
     reducer: addConstant,
-    prepare: () => {
+    prepare: (payload?: { constantId?: string }) => {
       return {
         payload: {
-          constantId: uuid(),
+          constantId: payload?.constantId ?? uuid(),
         },
       };
     },

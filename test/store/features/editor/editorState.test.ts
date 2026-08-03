@@ -43,6 +43,34 @@ test("Unknown action should return input state", () => {
   expect(newState.tool).toBe("scene");
 });
 
+test("Should not select constants when they are added indirectly", () => {
+  const state: EditorState = {
+    ...initialState,
+    type: "actor",
+    scene: "scene1",
+    entityId: "actor1",
+  };
+  const newState = reducer(
+    state,
+    entitiesActions.addConstant({ constantId: "constant1" }),
+  );
+
+  expect(newState.type).toBe("actor");
+  expect(newState.scene).toBe("scene1");
+  expect(newState.entityId).toBe("actor1");
+});
+
+test("Should select constants explicitly", () => {
+  const newState = reducer(
+    initialState,
+    actions.selectConstant({ constantId: "constant1" }),
+  );
+
+  expect(newState.type).toBe("constant");
+  expect(newState.scene).toBe("");
+  expect(newState.entityId).toBe("constant1");
+});
+
 test("Default state should use select tool", () => {
   const action = {
     type: "UNKNOWN_ACTION",

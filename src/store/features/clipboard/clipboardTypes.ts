@@ -15,6 +15,7 @@ import {
   MetaspriteTile,
   TilesetSnapshot,
   Variable,
+  Constant,
 } from "shared/lib/resources/types";
 import { ScriptValue } from "shared/lib/scriptValue/types";
 
@@ -55,12 +56,15 @@ export type ClipboardScriptEvents = {
   scriptEvents: ScriptEventNormalized[];
   script: string[];
   customEvents: ScriptNormalized[];
+  variables?: Variable[];
+  constants?: Constant[];
 };
 
 export type ClipboardTriggers = {
   triggers: TriggerNormalized[];
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
+  constants?: Constant[];
   customEvents: ScriptNormalized[];
   triggerPrefabs?: TriggerPrefabNormalized[];
 };
@@ -69,6 +73,7 @@ export type ClipboardActors = {
   actors: ActorNormalized[];
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
+  constants?: Constant[];
   customEvents: ScriptNormalized[];
   actorPrefabs?: ActorPrefabNormalized[];
 };
@@ -79,6 +84,7 @@ export type ClipboardScenes = {
   triggers: TriggerNormalized[];
   scriptEvents: ScriptEventNormalized[];
   variables: Variable[];
+  constants?: Constant[];
   customEvents: ScriptNormalized[];
   actorPrefabs?: ActorPrefabNormalized[];
   triggerPrefabs?: TriggerPrefabNormalized[];

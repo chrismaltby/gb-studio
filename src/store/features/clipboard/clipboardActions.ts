@@ -6,7 +6,6 @@ import {
   customEventSelectors,
   actorSelectors,
   triggerSelectors,
-  variableSelectors,
   metaspriteSelectors,
   metaspriteTileSelectors,
   spriteStateSelectors,
@@ -75,12 +74,418 @@ import {
 } from "shared/lib/scripts/walk";
 import { batch } from "react-redux";
 import { sortSubsetStringArray } from "shared/lib/helpers/array";
-import { MetaspriteTile, Variable } from "shared/lib/resources/types";
+import {
+  Constant,
+  MetaspriteTile,
+  Variable,
+  type ScriptEventArgsOverride,
+} from "shared/lib/resources/types";
 import { copyGridSelection } from "shared/lib/tiles/grid";
 import {
   getTilemapLayersTileColors,
   isTilemapLayerCellTopmost,
 } from "shared/lib/tiles/sceneTilemapData";
+import { extractVariableIdsFromScriptEvent } from "shared/lib/variables/extractVariableReferences";
+
+type ResourceIdMapping = Record<string, string>;
+
+const normalizedVariableType = (variable: Variable) =>
+  variable.type ?? "number";
+
+const variableShapeMatches = (a: Variable, b: Variable) => {
+  const aType = normalizedVariableType(a);
+  const bType = normalizedVariableType(b);
+  return (
+    aType === bType &&
+    (aType !== "array" ||
+      (a.type === "array" && b.type === "array" && a.size === b.size))
+  );
+};
+
+const constantValueMatches = (a: Constant, b: Constant) => a.value === b.value;
+
+const collectReferencedResources = (
+  scriptEvents: ScriptEventNormalized[],
+  variables: Variable[],
+  constants: Constant[],
+  scriptEventDefs: ScriptEventDefs,
+  eventOverrides: Record<string, ScriptEventArgsOverride>[] = [],
+) => {
+  const variableIds = new Set<string>();
+  const constantIds = new Set<string>();
+  const variableIdLookup = new Set(variables.map((variable) => variable.id));
+  const constantIdLookup = new Set(constants.map((constant) => constant.id));
+
+  const visit = (value: unknown): void => {
+    if (typeof value === "string") {
+      value.replace(/[$#]([^$#]+)[$#]/g, (_match, id: string) => {
+        if (variableIdLookup.has(id)) variableIds.add(id);
+        return _match;
+      });
+      value.replace(/@([^@]+)@/g, (_match, id: string) => {
+        if (constantIdLookup.has(id)) constantIds.add(id);
+        return _match;
+      });
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.forEach(visit);
+      return;
+    }
+    if (!value || typeof value !== "object") return;
+    const record = value as Record<string, unknown>;
+    if (record.type === "variable") {
+      if (
+        typeof record.value === "string" &&
+        variableIdLookup.has(record.value)
+      ) {
+        variableIds.add(record.value);
+      }
+      if (typeof record.id === "string" && variableIdLookup.has(record.id)) {
+        variableIds.add(record.id);
+      }
+    }
+    if (
+      record.type === "constant" &&
+      typeof record.value === "string" &&
+      constantIdLookup.has(record.value)
+    ) {
+      constantIds.add(record.value);
+    }
+    Object.values(record).forEach(visit);
+  };
+
+  const visitEvent = (event: ScriptEventNormalized) => {
+    visit(event.args);
+    extractVariableIdsFromScriptEvent(event, scriptEventDefs).forEach((id) => {
+      if (variableIdLookup.has(id)) variableIds.add(id);
+    });
+  };
+
+  scriptEvents.forEach(visitEvent);
+  const scriptEventsLookup = keyBy(scriptEvents, "id");
+  eventOverrides.forEach((overrides) => {
+    Object.entries(overrides).forEach(([scriptEventId, override]) => {
+      const event = scriptEventsLookup[scriptEventId];
+      if (event) visitEvent({ ...event, args: override.args });
+    });
+  });
+  return {
+    variables: variables.filter((variable) => variableIds.has(variable.id)),
+    constants: constants.filter((constant) => constantIds.has(constant.id)),
+  };
+};
+
+const remapResourceReferences = <T>(
+  value: T,
+  variableMapping: ResourceIdMapping,
+  constantMapping: ResourceIdMapping,
+): T => {
+  if (typeof value === "string") {
+    return value
+      .replace(/([$#])([^$#]+)([$#])/g, (match, open, id, close) =>
+        variableMapping[id] ? `${open}${variableMapping[id]}${close}` : match,
+      )
+      .replace(/@([^@]+)@/g, (match, id) =>
+        constantMapping[id] ? `@${constantMapping[id]}@` : match,
+      ) as T;
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) =>
+      remapResourceReferences(item, variableMapping, constantMapping),
+    ) as T;
+  }
+  if (!value || typeof value !== "object") return value;
+  const record = value as Record<string, unknown>;
+  if (record.type === "variable") {
+    return {
+      ...record,
+      ...(typeof record.value === "string" && variableMapping[record.value]
+        ? { value: variableMapping[record.value] }
+        : {}),
+      ...(typeof record.id === "string" && variableMapping[record.id]
+        ? { id: variableMapping[record.id] }
+        : {}),
+      ...(record.index !== undefined
+        ? {
+            index: remapResourceReferences(
+              record.index,
+              variableMapping,
+              constantMapping,
+            ),
+          }
+        : {}),
+    } as T;
+  }
+  if (
+    record.type === "constant" &&
+    typeof record.value === "string" &&
+    constantMapping[record.value]
+  ) {
+    return { ...record, value: constantMapping[record.value] } as T;
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, child]) => [
+      key,
+      remapResourceReferences(child, variableMapping, constantMapping),
+    ]),
+  ) as T;
+};
+
+const remapResourceReferencesInEventArgs = (
+  command: string,
+  args: Record<string, unknown> | undefined,
+  variableMapping: ResourceIdMapping,
+  constantMapping: ResourceIdMapping,
+  scriptEventDefs: ScriptEventDefs,
+) => {
+  if (!args) return args;
+  const remappedArgs = remapResourceReferences(
+    args,
+    variableMapping,
+    constantMapping,
+  );
+  const fieldsLookup = scriptEventDefs[command]?.fieldsLookup ?? {};
+  for (const [key, value] of Object.entries(args)) {
+    const isVariableField =
+      key.startsWith("$variable[") || fieldsLookup[key]?.type === "variable";
+    if (
+      isVariableField &&
+      typeof value === "string" &&
+      variableMapping[value]
+    ) {
+      remappedArgs[key] = variableMapping[value];
+    }
+  }
+  return remappedArgs;
+};
+
+const remapResourceReferencesInEventOverrides = (
+  eventOverrides: Record<string, ScriptEventArgsOverride>,
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
+  variableMapping: ResourceIdMapping,
+  constantMapping: ResourceIdMapping,
+  scriptEventDefs: ScriptEventDefs,
+) => {
+  return Object.fromEntries(
+    Object.entries(eventOverrides).map(([scriptEventId, override]) => {
+      const command = scriptEventsLookup[scriptEventId]?.command;
+      return [
+        scriptEventId,
+        {
+          ...override,
+          args: command
+            ? (remapResourceReferencesInEventArgs(
+                command,
+                override.args,
+                variableMapping,
+                constantMapping,
+                scriptEventDefs,
+              ) ?? override.args)
+            : override.args,
+        },
+      ];
+    }),
+  );
+};
+
+const remapScriptEvents = (
+  scriptEvents: ScriptEventNormalized[],
+  variableMapping: ResourceIdMapping,
+  constantMapping: ResourceIdMapping,
+  scriptEventDefs: ScriptEventDefs = {},
+) =>
+  scriptEvents.map((event) => ({
+    ...event,
+    args: remapResourceReferencesInEventArgs(
+      event.command,
+      event.args,
+      variableMapping,
+      constantMapping,
+      scriptEventDefs,
+    ),
+  }));
+
+const remapScriptEventLookup = (
+  scriptEventsLookup: Record<string, ScriptEventNormalized>,
+  variableMapping: ResourceIdMapping,
+) =>
+  keyBy(
+    remapScriptEvents(Object.values(scriptEventsLookup), variableMapping, {}),
+    "id",
+  );
+
+const reconcileClipboardResources = (
+  dispatch: ClipboardDispatch,
+  variables: Variable[],
+  constants: Constant[],
+  existingVariables: Variable[],
+  existingConstants: Constant[],
+) => {
+  const variableMapping: ResourceIdMapping = {};
+  const constantMapping: ResourceIdMapping = {};
+  const variableNameCandidates = [...existingVariables];
+  const constantNameCandidates = [...existingConstants];
+  const reservedVariableIds = new Set(
+    variables.flatMap((variable) =>
+      variableNameCandidates.some((candidate) => candidate.id === variable.id)
+        ? [variable.id]
+        : [],
+    ),
+  );
+  const reservedConstantIds = new Set(
+    constants.flatMap((constant) =>
+      constantNameCandidates.some((candidate) => candidate.id === constant.id)
+        ? [constant.id]
+        : [],
+    ),
+  );
+  const claimedVariableIds = new Set<string>();
+  const claimedConstantIds = new Set<string>();
+
+  for (const variable of variables) {
+    // Entity-local variables are recreated by the existing entity paste path.
+    if (/_L\d+$/.test(variable.id)) continue;
+    const uuidMatch = existingVariables.find(
+      (candidate) => candidate.id === variable.id,
+    );
+    const compatibleNameMatches = variableNameCandidates.filter(
+      (candidate) =>
+        variable.name.length > 0 &&
+        candidate.name === variable.name &&
+        variableShapeMatches(variable, candidate),
+    );
+    const nameMatch =
+      compatibleNameMatches.length === 1 &&
+      !reservedVariableIds.has(compatibleNameMatches[0].id) &&
+      !claimedVariableIds.has(compatibleNameMatches[0].id)
+        ? compatibleNameMatches[0]
+        : undefined;
+    const match = uuidMatch ?? nameMatch;
+    if (match) {
+      variableMapping[variable.id] = match.id;
+      claimedVariableIds.add(match.id);
+      continue;
+    }
+    const idIsAvailable = !existingVariables.some(
+      (candidate) => candidate.id === variable.id,
+    );
+    const addAction = entitiesActions.addVariable(
+      idIsAvailable ? { variableId: variable.id } : undefined,
+    );
+    dispatch(addAction);
+    const variableId = addAction.payload.variableId;
+    dispatch(
+      entitiesActions.renameVariable({ variableId, name: variable.name }),
+    );
+    dispatch(
+      entitiesActions.setVariableType({
+        variableId,
+        type: normalizedVariableType(variable),
+      }),
+    );
+    if (variable.type === "array") {
+      dispatch(
+        entitiesActions.setVariableSize({ variableId, size: variable.size }),
+      );
+    }
+    if (variable.flags) {
+      dispatch(
+        entitiesActions.renameVariableFlags({
+          variableId,
+          flags: variable.flags,
+        }),
+      );
+    }
+    variableMapping[variable.id] = variableId;
+    claimedVariableIds.add(variableId);
+    existingVariables.push({ ...variable, id: variableId });
+  }
+
+  for (const constant of constants) {
+    const uuidMatch = existingConstants.find(
+      (candidate) => candidate.id === constant.id,
+    );
+    const compatibleNameMatches = constantNameCandidates.filter(
+      (candidate) =>
+        constant.name.length > 0 &&
+        candidate.name === constant.name &&
+        constantValueMatches(constant, candidate),
+    );
+    const nameMatch =
+      compatibleNameMatches.length === 1 &&
+      !reservedConstantIds.has(compatibleNameMatches[0].id) &&
+      !claimedConstantIds.has(compatibleNameMatches[0].id)
+        ? compatibleNameMatches[0]
+        : undefined;
+    const match = uuidMatch ?? nameMatch;
+    if (match) {
+      constantMapping[constant.id] = match.id;
+      claimedConstantIds.add(match.id);
+      continue;
+    }
+    const idIsAvailable = !existingConstants.some(
+      (candidate) => candidate.id === constant.id,
+    );
+    const addAction = entitiesActions.addConstant(
+      idIsAvailable ? { constantId: constant.id } : undefined,
+    );
+    dispatch(addAction);
+    const constantId = addAction.payload.constantId;
+    dispatch(
+      entitiesActions.editConstant({
+        constantId,
+        changes: { name: constant.name, value: constant.value },
+      }),
+    );
+    constantMapping[constant.id] = constantId;
+    claimedConstantIds.add(constantId);
+    existingConstants.push({ ...constant, id: constantId });
+  }
+
+  return { variableMapping, constantMapping };
+};
+
+const selectClipboardVariables = (state: RootState): Variable[] =>
+  Object.values(
+    state.project.present.entities.variables?.entities ?? {},
+  ).filter((variable): variable is Variable => !!variable);
+
+const selectClipboardConstants = (state: RootState): Constant[] =>
+  Object.values(
+    state.project.present.entities.constants?.entities ?? {},
+  ).filter((constant): constant is Constant => !!constant);
+
+const selectClipboardScriptEventDefs = (state: RootState): ScriptEventDefs =>
+  state.scriptEventDefs?.lookup ?? {};
+
+const prepareClipboardScriptsForPaste = (
+  dispatch: ClipboardDispatch,
+  state: RootState,
+  data: {
+    scriptEvents: ScriptEventNormalized[];
+    variables?: Variable[];
+    constants?: Constant[];
+  },
+) => {
+  const { variableMapping, constantMapping } = reconcileClipboardResources(
+    dispatch,
+    data.variables ?? [],
+    data.constants ?? [],
+    selectClipboardVariables(state),
+    selectClipboardConstants(state),
+  );
+  return {
+    scriptEvents: remapScriptEvents(
+      data.scriptEvents,
+      variableMapping,
+      constantMapping,
+      selectClipboardScriptEventDefs(state),
+    ),
+    variableMapping,
+    constantMapping,
+  };
+};
 
 const generateLocalVariableInsertActions = (
   originalId: string,
@@ -91,11 +496,31 @@ const generateLocalVariableInsertActions = (
   for (const variable of variables) {
     if (variable.id.startsWith(originalId)) {
       const variableId = variable.id.replace(originalId, newId);
-      const addVarAction = entitiesActions.renameVariable({
+      actions.push(entitiesActions.addVariable({ variableId }));
+      const renameVarAction = entitiesActions.renameVariable({
         variableId,
         name: variable.name,
       });
-      actions.push(addVarAction);
+      actions.push(renameVarAction);
+      actions.push(
+        entitiesActions.setVariableType({
+          variableId,
+          type: variable.type ?? "number",
+        }),
+      );
+      if (variable.type === "array") {
+        actions.push(
+          entitiesActions.setVariableSize({ variableId, size: variable.size }),
+        );
+      }
+      if (variable.flags) {
+        actions.push(
+          entitiesActions.renameVariableFlags({
+            variableId,
+            flags: variable.flags,
+          }),
+        );
+      }
     }
   }
   return actions;
@@ -180,12 +605,38 @@ const generateActorInsertActions = (
     defaults: actor,
   });
   actions.push(addActorAction);
+  const localVariableMapping = Object.fromEntries(
+    variables
+      .filter((variable) => variable.id.startsWith(actor.id))
+      .map((variable) => [
+        variable.id,
+        variable.id.replace(actor.id, addActorAction.payload.actorId),
+      ]),
+  );
+  const remappedScriptEventsLookup = remapScriptEventLookup(
+    scriptEventsLookup,
+    localVariableMapping,
+  );
+  actions[0] = {
+    ...addActorAction,
+    payload: {
+      ...addActorAction.payload,
+      defaults: {
+        ...addActorAction.payload.defaults,
+        prefabScriptOverrides: remapResourceReferences(
+          addActorAction.payload.defaults?.prefabScriptOverrides,
+          localVariableMapping,
+          {},
+        ),
+      },
+    },
+  };
   walkActorScriptsKeys((key) => {
     const scriptEventIds = actor[key];
     actions.push(
       ...generateScriptEventInsertActions(
         scriptEventIds,
-        scriptEventsLookup,
+        remappedScriptEventsLookup,
         addActorAction.payload.actorId,
         "actor",
         key,
@@ -281,12 +732,38 @@ const generateTriggerInsertActions = (
     defaults: trigger,
   });
   actions.push(addTriggerAction);
+  const localVariableMapping = Object.fromEntries(
+    variables
+      .filter((variable) => variable.id.startsWith(trigger.id))
+      .map((variable) => [
+        variable.id,
+        variable.id.replace(trigger.id, addTriggerAction.payload.triggerId),
+      ]),
+  );
+  const remappedScriptEventsLookup = remapScriptEventLookup(
+    scriptEventsLookup,
+    localVariableMapping,
+  );
+  actions[0] = {
+    ...addTriggerAction,
+    payload: {
+      ...addTriggerAction.payload,
+      defaults: {
+        ...addTriggerAction.payload.defaults,
+        prefabScriptOverrides: remapResourceReferences(
+          addTriggerAction.payload.defaults?.prefabScriptOverrides,
+          localVariableMapping,
+          {},
+        ),
+      },
+    },
+  };
   walkTriggerScriptsKeys((key) => {
     const scriptEventIds = trigger[key];
     actions.push(
       ...generateScriptEventInsertActions(
         scriptEventIds,
-        scriptEventsLookup,
+        remappedScriptEventsLookup,
         addTriggerAction.payload.triggerId,
         "trigger",
         key,
@@ -381,12 +858,24 @@ const generateSceneInsertActions = (
     defaults: scene,
   });
   actions.push(addSceneAction);
+  const localVariableMapping = Object.fromEntries(
+    variables
+      .filter((variable) => variable.id.startsWith(scene.id))
+      .map((variable) => [
+        variable.id,
+        variable.id.replace(scene.id, addSceneAction.payload.sceneId),
+      ]),
+  );
+  const remappedSceneScriptEventsLookup = remapScriptEventLookup(
+    scriptEventsLookup,
+    localVariableMapping,
+  );
   walkSceneScriptsKeys((key) => {
     const scriptEventIds = scene[key];
     actions.push(
       ...generateScriptEventInsertActions(
         scriptEventIds,
-        scriptEventsLookup,
+        remappedSceneScriptEventsLookup,
         addSceneAction.payload.sceneId,
         "scene",
         key,
@@ -786,12 +1275,24 @@ const copyScriptEvents =
         addEvent,
       );
     }
+    const referencedResources = collectReferencedResources(
+      scriptEvents,
+      selectClipboardVariables(state),
+      selectClipboardConstants(state),
+      selectClipboardScriptEventDefs(state),
+    );
     await copyToClipboard(dispatch, {
       format: ClipboardTypeScriptEvents,
       data: {
         scriptEvents,
         customEvents,
         script: action.payload.scriptEventIds,
+        ...(referencedResources.variables.length > 0
+          ? { variables: referencedResources.variables }
+          : {}),
+        ...(referencedResources.constants.length > 0
+          ? { constants: referencedResources.constants }
+          : {}),
       },
     });
   };
@@ -811,8 +1312,8 @@ const copyTriggers =
     const customEventsSeen: Record<string, boolean> = {};
     const triggerPrefabs: TriggerPrefabNormalized[] = [];
     const triggerPrefabsSeen: Record<string, boolean> = {};
-    const allVariables = variableSelectors.selectAll(state);
-    const variables = allVariables.filter((variable) => {
+    const allVariables = selectClipboardVariables(state);
+    const localVariables = allVariables.filter((variable) => {
       return action.payload.triggerIds.find((id) => variable.id.startsWith(id));
     });
     const addEvent = (scriptEvent: ScriptEventNormalized) => {
@@ -862,6 +1363,20 @@ const copyTriggers =
         addEvent,
       );
     }
+    const referencedResources = collectReferencedResources(
+      scriptEvents,
+      allVariables,
+      selectClipboardConstants(state),
+      selectClipboardScriptEventDefs(state),
+      triggers.map((trigger) => trigger.prefabScriptOverrides),
+    );
+    const variables = Array.from(
+      new Map(
+        [...localVariables, ...referencedResources.variables].map(
+          (variable) => [variable.id, variable],
+        ),
+      ).values(),
+    );
     await copyToClipboard(dispatch, {
       format: ClipboardTypeTriggers,
       data: {
@@ -870,6 +1385,9 @@ const copyTriggers =
         variables,
         scriptEvents,
         triggerPrefabs,
+        ...(referencedResources.constants.length > 0
+          ? { constants: referencedResources.constants }
+          : {}),
       },
     });
   };
@@ -889,8 +1407,8 @@ const copyActors =
     const customEventsSeen: Record<string, boolean> = {};
     const actorPrefabs: ActorPrefabNormalized[] = [];
     const actorPrefabsSeen: Record<string, boolean> = {};
-    const allVariables = variableSelectors.selectAll(state);
-    const variables = allVariables.filter((variable) => {
+    const allVariables = selectClipboardVariables(state);
+    const localVariables = allVariables.filter((variable) => {
       return action.payload.actorIds.find((id) => variable.id.startsWith(id));
     });
     const addEvent = (scriptEvent: ScriptEventNormalized) => {
@@ -940,6 +1458,20 @@ const copyActors =
         addEvent,
       );
     }
+    const referencedResources = collectReferencedResources(
+      scriptEvents,
+      allVariables,
+      selectClipboardConstants(state),
+      selectClipboardScriptEventDefs(state),
+      actors.map((actor) => actor.prefabScriptOverrides),
+    );
+    const variables = Array.from(
+      new Map(
+        [...localVariables, ...referencedResources.variables].map(
+          (variable) => [variable.id, variable],
+        ),
+      ).values(),
+    );
     await copyToClipboard(dispatch, {
       format: ClipboardTypeActors,
       data: {
@@ -948,6 +1480,9 @@ const copyActors =
         variables,
         scriptEvents,
         actorPrefabs,
+        ...(referencedResources.constants.length > 0
+          ? { constants: referencedResources.constants }
+          : {}),
       },
     });
   };
@@ -1061,10 +1596,24 @@ const copyScenes =
         addEvent,
       );
     }
-    const allVariables = variableSelectors.selectAll(state);
-    const variables = allVariables.filter((variable) => {
+    const allVariables = selectClipboardVariables(state);
+    const localVariables = allVariables.filter((variable) => {
       return entityIds.find((id) => variable.id.startsWith(id));
     });
+    const referencedResources = collectReferencedResources(
+      scriptEvents,
+      allVariables,
+      selectClipboardConstants(state),
+      selectClipboardScriptEventDefs(state),
+      [...actors, ...triggers].map((entity) => entity.prefabScriptOverrides),
+    );
+    const variables = Array.from(
+      new Map(
+        [...localVariables, ...referencedResources.variables].map(
+          (variable) => [variable.id, variable],
+        ),
+      ).values(),
+    );
     await copyToClipboard(dispatch, {
       format: ClipboardTypeScenes,
       data: {
@@ -1076,6 +1625,9 @@ const copyScenes =
         scriptEvents,
         actorPrefabs,
         triggerPrefabs,
+        ...(referencedResources.constants.length > 0
+          ? { constants: referencedResources.constants }
+          : {}),
       },
     });
   };
@@ -1097,7 +1649,11 @@ const pasteScriptEvents =
     if (clipboard.format === ClipboardTypeScriptEvents) {
       const state = getState();
       const scriptEventIds = clipboard.data.script;
-      const scriptEvents = clipboard.data.scriptEvents;
+      const { scriptEvents } = prepareClipboardScriptsForPaste(
+        dispatch,
+        state,
+        clipboard.data,
+      );
       const scriptEventsLookup = keyBy(scriptEvents, "id");
       const existingCustomEvents = customEventSelectors.selectAll(state);
       const existingScriptEventsLookup =
@@ -1144,7 +1700,11 @@ const pasteScriptEventValues =
         state.project.present.entities.scriptEvents.entities[
           action.payload.scriptEventId
         ];
-      const scriptEvent = clipboard.data.scriptEvents[0];
+      const scriptEvent = prepareClipboardScriptsForPaste(
+        dispatch,
+        state,
+        clipboard.data,
+      ).scriptEvents[0];
       if (currentEvent && scriptEvent) {
         dispatch(
           entitiesActions.editScriptEvent({
@@ -1172,8 +1732,10 @@ const pasteTriggerAt =
     const clipboard = await pasteAny();
     if (clipboard && clipboard.format === ClipboardTypeTriggers) {
       const state = getState();
-      const scriptEvents = clipboard.data.scriptEvents;
+      const { scriptEvents, variableMapping, constantMapping } =
+        prepareClipboardScriptsForPaste(dispatch, state, clipboard.data);
       const scriptEventsLookup = keyBy(scriptEvents, "id");
+      const scriptEventDefs = selectClipboardScriptEventDefs(state);
       const existingCustomEvents = customEventSelectors.selectAll(state);
       const existingTriggerPrefabs = triggerPrefabSelectors.selectAll(state);
       const existingScriptEventsLookup =
@@ -1193,8 +1755,18 @@ const pasteTriggerAt =
         });
       }
       for (const trigger of clipboard.data.triggers) {
+        const remappedTrigger = {
+          ...trigger,
+          prefabScriptOverrides: remapResourceReferencesInEventOverrides(
+            trigger.prefabScriptOverrides,
+            scriptEventsLookup,
+            variableMapping,
+            constantMapping,
+            scriptEventDefs,
+          ),
+        };
         const actions = generateTriggerInsertActions(
-          trigger,
+          remappedTrigger,
           scriptEventsLookup,
           clipboard.data.variables,
           action.payload.sceneId,
@@ -1234,8 +1806,10 @@ const pasteActorAt =
     const clipboard = await pasteAny();
     if (clipboard && clipboard.format === ClipboardTypeActors) {
       const state = getState();
-      const scriptEvents = clipboard.data.scriptEvents;
+      const { scriptEvents, variableMapping, constantMapping } =
+        prepareClipboardScriptsForPaste(dispatch, state, clipboard.data);
       const scriptEventsLookup = keyBy(scriptEvents, "id");
+      const scriptEventDefs = selectClipboardScriptEventDefs(state);
       const existingCustomEvents = customEventSelectors.selectAll(state);
       const existingActorPrefabs = actorPrefabSelectors.selectAll(state);
       const existingScriptEventsLookup =
@@ -1254,8 +1828,18 @@ const pasteActorAt =
         });
       }
       for (const actor of clipboard.data.actors) {
+        const remappedActor = {
+          ...actor,
+          prefabScriptOverrides: remapResourceReferencesInEventOverrides(
+            actor.prefabScriptOverrides,
+            scriptEventsLookup,
+            variableMapping,
+            constantMapping,
+            scriptEventDefs,
+          ),
+        };
         const actions = generateActorInsertActions(
-          actor,
+          remappedActor,
           scriptEventsLookup,
           clipboard.data.variables,
           action.payload.sceneId,
@@ -1291,7 +1875,8 @@ const pasteSceneAt =
     const clipboard = await pasteAny();
     if (clipboard && clipboard.format === ClipboardTypeScenes) {
       const state = getState();
-      const scriptEvents = clipboard.data.scriptEvents;
+      const { scriptEvents, variableMapping, constantMapping } =
+        prepareClipboardScriptsForPaste(dispatch, state, clipboard.data);
       const scriptEventsLookup = keyBy(scriptEvents, "id");
       const scriptEventDefs = selectScriptEventDefs(state);
       const existingCustomEvents = customEventSelectors.selectAll(state);
@@ -1329,10 +1914,30 @@ const pasteSceneAt =
       }
 
       for (const scene of clipboard.data.scenes) {
+        const remappedActors = clipboard.data.actors.map((actor) => ({
+          ...actor,
+          prefabScriptOverrides: remapResourceReferencesInEventOverrides(
+            actor.prefabScriptOverrides,
+            scriptEventsLookup,
+            variableMapping,
+            constantMapping,
+            scriptEventDefs,
+          ),
+        }));
+        const remappedTriggers = clipboard.data.triggers.map((trigger) => ({
+          ...trigger,
+          prefabScriptOverrides: remapResourceReferencesInEventOverrides(
+            trigger.prefabScriptOverrides,
+            scriptEventsLookup,
+            variableMapping,
+            constantMapping,
+            scriptEventDefs,
+          ),
+        }));
         const actions = generateSceneInsertActions(
           scene,
-          clipboard.data.actors,
-          clipboard.data.triggers,
+          remappedActors,
+          remappedTriggers,
           scriptEventsLookup,
           scriptEventDefs,
           clipboard.data.variables,
