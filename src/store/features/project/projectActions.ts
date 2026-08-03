@@ -1,18 +1,30 @@
-import { createAsyncThunk, createAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createAction,
+  type EntitySelectors,
+} from "@reduxjs/toolkit";
 import {
   EntitiesState,
   ProjectEntitiesData,
 } from "shared/lib/entities/entitiesTypes";
-import type { RootState } from "store/storeTypes";
+import type { AppThunk, RootState } from "store/storeTypes";
 import { SettingsState } from "store/features/settings/settingsState";
 import { MetadataState } from "store/features/metadata/metadataState";
 import { denormalizeEntities } from "shared/lib/entities/entitiesHelpers";
 import API from "renderer/lib/api";
-import { Asset, AssetType } from "shared/lib/helpers/assets";
+import type { Asset, AssetType } from "shared/lib/helpers/assets";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
 import { ProjectResources } from "shared/lib/resources/types";
 import { compressProjectResources } from "shared/lib/resources/compression";
 import { buildCompressedProjectResourcesPatch } from "shared/lib/resources/patch";
+import {
+  backgroundSelectors,
+  musicSelectors,
+  soundSelectors,
+  spriteSheetSelectors,
+  tilesetSelectors,
+} from "store/features/entities/entitiesSelectors";
+import { assertUnreachable } from "shared/lib/helpers/assert";
 
 let saving = false;
 
@@ -53,7 +65,6 @@ export const denormalizeProject = (project: {
   };
 };
 
-const openProject = createAction<string>("project/openProject");
 const closeProject = createAction<void>("project/closeProject");
 
 const setSaveStep = createAction<SaveStep>("project/setSaveStep");
@@ -71,6 +82,20 @@ const loadProject = createAsyncThunk<
     path,
   };
 });
+
+const openProject =
+  (path: string): AppThunk<Promise<void>> =>
+  async (dispatch) => {
+    const shouldOpenProject = await API.dialog.migrateWarning(path);
+
+    if (!shouldOpenProject) {
+      dispatch(closeProject());
+      return;
+    }
+
+    await API.app.showProjectWindow();
+    await dispatch(loadProject(path));
+  };
 
 /**************************************************************************
  * UI
@@ -124,43 +149,112 @@ const renameAsset = createAsyncThunk<
   };
 });
 
-const renameBackgroundAsset = createAction<{
-  backgroundId: string;
-  newFilename: string;
-}>("project/renameBackgroundAsset");
-const removeBackgroundAsset = createAction<{ backgroundId: string }>(
-  "project/removeBackgroundAsset",
-);
-
-const renameTilesetAsset = createAction<{
-  tilesetId: string;
-  newFilename: string;
-}>("project/renameTilesetAsset");
-const removeTilesetAsset = createAction<{ tilesetId: string }>(
-  "project/removeTilesetAsset",
-);
-
-const renameSpriteAsset = createAction<{
-  spriteSheetId: string;
-  newFilename: string;
-}>("project/renameSpriteAsset");
-const removeSpriteAsset = createAction<{ spriteSheetId: string }>(
-  "project/removeSpriteAsset",
-);
-
 const renameMusicAsset = createAction<{ musicId: string; newFilename: string }>(
   "project/renameMusicAsset",
 );
-const removeMusicAsset = createAction<{ musicId: string }>(
-  "project/removeMusicAsset",
-);
 
-const renameSoundAsset = createAction<{ soundId: string; newFilename: string }>(
-  "project/renameSoundAsset",
-);
-const removeSoundAsset = createAction<{ soundId: string }>(
-  "project/removeSoundAsset",
-);
+const renameSelectedAsset =
+  <T extends Asset>(
+    assetType: AssetType,
+    assetSelectors: EntitySelectors<T, RootState, string>,
+    assetId: string,
+    newName: string,
+    getExtension: (asset: T) => string,
+  ): AppThunk<Promise<void>> =>
+  async (dispatch, getState) => {
+    const asset = assetSelectors.selectById(getState(), assetId);
+    if (!asset) {
+      return;
+    }
+
+    await dispatch(
+      renameAsset({
+        assetType,
+        asset,
+        newFilename: `${newName}.${getExtension(asset)}`,
+      }),
+    );
+  };
+
+const removeSelectedAsset =
+  <T extends Asset>(
+    assetType: AssetType,
+    assetSelectors: EntitySelectors<T, RootState, string>,
+    assetId: string,
+  ): AppThunk<Promise<void>> =>
+  async (dispatch, getState) => {
+    const asset = assetSelectors.selectById(getState(), assetId);
+    if (asset) {
+      await dispatch(removeAsset({ assetType, asset }));
+    }
+  };
+
+const renameBackgroundAsset = (payload: {
+  backgroundId: string;
+  newFilename: string;
+}) =>
+  renameSelectedAsset(
+    "backgrounds",
+    backgroundSelectors,
+    payload.backgroundId,
+    payload.newFilename,
+    () => "png",
+  );
+
+const removeBackgroundAsset = (payload: { backgroundId: string }) =>
+  removeSelectedAsset("backgrounds", backgroundSelectors, payload.backgroundId);
+
+const renameTilesetAsset = (payload: {
+  tilesetId: string;
+  newFilename: string;
+}) =>
+  renameSelectedAsset(
+    "tilesets",
+    tilesetSelectors,
+    payload.tilesetId,
+    payload.newFilename,
+    () => "png",
+  );
+
+const removeTilesetAsset = (payload: { tilesetId: string }) =>
+  removeSelectedAsset("tilesets", tilesetSelectors, payload.tilesetId);
+
+const renameSpriteAsset = (payload: {
+  spriteSheetId: string;
+  newFilename: string;
+}) =>
+  renameSelectedAsset(
+    "sprites",
+    spriteSheetSelectors,
+    payload.spriteSheetId,
+    payload.newFilename,
+    () => "png",
+  );
+
+const removeSpriteAsset = (payload: { spriteSheetId: string }) =>
+  removeSelectedAsset("sprites", spriteSheetSelectors, payload.spriteSheetId);
+
+const removeMusicAsset = (payload: { musicId: string }) =>
+  removeSelectedAsset("music", musicSelectors, payload.musicId);
+
+const renameSoundAsset = (payload: { soundId: string; newFilename: string }) =>
+  renameSelectedAsset(
+    "sounds",
+    soundSelectors,
+    payload.soundId,
+    payload.newFilename,
+    (asset) =>
+      asset.type === "fxhammer"
+        ? "sav"
+        : asset.type === "vgm"
+          ? "vgm"
+          : asset.type === "wav"
+            ? "wav"
+            : assertUnreachable(asset.type),
+  );
+
+const removeSoundAsset = (payload: { soundId: string }) =>
+  removeSelectedAsset("sounds", soundSelectors, payload.soundId);
 
 /**************************************************************************
  * Save

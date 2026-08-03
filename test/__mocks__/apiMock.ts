@@ -10,8 +10,14 @@ const APIMock = {
     getTheme: () => Promise.resolve("light"),
     onChange: () => {},
   },
+  app: {
+    showProjectWindow: () => Promise.resolve(),
+  },
   project: {
     ejectWebTemplate: () => Promise.resolve(undefined),
+    loadProject: () => Promise.resolve({}),
+    removeAsset: () => Promise.resolve(true),
+    renameAsset: () => Promise.resolve(true),
     getBackgroundInfo: () =>
       Promise.resolve({
         numTiles: 1,
@@ -24,10 +30,15 @@ const APIMock = {
         warnings: [],
       }),
   },
+  sprite: {
+    compileSprite: () => Promise.resolve({ tiles: [] }),
+  },
 
   music: {
     openMusic: () => {},
     closeMusic: () => {},
+    playUGE: () => {},
+    playMOD: () => {},
     sendToMusicWindow: () => {},
     sendToProjectWindow: () => {},
     updateMidiInputMenuState: () => {},
@@ -54,6 +65,9 @@ const APIMock = {
   },
   dialog: {
     confirmUnsavedChangesTrackerDialog: () => Promise.resolve(2),
+    migrateWarning: () => Promise.resolve(true),
+    confirmDeleteConstant: jest.fn(() => Promise.resolve(false)),
+    confirmDeleteCustomEvent: jest.fn(() => Promise.resolve(0)),
   },
   clipboard: {
     readText: () => {},

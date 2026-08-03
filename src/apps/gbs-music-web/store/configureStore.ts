@@ -1,12 +1,15 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, createListenerMiddleware } from "@reduxjs/toolkit";
 import rootReducer from "./rootReducer";
 import backupMusicMiddleware from "gbs-music-web/store/backupMusicMiddleware";
-import projectMiddleware from "gbs-music-web/store/projectMiddleware";
+import { registerProjectListeners } from "gbs-music-web/store/projectListeners";
 
 export type MusicEditorRootState = ReturnType<typeof rootReducer>;
 
-export const createMusicEditorStore = () =>
-  configureStore({
+export const createMusicEditorStore = () => {
+  const listenerMiddleware = createListenerMiddleware<MusicEditorRootState>();
+  registerProjectListeners(listenerMiddleware.startListening);
+
+  return configureStore({
     reducer: rootReducer,
     devTools: {
       latency: 200,
@@ -16,7 +19,10 @@ export const createMusicEditorStore = () =>
       getDefaultMiddleware({
         serializableCheck: false,
         immutableCheck: false,
-      }).concat([backupMusicMiddleware, projectMiddleware]),
+      })
+        .prepend(listenerMiddleware.middleware)
+        .concat([backupMusicMiddleware]),
   });
+};
 
 export type MusicEditorStore = ReturnType<typeof createMusicEditorStore>;

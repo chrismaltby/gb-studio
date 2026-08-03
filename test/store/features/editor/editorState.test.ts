@@ -71,6 +71,12 @@ test("Should be able to set selected palette", () => {
   expect(newState.selectedPalette).toBe(2);
 });
 
+test("Should remember the palette editor tab", () => {
+  const action = actions.setPaletteEditorTab("hsb");
+  const newState = reducer(initialState, action);
+  expect(newState.paletteEditorTab).toBe("hsb");
+});
+
 test("Should leave selection mode when selecting a palette", () => {
   const state: EditorState = {
     ...initialState,

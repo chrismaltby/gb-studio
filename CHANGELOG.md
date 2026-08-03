@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add autotile groups for tilesets, supporting 2x2 Wang tiles and 9-slice autotiles
 - Add ability to set tile palettes from right click context menu in sprite editor
 - Add ability to set the emulator to use when running your game. Debugger will always use the inbuilt emulator [@8bitKittyKat](https://github.com/8bitKittyKat)
+- Add ability to edit palettes from palette select menus in the World view
+- Add ability to create/edit palettes from palette selects in the World view by entering a new name in the search field
 
 ### Changed
 
@@ -35,6 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where copy/paste of scenes would not transfer actor references in properties used in values
 - Fix issue where creating a project from a template plugin included its thumbnail.png and plugin.json in the new project's root folder
 - Fix issue where projects created from a template plugin may not have their name and author values set correctly
+- Fix issue where select dropdowns (select Actor/Scene/Palette etc) would not scroll to the selected value when opened
+- Fix issue where changing section to "Music" while already in music section would cause music playback to stop working
+- Fix issue where unused music patterns in `.uge` files could cause compiled size to be larger than in versions before 4.3.0
 
 ## [4.3.2] - 2026-06-22
 

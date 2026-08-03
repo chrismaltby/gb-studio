@@ -165,9 +165,7 @@ export const CustomEventNavigatorPane = ({
         <MenuItem
           key="delete"
           onClick={() =>
-            dispatch(
-              entitiesActions.removeCustomEvent({ customEventId: item.id }),
-            )
+            dispatch(entitiesActions.confirmRemoveCustomEvent(item.id))
           }
           icon={<BlankIcon />}
         >

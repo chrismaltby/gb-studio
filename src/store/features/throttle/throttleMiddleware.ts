@@ -35,7 +35,7 @@ const throttled: Record<
 > = {};
 
 const throttleMiddleware: Middleware<Dispatch, RootState> =
-  (_store) => (next) => async (action) => {
+  (_store) => (next) => (action) => {
     if (!isThrottleableAction(action)) {
       return next(action);
     }

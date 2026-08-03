@@ -11,6 +11,7 @@ import {
   Select as DefaultSelect,
   SelectCommonProps,
   OptGroup,
+  findSelectOption,
 } from "ui/form/Select";
 import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
@@ -266,11 +267,12 @@ const AnimationStateSelect = ({
   }, [allowDefault, groupBySprites, spriteStates, spriteStatesLookup, sprites]);
 
   const currentValue = useMemo(
-    () => ({
-      value: value || "",
-      label: value || (allowDefault ? l10n("FIELD_DEFAULT") : ""),
-    }),
-    [allowDefault, value],
+    () =>
+      findSelectOption<Option>(options, value || "") || {
+        value: value || "",
+        label: value || (allowDefault ? l10n("FIELD_DEFAULT") : ""),
+      },
+    [allowDefault, options, value],
   );
 
   return (

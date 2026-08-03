@@ -64,15 +64,18 @@ function pause() {
 const soundfxMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action) => {
     if (actions.playSoundFxBeep.match(action)) {
+      store.dispatch(musicActions.pauseMusic());
       pause();
       play(`effect_beep_${action.payload.pitch}.mp3`);
     } else if (actions.playSoundFxTone.match(action)) {
+      store.dispatch(musicActions.pauseMusic());
       pause();
       oscillator = playTone(
         action.payload.frequency,
         action.payload.duration * 1000,
       );
     } else if (actions.playSoundFxCrash.match(action)) {
+      store.dispatch(musicActions.pauseMusic());
       play("effect_crash.mp3");
     } else if (actions.playSoundFx.match(action)) {
       const state = store.getState();

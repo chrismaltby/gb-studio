@@ -9,7 +9,6 @@ import { isResizeTilemapLayersAction } from "store/features/entities/entitiesAct
 import { normalizeTilemapLayersSize } from "shared/lib/tiles/sceneTilemapData";
 
 export type ColorModeSetting = "mono" | "mixed" | "color";
-export type MusicDriverSetting = "huge" | "gbt";
 export type CartType = "mbc5" | "mbc3";
 export type BreakpointData = {
   scriptEventId: string;

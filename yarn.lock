@@ -10488,7 +10488,6 @@ __metadata:
     react-select: "npm:^5.10.2"
     react-simple-code-editor: "npm:^0.14.1"
     react-window: "npm:^2.2.7"
-    react-windowed-select: "npm:^5.2.0"
     redux: "npm:^5.0.1"
     redux-thunk: "npm:^3.1.0"
     redux-undo: "npm:1.1.0"
@@ -10497,7 +10496,7 @@ __metadata:
     semver: "npm:7.8.5"
     spark-md5: "npm:^3.0.2"
     storybook: "npm:^10.5.0"
-    styled-components: "npm:^6.4.3"
+    styled-components: "npm:^6.4.4"
     ts-flood-fill: "npm:^1.0.2"
     ts-jest: "npm:^29.4.11"
     ts-loader: "npm:^9.6.2"
@@ -13116,13 +13115,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"memoize-one@npm:>=3.1.1 <6":
-  version: 5.2.1
-  resolution: "memoize-one@npm:5.2.1"
-  checksum: 10c0/fd22dbe9a978a2b4f30d6a491fc02fb90792432ad0dab840dc96c1734d2bd7c9cdeb6a26130ec60507eb43230559523615873168bcbe8fafab221c30b11d54c1
-  languageName: node
-  linkType: hard
-
 "memoize-one@npm:^6.0.0":
   version: 6.0.0
   resolution: "memoize-one@npm:6.0.0"
@@ -15174,7 +15166,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-select@npm:^5.10.2, react-select@npm:^5.2.2":
+"react-select@npm:^5.10.2":
   version: 5.10.2
   resolution: "react-select@npm:5.10.2"
   dependencies:
@@ -15219,19 +15211,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-window@npm:^1.8.6":
-  version: 1.8.11
-  resolution: "react-window@npm:1.8.11"
-  dependencies:
-    "@babel/runtime": "npm:^7.0.0"
-    memoize-one: "npm:>=3.1.1 <6"
-  peerDependencies:
-    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/5ae8da1bc5c47d8f0a428b28a600256e2db511975573e52cb65a9b27ed1a0e5b9f7b3bee5a54fb0da93956d782c24010be434be451072f46ba5a89159d2b3944
-  languageName: node
-  linkType: hard
-
 "react-window@npm:^2.2.7":
   version: 2.2.7
   resolution: "react-window@npm:2.2.7"
@@ -15239,19 +15218,6 @@ __metadata:
     react: ^18.0.0 || ^19.0.0
     react-dom: ^18.0.0 || ^19.0.0
   checksum: 10c0/4eba3bce2083fa53ac674513078fb23d4dc3ad7dfd12ea5733863b583ea1472294df791947a2b58f27bab45138cedf7a63fdc19b0420823bf19749aa10455b81
-  languageName: node
-  linkType: hard
-
-"react-windowed-select@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "react-windowed-select@npm:5.2.0"
-  dependencies:
-    react-select: "npm:^5.2.2"
-    react-window: "npm:^1.8.6"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/aa2d28f259b62f563119e7931736f177867c5188ea7691890857f43af02f7c17a51b7cb561d98ed85876153251d23ab69667ef0e9d03b48228c56b6188dc52f1
   languageName: node
   linkType: hard
 
@@ -16840,9 +16806,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"styled-components@npm:^6.4.3":
-  version: 6.4.3
-  resolution: "styled-components@npm:6.4.3"
+"styled-components@npm:^6.4.4":
+  version: 6.4.4
+  resolution: "styled-components@npm:6.4.4"
   dependencies:
     "@emotion/is-prop-valid": "npm:1.4.0"
     css-to-react-native: "npm:3.2.0"
@@ -16860,7 +16826,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 10c0/158514feb0a502dfa7f95610a8270faa56be2572c12902b7bf5c2855bf9fdd5d76a5909d67dcbecf627ee40511f4161f8016b23f9fef22c14f7911337359647c
+  checksum: 10c0/ed574b053a85adab543958bde7eb80ea9bf6075dc0c54f8763b2d7251c4ce940a5151513fbc7af8c5be5100c387a55d0b175c0270a829ff37ec6f88b72ac4bca
   languageName: node
   linkType: hard
 

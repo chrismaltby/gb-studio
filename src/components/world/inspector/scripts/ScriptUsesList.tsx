@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -14,14 +14,13 @@ import { EntityListItem } from "ui/lists/EntityListItem";
 import useDimensions from "react-cool-dimensions";
 import styled from "styled-components";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
-import type { ScriptUse, ScriptUseResult } from "./ScriptUses.worker";
+import type { ScriptUse } from "renderer/lib/workers/ScriptUses.worker";
 import l10n, { getL10NData } from "shared/lib/lang/l10n";
-import { selectScriptEventDefs } from "store/features/scriptEventDefs/scriptEventDefsState";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { CodeIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
-
-const worker = new Worker(new URL("./ScriptUses.worker.ts", import.meta.url));
+import { findScriptUses } from "renderer/lib/workers/scriptUses";
+import { isWorkerRequestAbortError } from "renderer/lib/workers/createWorkerClient";
 
 interface ScriptUsesListProps {
   id: string;
@@ -65,51 +64,44 @@ export const ScriptUsesList: FC<ScriptUsesListProps> = ({ id, onClose }) => {
   const triggerPrefabsLookup = useAppSelector(
     triggerPrefabSelectors.selectEntities,
   );
-  const scriptEventDefs = useAppSelector((state) =>
-    selectScriptEventDefs(state),
-  );
-
   const dispatch = useAppDispatch();
 
-  const onWorkerComplete = useCallback(
-    (e: MessageEvent<ScriptUseResult>) => {
-      if (e.data.id === id) {
+  useEffect(() => {
+    const abortController = new AbortController();
+    const loadUses = async () => {
+      setFetching(true);
+      try {
+        const uses = await findScriptUses(
+          {
+            scriptId: id,
+            scenes,
+            actorsLookup,
+            triggersLookup,
+            actorPrefabsLookup,
+            triggerPrefabsLookup,
+            scriptEventsLookup,
+            customEventsLookup,
+            l10NData: getL10NData(),
+          },
+          { signal: abortController.signal },
+        );
+        setScriptUses(uses);
         setFetching(false);
-        setScriptUses(e.data.uses);
+      } catch (error) {
+        if (!isWorkerRequestAbortError(error)) {
+          console.error(error);
+          setFetching(false);
+        }
       }
-    },
-    [id],
-  );
-
-  useEffect(() => {
-    worker.addEventListener("message", onWorkerComplete);
-    return () => {
-      worker.removeEventListener("message", onWorkerComplete);
     };
-  }, [onWorkerComplete]);
-
-  useEffect(() => {
-    setFetching(true);
-    worker.postMessage({
-      id,
-      scriptId: id,
-      scenes,
-      actorsLookup,
-      triggersLookup,
-      actorPrefabsLookup,
-      triggerPrefabsLookup,
-      scriptEventsLookup,
-      scriptEventDefs,
-      customEventsLookup,
-      l10NData: getL10NData(),
-    });
+    void loadUses();
+    return () => abortController.abort();
   }, [
     scenes,
     actorsLookup,
     triggersLookup,
     id,
     scriptEventsLookup,
-    scriptEventDefs,
     customEventsLookup,
     actorPrefabsLookup,
     triggerPrefabsLookup,

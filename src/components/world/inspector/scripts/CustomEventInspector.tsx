@@ -183,9 +183,7 @@ export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
     if (!customEvent) {
       return;
     }
-    dispatch(
-      entitiesActions.removeCustomEvent({ customEventId: customEvent.id }),
-    );
+    dispatch(entitiesActions.confirmRemoveCustomEvent(customEvent.id));
   }, [dispatch, customEvent]);
 
   const onToggleLockScriptEditor = useCallback(() => {

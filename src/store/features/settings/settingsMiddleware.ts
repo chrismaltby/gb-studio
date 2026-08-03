@@ -6,7 +6,7 @@ import { defaultProjectSettings } from "consts";
 
 const settingsMiddleware: Middleware<Dispatch, RootState> =
   (store) => (next) => (action) => {
-    next(action);
+    const result = next(action);
 
     if (settingsActions.editSettings.match(action)) {
       // When color mode changes reset previewAsMono to false
@@ -31,6 +31,8 @@ const settingsMiddleware: Middleware<Dispatch, RootState> =
         }
       }
     }
+
+    return result;
   };
 
 export default settingsMiddleware;

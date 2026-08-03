@@ -811,7 +811,18 @@ export const exportToC = (song: Song, trackName: string): string => {
   const patterns: PatternCell[][] = [];
   const patternMap: { [key: string]: number } = {};
 
+  const usedPatternIds = new Set<number>();
+  for (const sequenceItem of song.sequence) {
+    for (const patternId of sequenceItem.channels) {
+      usedPatternIds.add(patternId);
+    }
+  }
+
   for (let n = 0; n < song.patterns.length; n++) {
+    if (!usedPatternIds.has(n)) {
+      continue;
+    }
+
     const sourcePattern = song.patterns[n];
     const targetPattern = [];
     for (let m = 0; m < sourcePattern.length; m++) {

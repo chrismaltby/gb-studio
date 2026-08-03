@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { useAppSelector } from "store/hooks";
 import uniq from "lodash/uniq";
 import { spriteSheetSelectors } from "store/features/entities/entitiesSelectors";
@@ -11,6 +11,7 @@ import {
   SingleValueWithPreview,
   SelectCommonProps,
   FormatFolderLabel,
+  findSelectOption,
 } from "ui/form/Select";
 import SpriteSheetCanvas from "components/rendering/SpriteSheetCanvas";
 import { SingleValue } from "react-select";
@@ -68,14 +69,12 @@ const SpriteSheetSelectComponent = ({
   const defaultSpriteMode = useAppSelector(
     (state) => state.project.present.settings.spriteMode,
   );
-  const [options, setOptions] = useState<OptGroup[]>([]);
-
-  useEffect(() => {
+  const options = useMemo<SpriteSheetOptGroup[]>(() => {
     const filteredSpriteSheets = spriteSheets.filter(filter || (() => true));
     const plugins = uniq(
       filteredSpriteSheets.map((s) => s.plugin || ""),
     ).sort();
-    const options = plugins.reduce(
+    return plugins.reduce<SpriteSheetOptGroup[]>(
       (memo, plugin) => {
         buildOptions(
           memo,
@@ -87,25 +86,30 @@ const SpriteSheetSelectComponent = ({
         return memo;
       },
       optional
-        ? ([
+        ? [
             {
               label: "",
               options: [{ value: "", label: optionalLabel || "None" }],
             },
-          ] as OptGroup[])
-        : ([] as OptGroup[]),
+          ]
+        : [],
     );
-
-    setOptions(options);
   }, [spriteSheets, optional, filter, optionalLabel]);
 
   const currentValue = useMemo(() => {
+    const option = findSelectOption<SpriteSheetOption>(
+      options,
+      value ?? (optional ? "" : undefined),
+    );
+    if (option) {
+      return option;
+    }
     const currentSpriteSheet = spriteSheets.find((item) => item.id === value);
     if (currentSpriteSheet) {
       return { value: currentSpriteSheet.id, label: currentSpriteSheet.name };
     }
     return optional ? { value: "", label: optionalLabel || "None" } : undefined;
-  }, [spriteSheets, value, optional, optionalLabel]);
+  }, [options, spriteSheets, value, optional, optionalLabel]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {

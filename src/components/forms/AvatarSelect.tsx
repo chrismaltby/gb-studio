@@ -7,6 +7,7 @@ import {
   OptionLabelWithPreview,
   SingleValueWithPreview,
   SelectCommonProps,
+  findSelectOption,
 } from "ui/form/Select";
 import { AvatarCanvas } from "components/rendering/AvatarCanvas";
 import { SingleValue } from "react-select";
@@ -51,27 +52,11 @@ const AvatarSelectComponent = ({
     [avatars, optional, optionalLabel],
   );
   const currentValue = useMemo(() => {
-    const currentAvatar = avatars.find((item) => item.id === value);
-    if (currentAvatar) {
-      return {
-        value: currentAvatar.id,
-        label: `${currentAvatar.name}`,
-      };
-    }
-    if (optional) {
-      return {
-        value: "",
-        label: optionalLabel || "None",
-      };
-    }
-    const firstAvatar = avatars[0];
-    return firstAvatar
-      ? {
-          value: firstAvatar.id,
-          label: `${firstAvatar.name}`,
-        }
-      : undefined;
-  }, [avatars, value, optional, optionalLabel]);
+    return (
+      findSelectOption(options, value) ||
+      findSelectOption(options, optional ? "" : options[0]?.value)
+    );
+  }, [options, value, optional]);
 
   const onSelectChange = (newValue: SingleValue<Option>) => {
     if (newValue) {
