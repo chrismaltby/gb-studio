@@ -1614,6 +1614,14 @@ test("Should replace indexed references to number variables with variable symbol
       index: { type: "number", value: 0 },
     }),
   ).toEqual("VAR_NUMBER");
+
+  const dynamicallyIndexedVariable = {
+    type: "variable" as const,
+    value: "11111111-1111-1111-1111-111111111111",
+    index: { type: "variable" as const, value: "L0" },
+  };
+  expect(sb.getVariableAlias(dynamicallyIndexedVariable)).toBe("VAR_NUMBER");
+  expect(sb._isIndirectVariable(dynamicallyIndexedVariable)).toBe(false);
 });
 
 test.each([-1, 4])(
@@ -1819,7 +1827,7 @@ test("Should write an indexed array through a by-reference script argument", asy
   );
 });
 
-test("Should reject indexing a script argument passed by value", async () => {
+test("Should ignore indexes on a script argument passed by value", async () => {
   const { sb } = await createTestScriptBuilder(
     {},
     {
@@ -1839,16 +1847,16 @@ test("Should reject indexing a script argument passed by value", async () => {
     },
   );
 
-  expect(() =>
-    sb.getVariableAlias({
-      type: "variable",
-      value: "V0",
-      index: { type: "number", value: 1 },
-    }),
-  ).toThrow("because it is passed by value");
+  const variable = {
+    type: "variable" as const,
+    value: "V0",
+    index: { type: "variable" as const, value: "L0" },
+  };
+  expect(sb.getVariableAlias(variable)).toBe(".SCRIPT_ARG_0_VARIABLE");
+  expect(sb._isIndirectVariable(variable)).toBe(false);
 });
 
-test("Should reject indexing a scalar script argument passed by reference", async () => {
+test("Should ignore indexes on a scalar script argument passed by reference", async () => {
   const { sb } = await createTestScriptBuilder(
     {},
     {
@@ -1869,13 +1877,39 @@ test("Should reject indexing a scalar script argument passed by reference", asyn
     },
   );
 
-  expect(() =>
-    sb.getVariableAlias({
-      type: "variable",
-      value: "V0",
-      index: { type: "number", value: 1 },
-    }),
-  ).toThrow("because it is not an array reference");
+  const variable = {
+    type: "variable" as const,
+    value: "V0",
+    index: { type: "variable" as const, value: "L0" },
+  };
+  expect(sb.getVariableAlias(variable)).toBe(".SCRIPT_ARG_INDIRECT_0_VARIABLE");
+  expect(sb._isIndirectVariable(variable)).toBe(true);
+});
+
+test("Should treat a missing array-reference index as zero", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      argLookup: {
+        variable: new Map([
+          [
+            "V0",
+            {
+              type: "argument",
+              indirect: true,
+              array: true,
+              symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+            },
+          ],
+        ]),
+        actor: new Map(),
+      },
+    },
+  );
+
+  const variable = { type: "variable" as const, value: "V0" };
+  expect(sb.getVariableAlias(variable)).toBe(".SCRIPT_ARG_INDIRECT_0_VARIABLE");
+  expect(sb._isIndirectVariable(variable)).toBe(true);
 });
 
 test("Should not reuse the array pointer local while setting an indexed variable", async () => {
@@ -6239,6 +6273,55 @@ _script1::
     expect(script).toContain(
       "VM_SET_INDIRECT         ^/(.SCRIPT_ARG_INDIRECT_1_VARIABLE - 1)/, .ARG0",
     );
+  });
+
+  test("Should compile a missing array-reference index as index zero", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        customEvents: [
+          {
+            id: "script1",
+            name: "Test Script",
+            description: "",
+            variables: {
+              V0: {
+                id: "V0",
+                name: "Array",
+                passByReference: "array",
+              },
+              V1: {
+                id: "V1",
+                name: "Output",
+                passByReference: true,
+              },
+            },
+            actors: {},
+            symbol: "script1",
+            script: [
+              {
+                command: "EVENT_SET_VALUE",
+                args: {
+                  variable: "V1",
+                  value: {
+                    type: "variable",
+                    value: "V0",
+                  },
+                },
+                id: "event1",
+              },
+            ],
+          },
+        ],
+      },
+    );
+
+    sb.compileCustomEventScript("script1");
+    const script = sb.options.additionalScripts["script1"]?.compiledScript;
+    expect(script).toContain(
+      "VM_PUSH_VALUE_IND       .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+    );
+    expect(script).not.toContain("ARRAY_PTR");
   });
 
   test("Should compile a custom event script with actor arg", async () => {

@@ -27,30 +27,6 @@ import {
   localCustomEventSelectTotal,
   localScriptEventSelectAll,
 } from "store/features/entities/helpers";
-import { walkNormalizedScript } from "shared/lib/scripts/walk";
-
-const removeVariableIndexes = (value: unknown, variableId: string): unknown => {
-  if (Array.isArray(value)) {
-    return value.map((item) => removeVariableIndexes(item, variableId));
-  }
-  if (!value || typeof value !== "object") {
-    return value;
-  }
-
-  const objectValue = value as Record<string, unknown>;
-  return Object.fromEntries(
-    Object.entries(objectValue)
-      .filter(
-        ([key]) =>
-          !(
-            key === "index" &&
-            objectValue.type === "variable" &&
-            objectValue.value === variableId
-          ),
-      )
-      .map(([key, child]) => [key, removeVariableIndexes(child, variableId)]),
-  );
-};
 
 const addCustomEvent: CaseReducer<
   EntitiesState,
@@ -101,24 +77,7 @@ const editCustomEventVariablePassByReference: CaseReducer<
     return;
   }
 
-  const wasArrayReference = variable.passByReference === "array";
   variable.passByReference = action.payload.passByReference;
-
-  if (wasArrayReference && action.payload.passByReference !== "array") {
-    walkNormalizedScript(
-      customEvent.script,
-      state.scriptEvents.entities,
-      undefined,
-      (scriptEvent) => {
-        if (scriptEvent.args) {
-          scriptEvent.args = removeVariableIndexes(
-            scriptEvent.args,
-            action.payload.variableId,
-          ) as Record<string, unknown>;
-        }
-      },
-    );
-  }
 };
 
 const setCustomEventSymbol: CaseReducer<

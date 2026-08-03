@@ -2407,10 +2407,18 @@ extern void __mute_mask_${symbol};
       : this._resolveVariableRef(x);
     if (this._isVariableReference(resolved)) {
       const baseVariable = this._resolveVariableRef(resolved.value);
+      if (this._isFunctionArg(baseVariable)) {
+        return baseVariable.indirect;
+      }
+      const variableId = getVariableId(
+        String(baseVariable),
+        this.options.entity,
+      );
+      const variableDefinition = this.options.variablesLookup[variableId];
       return (
-        (this._isFunctionArg(baseVariable) && baseVariable.indirect) ||
-        (resolved.index !== undefined &&
-          this._getVariableIndexValue(resolved.index) === undefined)
+        variableDefinition?.type === "array" &&
+        resolved.index !== undefined &&
+        this._getVariableIndexValue(resolved.index) === undefined
       );
     }
     return this._isFunctionArg(resolved) && resolved.indirect;
@@ -2687,15 +2695,8 @@ extern void __mute_mask_${symbol};
       const staticIndex = this._getVariableIndexValue(variable.index);
       const resolvedVariable = this._resolveVariableRef(variable.value);
       if (this._isFunctionArg(resolvedVariable)) {
-        if (!resolvedVariable.indirect) {
-          throw new Error(
-            `Cannot index variable argument "${resolvedVariable.symbol}" because it is passed by value`,
-          );
-        }
         if (!resolvedVariable.array) {
-          throw new Error(
-            `Cannot index variable argument "${resolvedVariable.symbol}" because it is not an array reference`,
-          );
+          return resolvedVariable.symbol;
         }
         if (staticIndex !== undefined && staticIndex < 0) {
           throw new Error(`Array index ${staticIndex} cannot be negative`);

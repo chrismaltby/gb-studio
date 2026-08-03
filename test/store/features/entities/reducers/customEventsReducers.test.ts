@@ -23,7 +23,7 @@ describe("Custom Events", () => {
   });
 
   describe("editCustomEventVariablePassByReference", () => {
-    test("removes indexes when changing an array reference to a scalar reference", () => {
+    test("retains indexes when changing an array reference to a scalar reference", () => {
       const state: EntitiesState = {
         ...initialState,
         customEvents: {
@@ -97,10 +97,12 @@ describe("Custom Events", () => {
         variable: {
           type: "variable",
           value: "V1",
+          index: { type: "number", value: 0 },
         },
         value: {
           type: "variable",
           value: "V1",
+          index: { type: "number", value: 2 },
         },
         arrayIndex: {
           type: "variable",
