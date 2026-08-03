@@ -1658,8 +1658,8 @@ ipcMain.handle(
             gbvmScripts,
           });
         } else if (emulatorPath !== "") {
-          if (!playWindow) {
-            sendToProjectWindow("debugger:disconnected");
+          if (playWindow) {
+            playWindow.close();
           }
         }
 
