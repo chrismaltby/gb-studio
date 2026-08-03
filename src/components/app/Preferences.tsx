@@ -18,6 +18,7 @@ import styled from "styled-components";
 import { TrackerKeysPreview } from "components/music/tracker/keyboard/TrackerKeysPreview";
 import { RelativePortal } from "ui/layout/RelativePortal";
 import { MenuOverlay } from "ui/menu/Menu";
+import { SYSTEM_DEFAULT_APP } from "consts";
 
 interface Options {
   value: number;
@@ -212,7 +213,7 @@ const Preferences = () => {
               presetOptions={[
                 { value: "", label: l10n("FIELD_DEFAULT_WEB_TEMPLATE_BINJGB") },
                 {
-                  value: "system-default",
+                  value: SYSTEM_DEFAULT_APP,
                   label: l10n("FIELD_SYSTEM_DEFAULT_FOR_EXTENSION", {
                     extension: ".gb/.gbc",
                   }),

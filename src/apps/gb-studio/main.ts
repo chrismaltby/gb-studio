@@ -63,6 +63,7 @@ import {
   EMULATOR_MUTED_SETTING_KEY,
   LOCALE_SETTING_KEY,
   musicTemplatesRoot,
+  SYSTEM_DEFAULT_APP,
   THEME_SETTING_KEY,
 } from "consts";
 import { getBackgroundInfo, getSceneTilemapInfo } from "lib/helpers/validation";
@@ -1626,7 +1627,9 @@ ipcMain.handle(
           )}...`,
         );
 
-        const emulatorPath = options.debugEnabled  ? "" : String((await settingsGet("emulatorPath")) || "");
+        const emulatorPath = options.debugEnabled
+          ? ""
+          : String((await settingsGet("emulatorPath")) || "");
         const romPath = Path.join(outputRoot, "build", "rom", romFilename);
 
         if (debuggerEnabled && emulatorPath === "") {
@@ -1666,7 +1669,7 @@ ipcMain.handle(
             sgbEnabled && colorMode === "mono",
             debuggerEnabled,
           );
-        } else if (emulatorPath === "system-default") {
+        } else if (emulatorPath === SYSTEM_DEFAULT_APP) {
           open(romPath);
         } else {
           const app = emulatorPath;
