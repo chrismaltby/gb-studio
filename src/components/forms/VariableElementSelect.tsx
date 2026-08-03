@@ -155,14 +155,8 @@ const VariableElementSelectComponent = ({
     if (!name) {
       return;
     }
-    const action = entitiesActions.addVariable();
+    const action = entitiesActions.addVariable({ name });
     dispatch(action);
-    dispatch(
-      entitiesActions.renameVariable({
-        variableId: action.payload.variableId,
-        name,
-      }),
-    );
     onChange({ type: "variable", value: action.payload.variableId });
   };
 

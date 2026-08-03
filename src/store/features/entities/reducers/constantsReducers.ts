@@ -17,19 +17,31 @@ import {
 } from "store/features/entities/helpers";
 import { v4 as uuid } from "uuid";
 
+type AddConstantPayload = {
+  constantId?: string;
+  name?: string;
+  value?: number;
+};
+
+type PreparedAddConstantPayload = AddConstantPayload & {
+  constantId: string;
+};
+
 const addConstant: CaseReducer<
   EntitiesState,
-  PayloadAction<{
-    constantId: string;
-  }>
+  PayloadAction<PreparedAddConstantPayload>
 > = (state, action) => {
   const numConstants = localConstantSelectTotal(state);
+  const name = action.payload.name ?? "";
 
   const newConstant: Constant = {
     id: action.payload.constantId,
-    name: "",
-    symbol: genEntitySymbol(state, `const_constant_${numConstants + 1}`),
-    value: 0,
+    name,
+    symbol: genEntitySymbol(
+      state,
+      name ? `const_${name}` : `const_constant_${numConstants + 1}`,
+    ),
+    value: action.payload.value ?? 0,
   };
 
   constantsAdapter.addOne(state.constants, newConstant);
@@ -121,10 +133,11 @@ const reparentConstant: CaseReducer<
 const constantsReducers = {
   addConstant: {
     reducer: addConstant,
-    prepare: (payload?: { constantId?: string }) => {
+    prepare: (payload: AddConstantPayload = {}) => {
       return {
         payload: {
-          constantId: payload?.constantId ?? uuid(),
+          ...payload,
+          constantId: payload.constantId ?? uuid(),
         },
       };
     },

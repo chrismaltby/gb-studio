@@ -14,20 +14,54 @@ import { v4 as uuid } from "uuid";
 import { localVariableSelectTotal } from "store/features/entities/helpers";
 import { Variable, VariableType } from "shared/lib/resources/types";
 
+type AddVariablePayload = {
+  variableId?: string;
+  name?: string;
+  type?: VariableType;
+  size?: number;
+  flags?: Record<string, string>;
+};
+
+type PreparedAddVariablePayload = AddVariablePayload & {
+  variableId: string;
+};
+
+const clampSize = (size: number | undefined) =>
+  Math.max(1, Math.floor(size || 1));
+
 const addVariable: CaseReducer<
   EntitiesState,
-  PayloadAction<{
-    variableId: string;
-  }>
+  PayloadAction<PreparedAddVariablePayload>
 > = (state, action) => {
   const numVariables = localVariableSelectTotal(state);
+  const name = action.payload.name ?? "";
+  const type = action.payload.type ?? "number";
+  const symbol = genEntitySymbol(
+    state,
+    name ? `var_${name}` : `var_${numVariables + 1}`,
+  );
 
-  const newVariable: Variable = {
-    id: action.payload.variableId,
-    name: "",
-    symbol: genEntitySymbol(state, `var_${numVariables + 1}`),
-    type: "number",
-  };
+  const newVariable: Variable =
+    type === "array"
+      ? {
+          id: action.payload.variableId,
+          name,
+          symbol,
+          type,
+          size: clampSize(action.payload.size),
+          ...(action.payload.flags !== undefined
+            ? { flags: action.payload.flags }
+            : {}),
+        }
+      : {
+          id: action.payload.variableId,
+          name,
+          symbol,
+          type,
+          ...(action.payload.flags !== undefined
+            ? { flags: action.payload.flags }
+            : {}),
+        };
 
   variablesAdapter.addOne(state.variables, newVariable);
 };
@@ -53,7 +87,7 @@ const setVariableType: CaseReducer<
           type: "array",
           size:
             existingVariable.type === "array"
-              ? Math.max(1, Math.floor(existingVariable.size))
+              ? clampSize(existingVariable.size)
               : 1,
         }
       : {
@@ -74,7 +108,7 @@ const setVariableSize: CaseReducer<
   variablesAdapter.updateOne(state.variables, {
     id: action.payload.variableId,
     changes: {
-      size: Math.max(1, Math.floor(action.payload.size || 1)),
+      size: clampSize(action.payload.size),
     },
   });
 };
@@ -167,9 +201,10 @@ const reparentVariable: CaseReducer<
 const variablesReducers = {
   addVariable: {
     reducer: addVariable,
-    prepare: (payload?: { variableId?: string }) => {
+    prepare: (payload: AddVariablePayload = {}) => {
       return {
         payload: {
+          ...payload,
           variableId: payload?.variableId ?? uuid(),
         },
       };

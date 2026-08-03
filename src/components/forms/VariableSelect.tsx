@@ -268,25 +268,12 @@ const VariableSelectComponent = ({
       return;
     }
 
-    const action = entitiesActions.addVariable();
+    const type =
+      allowedVariableTypes?.length === 1 && allowedVariableTypes[0] === "array"
+        ? "array"
+        : "number";
+    const action = entitiesActions.addVariable({ name, type });
     dispatch(action);
-    if (
-      allowedVariableTypes?.length === 1 &&
-      allowedVariableTypes[0] === "array"
-    ) {
-      dispatch(
-        entitiesActions.setVariableType({
-          variableId: action.payload.variableId,
-          type: "array",
-        }),
-      );
-    }
-    dispatch(
-      entitiesActions.renameVariable({
-        variableId: action.payload.variableId,
-        name,
-      }),
-    );
     onChange(action.payload.variableId);
   };
 

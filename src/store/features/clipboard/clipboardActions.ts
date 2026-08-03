@@ -370,33 +370,15 @@ const reconcileClipboardResources = (
     const idIsAvailable = !existingVariables.some(
       (candidate) => candidate.id === variable.id,
     );
-    const addAction = entitiesActions.addVariable(
-      idIsAvailable ? { variableId: variable.id } : undefined,
-    );
+    const addAction = entitiesActions.addVariable({
+      ...(idIsAvailable ? { variableId: variable.id } : {}),
+      name: variable.name,
+      type: normalizedVariableType(variable),
+      ...(variable.type === "array" ? { size: variable.size } : {}),
+      ...(variable.flags ? { flags: variable.flags } : {}),
+    });
     dispatch(addAction);
     const variableId = addAction.payload.variableId;
-    dispatch(
-      entitiesActions.renameVariable({ variableId, name: variable.name }),
-    );
-    dispatch(
-      entitiesActions.setVariableType({
-        variableId,
-        type: normalizedVariableType(variable),
-      }),
-    );
-    if (variable.type === "array") {
-      dispatch(
-        entitiesActions.setVariableSize({ variableId, size: variable.size }),
-      );
-    }
-    if (variable.flags) {
-      dispatch(
-        entitiesActions.renameVariableFlags({
-          variableId,
-          flags: variable.flags,
-        }),
-      );
-    }
     variableMapping[variable.id] = variableId;
     claimedVariableIds.add(variableId);
     existingVariables.push({ ...variable, id: variableId });
@@ -427,17 +409,13 @@ const reconcileClipboardResources = (
     const idIsAvailable = !existingConstants.some(
       (candidate) => candidate.id === constant.id,
     );
-    const addAction = entitiesActions.addConstant(
-      idIsAvailable ? { constantId: constant.id } : undefined,
-    );
+    const addAction = entitiesActions.addConstant({
+      ...(idIsAvailable ? { constantId: constant.id } : {}),
+      name: constant.name,
+      value: constant.value,
+    });
     dispatch(addAction);
     const constantId = addAction.payload.constantId;
-    dispatch(
-      entitiesActions.editConstant({
-        constantId,
-        changes: { name: constant.name, value: constant.value },
-      }),
-    );
     constantMapping[constant.id] = constantId;
     claimedConstantIds.add(constantId);
     existingConstants.push({ ...constant, id: constantId });
@@ -496,31 +474,15 @@ const generateLocalVariableInsertActions = (
   for (const variable of variables) {
     if (variable.id.startsWith(originalId)) {
       const variableId = variable.id.replace(originalId, newId);
-      actions.push(entitiesActions.addVariable({ variableId }));
-      const renameVarAction = entitiesActions.renameVariable({
-        variableId,
-        name: variable.name,
-      });
-      actions.push(renameVarAction);
       actions.push(
-        entitiesActions.setVariableType({
+        entitiesActions.addVariable({
           variableId,
+          name: variable.name,
           type: variable.type ?? "number",
+          ...(variable.type === "array" ? { size: variable.size } : {}),
+          ...(variable.flags ? { flags: variable.flags } : {}),
         }),
       );
-      if (variable.type === "array") {
-        actions.push(
-          entitiesActions.setVariableSize({ variableId, size: variable.size }),
-        );
-      }
-      if (variable.flags) {
-        actions.push(
-          entitiesActions.renameVariableFlags({
-            variableId,
-            flags: variable.flags,
-          }),
-        );
-      }
     }
   }
   return actions;

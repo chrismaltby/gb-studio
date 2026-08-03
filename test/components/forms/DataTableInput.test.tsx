@@ -551,20 +551,26 @@ test("Should create missing variables with the required array size", async () =>
   await waitFor(() => {
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: "entities/setVariableSize",
-        payload: expect.objectContaining({ size: 5 }),
+        type: "entities/addVariable",
+        payload: expect.objectContaining({
+          name: "NewArr",
+          type: "array",
+          size: 5,
+        }),
       }),
     );
   });
 
-  const renameActions = dispatch.mock.calls
+  const addActions = dispatch.mock.calls
     .map(([action]) => action)
-    .filter(({ type }) => type === "entities/renameVariable");
-  const arrayId = renameActions.find(({ payload }) => payload.name === "NewArr")
+    .filter(({ type }) => type === "entities/addVariable");
+  const arrayId = addActions.find(({ payload }) => payload.name === "NewArr")
     ?.payload.variableId;
-  const scalarId = renameActions.find(
+  const scalarId = addActions.find(
     ({ payload }) => payload.name === "NewScalar",
   )?.payload.variableId;
+
+  expect(addActions).toHaveLength(2);
 
   expect(onChange).toHaveBeenCalledWith({
     label: "Imported",

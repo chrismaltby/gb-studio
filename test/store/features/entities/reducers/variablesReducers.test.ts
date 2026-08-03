@@ -16,6 +16,66 @@ test("Should add number variables without an array size", () => {
   expect(variable).not.toHaveProperty("size");
 });
 
+test("Should create a complete named number variable atomically", () => {
+  const state: EntitiesState = {
+    ...initialState,
+  };
+  const flags = { persistent: "true" };
+
+  const newState = reducer(
+    state,
+    actions.addVariable({
+      variableId: "variable-1",
+      name: "Player Health",
+      type: "number",
+      size: 12,
+      flags,
+    }),
+  );
+
+  expect(newState.variables.entities["variable-1"]).toEqual({
+    id: "variable-1",
+    name: "Player Health",
+    symbol: "var_player_health",
+    type: "number",
+    flags,
+  });
+});
+
+test.each([
+  [undefined, 1],
+  [0, 1],
+  [-4, 1],
+  [3.9, 3],
+])(
+  "Should create an array atomically and clamp size %p to %p",
+  (size, expected) => {
+    const state: EntitiesState = {
+      ...initialState,
+    };
+
+    const newState = reducer(
+      state,
+      actions.addVariable({
+        variableId: "array-1",
+        name: "Inventory",
+        type: "array",
+        size,
+        flags: { persistent: "true" },
+      }),
+    );
+
+    expect(newState.variables.entities["array-1"]).toEqual({
+      id: "array-1",
+      name: "Inventory",
+      symbol: "var_inventory",
+      type: "array",
+      size: expected,
+      flags: { persistent: "true" },
+    });
+  },
+);
+
 test("Should be able to set a variable's name", () => {
   const state: EntitiesState = {
     ...initialState,

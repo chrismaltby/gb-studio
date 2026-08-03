@@ -1640,24 +1640,18 @@ test("Should create missing arrays and constants with their original UUIDs and v
     customEvents: [],
   });
 
-  expect(
-    actions.find(entitiesActions.addVariable.match)?.payload.variableId,
-  ).toBe(variable.id);
-  expect(actions).toContainEqual(
-    entitiesActions.setVariableType({ variableId: variable.id, type: "array" }),
-  );
-  expect(actions).toContainEqual(
-    entitiesActions.setVariableSize({ variableId: variable.id, size: 12 }),
-  );
-  expect(
-    actions.find(entitiesActions.addConstant.match)?.payload.constantId,
-  ).toBe(constant.id);
-  expect(actions).toContainEqual(
-    entitiesActions.editConstant({
-      constantId: constant.id,
-      changes: { name: constant.name, value: constant.value },
-    }),
-  );
+  expect(actions.find(entitiesActions.addVariable.match)?.payload).toEqual({
+    variableId: variable.id,
+    name: variable.name,
+    type: "array",
+    size: 12,
+    flags: variable.flags,
+  });
+  expect(actions.find(entitiesActions.addConstant.match)?.payload).toEqual({
+    constantId: constant.id,
+    name: constant.name,
+    value: constant.value,
+  });
 });
 
 test("Should reuse matching UUIDs when clipboard properties are stale", async () => {
@@ -1756,13 +1750,11 @@ test("Should treat legacy clipboard variables without a type as numbers", async 
 
   const addVariableActions = actions.filter(entitiesActions.addVariable.match);
   expect(addVariableActions).toHaveLength(1);
-  expect(addVariableActions[0].payload.variableId).toBe(newLegacyVariable.id);
-  expect(actions).toContainEqual(
-    entitiesActions.setVariableType({
-      variableId: newLegacyVariable.id,
-      type: "number",
-    }),
-  );
+  expect(addVariableActions[0].payload).toMatchObject({
+    variableId: newLegacyVariable.id,
+    name: newLegacyVariable.name,
+    type: "number",
+  });
   expect(
     actions.find(entitiesActions.addScriptEvents.match)?.payload.data[0].args,
   ).toMatchObject({
@@ -2363,27 +2355,13 @@ test("Should preserve and remap local array variables when pasting actors", asyn
   const actions = dispatch.mock.calls.map(([action]) => action);
   const addActorAction = actions.find(entitiesActions.addActor.match);
   const targetVariableId = `${addActorAction?.payload.actorId}_L0`;
-  expect(
-    actions.find(entitiesActions.addVariable.match)?.payload.variableId,
-  ).toBe(targetVariableId);
-  expect(actions).toContainEqual(
-    entitiesActions.setVariableType({
-      variableId: targetVariableId,
-      type: "array",
-    }),
-  );
-  expect(actions).toContainEqual(
-    entitiesActions.setVariableSize({
-      variableId: targetVariableId,
-      size: 7,
-    }),
-  );
-  expect(actions).toContainEqual(
-    entitiesActions.renameVariableFlags({
-      variableId: targetVariableId,
-      flags: localVariable.flags,
-    }),
-  );
+  expect(actions.find(entitiesActions.addVariable.match)?.payload).toEqual({
+    variableId: targetVariableId,
+    name: localVariable.name,
+    type: "array",
+    size: 7,
+    flags: localVariable.flags,
+  });
   expect(
     actions.find(entitiesActions.addScriptEvents.match)?.payload.data[0].args,
   ).toMatchObject({ variable: { value: targetVariableId } });

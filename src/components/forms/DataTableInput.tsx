@@ -672,29 +672,13 @@ export const DataTableInput = ({
         const { dataTable, newVariables } = importedTable;
         const newVariableIds: Record<string, string> = {};
         for (const variable of newVariables) {
-          const action = entitiesActions.addVariable();
+          const action = entitiesActions.addVariable({
+            name: variable.name,
+            type: variable.type,
+            ...(variable.type === "array" ? { size: variable.size } : {}),
+          });
           const variableId = action.payload.variableId;
           store.dispatch(action);
-          store.dispatch(
-            entitiesActions.renameVariable({
-              variableId,
-              name: variable.name,
-            }),
-          );
-          if (variable.type === "array") {
-            store.dispatch(
-              entitiesActions.setVariableType({
-                variableId,
-                type: "array",
-              }),
-            );
-            store.dispatch(
-              entitiesActions.setVariableSize({
-                variableId,
-                size: variable.size ?? 1,
-              }),
-            );
-          }
           newVariableIds[variable.placeholder] = variableId;
         }
         onChange({

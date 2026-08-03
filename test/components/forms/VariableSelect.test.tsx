@@ -557,12 +557,11 @@ test("Should create and select a named variable", () => {
   if (!addAction) {
     throw new Error("Expected addVariable to be dispatched");
   }
-  expect(dispatch).toHaveBeenCalledWith(
-    entitiesActions.renameVariable({
-      variableId: addAction.payload.variableId,
-      name: "Player Health",
-    }),
-  );
+  expect(addAction.payload).toMatchObject({
+    name: "Player Health",
+    type: "number",
+  });
+  expect(dispatch).toHaveBeenCalledTimes(1);
   expect(onChange).toHaveBeenCalledWith(addAction.payload.variableId);
 });
 
