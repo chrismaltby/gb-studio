@@ -26,6 +26,7 @@ const fields = [
     type: "group",
     flexBasis: "100%",
     alignBottom: true,
+    wrapItems: true,
     fields: [
       {
         key: "joypad",
@@ -39,7 +40,7 @@ const fields = [
           },
         ],
         alignBottom: true,
-        flexBasis: "25%",
+        flexBasis: 25,
       },
       {
         key: "input",
@@ -47,7 +48,7 @@ const fields = [
         description: l10n("FIELD_INPUT_MULTIPLE_DESC"),
         type: "input",
         defaultValue: ["a", "b"],
-        flexBasis: "75%",
+        flexBasis: 75,
       },
     ],
   },
