@@ -1206,6 +1206,7 @@ const ValueSelect = ({
                   name={`${name}_index`}
                   entityId={entityId}
                   value={value.index}
+                  min={0}
                   max={
                     selectedVariable?.type === "array"
                       ? selectedVariable.size - 1

@@ -12,16 +12,22 @@ jest.mock("components/forms/ValueSelect", () => ({
     value,
     onChange,
     innerValue,
+    min,
+    max,
   }: {
     value: unknown;
     onChange: (value: unknown) => void;
     innerValue: boolean;
+    min?: number;
+    max?: number;
   }) => (
     <button
       type="button"
       data-testid="index-value"
       data-value={JSON.stringify(value)}
       data-inner-value={String(innerValue)}
+      data-min={min}
+      data-max={max}
       onClick={() =>
         onChange({
           type: "add",
@@ -35,12 +41,13 @@ jest.mock("components/forms/ValueSelect", () => ({
   ),
 }));
 
-test("renders the index using the ScriptValue editor", () => {
+test("renders the index using the ScriptValue editor with array bounds", () => {
   render(
     <VariableIndexSelect
       name="index"
       entityId="entity-1"
       value={{ type: "constant", value: "constant-1" }}
+      max={9}
       onChange={jest.fn()}
     />,
   );
@@ -53,6 +60,8 @@ test("renders the index using the ScriptValue editor", () => {
     "data-inner-value",
     "true",
   );
+  expect(screen.getByTestId("index-value")).toHaveAttribute("data-min", "0");
+  expect(screen.getByTestId("index-value")).toHaveAttribute("data-max", "9");
 });
 
 test("accepts a complex ScriptValue index", () => {

@@ -30,6 +30,7 @@ export const VariableIndexSelect = ({
       name={name}
       entityId={entityId}
       value={value}
+      min={0}
       max={max}
       onChange={onChange}
       innerValue
