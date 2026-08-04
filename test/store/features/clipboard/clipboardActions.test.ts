@@ -1817,6 +1817,286 @@ test("Should only remap raw numeric IDs in schema-defined variable fields", asyn
   });
 });
 
+test("Should reuse a compatible variable with the same legacy numeric ID", async () => {
+  const variable = {
+    id: "0",
+    name: "Counter",
+    symbol: "var_counter",
+    type: "number" as const,
+  };
+  const actions = await pasteResourceScript(
+    clipboardResourceState([variable]),
+    {
+      script: ["event1"],
+      scriptEvents: [
+        {
+          id: "event1",
+          command: "EVENT_TEST",
+          args: { variable: { type: "variable", value: variable.id } },
+        },
+      ],
+      variables: [variable],
+      constants: [],
+      customEvents: [],
+    },
+  );
+
+  expect(actions.some(entitiesActions.addVariable.match)).toBe(false);
+  expect(
+    actions.find(entitiesActions.addScriptEvents.match)?.payload.data[0].args,
+  ).toMatchObject({ variable: { value: variable.id } });
+});
+
+test("Should reuse an unnamed compatible variable with the same legacy numeric ID", async () => {
+  const variable = {
+    id: "0",
+    name: "",
+    symbol: "var_0",
+    type: "number" as const,
+  };
+  const actions = await pasteResourceScript(
+    clipboardResourceState([variable]),
+    {
+      script: ["event1"],
+      scriptEvents: [
+        {
+          id: "event1",
+          command: "EVENT_TEST",
+          args: { variable: { type: "variable", value: variable.id } },
+        },
+      ],
+      variables: [variable],
+      constants: [],
+      customEvents: [],
+    },
+  );
+
+  expect(actions.some(entitiesActions.addVariable.match)).toBe(false);
+  expect(
+    actions.find(entitiesActions.addScriptEvents.match)?.payload.data[0].args,
+  ).toMatchObject({ variable: { value: variable.id } });
+});
+
+test("Should remap swapped legacy numeric IDs by name and shape", async () => {
+  const sourceVariables = [
+    {
+      id: "0",
+      name: "Counter",
+      symbol: "var_counter_source",
+      type: "number" as const,
+    },
+    {
+      id: "1",
+      name: "Inventory",
+      symbol: "var_inventory_source",
+      type: "number" as const,
+    },
+  ];
+  const targetVariables = [
+    { ...sourceVariables[1], id: "0", symbol: "var_inventory_target" },
+    { ...sourceVariables[0], id: "1", symbol: "var_counter_target" },
+  ];
+  const actions = await pasteResourceScript(
+    clipboardResourceState(targetVariables),
+    {
+      script: ["event1"],
+      scriptEvents: [
+        {
+          id: "event1",
+          command: "EVENT_TEST",
+          args: {
+            variable: { type: "variable", value: sourceVariables[0].id },
+            variableElement: {
+              type: "variable",
+              value: sourceVariables[1].id,
+            },
+          },
+        },
+      ],
+      variables: sourceVariables,
+      constants: [],
+      customEvents: [],
+    },
+  );
+
+  expect(actions.some(entitiesActions.addVariable.match)).toBe(false);
+  expect(
+    actions.find(entitiesActions.addScriptEvents.match)?.payload.data[0].args,
+  ).toMatchObject({
+    variable: { value: "1" },
+    variableElement: { value: "0" },
+  });
+});
+
+test.each([
+  {
+    name: "a different name",
+    targetVariable: {
+      id: "0",
+      name: "Inventory",
+      symbol: "var_inventory",
+      type: "number" as const,
+    },
+  },
+  {
+    name: "a different shape",
+    targetVariable: {
+      id: "0",
+      name: "Counter",
+      symbol: "var_counter_array",
+      type: "array" as const,
+      size: 16,
+    },
+  },
+])(
+  "Should not reuse a legacy numeric ID with $name",
+  async ({ targetVariable }) => {
+    const sourceVariable = {
+      id: "0",
+      name: "Counter",
+      symbol: "var_counter",
+      type: "number" as const,
+    };
+    const actions = await pasteResourceScript(
+      clipboardResourceState([targetVariable]),
+      {
+        script: ["event1"],
+        scriptEvents: [
+          {
+            id: "event1",
+            command: "EVENT_TEST",
+            args: {
+              variable: { type: "variable", value: sourceVariable.id },
+            },
+          },
+        ],
+        variables: [sourceVariable],
+        constants: [],
+        customEvents: [],
+      },
+    );
+
+    const addVariableAction = actions.find(entitiesActions.addVariable.match);
+    expect(addVariableAction?.payload).toMatchObject({
+      name: sourceVariable.name,
+      type: sourceVariable.type,
+    });
+    expect(addVariableAction?.payload.variableId).not.toBe(sourceVariable.id);
+    expect(
+      actions.find(entitiesActions.addScriptEvents.match)?.payload.data[0].args,
+    ).toMatchObject({
+      variable: { value: addVariableAction?.payload.variableId },
+    });
+  },
+);
+
+test("Should remap an incompatible legacy ID to a compatible named variable", async () => {
+  const sourceVariable = {
+    id: "0",
+    name: "Counter",
+    symbol: "var_counter_source",
+    type: "number" as const,
+  };
+  const collidingVariable = {
+    id: "0",
+    name: "Inventory",
+    symbol: "var_inventory",
+    type: "array" as const,
+    size: 16,
+  };
+  const compatibleVariable = {
+    ...sourceVariable,
+    id: "11111111-1111-1111-1111-111111111111",
+    symbol: "var_counter_target",
+  };
+  const actions = await pasteResourceScript(
+    clipboardResourceState([collidingVariable, compatibleVariable]),
+    {
+      script: ["event1"],
+      scriptEvents: [
+        {
+          id: "event1",
+          command: "EVENT_TEST",
+          args: {
+            variable: { type: "variable", value: sourceVariable.id },
+          },
+        },
+      ],
+      variables: [sourceVariable],
+      constants: [],
+      customEvents: [],
+    },
+  );
+
+  expect(actions.some(entitiesActions.addVariable.match)).toBe(false);
+  expect(
+    actions.find(entitiesActions.addScriptEvents.match)?.payload.data[0].args,
+  ).toMatchObject({ variable: { value: compatibleVariable.id } });
+});
+
+test("Should remap zero-padded legacy variable references", async () => {
+  const sourceVariable = {
+    id: "1",
+    name: "Counter",
+    symbol: "var_counter_source",
+    type: "number" as const,
+  };
+  const targetVariable = {
+    ...sourceVariable,
+    id: "11111111-1111-1111-1111-111111111111",
+    symbol: "var_counter_target",
+  };
+  const baseState = clipboardResourceState([targetVariable]);
+  const state = {
+    ...baseState,
+    scriptEventDefs: {
+      lookup: {
+        EVENT_TEST: {
+          fieldsLookup: {
+            dialogue: { type: "text" },
+            expression: { type: "matharea" },
+            rawVariable: { type: "variable" },
+            value: { type: "value" },
+            references: { type: "references" },
+          },
+        },
+      },
+    },
+  } as unknown as RootState;
+  const actions = await pasteResourceScript(state, {
+    script: ["event1"],
+    scriptEvents: [
+      {
+        id: "event1",
+        command: "EVENT_TEST",
+        args: {
+          dialogue: "Values: $01$ and #001#",
+          expression: "$001$ + 1",
+          rawVariable: "01",
+          value: { type: "variable", value: "001" },
+          references: [{ type: "variable", id: "01" }],
+          "$variable[V0]$": "001",
+        },
+      },
+    ],
+    variables: [sourceVariable],
+    constants: [],
+    customEvents: [],
+  });
+
+  expect(actions.some(entitiesActions.addVariable.match)).toBe(false);
+  expect(
+    actions.find(entitiesActions.addScriptEvents.match)?.payload.data[0].args,
+  ).toMatchObject({
+    dialogue: `Values: $${targetVariable.id}$ and #${targetVariable.id}#`,
+    expression: `$${targetVariable.id}$ + 1`,
+    rawVariable: targetVariable.id,
+    value: { type: "variable", value: targetVariable.id },
+    references: [{ type: "variable", id: targetVariable.id }],
+    "$variable[V0]$": targetVariable.id,
+  });
+});
+
 test("Should not collect numeric IDs from unrelated string fields", async () => {
   mockedClipboard.writeBuffer.mockClear();
   const variable = {

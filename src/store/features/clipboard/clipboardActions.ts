@@ -86,12 +86,18 @@ import {
   isTilemapLayerCellTopmost,
 } from "shared/lib/tiles/sceneTilemapData";
 import { extractVariableIdsFromScriptEvent } from "shared/lib/variables/extractVariableReferences";
+import { normalizeVariableId } from "shared/lib/variables/variableIds";
 import { isVariableFieldType } from "shared/lib/scripts/scriptDefHelpers";
 
 type ResourceIdMapping = Record<string, string>;
 
+const remapVariableId = (id: string, variableMapping: ResourceIdMapping) =>
+  variableMapping[id] ?? variableMapping[normalizeVariableId(id)];
+
 const normalizedVariableType = (variable: Variable) =>
   variable.type ?? "number";
+
+const isLegacyNumericId = (id: string) => /^\d+$/.test(id);
 
 const variableShapeMatches = (a: Variable, b: Variable) => {
   const aType = normalizedVariableType(a);
@@ -102,6 +108,12 @@ const variableShapeMatches = (a: Variable, b: Variable) => {
       (a.type === "array" && b.type === "array" && a.size === b.size))
   );
 };
+
+const variableIdMatches = (source: Variable, candidate: Variable) =>
+  candidate.id === source.id &&
+  (!isLegacyNumericId(source.id) ||
+    (candidate.name === source.name &&
+      variableShapeMatches(source, candidate)));
 
 const constantValueMatches = (a: Constant, b: Constant) => a.value === b.value;
 
@@ -184,9 +196,10 @@ const remapResourceReferences = <T>(
 ): T => {
   if (typeof value === "string") {
     return value
-      .replace(/([$#])([^$#]+)([$#])/g, (match, open, id, close) =>
-        variableMapping[id] ? `${open}${variableMapping[id]}${close}` : match,
-      )
+      .replace(/([$#])([^$#]+)([$#])/g, (match, open, id, close) => {
+        const remappedId = remapVariableId(id, variableMapping);
+        return remappedId ? `${open}${remappedId}${close}` : match;
+      })
       .replace(/@([^@]+)@/g, (match, id) =>
         constantMapping[id] ? `@${constantMapping[id]}@` : match,
       ) as T;
@@ -199,14 +212,18 @@ const remapResourceReferences = <T>(
   if (!value || typeof value !== "object") return value;
   const record = value as Record<string, unknown>;
   if (record.type === "variable") {
+    const remappedValue =
+      typeof record.value === "string"
+        ? remapVariableId(record.value, variableMapping)
+        : undefined;
+    const remappedId =
+      typeof record.id === "string"
+        ? remapVariableId(record.id, variableMapping)
+        : undefined;
     return {
       ...record,
-      ...(typeof record.value === "string" && variableMapping[record.value]
-        ? { value: variableMapping[record.value] }
-        : {}),
-      ...(typeof record.id === "string" && variableMapping[record.id]
-        ? { id: variableMapping[record.id] }
-        : {}),
+      ...(remappedValue ? { value: remappedValue } : {}),
+      ...(remappedId ? { id: remappedId } : {}),
       ...(record.index !== undefined
         ? {
             index: remapResourceReferences(
@@ -251,12 +268,11 @@ const remapResourceReferencesInEventArgs = (
     const isVariableField =
       key.startsWith("$variable[") ||
       isVariableFieldType(fieldsLookup[key]?.type);
-    if (
-      isVariableField &&
-      typeof value === "string" &&
-      variableMapping[value]
-    ) {
-      remappedArgs[key] = variableMapping[value];
+    if (isVariableField && typeof value === "string") {
+      const remappedId = remapVariableId(value, variableMapping);
+      if (remappedId) {
+        remappedArgs[key] = remappedId;
+      }
     }
   }
   return remappedArgs;
@@ -330,7 +346,9 @@ const reconcileClipboardResources = (
   const constantNameCandidates = [...existingConstants];
   const reservedVariableIds = new Set(
     variables.flatMap((variable) =>
-      variableNameCandidates.some((candidate) => candidate.id === variable.id)
+      variableNameCandidates.some((candidate) =>
+        variableIdMatches(variable, candidate),
+      )
         ? [variable.id]
         : [],
     ),
@@ -348,8 +366,8 @@ const reconcileClipboardResources = (
   for (const variable of variables) {
     // Entity-local variables are recreated by the existing entity paste path.
     if (/_L\d+$/.test(variable.id)) continue;
-    const uuidMatch = existingVariables.find(
-      (candidate) => candidate.id === variable.id,
+    const idMatch = existingVariables.find((candidate) =>
+      variableIdMatches(variable, candidate),
     );
     const compatibleNameMatches = variableNameCandidates.filter(
       (candidate) =>
@@ -363,7 +381,7 @@ const reconcileClipboardResources = (
       !claimedVariableIds.has(compatibleNameMatches[0].id)
         ? compatibleNameMatches[0]
         : undefined;
-    const match = uuidMatch ?? nameMatch;
+    const match = idMatch ?? nameMatch;
     if (match) {
       variableMapping[variable.id] = match.id;
       claimedVariableIds.add(match.id);
