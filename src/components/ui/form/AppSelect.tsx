@@ -11,14 +11,16 @@ interface AppSelectProps {
   presetOptions?: Option[];
 }
 
-export const AppSelect: FC<AppSelectProps> = ({ value, onChange, presetOptions = [
-      {
-        value: "",
-        label: l10n("FIELD_SYSTEM_DEFAULT"),
-      },
-    ],
-  }) => {
-
+export const AppSelect: FC<AppSelectProps> = ({
+  value,
+  onChange,
+  presetOptions = [
+    {
+      value: "",
+      label: l10n("FIELD_SYSTEM_DEFAULT"),
+    },
+  ],
+}) => {
   const options = ([] as Option[]).concat(
     [
       {
