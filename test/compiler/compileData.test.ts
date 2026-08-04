@@ -433,17 +433,23 @@ test("should compile simple project into files object", async () => {
     variables: {
       variables: [
         {
-          id: "1",
-          name: "Inventory",
-          symbol: "var_inventory",
-          type: "array",
-          size: 3,
+          id: "actor__L0",
+          name: "",
+          symbol: "var_actor_local_0",
+          type: "number",
         },
         {
           id: "2",
           name: "",
           symbol: "var_2",
           type: "number",
+        },
+        {
+          id: "1",
+          name: "Inventory",
+          symbol: "var_inventory",
+          type: "array",
+          size: 3,
         },
         {
           id: "3",
@@ -480,7 +486,7 @@ test("should compile simple project into files object", async () => {
   expect(compiled).toBeInstanceOf(Object);
   expect(compiled.files["game_globals.i"]).toInclude("VAR_INVENTORY = 0");
   expect(compiled.files["game_globals.i"]).toInclude("MAX_GLOBAL_VARS = 6");
-  expect(compiled.variableMap.VAR_2.name).toBe("Variable 2");
+  expect(compiled.variableMap.VAR_2.name).toBe("Variable 1");
   expect(compiled.variableMap.VAR_3.name).toBe("Variable 3");
 });
 

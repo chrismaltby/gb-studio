@@ -1481,7 +1481,10 @@ const compile = async (
 
   const projectVariables = projectData.variables.variables;
   const variablesLookup = keyBy(projectVariables, "id");
-  const variableIndexLookup = projectVariables.reduce(
+  const globalVariables = projectVariables.filter(
+    (variable) => !variable.id.includes("__L"),
+  );
+  const variableIndexLookup = globalVariables.reduce(
     (memo, variable, index) => {
       memo[variable.id] = index;
       return memo;
