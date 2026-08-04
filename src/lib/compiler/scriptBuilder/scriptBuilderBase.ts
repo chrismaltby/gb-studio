@@ -539,7 +539,10 @@ abstract class ScriptBuilderBase {
     }
   };
 
-  _setToVariable = (addr: ScriptBuilderStackVariable, variable: string) => {
+  _setToVariable = (
+    addr: ScriptBuilderStackVariable,
+    variable: ScriptBuilderVariable,
+  ) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       this._stackPushInd(variableAlias);
@@ -749,7 +752,10 @@ abstract class ScriptBuilderBase {
     );
   };
 
-  _setVariableMemInt8 = (variable: string, cVariable: string) => {
+  _setVariableMemInt8 = (
+    variable: ScriptBuilderVariable,
+    cVariable: string,
+  ) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
@@ -760,7 +766,10 @@ abstract class ScriptBuilderBase {
     }
   };
 
-  _setVariableMemInt16 = (variable: string, cVariable: string) => {
+  _setVariableMemInt16 = (
+    variable: ScriptBuilderVariable,
+    cVariable: string,
+  ) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
@@ -967,7 +976,11 @@ abstract class ScriptBuilderBase {
     this._addCmd("VM_RAND", addr, min, range);
   };
 
-  _randVariable = (variable: string, min: number, range: number) => {
+  _randVariable = (
+    variable: ScriptBuilderVariable,
+    min: number,
+    range: number,
+  ) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       const valueTmpRef = this._declareLocal("value_tmp", 1, true);
@@ -1351,7 +1364,7 @@ abstract class ScriptBuilderBase {
   };
 
   _switchVariable = (
-    variable: string,
+    variable: ScriptBuilderVariable,
     switchCases: [number | string, string][],
     popNum: number,
   ) => {
@@ -1382,8 +1395,8 @@ abstract class ScriptBuilderBase {
 
   _ifVariableCmpVariable = (
     operator: ScriptBuilderComparisonOperator,
-    variableA: string,
-    variableB: string,
+    variableA: ScriptBuilderVariable,
+    variableB: ScriptBuilderVariable,
     label: string,
     popNum: number,
   ) => {
@@ -1531,7 +1544,10 @@ abstract class ScriptBuilderBase {
     this._addCmd("VM_ACTOR_GET_ANGLE", addr, dest);
   };
 
-  _actorGetDirectionToVariable = (addr: string, variable: string) => {
+  _actorGetDirectionToVariable = (
+    addr: string,
+    variable: ScriptBuilderVariable,
+  ) => {
     const variableAlias = this.getVariableAlias(variable);
     if (this._isIndirectVariable(variable)) {
       const dirDestVarRef = this._declareLocal("dir_dest_var", 1, true);

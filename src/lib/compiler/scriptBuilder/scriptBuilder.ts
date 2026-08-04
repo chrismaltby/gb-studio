@@ -367,8 +367,8 @@ class ScriptBuilder extends ScriptBuilderBase {
   };
 
   actorGetPosition = (
-    variableX: string,
-    variableY: string,
+    variableX: ScriptBuilderVariable,
+    variableY: ScriptBuilderVariable,
     units: DistanceUnitType = "tiles",
   ) => {
     const actorRef = this._declareLocal("actor", 4);
@@ -390,7 +390,7 @@ class ScriptBuilder extends ScriptBuilderBase {
   };
 
   actorGetPositionX = (
-    variableX: string,
+    variableX: ScriptBuilderVariable,
     units: DistanceUnitType = "tiles",
   ) => {
     const actorRef = this._declareLocal("actor", 4);
@@ -408,7 +408,7 @@ class ScriptBuilder extends ScriptBuilderBase {
   };
 
   actorGetPositionY = (
-    variableY: string,
+    variableY: ScriptBuilderVariable,
     units: DistanceUnitType = "tiles",
   ) => {
     const actorRef = this._declareLocal("actor", 4);
@@ -425,14 +425,14 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
-  actorGetDirection = (variable: string) => {
+  actorGetDirection = (variable: ScriptBuilderVariable) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Direction In Variable`);
     this._actorGetDirectionToVariable(actorRef, variable);
     this._addNL();
   };
 
-  actorGetAnimFrame = (variable: string) => {
+  actorGetAnimFrame = (variable: ScriptBuilderVariable) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment(`Store Frame In Variable`);
     this._actorGetAnimFrame(actorRef);
@@ -988,7 +988,7 @@ class ScriptBuilder extends ScriptBuilderBase {
     projectileIndex: number,
     x = 0,
     y = 0,
-    angleVariable: string,
+    angleVariable: ScriptBuilderVariable,
   ) => {
     const actorRef = this._declareLocal("actor", 4);
     this._addComment("Launch Projectile In Angle");
@@ -1374,7 +1374,7 @@ class ScriptBuilder extends ScriptBuilderBase {
   };
 
   textChoice = (
-    variable: string,
+    variable: ScriptBuilderVariable,
     args: { trueText: string; falseText: string },
   ) => {
     const variableAlias = this.getVariableAlias(variable);
@@ -1413,7 +1413,7 @@ class ScriptBuilder extends ScriptBuilderBase {
   };
 
   textMenu = (
-    variable: string,
+    variable: ScriptBuilderVariable,
     options: string[],
     layout = "menu",
     cancelOnLastOption = false,
@@ -1944,7 +1944,10 @@ class ScriptBuilder extends ScriptBuilderBase {
   // --------------------------------------------------------------------------
   // Threads
 
-  threadStart = (handleVariable: string, script: ScriptEvent[]) => {
+  threadStart = (
+    handleVariable: ScriptBuilderVariable,
+    script: ScriptEvent[],
+  ) => {
     this._addComment(`Thread Start`);
     const scriptRef = this._compileSubScript("thread", script);
     this._vmUnlock();
@@ -1952,7 +1955,7 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
-  threadTerminate = (handleVariable: string) => {
+  threadTerminate = (handleVariable: ScriptBuilderVariable) => {
     this._addComment(`Thread Stop`);
     this._threadTerminateWithVariableHandle(handleVariable);
     this._addNL();
@@ -2621,7 +2624,10 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
-  variableSetToValue = (variable: string, value: number | string) => {
+  variableSetToValue = (
+    variable: ScriptBuilderVariable,
+    value: number | string,
+  ) => {
     this._addComment("Variable Set To Value");
     this._setVariableConst(variable, value);
     this._addNL();
@@ -2661,7 +2667,11 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
-  variableSetToRandom = (variable: string, min: number, range: number) => {
+  variableSetToRandom = (
+    variable: ScriptBuilderVariable,
+    min: number,
+    range: number,
+  ) => {
     this._addComment("Variable Set To Random");
     this._randVariable(variable, min, range);
     this._addNL();
@@ -2674,9 +2684,9 @@ class ScriptBuilder extends ScriptBuilderBase {
   };
 
   variablesOperation = (
-    setVariable: string,
+    setVariable: ScriptBuilderVariable,
     operation: ScriptBuilderRPNOperation,
-    otherVariable: string,
+    otherVariable: ScriptBuilderVariable,
     clamp: boolean,
   ) => {
     this._addComment(`Variables ${operation}`);
@@ -2697,7 +2707,7 @@ class ScriptBuilder extends ScriptBuilderBase {
   };
 
   variableValueOperation = (
-    setVariable: string,
+    setVariable: ScriptBuilderVariable,
     operation: ScriptBuilderRPNOperation,
     value: number,
     clamp: boolean,
@@ -2720,7 +2730,7 @@ class ScriptBuilder extends ScriptBuilderBase {
   };
 
   variablesScriptValueOperation = (
-    setVariable: string,
+    setVariable: ScriptBuilderVariable,
     operation: ScriptBuilderRPNOperation,
     value: ScriptValue,
   ) => {
@@ -2739,7 +2749,7 @@ class ScriptBuilder extends ScriptBuilderBase {
   };
 
   variableRandomOperation = (
-    variable: string,
+    variable: ScriptBuilderVariable,
     operation: ScriptBuilderRPNOperation,
     min: number,
     range: number,
@@ -2764,7 +2774,7 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
-  variableAddFlags = (variable: string, flags: number) => {
+  variableAddFlags = (variable: ScriptBuilderVariable, flags: number) => {
     this._addComment(`Variable Add Flags`);
     this._rpn() //
       .refVariable(variable)
@@ -2775,7 +2785,7 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
-  variableClearFlags = (variable: string, flags: number) => {
+  variableClearFlags = (variable: ScriptBuilderVariable, flags: number) => {
     this._addComment(`Variable Clear Flags`);
     this._rpn() //
       .refVariable(variable)
@@ -2788,7 +2798,10 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
-  variableEvaluateExpression = (variable: string, expression: string) => {
+  variableEvaluateExpression = (
+    variable: ScriptBuilderVariable,
+    expression: string,
+  ) => {
     this._addComment(
       `Variable ${variable} = ${this._expressionToHumanReadable(expression)}`,
     );
@@ -2796,7 +2809,10 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
-  variableDataTableLookup = (indexVariable: string, table: ScriptDataTable) => {
+  variableDataTableLookup = (
+    indexVariable: ScriptBuilderVariable,
+    table: ScriptDataTable,
+  ) => {
     if (table.variables.length === 0 || table.rows.length === 0) {
       // No data provided, skip instruction
       return;
@@ -2937,7 +2953,10 @@ class ScriptBuilder extends ScriptBuilderBase {
     }
   };
 
-  engineFieldStoreInVariable = (key: string, variable: string) => {
+  engineFieldStoreInVariable = (
+    key: string,
+    variable: ScriptBuilderVariable,
+  ) => {
     const { engineFields } = this.options;
     const engineField = engineFields[key];
     if (engineField !== undefined && engineField.key) {
@@ -3774,9 +3793,9 @@ class ScriptBuilder extends ScriptBuilderBase {
 
   // @to-deprecate Currently used by eventReplaceTileXYSequence
   ifVariableCompare = (
-    variableA: string,
+    variableA: ScriptBuilderVariable,
     operator: ScriptBuilderComparisonOperator,
-    variableB: string,
+    variableB: ScriptBuilderVariable,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
   ) => {
@@ -3794,7 +3813,7 @@ class ScriptBuilder extends ScriptBuilderBase {
 
   // @to-deprecate Currently used by eventReplaceTileXYSequence and eventLoopFor
   ifVariableCompareScriptValue = (
-    variable: string,
+    variable: ScriptBuilderVariable,
     operator: ScriptBuilderComparisonOperator,
     value: ScriptValue,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
@@ -3913,7 +3932,7 @@ class ScriptBuilder extends ScriptBuilderBase {
 
   // @to-deprecate Currently used by eventIfVariableFlagsCompare (use if ifScriptValue)
   ifVariableBitwiseValue = (
-    variable: string,
+    variable: ScriptBuilderVariable,
     operator: ScriptBuilderRPNOperation,
     flags: number,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
@@ -4356,7 +4375,7 @@ class ScriptBuilder extends ScriptBuilderBase {
   };
 
   caseVariableConstValue = (
-    variable: string,
+    variable: ScriptBuilderVariable,
     cases: {
       value: ConstScriptValue;
       branch: ScriptEvent[] | ScriptBuilderPathFunction;

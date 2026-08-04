@@ -47,7 +47,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
   };
 
   const variableSetToProperty = (
-    variable: string,
+    variable: ScriptBuilderVariable,
     property: string | { value: ScriptBuilderVariable; property: string },
   ) => {
     _deprecated({
@@ -88,7 +88,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
   };
 
   const variableSetToUnionValue = (
-    variable: string,
+    variable: ScriptBuilderVariable,
     unionValue: ScriptBuilderUnionValue,
   ) => {
     _deprecated({
@@ -161,8 +161,8 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
     },
 
     actorMoveToVariables: (
-      variableX: string,
-      variableY: string,
+      variableX: ScriptBuilderVariable,
+      variableY: ScriptBuilderVariable,
       useCollisions: boolean,
       moveType: ScriptBuilderMoveType = "horizontal",
       units: DistanceUnitType = "tiles",
@@ -250,8 +250,8 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
     },
 
     actorSetPositionToVariables: (
-      variableX: string,
-      variableY: string,
+      variableX: ScriptBuilderVariable,
+      variableY: ScriptBuilderVariable,
       units: DistanceUnitType = "tiles",
     ) => {
       _deprecated({
@@ -361,7 +361,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
       sb._addNL();
     },
 
-    actorSetDirectionToVariable: (variable: string) => {
+    actorSetDirectionToVariable: (variable: ScriptBuilderVariable) => {
       _deprecated({
         oldFn: "actorSetDirectionToVariable",
         newFn: "actorSetDirectionToScriptValue",
@@ -407,7 +407,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
       sb._addNL();
     },
 
-    actorSetFrameToVariable: (variable: string) => {
+    actorSetFrameToVariable: (variable: ScriptBuilderVariable) => {
       _deprecated({
         oldFn: "actorSetFrameToVariable",
         newFn: "actorSetFrameToScriptValue",
@@ -486,8 +486,8 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
     },
 
     cameraMoveToVariables: (
-      variableX: string,
-      variableY: string,
+      variableX: ScriptBuilderVariable,
+      variableY: ScriptBuilderVariable,
       speed = 0,
       units: DistanceUnitType = "tiles",
     ) => {
@@ -550,7 +550,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
       shouldShakeX: boolean,
       shouldShakeY: boolean,
       frames: number,
-      magnitude: string,
+      magnitude: ScriptBuilderVariable,
     ) => {
       _deprecated({
         oldFn: "cameraShakeVariables",
@@ -616,7 +616,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
       }
     },
 
-    variableSetToTrue: (variable: string) => {
+    variableSetToTrue: (variable: ScriptBuilderVariable) => {
       _deprecated({
         oldFn: "variableSetToTrue",
         newFn: "variableSetToScriptValue",
@@ -626,7 +626,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
       sb._addNL();
     },
 
-    variableSetToFalse: (variable: string) => {
+    variableSetToFalse: (variable: ScriptBuilderVariable) => {
       _deprecated({
         oldFn: "variableSetToFalse",
         newFn: "variableSetToScriptValue",
@@ -637,8 +637,8 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
     },
 
     variablesAdd: (
-      setVariable: string,
-      otherVariable: string,
+      setVariable: ScriptBuilderVariable,
+      otherVariable: ScriptBuilderVariable,
       clamp: boolean,
     ) => {
       _deprecated({
@@ -649,8 +649,8 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
     },
 
     variablesSub: (
-      setVariable: string,
-      otherVariable: string,
+      setVariable: ScriptBuilderVariable,
+      otherVariable: ScriptBuilderVariable,
       clamp: boolean,
     ) => {
       _deprecated({
@@ -660,7 +660,10 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
       sb.variablesOperation(setVariable, ".SUB", otherVariable, clamp);
     },
 
-    variablesMul: (setVariable: string, otherVariable: string) => {
+    variablesMul: (
+      setVariable: ScriptBuilderVariable,
+      otherVariable: ScriptBuilderVariable,
+    ) => {
       _deprecated({
         oldFn: "variablesMul",
         newFn: "variableSetToScriptValue",
@@ -668,7 +671,10 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
       sb.variablesOperation(setVariable, ".MUL", otherVariable, false);
     },
 
-    variablesDiv: (setVariable: string, otherVariable: string) => {
+    variablesDiv: (
+      setVariable: ScriptBuilderVariable,
+      otherVariable: ScriptBuilderVariable,
+    ) => {
       _deprecated({
         oldFn: "variablesDiv",
         newFn: "variableSetToScriptValue",
@@ -676,7 +682,10 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
       sb.variablesOperation(setVariable, ".DIV", otherVariable, false);
     },
 
-    variablesMod: (setVariable: string, otherVariable: string) => {
+    variablesMod: (
+      setVariable: ScriptBuilderVariable,
+      otherVariable: ScriptBuilderVariable,
+    ) => {
       _deprecated({
         oldFn: "variablesMod",
         newFn: "variableSetToScriptValue",
@@ -690,7 +699,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
 
     variableFromUnion: (
       unionValue: ScriptBuilderUnionValue,
-      defaultVariable: string,
+      defaultVariable: ScriptBuilderVariable,
     ) => {
       _deprecated({
         oldFn: "variableFromUnion",
@@ -745,7 +754,10 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
       }
     },
 
-    engineFieldSetToVariable: (key: string, variable: string) => {
+    engineFieldSetToVariable: (
+      key: string,
+      variable: ScriptBuilderVariable,
+    ) => {
       _deprecated({
         oldFn: "engineFieldSetToVariable",
         newFn: "engineFieldSetToScriptValue",
@@ -820,7 +832,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
       x: number,
       y: number,
       tilesetId: string,
-      tileIndexVariable: string,
+      tileIndexVariable: ScriptBuilderVariable,
       tileSize: "8px" | "16px",
     ) => {
       _deprecated({
@@ -917,7 +929,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
     },
 
     ifVariableTrue: (
-      variable: string,
+      variable: ScriptBuilderVariable,
       truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
       falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
     ) => {
@@ -938,7 +950,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
     },
 
     ifVariableValue: (
-      variable: string,
+      variable: ScriptBuilderVariable,
       operator: ScriptBuilderComparisonOperator,
       value: number,
       truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
@@ -1091,7 +1103,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
     },
 
     ifActorDistanceVariableFromActor: (
-      distanceVariable: string,
+      distanceVariable: ScriptBuilderVariable,
       operator: ScriptBuilderComparisonOperator,
       otherId: string,
       truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
@@ -1164,7 +1176,7 @@ export function createDeprecatedMethods(sb: ScriptBuilder) {
     },
 
     caseVariableValue: (
-      variable: string,
+      variable: ScriptBuilderVariable,
       cases: {
         [key: string]: ScriptEvent[] | ScriptBuilderPathFunction;
       } = {},
