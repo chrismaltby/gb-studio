@@ -11,7 +11,7 @@ const confirmDeletePrefab = (name: string, count: number) => {
     message: l10n("DIALOG_DELETE_PREFAB", { name }),
     detail: l10n(
       count === 1
-        ? "DIALOG_DELETE_PREFAB_USED_SINGLAR"
+        ? "DIALOG_DELETE_PREFAB_USED_SINGULAR"
         : "DIALOG_DELETE_PREFAB_USED",
       { count },
     ),

@@ -18,7 +18,7 @@ const confirmDeleteConstant = (name: string, usesNames: string[]) => {
     message: l10n("DIALOG_DELETE_CONSTANT", { name }),
     detail: l10n(
       usesNames.length === 1
-        ? "DIALOG_DELETE_CONSTANT_USED_SINGLAR"
+        ? "DIALOG_DELETE_CONSTANT_USED_SINGULAR"
         : "DIALOG_DELETE_CONSTANT_USED",
       { count: usesNames.length, foundReferences },
     ),

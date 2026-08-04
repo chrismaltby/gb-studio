@@ -1409,7 +1409,7 @@
   "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Silakan simpan proyek Anda dan restart aplikasi.",
   "DIALOG_DELETE_CUSTOM_EVENT": "Hapus Skrip \"{name}\"?",
   "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} penggunaan event ini juga akan dihapus.\n\nDitemukan di: {sceneNames}",
-  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} penggunaan event ini juga akan dihapus.\n\nDitemukan di: {sceneNames}",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGULAR": "{count} penggunaan event ini juga akan dihapus.\n\nDitemukan di: {sceneNames}",
   "DIALOG_EJECT_ENGINE": "Eject engine permainan?",
   "DIALOG_EJECT_ENGINE_DESCRIPTION": "File engine GB Studio terbaru akan disalin ke 'assets/engine'. Anda dapat membuat perubahan pada file-file ini dan mereka akan menggantikan engine default selama build.\n\nUntuk mengembalikan engine default, hapus 'assets/engine'",
   "DIALOG_EJECT": "Eject",

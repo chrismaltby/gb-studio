@@ -863,7 +863,7 @@
   "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Por favor, guarde o seu projecto e reinicie o GB Studio.",
   "DIALOG_DELETE_CUSTOM_EVENT": "Eliminar o Evento Personalizado \"{name}\"?",
   "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} outros usos deste Evento serão também eliminados.\n\nEncontrados em: {sceneNames}",
-  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} outro uso deste evento será também eliminado.\n\nEncontrado em: {sceneNames",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGULAR": "{count} outro uso deste evento será também eliminado.\n\nEncontrado em: {sceneNames}",
   "DIALOG_EJECT_ENGINE": "Ejectar engine do Jogo?",
   "DIALOG_EJECT_ENGINE_DESCRIPTION": "Os ficheiros mais recentes serão copiados para 'assets/engine'. Pode alterar estes ficheiros. Para restaurar de volta ao engine predefinido apague 'assets/engine'",
   "DIALOG_EJECT": "Ejectar",

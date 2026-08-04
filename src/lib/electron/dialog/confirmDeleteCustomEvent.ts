@@ -32,7 +32,7 @@ const confirmDeleteCustomEvent = (
     message: l10n("DIALOG_DELETE_CUSTOM_EVENT", { name }),
     detail: l10n(
       count === 1
-        ? "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR"
+        ? "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGULAR"
         : "DIALOG_DELETE_CUSTOM_EVENT_USED",
       { count, sceneNames: foundReferences },
     ),

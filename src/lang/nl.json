@@ -454,7 +454,7 @@
   "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Sla je project alsjeblieft op en herstart de applicatie.",
   "DIALOG_DELETE_CUSTOM_EVENT": "Aangepaste actie \"{name}\" verwijderen?",
   "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} verwijzingen naar deze actie worden ook verwijderd.\n\nGevonden in: {sceneNames}",
-  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} verwijzing naar deze actie wordt ook verwijderd.\n\nGevonden in: {sceneNames}",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGULAR": "{count} verwijzing naar deze actie wordt ook verwijderd.\n\nGevonden in: {sceneNames}",
 
   "// 16": "Settings ----------------------------------------------------",
 

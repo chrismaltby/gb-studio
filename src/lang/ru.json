@@ -1231,7 +1231,7 @@
   "DIALOG_LANGUAGE_SAVE_AND_RESTART": "Пожалуйста, сохраните ваш проект и перезапустите приложение",
   "DIALOG_DELETE_CUSTOM_EVENT": "Удалить скрипт \"{name}\"?",
   "DIALOG_DELETE_CUSTOM_EVENT_USED": "{count} использование этого события также будет удалено.\n\n Найдено в: {sceneNames}",
-  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGLAR": "{count} использование этого события также будет удалено.\n\n Найдено в: {sceneNames}",
+  "DIALOG_DELETE_CUSTOM_EVENT_USED_SINGULAR": "{count} использование этого события также будет удалено.\n\n Найдено в: {sceneNames}",
   "DIALOG_EJECT_ENGINE": "Извлечь игровой движок?",
   "DIALOG_EJECT_ENGINE_DESCRIPTION": "Последние файлы движка GB Studio будут скопированы в активы / движок. Вы можете вносить изменения в любой из этих файлов, и они заменят движок по умолчанию во время сборки.\n\n Чтобы восстановить движок по умолчанию, удалите активы / движок",
   "DIALOG_EJECT": "Извлечь",

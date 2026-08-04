@@ -18,7 +18,7 @@ const confirmDeleteVariable = (name: string, usesNames: string[]) => {
     message: l10n("DIALOG_DELETE_VARIABLE", { name }),
     detail: l10n(
       usesNames.length === 1
-        ? "DIALOG_DELETE_VARIABLE_USED_SINGLAR"
+        ? "DIALOG_DELETE_VARIABLE_USED_SINGULAR"
         : "DIALOG_DELETE_VARIABLE_USED",
       { count: usesNames.length, foundReferences },
     ),
