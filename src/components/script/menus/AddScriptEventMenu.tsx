@@ -51,6 +51,7 @@ import { applyCustomEventArgDefaults } from "components/script/events/customEven
 import {
   defaultVariableElementValue,
   defaultValueForUnionType,
+  defaultVariableValueForType,
   type VariableFieldCandidate,
 } from "components/script/fields/fieldHelpers";
 
@@ -89,6 +90,7 @@ interface EventOptGroup {
 }
 
 interface InstanciateOptions {
+  variableCandidates: VariableFieldCandidate[];
   defaultSceneId: string;
   defaultVariableId: string;
   defaultScalarVariableId: string;
@@ -110,6 +112,7 @@ const MENU_GROUP_SPACER = 10;
 const instanciateScriptEvent = (
   handler: ScriptEventDef,
   {
+    variableCandidates,
     defaultSceneId,
     defaultVariableId,
     defaultScalarVariableId,
@@ -232,6 +235,18 @@ const instanciateScriptEvent = (
         if (field.type === "variableElement") {
           replaceValue = defaultVariableElementValue(
             defaultValue,
+            defaultVariableId,
+          );
+        }
+
+        if (
+          field.type === "variable" &&
+          field.variableType &&
+          defaultValue === "LAST_VARIABLE"
+        ) {
+          replaceValue = defaultVariableValueForType(
+            field.variableType,
+            variableCandidates,
             defaultVariableId,
           );
         }
@@ -891,6 +906,7 @@ const AddScriptEventMenu = ({
           before,
           data: [
             instanciateScriptEvent(newEvent, {
+              variableCandidates,
               defaultActorId: "player",
               defaultVariableId,
               defaultScalarVariableId,
@@ -922,6 +938,7 @@ const AddScriptEventMenu = ({
       parentKey,
       insertId,
       before,
+      variableCandidates,
       defaultVariableId,
       defaultScalarVariableId,
       lastMusicId,

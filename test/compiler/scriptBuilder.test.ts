@@ -1103,7 +1103,7 @@ test("Should link transfer single-word indirect variables", async () => {
   ).toBe(true);
 });
 
-test("Should reject multiword link transfer with indirect variables", async () => {
+test("Should reject multiword link transfer with non-array variables", async () => {
   const { sb } = await createTestScriptBuilder();
   const sendVariable = {
     type: "argument" as const,
@@ -1117,8 +1117,142 @@ test("Should reject multiword link transfer with indirect variables", async () =
   };
 
   expect(() => sb.linkTransfer(sendVariable, receiveVariable, 2)).toThrow(
-    "Variable must resolve to a direct address",
+    "Variable must be an array",
   );
+});
+
+test("Should link transfer between sufficiently sized arrays", async () => {
+  const sendVariableId = "11111111-1111-1111-1111-111111111111";
+  const receiveVariableId = "22222222-2222-2222-2222-222222222222";
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [sendVariableId]: {
+          id: sendVariableId,
+          name: "Send Array",
+          symbol: "var_send_array",
+          type: "array",
+          size: 3,
+        },
+        [receiveVariableId]: {
+          id: receiveVariableId,
+          name: "Receive Array",
+          symbol: "var_receive_array",
+          type: "array",
+          size: 2,
+        },
+      },
+    },
+  );
+
+  sb.linkTransfer(
+    { type: "variable", value: sendVariableId },
+    { type: "variable", value: receiveVariableId },
+    2,
+  );
+
+  expect(output).toContain(
+    "        VM_SIO_EXCHANGE         VAR_SEND_ARRAY, VAR_RECEIVE_ARRAY, 2",
+  );
+});
+
+test("Should reject link transfers larger than a global array", async () => {
+  const sendVariableId = "11111111-1111-1111-1111-111111111111";
+  const receiveVariableId = "22222222-2222-2222-2222-222222222222";
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [sendVariableId]: {
+          id: sendVariableId,
+          name: "Send Array",
+          symbol: "var_send_array",
+          type: "array",
+          size: 2,
+        },
+        [receiveVariableId]: {
+          id: receiveVariableId,
+          name: "Receive Array",
+          symbol: "var_receive_array",
+          type: "array",
+          size: 3,
+        },
+      },
+    },
+  );
+
+  expect(() =>
+    sb.linkTransfer(
+      { type: "variable", value: sendVariableId },
+      { type: "variable", value: receiveVariableId },
+      3,
+    ),
+  ).toThrow('Array "Send Array" with size 2 is too small for required size 3');
+});
+
+test("Should link transfer multiword custom event array parameters", async () => {
+  const { sb, output } = await createTestScriptBuilder();
+  const sendVariable = {
+    type: "argument" as const,
+    indirect: true,
+    array: true,
+    symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+  };
+  const receiveVariable = {
+    type: "argument" as const,
+    indirect: true,
+    array: true,
+    symbol: ".SCRIPT_ARG_INDIRECT_1_VARIABLE",
+  };
+
+  sb.linkTransfer(sendVariable, receiveVariable, 2);
+
+  expect(
+    output.some(
+      (line) =>
+        line.includes("VM_SIO_EXCHANGE") &&
+        line.includes("SIO_SEND") &&
+        line.includes("SIO_RECEIVE") &&
+        line.includes("2"),
+    ),
+  ).toBe(true);
+  expect(
+    output.filter((line) => line.includes("VM_PUSH_VALUE_IND")),
+  ).toHaveLength(2);
+  expect(
+    output.filter((line) => line.includes("VM_SET_INDIRECT")),
+  ).toHaveLength(2);
+});
+
+test("Should reject indexed arrays for multiword link transfers", async () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [arrayId]: {
+          id: arrayId,
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+    },
+  );
+
+  expect(() =>
+    sb.linkTransfer(
+      {
+        type: "variable",
+        value: arrayId,
+        index: { type: "number", value: 1 },
+      },
+      { type: "variable", value: arrayId },
+      2,
+    ),
+  ).toThrow("Variable must reference the root of an array");
 });
 
 test("Should resolve a scalar variable object without an index", async () => {

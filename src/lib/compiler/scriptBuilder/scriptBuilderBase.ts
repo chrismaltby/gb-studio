@@ -829,9 +829,53 @@ abstract class ScriptBuilderBase {
     packetSize: number,
   ) => {
     if (packetSize > 1) {
-      this._assertResolvedVariableDirect(variableA);
-      this._assertResolvedVariableDirect(variableB);
-      this._sioExchange(variableA.address, variableB.address, packetSize);
+      const offsetAddress = (
+        address: ScriptBuilderStackVariable,
+        offset: number,
+      ): ScriptBuilderStackVariable =>
+        offset === 0 ? address : `^/(${address} + ${offset})/`;
+      const incrementPointer = (pointer: ScriptBuilderStackVariable) => {
+        this._rpn()
+          .ref(pointer)
+          .int8(1)
+          .operator(".ADD")
+          .refSet(pointer)
+          .stop();
+      };
+
+      let sendAddress: ScriptBuilderStackVariable;
+      if (variableA.type === "direct") {
+        sendAddress = variableA.address;
+      } else {
+        sendAddress = this._declareLocal("sio_send", packetSize, true);
+        const sendPointer = this._declareLocal("sio_send_ptr", 1, true);
+        this._set(sendPointer, variableA.pointer);
+        for (let i = 0; i < packetSize; i++) {
+          this._stackPushInd(sendPointer);
+          this._set(offsetAddress(sendAddress, i), ".ARG0");
+          this._stackPop(1);
+          if (i < packetSize - 1) {
+            incrementPointer(sendPointer);
+          }
+        }
+      }
+
+      const receiveAddress =
+        variableB.type === "direct"
+          ? variableB.address
+          : this._declareLocal("sio_receive", packetSize, true);
+      this._sioExchange(sendAddress, receiveAddress, packetSize);
+
+      if (variableB.type === "indirect") {
+        const receivePointer = this._declareLocal("sio_receive_ptr", 1, true);
+        this._set(receivePointer, variableB.pointer);
+        for (let i = 0; i < packetSize; i++) {
+          this._setInd(receivePointer, offsetAddress(receiveAddress, i));
+          if (i < packetSize - 1) {
+            incrementPointer(receivePointer);
+          }
+        }
+      }
       return;
     }
 
@@ -2452,6 +2496,50 @@ extern void __mute_mask_${symbol};
       type: "direct",
       address,
     };
+  };
+
+  _assertVariableIsArrayOfMinimumSize = (
+    variable: ScriptBuilderVariable,
+    minimumSize: number,
+  ) => {
+    let rootVariable: ScriptBuilderVariable;
+    if (this._isVariableReference(variable)) {
+      if (variable.index !== undefined) {
+        throw new Error("Variable must reference the root of an array");
+      }
+      rootVariable = variable.value;
+    } else {
+      rootVariable = variable;
+    }
+
+    const resolvedVariable = this._resolveVariableRef(rootVariable);
+    if (this._isFunctionArg(resolvedVariable)) {
+      if (!resolvedVariable.indirect || !resolvedVariable.array) {
+        throw new Error("Variable must be an array");
+      }
+      return;
+    }
+
+    if (
+      typeof resolvedVariable !== "string" &&
+      typeof resolvedVariable !== "number"
+    ) {
+      throw new Error("Variable must be an array");
+    }
+
+    const variableId = getVariableId(
+      String(resolvedVariable),
+      this.options.entity,
+    );
+    const variableDefinition = this.options.variablesLookup[variableId];
+    if (variableDefinition?.type !== "array") {
+      throw new Error("Variable must be an array");
+    }
+    if (variableDefinition.size < minimumSize) {
+      throw new Error(
+        `Array "${variableDefinition.name || variableId}" with size ${variableDefinition.size} is too small for required size ${minimumSize}`,
+      );
+    }
   };
 
   _assertResolvedVariableDirect: (

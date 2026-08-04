@@ -3675,6 +3675,10 @@ class ScriptBuilder extends ScriptBuilderBase {
     receiveVariable: ScriptBuilderVariable,
     packetSize: number,
   ) => {
+    if (packetSize > 1) {
+      this._assertVariableIsArrayOfMinimumSize(sendVariable, packetSize);
+      this._assertVariableIsArrayOfMinimumSize(receiveVariable, packetSize);
+    }
     this._sioExchangeVariables(
       this._resolveVariableAddress(sendVariable),
       this._resolveVariableAddress(receiveVariable),
