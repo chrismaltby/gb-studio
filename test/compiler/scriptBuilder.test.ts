@@ -969,6 +969,158 @@ test("Should increment an array variable with a static index", async () => {
   ]);
 });
 
+test("Should reject data peek from a dynamically indexed array element", async () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
+  const sourceIndexId = "22222222-2222-2222-2222-222222222222";
+  const destinationIndexId = "33333333-3333-3333-3333-333333333333";
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [arrayId]: {
+          id: arrayId,
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+        [sourceIndexId]: {
+          id: sourceIndexId,
+          name: "Source Index",
+          symbol: "var_source_index",
+          type: "number",
+        },
+        [destinationIndexId]: {
+          id: destinationIndexId,
+          name: "Destination Index",
+          symbol: "var_destination_index",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  expect(() =>
+    sb.dataPeek(
+      0,
+      {
+        type: "variable",
+        value: arrayId,
+        index: { type: "variable", value: sourceIndexId },
+      },
+      {
+        type: "variable",
+        value: arrayId,
+        index: { type: "variable", value: destinationIndexId },
+      },
+    ),
+  ).toThrow("Variable must resolve to a direct address");
+});
+
+test("Should data peek into a dynamically indexed array element", async () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
+  const destinationIndexId = "33333333-3333-3333-3333-333333333333";
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [arrayId]: {
+          id: arrayId,
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+        [destinationIndexId]: {
+          id: destinationIndexId,
+          name: "Destination Index",
+          symbol: "var_destination_index",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  sb.dataPeek(
+    0,
+    {
+      type: "variable",
+      value: arrayId,
+      index: { type: "number", value: 3 },
+    },
+    {
+      type: "variable",
+      value: arrayId,
+      index: { type: "variable", value: destinationIndexId },
+    },
+  );
+
+  expect(
+    output.some(
+      (line) =>
+        line.includes("VM_SAVE_PEEK") &&
+        line.includes("PEEK_DEST") &&
+        line.includes("^/(VAR_ARRAY + 3)/"),
+    ),
+  ).toBe(true);
+  expect(
+    output.some(
+      (line) =>
+        line.includes("VM_SET_INDIRECT") &&
+        line.includes("ARRAY_PTR") &&
+        line.includes("PEEK_DEST"),
+    ),
+  ).toBe(true);
+});
+
+test("Should link transfer single-word indirect variables", async () => {
+  const { sb, output } = await createTestScriptBuilder();
+  const sendVariable = {
+    type: "argument" as const,
+    indirect: true,
+    symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+  };
+  const receiveVariable = {
+    type: "argument" as const,
+    indirect: true,
+    symbol: ".SCRIPT_ARG_INDIRECT_1_VARIABLE",
+  };
+
+  sb.linkTransfer(sendVariable, receiveVariable, 1);
+
+  expect(
+    output.some(
+      (line) =>
+        line.includes("VM_SIO_EXCHANGE") && line.includes(".ARG0, .ARG1, 1"),
+    ),
+  ).toBe(true);
+  expect(
+    output.some(
+      (line) =>
+        line.includes("VM_SET_INDIRECT") &&
+        line.includes(receiveVariable.symbol),
+    ),
+  ).toBe(true);
+});
+
+test("Should reject multiword link transfer with indirect variables", async () => {
+  const { sb } = await createTestScriptBuilder();
+  const sendVariable = {
+    type: "argument" as const,
+    indirect: true,
+    symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+  };
+  const receiveVariable = {
+    type: "argument" as const,
+    indirect: true,
+    symbol: ".SCRIPT_ARG_INDIRECT_1_VARIABLE",
+  };
+
+  expect(() => sb.linkTransfer(sendVariable, receiveVariable, 2)).toThrow(
+    "Variable must resolve to a direct address",
+  );
+});
+
 test("Should resolve a scalar variable object without an index", async () => {
   const { sb } = await createTestScriptBuilder(
     {},

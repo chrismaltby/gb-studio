@@ -3613,25 +3613,45 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._addNL();
   };
 
-  dataPeek = (slot = 0, variableSource: string, variableDest: string) => {
+  dataPeek = (
+    slot = 0,
+    variableSource: ScriptBuilderVariable,
+    variableDest: ScriptBuilderVariable,
+  ) => {
     const peekValueRef = this._declareLocal("peek_value", 1, true);
-    const variableDestAlias = this.getVariableAlias(variableDest);
-    const variableSourceAlias = this.getVariableAlias(variableSource);
+    const variableSourceAddress = this._resolveVariableAddress(variableSource);
+    this._assertResolvedVariableDirect(variableSourceAddress);
+    const variableDestAddress = this._resolveVariableAddress(variableDest);
+    const peekDestAddress =
+      variableDestAddress.type === "direct"
+        ? variableDestAddress
+        : this._directVariableAddress(this._declareLocal("peek_dest", 1, true));
     const foundLabel = this.getNextLabel();
 
     this._addComment(
-      `Store ${variableSourceAlias} from save slot ${slot} into ${variableDestAlias}`,
+      `Store ${variableSourceAddress.address} from save slot ${slot} into ${
+        variableDestAddress.type === "direct"
+          ? variableDestAddress.address
+          : variableDestAddress.pointer
+      }`,
     );
     this._savePeek(
       peekValueRef,
-      variableDestAlias,
-      variableSourceAlias,
+      peekDestAddress,
+      variableSourceAddress,
       1,
       slot,
     );
     this._ifConst(".EQ", peekValueRef, 1, foundLabel, 0);
-    this._setVariableConst(variableDest, 0);
+    if (variableDestAddress.type === "direct") {
+      this._setConst(variableDestAddress.address, 0);
+    } else {
+      this._setConst(peekDestAddress.address, 0);
+    }
     this._label(foundLabel);
+    if (variableDestAddress.type === "indirect") {
+      this._setInd(variableDestAddress.pointer, peekDestAddress.address);
+    }
     this._addNL();
   };
 
@@ -3651,11 +3671,15 @@ class ScriptBuilder extends ScriptBuilderBase {
   };
 
   linkTransfer = (
-    sendVariable: string,
-    receiveVariable: string,
+    sendVariable: ScriptBuilderVariable,
+    receiveVariable: ScriptBuilderVariable,
     packetSize: number,
   ) => {
-    this._sioExchangeVariables(sendVariable, receiveVariable, packetSize);
+    this._sioExchangeVariables(
+      this._resolveVariableAddress(sendVariable),
+      this._resolveVariableAddress(receiveVariable),
+      packetSize,
+    );
   };
 
   // --------------------------------------------------------------------------
@@ -4109,7 +4133,13 @@ class ScriptBuilder extends ScriptBuilderBase {
     const trueLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     this._addComment(`If Variable True`);
-    this._savePeek(savePeekRef, 0, 0, 0, slot);
+    this._savePeek(
+      savePeekRef,
+      this._directVariableAddress(0),
+      this._directVariableAddress(0),
+      0,
+      slot,
+    );
     this._ifConst(".EQ", savePeekRef, 1, trueLabel, 0);
     this._addNL();
     this._compilePath(falsePath);

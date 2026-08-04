@@ -72,6 +72,19 @@ export type ScriptBuilderVariable =
   | ScriptBuilderFunctionArg
   | ScriptBuilderVariableReference;
 
+export type ScriptBuilderDirectVariableAddress = {
+  type: "direct";
+  address: ScriptBuilderStackVariable;
+};
+
+export type ScriptBuilderIndirectVariableAddress = {
+  type: "indirect";
+  pointer: ScriptBuilderStackVariable;
+};
+
+export type ScriptBuilderResolvedVariableAddress =
+  ScriptBuilderDirectVariableAddress | ScriptBuilderIndirectVariableAddress;
+
 export type CameraProperty =
   | "camera_x"
   | "camera_y"

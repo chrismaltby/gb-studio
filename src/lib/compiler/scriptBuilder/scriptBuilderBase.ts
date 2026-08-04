@@ -32,6 +32,7 @@ import {
   ScriptBuilderChoiceFlag,
   ScriptBuilderComparisonOperator,
   ScriptBuilderDataTable,
+  ScriptBuilderDirectVariableAddress,
   ScriptBuilderFunctionArg,
   ScriptBuilderVariableReference,
   ScriptBuilderLocalSymbol,
@@ -42,6 +43,7 @@ import {
   ScriptBuilderPaletteType,
   ScriptBuilderPathFunction,
   ScriptBuilderRPNOperation,
+  ScriptBuilderResolvedVariableAddress,
   ScriptBuilderStackVariable,
   ScriptBuilderUIColor,
   ScriptBuilderVariable,
@@ -814,40 +816,45 @@ abstract class ScriptBuilderBase {
   };
 
   _sioExchange = (
-    sendVariable: string,
-    receiveVariable: string,
+    sendVariable: ScriptBuilderStackVariable,
+    receiveVariable: ScriptBuilderStackVariable,
     packetSize: number,
   ) => {
     this._addCmd("VM_SIO_EXCHANGE", sendVariable, receiveVariable, packetSize);
   };
 
   _sioExchangeVariables = (
-    variableA: string,
-    variableB: string,
+    variableA: ScriptBuilderResolvedVariableAddress,
+    variableB: ScriptBuilderResolvedVariableAddress,
     packetSize: number,
   ) => {
-    const variableAliasA = this.getVariableAlias(variableA);
-    const variableAliasB = this.getVariableAlias(variableB);
+    if (packetSize > 1) {
+      this._assertResolvedVariableDirect(variableA);
+      this._assertResolvedVariableDirect(variableB);
+      this._sioExchange(variableA.address, variableB.address, packetSize);
+      return;
+    }
 
     let pop = 0;
-    let dest = variableAliasB;
+    let dest: ScriptBuilderStackVariable =
+      variableB.type === "direct" ? variableB.address : ".ARG0";
 
-    if (this._isIndirectVariable(variableB)) {
+    if (variableB.type === "indirect") {
       pop++;
       this._stackPushConst(0);
-      dest = this._isIndirectVariable(variableA) ? ".ARG1" : ".ARG0";
+      dest = variableA.type === "indirect" ? ".ARG1" : ".ARG0";
     }
 
-    if (this._isIndirectVariable(variableA)) {
+    if (variableA.type === "indirect") {
       pop++;
-      this._stackPushInd(variableAliasA);
+      this._stackPushInd(variableA.pointer);
       this._sioExchange(".ARG0", dest, packetSize);
     } else {
-      this._sioExchange(variableAliasA, dest, packetSize);
+      this._sioExchange(variableA.address, dest, packetSize);
     }
 
-    if (this._isIndirectVariable(variableB)) {
-      this._setInd(variableAliasB, dest);
+    if (variableB.type === "indirect") {
+      this._setInd(variableB.pointer, dest);
     }
 
     if (pop > 0) {
@@ -2100,12 +2107,19 @@ abstract class ScriptBuilderBase {
 
   _savePeek = (
     successDest: ScriptBuilderStackVariable,
-    dest: ScriptBuilderStackVariable,
-    source: ScriptBuilderStackVariable,
+    dest: ScriptBuilderDirectVariableAddress,
+    source: ScriptBuilderDirectVariableAddress,
     count: number,
     slot: number,
   ) => {
-    this._addCmd("VM_SAVE_PEEK", successDest, dest, source, count, slot);
+    this._addCmd(
+      "VM_SAVE_PEEK",
+      successDest,
+      dest.address,
+      source.address,
+      count,
+      slot,
+    );
   };
 
   _saveClear = (slot: number) => {
@@ -2423,6 +2437,37 @@ extern void __mute_mask_${symbol};
     }
     return this._isFunctionArg(resolved) && resolved.indirect;
   };
+
+  _resolveVariableAddress = (
+    variable: ScriptBuilderVariable,
+  ): ScriptBuilderResolvedVariableAddress => {
+    const address = this.getVariableAlias(variable);
+    if (this._isIndirectVariable(variable)) {
+      return {
+        type: "indirect",
+        pointer: address,
+      };
+    }
+    return {
+      type: "direct",
+      address,
+    };
+  };
+
+  _assertResolvedVariableDirect: (
+    variable: ScriptBuilderResolvedVariableAddress,
+  ) => asserts variable is ScriptBuilderDirectVariableAddress = (variable) => {
+    if (variable.type !== "direct") {
+      throw new Error("Variable must resolve to a direct address");
+    }
+  };
+
+  _directVariableAddress = (
+    address: ScriptBuilderStackVariable,
+  ): ScriptBuilderDirectVariableAddress => ({
+    type: "direct",
+    address,
+  });
 
   _declareLocal = (
     symbol: string,
