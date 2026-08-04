@@ -154,6 +154,9 @@ const VariableSelectComponent = ({
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state),
   );
+  const allVariables = useAppSelector((state) =>
+    variableSelectors.selectAll(state),
+  );
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId),
   );
@@ -166,7 +169,7 @@ const VariableSelectComponent = ({
 
   const variables = useMemo(
     () =>
-      namedVariablesByContext(context, variablesLookup, customEvent).filter(
+      namedVariablesByContext(context, allVariables, customEvent).filter(
         (variable) => {
           if (!allowedVariableTypes) {
             return true;
@@ -179,7 +182,7 @@ const VariableSelectComponent = ({
           return allowedVariableTypes.includes(variableType);
         },
       ),
-    [variablesLookup, context, customEvent, allowedVariableTypes],
+    [allVariables, variablesLookup, context, customEvent, allowedVariableTypes],
   );
 
   const options = useMemo<OptGroup[]>(() => {

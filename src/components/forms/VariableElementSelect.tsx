@@ -69,16 +69,19 @@ const VariableElementSelectComponent = ({
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state),
   );
+  const allVariables = useAppSelector((state) =>
+    variableSelectors.selectAll(state),
+  );
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId),
   );
   const variables = useMemo(
     () =>
-      namedVariablesByContext(context, variablesLookup, customEvent).filter(
+      namedVariablesByContext(context, allVariables, customEvent).filter(
         (variable) =>
           allowCustomEventParameters || !isVariableCustomEvent(variable.id),
       ),
-    [allowCustomEventParameters, context, customEvent, variablesLookup],
+    [allowCustomEventParameters, allVariables, context, customEvent],
   );
   const options = useMemo<VariableElementOptionGroup[]>(
     () =>

@@ -15,6 +15,7 @@ import {
 import { Variable } from "shared/lib/resources/types";
 import { sortByName } from "shared/lib/helpers/sort";
 import { variableName } from "shared/lib/entities/entitiesHelpers";
+import keyBy from "lodash/keyBy";
 
 const arrayNStrings = (n: number) =>
   Array.from(Array(n).keys()).map((n) => String(n));
@@ -44,24 +45,25 @@ interface VariableGroup {
 
 export const namedVariablesByContext = (
   context: ScriptEditorCtx,
-  variablesLookup: VariablesLookup,
+  variables: Variable[],
   customEvent: ScriptNormalized | undefined,
 ): NamedVariable[] => {
+  const variablesLookup = keyBy(variables, "id");
   if (context.type === "script") {
     if (customEvent) {
-      return namedCustomEventVariables(customEvent, variablesLookup);
+      return namedCustomEventVariables(customEvent, variables);
     }
     return [];
   } else if (context.type === "entity" || context.type === "prefab") {
-    return namedEntityVariables(context.entityId, variablesLookup);
+    return namedEntityVariables(context.entityId, variables, variablesLookup);
   } else {
-    return namedGlobalVariables(variablesLookup);
+    return namedGlobalVariables(variables);
   }
 };
 
 export const namedCustomEventVariables = (
   customEvent: ScriptNormalized,
-  variablesLookup: VariablesLookup,
+  variables: Variable[],
 ): NamedVariable[] => {
   return ([] as NamedVariable[]).concat(
     customEventVariables.map((variable) => {
@@ -80,12 +82,13 @@ export const namedCustomEventVariables = (
         group: l10n("SIDEBAR_PARAMETERS"),
       };
     }),
-    namedGlobalVariables(variablesLookup),
+    namedGlobalVariables(variables),
   );
 };
 
 const namedEntityVariables = (
   entityId: string,
+  variables: Variable[],
   variablesLookup: VariablesLookup,
 ): NamedVariable[] => {
   return ([] as NamedVariable[]).concat(
@@ -109,16 +112,14 @@ const namedEntityVariables = (
         group: l10n("FIELD_TEMPORARY"),
       };
     }),
-    namedGlobalVariables(variablesLookup),
+    namedGlobalVariables(variables),
   );
 };
 
 const isGlobalVariable = (variable: Variable) => !variable.id.includes("__L");
 
-const namedGlobalVariables = (
-  variablesLookup: VariablesLookup,
-): NamedVariable[] =>
-  (Object.values(variablesLookup) as Variable[])
+const namedGlobalVariables = (variables: Variable[]): NamedVariable[] =>
+  variables
     .filter(isGlobalVariable)
     .map((variable, index) => {
       const name = variableName(variable, index);

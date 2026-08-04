@@ -66,8 +66,8 @@ export const useScriptEventTitle = (
   >({});
   const { entityType, sceneId, entityId } = context;
 
-  const variablesLookup = useAppSelector((state) =>
-    variableSelectors.selectEntities(state),
+  const allVariables = useAppSelector((state) =>
+    variableSelectors.selectAll(state),
   );
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId),
@@ -108,12 +108,12 @@ export const useScriptEventTitle = (
   useEffect(() => {
     const variables = namedVariablesByContext(
       context,
-      variablesLookup,
+      allVariables,
       customEvent,
     );
     const namedLookup = keyBy(variables, "id");
     setNamedVariablesLookup(namedLookup);
-  }, [entityId, variablesLookup, context, customEvent]);
+  }, [allVariables, entityId, context, customEvent]);
 
   useEffect(() => {
     async function fetchAutoLabel() {

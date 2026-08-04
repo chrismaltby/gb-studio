@@ -13,12 +13,15 @@ export const useVariableFieldContext = (entityId: string) => {
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state),
   );
+  const allVariables = useAppSelector((state) =>
+    variableSelectors.selectAll(state),
+  );
   const customEvent = useAppSelector((state) =>
     customEventSelectors.selectById(state, entityId),
   );
   const variables = useMemo(
-    () => namedVariablesByContext(context, variablesLookup, customEvent),
-    [context, customEvent, variablesLookup],
+    () => namedVariablesByContext(context, allVariables, customEvent),
+    [allVariables, context, customEvent],
   );
   const candidates = useMemo<VariableFieldCandidate[]>(
     () =>

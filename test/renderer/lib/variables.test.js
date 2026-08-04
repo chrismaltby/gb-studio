@@ -2,7 +2,15 @@
  * @jest-environment jsdom
  */
 
-import { namedCustomEventVariables } from "../../../src/renderer/lib/variables";
+import {
+  namedCustomEventVariables,
+  namedVariablesByContext,
+} from "../../../src/renderer/lib/variables";
+import { clearL10NData, setL10NData } from "../../../src/shared/lib/lang/l10n";
+
+afterEach(() => {
+  clearL10NData();
+});
 
 test("Should be able to extract named variables from custom event", () => {
   expect(
@@ -18,7 +26,7 @@ test("Should be able to extract named variables from custom event", () => {
           },
         },
       },
-      {},
+      [],
     ).slice(0, 10),
   ).toEqual([
     {
@@ -99,19 +107,54 @@ test("Should keep array capacity separate from the variable name", () => {
     {
       variables: {},
     },
-    {
-      array1: {
+    [
+      {
         id: "array1",
         name: "Inventory",
         symbol: "var_inventory",
         type: "array",
         size: 5,
       },
-    },
+    ],
   ).find(({ id }) => id === "array1");
 
   expect(variable).toMatchObject({
     name: "Inventory",
     displayName: "Inventory[5]",
   });
+});
+
+test("Should number unnamed globals using the supplied variable order", () => {
+  setL10NData({ FIELD_VARIABLE: "Variable" });
+  const variables = [
+    {
+      id: "10",
+      name: "",
+      symbol: "var_10",
+      type: "number",
+    },
+    {
+      id: "2",
+      name: "",
+      symbol: "var_2",
+      type: "number",
+    },
+  ];
+
+  expect(
+    namedVariablesByContext(
+      {
+        type: "scene",
+        sceneId: "scene1",
+        entityId: "scene1",
+        entityType: "scene",
+        scriptKey: "script",
+      },
+      variables,
+      undefined,
+    ).map(({ id, name }) => ({ id, name })),
+  ).toEqual([
+    { id: "10", name: "Variable 1" },
+    { id: "2", name: "Variable 2" },
+  ]);
 });
