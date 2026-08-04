@@ -2,6 +2,7 @@ import {
   ScriptEventDefs,
   isActorField,
   isDataTableField,
+  isVariableField,
 } from "shared/lib/scripts/scriptDefHelpers";
 
 test('should identify fields starting with "$actor[" as actor fields from custom events', () => {
@@ -49,6 +50,22 @@ test('should identify fields with type "dataTable" as data table fields', () => 
           test: {
             key: "test",
             type: "dataTable",
+          },
+        },
+      },
+    } as unknown as ScriptEventDefs),
+  ).toEqual(true);
+});
+
+test('should identify fields with type "variableElement" as variable fields', () => {
+  expect(
+    isVariableField("EVENT_TEST", "test", {}, {
+      EVENT_TEST: {
+        id: "EVENT_TEST",
+        fieldsLookup: {
+          test: {
+            key: "test",
+            type: "variableElement",
           },
         },
       },

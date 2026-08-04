@@ -49,7 +49,7 @@ test("Should list fixed array elements as individual options", () => {
     <VariableElementSelect
       name="test"
       entityId=""
-      value={{ type: "variable", value: "scalar" }}
+      value={{ type: "variable", value: "array" }}
       onChange={onChange}
       menuIsOpen
       menuPortalTarget={null}
@@ -59,6 +59,7 @@ test("Should list fixed array elements as individual options", () => {
   );
 
   expect(screen.getByRole("option", { name: "Scalar" })).toBeInTheDocument();
+  expect(screen.getByText("$Array[0]")).toBeInTheDocument();
   expect(screen.getByRole("option", { name: "Array[0]" })).toBeInTheDocument();
   expect(screen.getByRole("option", { name: "Array[1]" })).toBeInTheDocument();
   expect(screen.getByRole("option", { name: "Array[2]" })).toBeInTheDocument();
@@ -147,4 +148,92 @@ test("Should use index zero for custom event array parameters", () => {
     value: "V1",
     index: { type: "number", value: 0 },
   });
+});
+
+test("Should exclude custom event parameters when disabled", () => {
+  const state = {
+    editor: { type: "customEvent" },
+    project: {
+      present: {
+        entities: {
+          customEvents: {
+            entities: {
+              customEvent1: {
+                id: "customEvent1",
+                variables: {
+                  V0: {
+                    id: "V0",
+                    name: "Array Reference",
+                    passByReference: "array",
+                  },
+                  V1: {
+                    id: "V1",
+                    name: "Variable Reference",
+                    passByReference: true,
+                  },
+                  V2: {
+                    id: "V2",
+                    name: "Value Parameter",
+                    passByReference: false,
+                  },
+                },
+              },
+            },
+            ids: ["customEvent1"],
+          },
+          variables: {
+            entities: {
+              global: {
+                id: "global",
+                name: "Global",
+                symbol: "var_global",
+                type: "number",
+              },
+            },
+            ids: ["global"],
+          },
+        },
+      },
+    },
+  };
+  const store = {
+    getState: () => state,
+    dispatch: () => {},
+    subscribe: () => {},
+  } as unknown as Store<RootState, UnknownAction>;
+
+  render(
+    <ScriptEditorContext.Provider
+      value={{
+        type: "script",
+        entityType: "customEvent",
+        entityId: "customEvent1",
+        sceneId: "",
+        scriptKey: "script",
+      }}
+    >
+      <VariableElementSelect
+        name="test"
+        entityId="customEvent1"
+        value={undefined}
+        onChange={() => {}}
+        allowCustomEventParameters={false}
+        menuIsOpen
+        menuPortalTarget={null}
+      />
+    </ScriptEditorContext.Provider>,
+    store,
+    {},
+  );
+
+  expect(
+    screen.queryByRole("option", { name: "Array Reference[]" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("option", { name: "Variable Reference" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("option", { name: "Value Parameter" }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole("option", { name: "Global" })).toBeInTheDocument();
 });

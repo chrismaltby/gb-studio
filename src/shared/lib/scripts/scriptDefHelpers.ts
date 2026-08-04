@@ -17,6 +17,9 @@ export type ScriptEventDefsFieldTypeLookup = Record<
 
 const SECTION_TAB_KEY = "__section";
 
+export const isVariableFieldType = (type: string | undefined): boolean =>
+  type === "variable" || type === "variableElement";
+
 export const isFieldVisible = (
   field: ScriptEventFieldSchema,
   args: ScriptEventArgs,
@@ -69,7 +72,7 @@ export const isVariableField = (
   const argValue = args[fieldName];
   return (
     !!field &&
-    (field.type === "variable" || isUnionVariableValue(argValue)) &&
+    (isVariableFieldType(field.type) || isUnionVariableValue(argValue)) &&
     isFieldVisible(field, args, [SECTION_TAB_KEY])
   );
 };

@@ -85,6 +85,27 @@ export const migrateFrom420r10To500r1DataTables: ScriptEventMigrationFn = (
   return changed ? { ...scriptEvent, args } : scriptEvent;
 };
 
+export const migrateFrom420r10To500r1DataPeek: ScriptEventMigrationFn = (
+  scriptEvent,
+) => {
+  if (
+    scriptEvent.command !== "EVENT_PEEK_DATA" ||
+    typeof scriptEvent.args?.variableSource !== "string"
+  ) {
+    return scriptEvent;
+  }
+  return {
+    ...scriptEvent,
+    args: {
+      ...scriptEvent.args,
+      variableSource: {
+        type: "variable",
+        value: scriptEvent.args.variableSource,
+      },
+    },
+  };
+};
+
 // Create global variable entry for all variable references
 export const migrateFrom420r10To500r1Variables: ProjectResourcesMigrationFn = (
   resources,
@@ -158,6 +179,7 @@ export const migrate420r10To500r1: ProjectResourcesMigration = {
   to: { version: "5.0.0", release: "1" },
   migrationFn: pipeMigrationFns([
     createScriptEventsMigrator(migrateFrom420r10To500r1DataTables),
+    createScriptEventsMigrator(migrateFrom420r10To500r1DataPeek),
     migrateFrom420r10To500r1Variables,
   ]),
 };

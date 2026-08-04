@@ -1,6 +1,7 @@
 import {
   allowedVariableTypesForFieldType,
   defaultValueForUnionType,
+  defaultVariableElementValue,
   defaultVariableValueForType,
   variableTypeAllowsIndex,
   variableValueForType,
@@ -99,6 +100,23 @@ describe("union field defaults", () => {
   test("returns undefined when the union member has no default", () => {
     expect(
       defaultValueForUnionType(field, "direction", "variable-id"),
+    ).toBeUndefined();
+  });
+});
+
+describe("variable element defaults", () => {
+  test("resolves the last variable placeholder", () => {
+    expect(
+      defaultVariableElementValue(
+        { type: "variable", value: "LAST_VARIABLE" },
+        "variable-id",
+      ),
+    ).toEqual({ type: "variable", value: "variable-id" });
+  });
+
+  test("rejects legacy string defaults", () => {
+    expect(
+      defaultVariableElementValue("LAST_VARIABLE", "variable-id"),
     ).toBeUndefined();
   });
 });

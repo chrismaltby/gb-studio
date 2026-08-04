@@ -10,7 +10,10 @@ import {
   isScriptValueVariable,
 } from "shared/lib/scriptValue/types";
 import { normalizeVariableId } from "shared/lib/variables/variableIds";
-import type { ScriptEventDefsFieldTypeLookup } from "shared/lib/scripts/scriptDefHelpers";
+import {
+  isVariableFieldType,
+  type ScriptEventDefsFieldTypeLookup,
+} from "shared/lib/scripts/scriptDefHelpers";
 
 const isUnionVariableValue = (
   value: unknown,
@@ -105,7 +108,10 @@ export const extractVariableIdsFromScriptEvent = (
       continue;
     }
 
-    if (field?.type === "variable" || (field && isUnionVariableValue(value))) {
+    if (
+      isVariableFieldType(field?.type) ||
+      (field && isUnionVariableValue(value))
+    ) {
       if (typeof value === "string") {
         addVariableId(value);
       } else if (isScriptValueVariable(value)) {

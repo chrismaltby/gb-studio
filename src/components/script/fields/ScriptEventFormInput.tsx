@@ -70,6 +70,7 @@ import ValueSelect, {
 import {
   isConstScriptValue,
   isScriptValue,
+  isScriptVariableElement,
 } from "shared/lib/scriptValue/types";
 import { FlagField } from "ui/form/FlagField";
 import { FlagSelect } from "components/forms/FlagSelect";
@@ -80,6 +81,7 @@ import { EngineFieldType } from "store/features/engine/engineState";
 import { OverlaySpeedSelect } from "components/forms/OverlaySpeedSelect";
 import { ActorDirection, CollisionGroup } from "shared/lib/resources/types";
 import { DataTableInput } from "components/forms/DataTableInput";
+import { VariableElementSelect } from "components/forms/VariableElementSelect";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
 import { VariableFieldInput } from "./VariableFieldInput";
 import { defaultValueForUnionType } from "./fieldHelpers";
@@ -553,6 +555,20 @@ const ScriptEventFormInput = ({
         field={field}
         value={value}
         allowRename={allowRename}
+        onChange={onChangeField}
+      />
+    );
+  } else if (type === "variableElement") {
+    const variableElementValue = isScriptVariableElement(value)
+      ? value
+      : undefined;
+    return (
+      <VariableElementSelect
+        name={id}
+        entityId={entityId}
+        value={variableElementValue}
+        allowRename={allowRename}
+        allowCustomEventParameters={field.allowCustomEventParameters}
         onChange={onChangeField}
       />
     );

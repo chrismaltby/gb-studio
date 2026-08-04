@@ -1,6 +1,7 @@
 import {
   isInfix,
   isScriptValue,
+  isScriptVariableElement,
   isScriptValueVariable,
   isValueAtomType,
   isValueNumber,
@@ -34,6 +35,23 @@ test("should typeguard variable values with optional indices", () => {
       index: { type: "number", value: 2 },
     }),
   ).toEqual(true);
+});
+
+test("should typeguard variable elements with fixed indices", () => {
+  expect(
+    isScriptVariableElement({
+      type: "variable",
+      value: "11111111-1111-1111-1111-111111111111",
+      index: { type: "number", value: 2 },
+    }),
+  ).toEqual(true);
+  expect(
+    isScriptVariableElement({
+      type: "variable",
+      value: "11111111-1111-1111-1111-111111111111",
+      index: { type: "variable", value: "index-variable" },
+    }),
+  ).toEqual(false);
 });
 
 test("should reject the removed indexed variable representation", () => {

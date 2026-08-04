@@ -86,6 +86,7 @@ import {
   isTilemapLayerCellTopmost,
 } from "shared/lib/tiles/sceneTilemapData";
 import { extractVariableIdsFromScriptEvent } from "shared/lib/variables/extractVariableReferences";
+import { isVariableFieldType } from "shared/lib/scripts/scriptDefHelpers";
 
 type ResourceIdMapping = Record<string, string>;
 
@@ -248,7 +249,8 @@ const remapResourceReferencesInEventArgs = (
   const fieldsLookup = scriptEventDefs[command]?.fieldsLookup ?? {};
   for (const [key, value] of Object.entries(args)) {
     const isVariableField =
-      key.startsWith("$variable[") || fieldsLookup[key]?.type === "variable";
+      key.startsWith("$variable[") ||
+      isVariableFieldType(fieldsLookup[key]?.type);
     if (
       isVariableField &&
       typeof value === "string" &&

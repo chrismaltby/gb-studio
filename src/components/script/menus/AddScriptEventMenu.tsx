@@ -49,6 +49,7 @@ import { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
 import { useVariableFieldContext } from "components/script/fields/useVariableFieldContext";
 import { applyCustomEventArgDefaults } from "components/script/events/customEventArgs";
 import {
+  defaultVariableElementValue,
   defaultValueForUnionType,
   type VariableFieldCandidate,
 } from "components/script/fields/fieldHelpers";
@@ -226,6 +227,13 @@ const instanciateScriptEvent = (
                 : variable,
             ),
           };
+        }
+
+        if (field.type === "variableElement") {
+          replaceValue = defaultVariableElementValue(
+            defaultValue,
+            defaultVariableId,
+          );
         }
 
         if (field.type === "union") {

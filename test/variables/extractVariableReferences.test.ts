@@ -6,6 +6,7 @@ const scriptEventDefs = {
   EVENT_PLUGIN_TEST: {
     fieldsLookup: {
       direct: { type: "variable" },
+      element: { type: "variableElement" },
       union: { type: "union" },
       value: { type: "value" },
       text: { type: "text" },
@@ -30,6 +31,11 @@ test("extracts variable IDs from schema-driven event arguments", () => {
           valueA: { type: "variable", value: "26" },
           valueB: { type: "number", value: 1 },
         },
+      },
+      element: {
+        type: "variable",
+        value: "34",
+        index: { type: "number", value: 2 },
       },
       union: { type: "variable", value: "13" },
       value: {
@@ -95,6 +101,7 @@ test("extracts variable IDs from schema-driven event arguments", () => {
       "31",
       "32",
       "33",
+      "34",
     ].sort(),
   );
 });

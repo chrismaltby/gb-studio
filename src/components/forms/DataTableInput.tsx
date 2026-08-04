@@ -17,9 +17,11 @@ import { DataTableCSVVariable } from "shared/lib/scriptDataTable/csv";
 import {
   ScriptDataTable,
   ScriptDataTableRow,
-  ScriptDataTableVariable,
 } from "shared/lib/scriptDataTable/types";
-import { ConstScriptValue } from "shared/lib/scriptValue/types";
+import {
+  ConstScriptValue,
+  ScriptVariableElement,
+} from "shared/lib/scriptValue/types";
 import type { Variable } from "shared/lib/resources/types";
 import { constantSelectors } from "store/features/entities/entitiesSelectors";
 import entitiesActions from "store/features/entities/entitiesActions";
@@ -273,14 +275,11 @@ interface DataTableInputProps {
 }
 
 interface DataTableColumnHeaderProps {
-  variable: ScriptDataTableVariable;
+  variable: ScriptVariableElement;
   colIndex: number;
   canRemoveColumn: boolean;
   entityId: string;
-  onUpdateVariable: (
-    colIndex: number,
-    variable: ScriptDataTableVariable,
-  ) => void;
+  onUpdateVariable: (colIndex: number, variable: ScriptVariableElement) => void;
   onRemoveColumn: (colIndex: number) => void;
 }
 
@@ -309,10 +308,10 @@ const defaultValue = (variableId: string): ScriptDataTable => ({
 });
 
 const nextColumnVariable = (
-  variables: ScriptDataTableVariable[],
+  variables: ScriptVariableElement[],
   availableVariableIds: string[],
   variablesLookup: Record<string, Variable | undefined>,
-): ScriptDataTableVariable => {
+): ScriptVariableElement => {
   const previousVariable = variables.at(-1);
   if (previousVariable?.index?.type === "number") {
     const variable = variablesLookup[previousVariable.value];
@@ -550,7 +549,7 @@ export const DataTableInput = ({
   }, [onChange, table]);
 
   const updateVariable = useCallback(
-    (colIndex: number, newVariable: ScriptDataTableVariable) => {
+    (colIndex: number, newVariable: ScriptVariableElement) => {
       updateTable((currentTable) => ({
         ...currentTable,
         variables: currentTable.variables.map((variable, index) =>

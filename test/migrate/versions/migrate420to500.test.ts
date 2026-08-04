@@ -1,6 +1,7 @@
 import cloneDeep from "lodash/cloneDeep";
 import {
   migrate420r10To500r1,
+  migrateFrom420r10To500r1DataPeek,
   migrateFrom420r10To500r1DataTables,
   migrateFrom420r10To500r1Variables,
 } from "lib/project/migration/versions/420to500";
@@ -181,6 +182,71 @@ test("converts legacy data table variables to script values", () => {
         ],
         rows: [{ values: [{ type: "number", value: 1 }] }],
       },
+    },
+  });
+});
+
+test("converts legacy Data Peek source variables to variable elements", () => {
+  const scriptEvent = {
+    id: "event1",
+    command: "EVENT_PEEK_DATA",
+    args: {
+      saveSlot: 0,
+      variableSource: "12",
+      variableDest: "13",
+    },
+  };
+
+  expect(migrateFrom420r10To500r1DataPeek(scriptEvent)).toEqual({
+    ...scriptEvent,
+    args: {
+      ...scriptEvent.args,
+      variableSource: { type: "variable", value: "12" },
+    },
+  });
+});
+
+test("preserves already migrated Data Peek source variables", () => {
+  const scriptEvent = {
+    id: "event1",
+    command: "EVENT_PEEK_DATA",
+    args: {
+      variableSource: { type: "variable", value: "12" },
+    },
+  };
+
+  expect(migrateFrom420r10To500r1DataPeek(scriptEvent)).toBe(scriptEvent);
+});
+
+test("applies the Data Peek source migration to project scripts", () => {
+  const resources = {
+    ...dummyCompressedProjectResources,
+    scripts: [
+      {
+        ...dummyScriptResource,
+        script: [
+          {
+            id: "event1",
+            command: "EVENT_PEEK_DATA",
+            args: {
+              variableSource: "12",
+              variableDest: "13",
+              saveSlot: 0,
+            },
+          },
+        ],
+      },
+    ],
+  };
+
+  const migrated = migrate420r10To500r1.migrationFn(
+    resources as unknown as CompressedProjectResources,
+    { scriptEventDefs },
+  );
+
+  expect(migrated.scripts[0].script[0]).toMatchObject({
+    args: {
+      variableSource: { type: "variable", value: "12" },
     },
   });
 });

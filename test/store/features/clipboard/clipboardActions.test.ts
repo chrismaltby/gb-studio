@@ -1783,6 +1783,7 @@ test("Should only remap raw numeric IDs in schema-defined variable fields", asyn
         EVENT_TEST: {
           fieldsLookup: {
             variable: { type: "variable" },
+            variableElement: { type: "variableElement" },
             unrelatedOption: { type: "select" },
           },
         },
@@ -1797,6 +1798,7 @@ test("Should only remap raw numeric IDs in schema-defined variable fields", asyn
         command: "EVENT_TEST",
         args: {
           variable: "0",
+          variableElement: "0",
           unrelatedOption: "0",
         },
       },
@@ -1810,6 +1812,7 @@ test("Should only remap raw numeric IDs in schema-defined variable fields", asyn
     actions.find(entitiesActions.addScriptEvents.match)?.payload.data[0].args,
   ).toMatchObject({
     variable: targetVariable.id,
+    variableElement: targetVariable.id,
     unrelatedOption: "0",
   });
 });

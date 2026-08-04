@@ -20,7 +20,8 @@ import {
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import l10n from "shared/lib/lang/l10n";
-import type { ScriptDataTableVariable } from "shared/lib/scriptDataTable/types";
+import type { ScriptVariableElement } from "shared/lib/scriptValue/types";
+import { isVariableCustomEvent } from "shared/lib/entities/entitiesHelpers";
 import { CheckIcon, PencilIcon } from "ui/icons/Icons";
 import {
   findSelectOption,
@@ -30,7 +31,7 @@ import {
 } from "ui/form/Select";
 
 type VariableElementOption = Option & {
-  variable: ScriptDataTableVariable;
+  variable: ScriptVariableElement;
   variableName: string;
 };
 
@@ -40,13 +41,14 @@ interface VariableElementOptionGroup extends OptGroup {
 
 interface VariableElementSelectProps extends SelectCommonProps {
   name: string;
-  value: ScriptDataTableVariable;
+  value: ScriptVariableElement | undefined;
   entityId: string;
   allowRename?: boolean;
-  onChange: (newValue: ScriptDataTableVariable) => void;
+  allowCustomEventParameters?: boolean;
+  onChange: (newValue: ScriptVariableElement) => void;
 }
 
-const optionValue = (variable: ScriptDataTableVariable): string =>
+const optionValue = (variable: ScriptVariableElement): string =>
   variable.index
     ? JSON.stringify([variable.value, variable.index.value])
     : variable.value;
@@ -56,13 +58,14 @@ const VariableElementSelectComponent = ({
   onChange,
   entityId,
   allowRename,
+  allowCustomEventParameters = true,
   ...selectProps
 }: VariableElementSelectProps) => {
   const context = useContext(ScriptEditorContext);
   const dispatch = useAppDispatch();
   const [renameVisible, setRenameVisible] = useState(false);
   const [editValue, setEditValue] = useState("");
-  const variableId = value.value;
+  const variableId = value?.value ?? "";
   const variablesLookup = useAppSelector((state) =>
     variableSelectors.selectEntities(state),
   );
@@ -70,8 +73,12 @@ const VariableElementSelectComponent = ({
     customEventSelectors.selectById(state, entityId),
   );
   const variables = useMemo(
-    () => namedVariablesByContext(context, variablesLookup, customEvent),
-    [context, customEvent, variablesLookup],
+    () =>
+      namedVariablesByContext(context, variablesLookup, customEvent).filter(
+        (variable) =>
+          allowCustomEventParameters || !isVariableCustomEvent(variable.id),
+      ),
+    [allowCustomEventParameters, context, customEvent, variablesLookup],
   );
   const options = useMemo<VariableElementOptionGroup[]>(
     () =>
@@ -81,7 +88,7 @@ const VariableElementSelectComponent = ({
           const definition = variablesLookup[variable.id];
           if (definition?.type === "array") {
             return Array.from({ length: definition.size }, (_, index) => {
-              const indexedVariable: ScriptDataTableVariable = {
+              const indexedVariable: ScriptVariableElement = {
                 type: "variable",
                 value: variable.id,
                 index: { type: "number", value: index },
@@ -124,19 +131,29 @@ const VariableElementSelectComponent = ({
   );
   const isCustomEventArray =
     customEvent?.variables[variableId]?.passByReference === "array";
-  const currentValue = useMemo(
-    () =>
-      findSelectOption<VariableElementOption>(
-        options,
-        isCustomEventArray ? value.value : optionValue(value),
-      ),
-    [isCustomEventArray, options, value],
-  );
+  const currentValue = useMemo(() => {
+    if (!value) {
+      return undefined;
+    }
+    const selectedOption = findSelectOption<VariableElementOption>(
+      options,
+      isCustomEventArray ? value.value : optionValue(value),
+    );
+    if (selectedOption || value.index !== undefined) {
+      return selectedOption;
+    }
+    return options
+      .flatMap((group) => group.options)
+      .find((option) => option.variable.value === value.value);
+  }, [isCustomEventArray, options, value]);
   const currentVariable = variables.find(({ id }) => id === variableId);
   const valueIsLocal = variableId.startsWith("L");
   const valueIsTemp = variableId.startsWith("T");
   const canRename =
-    allowRename && !valueIsTemp && context.entityType !== "customEvent";
+    !!variableId &&
+    allowRename &&
+    !valueIsTemp &&
+    context.entityType !== "customEvent";
 
   const onRenameFinish = () => {
     if (variableId) {

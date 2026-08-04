@@ -22,8 +22,12 @@ const fields = [
         key: "variableSource",
         label: l10n("FIELD_TO_VARIABLE"),
         description: l10n("FIELD_VARIABLE_READ_DESC"),
-        type: "variable",
-        defaultValue: "LAST_VARIABLE",
+        type: "variableElement",
+        allowCustomEventParameters: false,
+        defaultValue: {
+          type: "variable",
+          value: "LAST_VARIABLE",
+        },
       },
       {
         key: "saveSlot",

@@ -124,6 +124,21 @@ export const isScriptValueVariable = (
   );
 };
 
+export type ScriptVariableElement = {
+  type: "variable";
+  value: string;
+  index?: {
+    type: "number";
+    value: number;
+  };
+};
+
+export const isScriptVariableElement = (
+  value: unknown,
+): value is ScriptVariableElement =>
+  isScriptValueVariable(value) &&
+  (value.index === undefined || value.index.type === "number");
+
 export type ScriptValueAtom =
   | {
       type: "number";

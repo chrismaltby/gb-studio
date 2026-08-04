@@ -2,8 +2,10 @@ import type { ScriptEventFieldSchema } from "shared/lib/entities/entitiesTypes";
 import type { VariableType } from "shared/lib/resources/types";
 import type {
   ScriptValue,
+  ScriptVariableElement,
   ScriptValueVariable,
 } from "shared/lib/scriptValue/types";
+import { isScriptVariableElement } from "shared/lib/scriptValue/types";
 
 type VariableFieldType = NonNullable<ScriptEventFieldSchema["variableType"]>;
 
@@ -78,4 +80,16 @@ export const defaultValueForUnionType = (
       : undefined;
 
   return defaultValue === "LAST_VARIABLE" ? defaultVariableId : defaultValue;
+};
+
+export const defaultVariableElementValue = (
+  defaultValue: unknown,
+  defaultVariableId: string,
+): ScriptVariableElement | undefined => {
+  if (!isScriptVariableElement(defaultValue)) {
+    return undefined;
+  }
+  return defaultValue.value === "LAST_VARIABLE"
+    ? { ...defaultValue, value: defaultVariableId }
+    : defaultValue;
 };

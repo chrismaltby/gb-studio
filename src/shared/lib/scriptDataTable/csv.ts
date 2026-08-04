@@ -4,8 +4,8 @@ import { Constant, VariableType } from "shared/lib/resources/types";
 import {
   isScriptDataTable,
   ScriptDataTable,
-  ScriptDataTableVariable,
 } from "shared/lib/scriptDataTable/types";
+import { ScriptVariableElement } from "shared/lib/scriptValue/types";
 
 export type DataTableCSVVariable = {
   id: string;
@@ -27,7 +27,7 @@ export type ScriptDataTableImport = {
 };
 
 const scriptDataTableVariableToCSV = (
-  variable: ScriptDataTableVariable,
+  variable: ScriptVariableElement,
   variablesLookup: Record<string, DataTableCSVVariable | undefined>,
 ): string => {
   const variableName = variablesLookup[variable.value]?.name ?? variable.value;
@@ -228,7 +228,7 @@ export const csvToScriptDataTable = (
     .slice(1)
     .map((value) => parseCSVVariable(value.trim()));
   const newVariablesLookup = new Map<string, NewDataTableCSVVariable>();
-  const variables = parsedVariables.map<ScriptDataTableVariable>(
+  const variables = parsedVariables.map<ScriptVariableElement>(
     ({ name, index }) => {
       if (!name) {
         throw new Error(l10n("ERROR_DATA_TABLE_CSV_INVALID"));
