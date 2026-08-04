@@ -21,6 +21,11 @@ import {
 import os from "os";
 import { ReferencedBackground } from "lib/compiler/precompile/determineUsedAssets";
 import { encodeSceneTileRef } from "shared/lib/tiles/sceneTilemapData";
+import { clearL10NData, setL10NData } from "shared/lib/lang/l10n";
+
+afterEach(() => {
+  clearL10NData();
+});
 
 test("should take into account state value when building projectiles", () => {
   const scene = projectileStateTest.scene as unknown as PrecompiledScene;
@@ -30,6 +35,7 @@ test("should take into account state value when building projectiles", () => {
 });
 
 test("should compile simple project into files object", async () => {
+  setL10NData({ FIELD_VARIABLE: "Variable" });
   const scriptEventHandlers = await getTestScriptHandlers();
   const project = {
     startSceneId: "1",
@@ -116,7 +122,29 @@ test("should compile simple project into files object", async () => {
             command: "EVENT_GBVM_SCRIPT",
             args: {
               script: "",
-              references: [{ type: "variable", id: "1" }],
+              references: [
+                { type: "variable", id: "1" },
+                { type: "variable", id: "2" },
+                { type: "variable", id: "3" },
+              ],
+            },
+          },
+          {
+            command: "EVENT_SET_VALUE",
+            args: {
+              variable: "2",
+              value: { type: "number", value: 1 },
+            },
+          },
+          {
+            command: "EVENT_SET_VALUE",
+            args: {
+              variable: {
+                type: "variable",
+                value: "3",
+                index: { type: "number", value: 0 },
+              },
+              value: { type: "number", value: 1 },
             },
           },
         ],
@@ -411,6 +439,19 @@ test("should compile simple project into files object", async () => {
           type: "array",
           size: 3,
         },
+        {
+          id: "2",
+          name: "",
+          symbol: "var_2",
+          type: "number",
+        },
+        {
+          id: "3",
+          name: "",
+          symbol: "var_3",
+          type: "array",
+          size: 2,
+        },
       ],
       constants: [],
     },
@@ -438,7 +479,9 @@ test("should compile simple project into files object", async () => {
   });
   expect(compiled).toBeInstanceOf(Object);
   expect(compiled.files["game_globals.i"]).toInclude("VAR_INVENTORY = 0");
-  expect(compiled.files["game_globals.i"]).toInclude("MAX_GLOBAL_VARS = 3");
+  expect(compiled.files["game_globals.i"]).toInclude("MAX_GLOBAL_VARS = 6");
+  expect(compiled.variableMap.VAR_2.name).toBe("Variable 2");
+  expect(compiled.variableMap.VAR_3.name).toBe("Variable 3");
 });
 
 test("should precompile image data", async () => {

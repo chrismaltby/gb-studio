@@ -137,6 +137,7 @@ import { EngineSchema } from "lib/project/loadEngineSchema";
 import { createLinkToResource } from "shared/lib/helpers/resourceLinks";
 import difference from "lodash/difference";
 import { toProjectileHash } from "./scriptBuilder/helpers";
+import { variableName } from "shared/lib/entities/entitiesHelpers";
 
 type CompiledTilemapData = {
   symbol: string;
@@ -1478,7 +1479,15 @@ const compile = async (
   // Can maybe move some of the compilation into workers to prevent this
   await new Promise((resolve) => setTimeout(resolve, 20));
 
-  const variablesLookup = keyBy(projectData.variables.variables, "id");
+  const projectVariables = projectData.variables.variables;
+  const variablesLookup = keyBy(projectVariables, "id");
+  const variableIndexLookup = projectVariables.reduce(
+    (memo, variable, index) => {
+      memo[variable.id] = index;
+      return memo;
+    },
+    {} as Record<string, number>,
+  );
   const variableAliasLookup = precompiled.usedVariables.reduce(
     (memo, variable) => {
       // Include variables referenced from GBVM
@@ -2073,7 +2082,17 @@ const compile = async (
   );
 
   const variableMap = keyBy(
-    globalVariableOffsets(variableAliasLookup).variables,
+    globalVariableOffsets(variableAliasLookup).variables.map((variable) => {
+      const projectVariable = variablesLookup[variable.id];
+      const variableIndex = variableIndexLookup[variable.id];
+      if (!projectVariable || variableIndex === undefined) {
+        return variable;
+      }
+      return {
+        ...variable,
+        name: variableName(projectVariable, variableIndex),
+      };
+    }),
     "symbol",
   );
 
