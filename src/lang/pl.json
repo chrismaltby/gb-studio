@@ -2,7 +2,7 @@
   "RTL": false,
 
   "GBSTUDIO_DESCRIPTION": "Visual retro game maker\nPolish translation by: Reptile (reptile@o2.pl)",
-  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2355260710",
+  "GBSTUDIO_COPYRIGHT": "Distributed under MIT license.\n Translation: 2358260804",
 
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Aktor",
@@ -374,6 +374,7 @@
   "FIELD_WARNING": "Uwaga",
   "FIELD_TMP_DIRECTORY": "Tymczasowy folder",
   "FIELD_TMP_DIRECTORY_INFO": "Folder, w którym są przechowywane pliki tymczasowe podczas kompilacji gry.\nJeżeli nie możesz skompilować gry z powodu błędu braku uprawnień, to możesz zmienić ten folder na taki, do którego masz dostęp.",
+  "FIELD_EMULATOR_INFO": "Uruchomienie debuggera domyślnie użyje emulatora Binjgb.",
   "FIELD_DONT_MODIFY": "Nie modyfikuj",
   "FIELD_MIN_VEL": "Minimalna prędkość",
   "FIELD_MIN_VEL_DESC": "Minimalna prędkość zastosowana przy niskim przyspieszeniu.",
@@ -417,8 +418,10 @@
   "FIELD_UNLOCK_SCRIPT_EDITOR": "Odblokuj edytor skryptów",
   "FIELD_DEFAULT_IMAGE_EDITOR": "Domyślny program graficzny",
   "FIELD_DEFAULT_MUSIC_EDITOR": "Domyślny program muzyczny",
+  "FIELD_EMULATOR": "Emulator",
   "FIELD_UI_ELEMENTS_SCALING": "Skalowanie elementów UI",
-  "FIELD_SYSTEM_DEFAULT": "Domyślny systemu",
+  "FIELD_SYSTEM_DEFAULT": "Domyślna aplikacja systemowa",
+  "FIELD_SYSTEM_DEFAULT_FOR_EXTENSION": "Domyślna aplikacja dla {extension}",
   "FIELD_CHOOSE_APPLICATION": "Wybierz program",
   "FIELD_ANIMATIONS": "Animacje",
   "FIELD_FRAMES": "Klatki",
