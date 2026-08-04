@@ -2,12 +2,16 @@ import { precompileScriptValue } from "shared/lib/scriptValue/helpers";
 import { PrecompiledScene } from "../../src/lib/compiler/generateGBVMData";
 import ScriptBuilder from "../../src/lib/compiler/scriptBuilder/scriptBuilder";
 import ScriptBuilderBase from "../../src/lib/compiler/scriptBuilder/scriptBuilderBase";
-import { ScriptBuilderOptions } from "../../src/lib/compiler/scriptBuilder/types";
+import {
+  ScriptBuilderOptions,
+  ScriptBuilderVariable,
+} from "../../src/lib/compiler/scriptBuilder/types";
 import {
   dummyActorNormalized,
   dummyEngineFieldSchema,
   dummyPrecompiledBackground,
   dummyPrecompiledSpriteSheet,
+  dummyTilesetResource,
   getDummyCompiledFont,
 } from "../dummydata";
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
@@ -933,6 +937,564 @@ test("Should reject a missing UUID variable without exposing its id", () => {
   expect(() =>
     sb.getVariableAlias("abcdef01-2345-6789-abcd-ef0123456789"),
   ).toThrow("Cannot find referenced variable");
+});
+
+describe("ScriptBuilderVariable values", () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
+  const indexId = "22222222-2222-2222-2222-222222222222";
+  const directArg = {
+    type: "argument" as const,
+    indirect: false,
+    symbol: ".SCRIPT_ARG_0_VARIABLE",
+  };
+  const indirectArg = {
+    type: "argument" as const,
+    indirect: true,
+    symbol: ".SCRIPT_ARG_INDIRECT_1_VARIABLE",
+  };
+  const arrayArg = {
+    type: "argument" as const,
+    indirect: true,
+    array: true,
+    symbol: ".SCRIPT_ARG_INDIRECT_2_VARIABLE",
+  };
+
+  const cases: {
+    name: string;
+    variable: ScriptBuilderVariable;
+    address: string;
+    indirect: boolean;
+    expectedSetup?: string[];
+  }[] = [
+    {
+      name: "string variable ID",
+      variable: "0",
+      address: "VAR_VARIABLE_0",
+      indirect: false,
+    },
+    {
+      name: "numeric variable ID",
+      variable: 0,
+      address: "VAR_VARIABLE_0",
+      indirect: false,
+    },
+    {
+      name: "direct function argument",
+      variable: directArg,
+      address: directArg.symbol,
+      indirect: false,
+    },
+    {
+      name: "indirect function argument",
+      variable: indirectArg,
+      address: indirectArg.symbol,
+      indirect: true,
+    },
+    {
+      name: "wrapped scalar variable",
+      variable: { type: "variable", value: "0" },
+      address: "VAR_VARIABLE_0",
+      indirect: false,
+    },
+    {
+      name: "statically indexed array variable",
+      variable: {
+        type: "variable",
+        value: arrayId,
+        index: { type: "number", value: 2 },
+      },
+      address: "^/(VAR_ARRAY + 2)/",
+      indirect: false,
+    },
+    {
+      name: "runtime-indexed array variable",
+      variable: {
+        type: "variable",
+        value: arrayId,
+        index: { type: "variable", value: indexId },
+      },
+      address: ".LOCAL_TMP0_ARRAY_PTR",
+      indirect: true,
+      expectedSetup: [
+        ".R_INT16    VAR_ARRAY",
+        ".R_REF      VAR_INDEX",
+        ".R_OPERATOR .ADD",
+        ".R_REF_SET  .LOCAL_TMP0_ARRAY_PTR",
+      ],
+    },
+    {
+      name: "indexed array function argument",
+      variable: {
+        type: "variable",
+        value: arrayArg,
+        index: { type: "number", value: 2 },
+      },
+      address: ".LOCAL_TMP0_ARRAY_PTR",
+      indirect: true,
+      expectedSetup: [
+        ".R_REF      .SCRIPT_ARG_INDIRECT_2_VARIABLE",
+        ".R_INT16    2",
+        ".R_OPERATOR .ADD",
+        ".R_REF_SET  .LOCAL_TMP0_ARRAY_PTR",
+      ],
+    },
+  ];
+
+  const createVariableTestBuilder = () =>
+    createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: {
+            id: arrayId,
+            name: "Array",
+            symbol: "var_array",
+            type: "array",
+            size: 4,
+          },
+          [indexId]: {
+            id: indexId,
+            name: "Index",
+            symbol: "var_index",
+            type: "number",
+          },
+        },
+        engineFields: {
+          testField: {
+            ...dummyEngineFieldSchema,
+            key: "testField",
+            cType: "BYTE",
+          },
+          testField16: {
+            ...dummyEngineFieldSchema,
+            key: "testField16",
+            cType: "WORD",
+          },
+        },
+        tilesets: [
+          {
+            ...dummyTilesetResource,
+            data: new Uint8Array(),
+          },
+        ],
+      },
+    );
+
+  const resolvedAddressForOutput = (output: string[], address: string) => {
+    if (!address.includes("ARRAY_PTR")) {
+      return address;
+    }
+    const pointer = output
+      .join("\n")
+      .match(/\.R_REF_SET\s+(\.LOCAL_TMP\d+_ARRAY_PTR)/)?.[1];
+    expect(pointer).toBeDefined();
+    return pointer as string;
+  };
+
+  const expectVariableSetup = (
+    script: string,
+    expectedSetup: string[],
+    address: string,
+    resolvedAddress: string,
+  ) => {
+    for (const fragment of expectedSetup) {
+      expect(script).toContain(fragment.replace(address, resolvedAddress));
+    }
+  };
+
+  test.each(cases)(
+    "writes to a $name",
+    async ({ variable, address, indirect, expectedSetup = [] }) => {
+      const { sb, output } = await createVariableTestBuilder();
+
+      sb.variableSetToValue(variable, 7);
+
+      const script = output.join("\n");
+      const resolvedAddress = resolvedAddressForOutput(output, address);
+      expectVariableSetup(script, expectedSetup, address, resolvedAddress);
+      if (indirect) {
+        expect(script).toContain(`VM_SET_INDIRECT         ${resolvedAddress},`);
+      } else {
+        expect(script).toContain(
+          `VM_SET_CONST            ${resolvedAddress}, 7`,
+        );
+        expect(script).not.toContain("VM_SET_INDIRECT");
+      }
+    },
+  );
+
+  test.each(cases)(
+    "reads and writes a $name",
+    async ({ variable, address, indirect, expectedSetup = [] }) => {
+      const { sb, output } = await createVariableTestBuilder();
+
+      sb.variablesOperation(variable, ".ADD", "1", false);
+
+      const script = output.join("\n");
+      const resolvedAddress = resolvedAddressForOutput(output, address);
+      expectVariableSetup(script, expectedSetup, address, resolvedAddress);
+      if (indirect) {
+        expect(script).toContain(`.R_REF_IND  ${resolvedAddress}`);
+        expect(script).toContain(`.R_REF_SET_IND ${resolvedAddress}`);
+      } else {
+        expect(script).toContain(`.R_REF      ${resolvedAddress}`);
+        expect(script).toContain(`.R_REF_SET  ${resolvedAddress}`);
+        expect(script).not.toContain(".R_REF_IND");
+        expect(script).not.toContain(".R_REF_SET_IND");
+      }
+    },
+  );
+
+  test.each(cases)(
+    "stores an actor direction in a $name",
+    async ({ variable, address, indirect, expectedSetup = [] }) => {
+      const { sb, output } = await createVariableTestBuilder();
+
+      sb.actorGetDirection(variable);
+
+      const script = output.join("\n");
+      const resolvedAddress = resolvedAddressForOutput(output, address);
+      expectVariableSetup(script, expectedSetup, address, resolvedAddress);
+      if (indirect) {
+        expect(
+          output.some(
+            (line) =>
+              line.includes("VM_ACTOR_GET_DIR") &&
+              line.includes("DIR_DEST_VAR"),
+          ),
+        ).toBe(true);
+        expect(script).toContain(`VM_SET_INDIRECT         ${resolvedAddress},`);
+      } else {
+        expect(script).toContain(
+          `VM_ACTOR_GET_DIR        .LOCAL_ACTOR, ${resolvedAddress}`,
+        );
+        expect(script).not.toContain("VM_SET_INDIRECT");
+      }
+    },
+  );
+
+  const runtimeIndexedVariable = (): ScriptBuilderVariable => ({
+    type: "variable",
+    value: arrayId,
+    index: { type: "variable", value: indexId },
+  });
+
+  const indirectRead = /\.R_REF_IND\s+\.LOCAL_TMP\d+_ARRAY_PTR/;
+  const indirectRpnWrite = /\.R_REF_SET_IND\s+\.LOCAL_TMP\d+_ARRAY_PTR/;
+  const indirectWrite = /VM_SET_INDIRECT\s+\.LOCAL_TMP\d+_ARRAY_PTR,/;
+  const indirectPush = /VM_PUSH_VALUE_IND\s+\.LOCAL_TMP\d+_ARRAY_PTR/;
+
+  const activeMethodCases: {
+    name: string;
+    invoke: (sb: ScriptBuilder, variable: ScriptBuilderVariable) => void;
+    expected: RegExp;
+  }[] = [
+    {
+      name: "actorGetPosition",
+      invoke: (sb, variable) => sb.actorGetPosition(variable, variable),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "actorGetPositionX",
+      invoke: (sb, variable) => sb.actorGetPositionX(variable),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "actorGetPositionY",
+      invoke: (sb, variable) => sb.actorGetPositionY(variable),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "actorGetAnimFrame",
+      invoke: (sb, variable) => sb.actorGetAnimFrame(variable),
+      expected: indirectWrite,
+    },
+    {
+      name: "launchProjectileInAngleVariable",
+      invoke: (sb, variable) =>
+        sb.launchProjectileInAngleVariable(0, 0, 0, variable),
+      expected: indirectRead,
+    },
+    {
+      name: "textChoice",
+      invoke: (sb, variable) =>
+        sb.textChoice(variable, { trueText: "Yes", falseText: "No" }),
+      expected: indirectWrite,
+    },
+    {
+      name: "textMenu",
+      invoke: (sb, variable) => sb.textMenu(variable, ["One", "Two"]),
+      expected: indirectWrite,
+    },
+    {
+      name: "threadStart",
+      invoke: (sb, variable) => sb.threadStart(variable, []),
+      expected: indirectWrite,
+    },
+    {
+      name: "threadTerminate",
+      invoke: (sb, variable) => sb.threadTerminate(variable),
+      expected: indirectPush,
+    },
+    {
+      name: "variableSetToRandom",
+      invoke: (sb, variable) => sb.variableSetToRandom(variable, 0, 10),
+      expected: indirectWrite,
+    },
+    {
+      name: "variableValueOperation",
+      invoke: (sb, variable) =>
+        sb.variableValueOperation(variable, ".ADD", 1, false),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variablesOperation source variable",
+      invoke: (sb, variable) =>
+        sb.variablesOperation("0", ".ADD", variable, false),
+      expected: indirectRead,
+    },
+    {
+      name: "variablesScriptValueOperation",
+      invoke: (sb, variable) =>
+        sb.variablesScriptValueOperation(variable, ".ADD", {
+          type: "number",
+          value: 1,
+        }),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variableRandomOperation",
+      invoke: (sb, variable) =>
+        sb.variableRandomOperation(variable, ".ADD", 0, 10, false),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variableAddFlags",
+      invoke: (sb, variable) => sb.variableAddFlags(variable, 1),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variableClearFlags",
+      invoke: (sb, variable) => sb.variableClearFlags(variable, 1),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variableEvaluateExpression",
+      invoke: (sb, variable) => sb.variableEvaluateExpression(variable, "1"),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variableDataTableLookup",
+      invoke: (sb, variable) =>
+        sb.variableDataTableLookup(variable, {
+          label: "Test Data",
+          variables: [{ type: "variable", value: "0" }],
+          rows: [{ values: [{ type: "number", value: 1 }] }],
+        }),
+      expected: indirectRead,
+    },
+    {
+      name: "engineFieldStoreInVariable",
+      invoke: (sb, variable) =>
+        sb.engineFieldStoreInVariable("testField", variable),
+      expected: indirectWrite,
+    },
+    {
+      name: "engineFieldStoreInVariable with a 16-bit field",
+      invoke: (sb, variable) =>
+        sb.engineFieldStoreInVariable("testField16", variable),
+      expected: indirectWrite,
+    },
+    {
+      name: "ifVariableCompare",
+      invoke: (sb, variable) => sb.ifVariableCompare(variable, ".EQ", "0"),
+      expected: indirectPush,
+    },
+    {
+      name: "ifVariableCompareScriptValue",
+      invoke: (sb, variable) =>
+        sb.ifVariableCompareScriptValue(variable, ".EQ", {
+          type: "number",
+          value: 1,
+        }),
+      expected: indirectPush,
+    },
+    {
+      name: "ifVariableCompare second variable",
+      invoke: (sb, variable) => sb.ifVariableCompare("0", ".EQ", variable),
+      expected: indirectPush,
+    },
+    {
+      name: "ifVariableBitwiseValue",
+      invoke: (sb, variable) =>
+        sb.ifVariableBitwiseValue(variable, ".B_AND", 1),
+      expected: indirectRead,
+    },
+    {
+      name: "caseVariableConstValue",
+      invoke: (sb, variable) =>
+        sb.caseVariableConstValue(variable, [
+          { value: { type: "number", value: 1 }, branch: [] },
+        ]),
+      expected: indirectPush,
+    },
+  ];
+
+  test.each(activeMethodCases)(
+    "$name supports runtime-indexed variables",
+    async ({ invoke, expected }) => {
+      const { sb, output } = await createVariableTestBuilder();
+
+      invoke(sb, runtimeIndexedVariable());
+
+      const script = output.join("\n");
+      expect(script).toContain(".R_INT16    VAR_ARRAY");
+      expect(script).toContain(".R_REF      VAR_INDEX");
+      expect(script).toMatch(/\.R_REF_SET\s+\.LOCAL_TMP\d+_ARRAY_PTR/);
+      expect(script).toMatch(expected);
+    },
+  );
+
+  const deprecatedMethodCases: {
+    name: string;
+    invoke: (api: DeprecatedAPI, variable: ScriptBuilderVariable) => void;
+    expected: RegExp;
+  }[] = [
+    {
+      name: "variableSetToProperty",
+      invoke: (api, variable) =>
+        api.variableSetToProperty(variable, "player:xpos"),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variableSetToUnionValue",
+      invoke: (api, variable) =>
+        api.variableSetToUnionValue(variable, { type: "number", value: 1 }),
+      expected: indirectWrite,
+    },
+    {
+      name: "actorMoveToVariables",
+      invoke: (api, variable) =>
+        api.actorMoveToVariables(variable, variable, true),
+      expected: indirectRead,
+    },
+    {
+      name: "actorSetPositionToVariables",
+      invoke: (api, variable) =>
+        api.actorSetPositionToVariables(variable, variable),
+      expected: indirectRead,
+    },
+    {
+      name: "actorSetDirectionToVariable",
+      invoke: (api, variable) => api.actorSetDirectionToVariable(variable),
+      expected: indirectPush,
+    },
+    {
+      name: "actorSetFrameToVariable",
+      invoke: (api, variable) => api.actorSetFrameToVariable(variable),
+      expected: indirectPush,
+    },
+    {
+      name: "cameraMoveToVariables",
+      invoke: (api, variable) => api.cameraMoveToVariables(variable, variable),
+      expected: indirectRead,
+    },
+    {
+      name: "cameraShakeVariables",
+      invoke: (api, variable) =>
+        api.cameraShakeVariables(true, true, 10, variable),
+      expected: indirectRead,
+    },
+    {
+      name: "variableSetToTrue",
+      invoke: (api, variable) => api.variableSetToTrue(variable),
+      expected: indirectWrite,
+    },
+    {
+      name: "variableSetToFalse",
+      invoke: (api, variable) => api.variableSetToFalse(variable),
+      expected: indirectWrite,
+    },
+    {
+      name: "variablesAdd",
+      invoke: (api, variable) => api.variablesAdd(variable, variable, false),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variablesSub",
+      invoke: (api, variable) => api.variablesSub(variable, variable, false),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variablesMul",
+      invoke: (api, variable) => api.variablesMul(variable, variable),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variablesDiv",
+      invoke: (api, variable) => api.variablesDiv(variable, variable),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variablesMod",
+      invoke: (api, variable) => api.variablesMod(variable, variable),
+      expected: indirectRpnWrite,
+    },
+    {
+      name: "variableFromUnion",
+      invoke: (api, variable) =>
+        api.variableFromUnion({ type: "number", value: 1 }, variable),
+      expected: indirectWrite,
+    },
+    {
+      name: "engineFieldSetToVariable",
+      invoke: (api, variable) =>
+        api.engineFieldSetToVariable("testField", variable),
+      expected: indirectPush,
+    },
+    {
+      name: "replaceTileXYVariable",
+      invoke: (api, variable) =>
+        api.replaceTileXYVariable(0, 0, "tileset1", variable, "8px"),
+      expected: indirectPush,
+    },
+    {
+      name: "ifVariableTrue",
+      invoke: (api, variable) => api.ifVariableTrue(variable),
+      expected: indirectPush,
+    },
+    {
+      name: "ifVariableValue",
+      invoke: (api, variable) => api.ifVariableValue(variable, ".EQ", 1),
+      expected: indirectPush,
+    },
+    {
+      name: "ifActorDistanceVariableFromActor",
+      invoke: (api, variable) =>
+        api.ifActorDistanceVariableFromActor(variable, ".LT", "player"),
+      expected: indirectRead,
+    },
+    {
+      name: "caseVariableValue",
+      invoke: (api, variable) => api.caseVariableValue(variable, { 1: [] }),
+      expected: indirectPush,
+    },
+  ];
+
+  test.each(deprecatedMethodCases)(
+    "deprecated $name supports runtime-indexed variables",
+    async ({ invoke, expected }) => {
+      const { sb, output } = await createVariableTestBuilder();
+
+      invoke(sb as unknown as DeprecatedAPI, runtimeIndexedVariable());
+
+      const script = output.join("\n");
+      expect(script).toContain(".R_INT16    VAR_ARRAY");
+      expect(script).toContain(".R_REF      VAR_INDEX");
+      expect(script).toMatch(/\.R_REF_SET\s+\.LOCAL_TMP\d+_ARRAY_PTR/);
+      expect(script).toMatch(expected);
+    },
+  );
 });
 
 test("Should increment an array variable with a static index", async () => {
