@@ -41,6 +41,16 @@ jest.mock("components/forms/ConstantValueSelect", () => ({
   __esModule: true,
   default: () => null,
 }));
+jest.mock("ui/form/FlagField", () => ({
+  FlagField: ({ variableId }: { variableId: string }) => (
+    <div data-testid="flag-field" data-variable-id={variableId} />
+  ),
+}));
+jest.mock("components/forms/FlagSelect", () => ({
+  FlagSelect: ({ variableId }: { variableId: string }) => (
+    <div data-testid="flag-select" data-variable-id={variableId} />
+  ),
+}));
 
 jest.mock("components/forms/VariableElementSelect", () => ({
   VariableElementSelect: ({
@@ -122,5 +132,37 @@ test("renders invalid variableElement values as an empty selection", () => {
       index: { type: "number", value: 2 },
     },
     undefined,
+  );
+});
+
+test.each([
+  { type: "flag", testId: "flag-field" },
+  { type: "selectFlags", testId: "flag-select" },
+])("uses the base array variable for $type fields", ({ type, testId }) => {
+  render(
+    <ScriptEventFormInput
+      id="flag"
+      entityId=""
+      type={type}
+      field={{ key: "flag", type }}
+      defaultValue={false}
+      value={false}
+      args={{
+        variable: {
+          type: "variable",
+          value: "arrayVariable",
+          index: { type: "number", value: 2 },
+        },
+      }}
+      defaultVariableId="defaultVariable"
+      onChange={() => {}}
+      onInsertEventAfter={() => {}}
+    />,
+    store,
+  );
+
+  expect(screen.getByTestId(testId)).toHaveAttribute(
+    "data-variable-id",
+    "arrayVariable",
   );
 });

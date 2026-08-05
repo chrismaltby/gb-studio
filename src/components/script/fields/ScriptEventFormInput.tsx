@@ -70,6 +70,7 @@ import ValueSelect, {
 import {
   isConstScriptValue,
   isScriptValue,
+  isScriptValueVariable,
   isScriptVariableElement,
 } from "shared/lib/scriptValue/types";
 import { FlagField } from "ui/form/FlagField";
@@ -118,6 +119,16 @@ const argValue = (arg: unknown): unknown => {
     return undefined;
   }
   return arg;
+};
+
+const argVariableId = (arg: unknown): string | undefined => {
+  if (typeof arg === "string") {
+    return arg;
+  }
+  if (isScriptValueVariable(arg)) {
+    return arg.value;
+  }
+  return undefined;
 };
 
 const asValueSelectFieldType = (
@@ -312,7 +323,7 @@ const ScriptEventFormInput = ({
         bit={field.key ?? "flag1"}
         defaultLabel={String(field.checkboxLabel || field.label)}
         title={field.description}
-        variableId={argValue(args.variable) as string}
+        variableId={argVariableId(args.variable) ?? ""}
         checked={
           typeof value === "boolean" ? value : Boolean(defaultValue || false)
         }
@@ -324,7 +335,7 @@ const ScriptEventFormInput = ({
     return (
       <FlagSelect
         name={id}
-        variableId={argValue(args.variable) as string}
+        variableId={argVariableId(args.variable) ?? ""}
         entityId={entityId}
         value={Number(value ?? defaultValue)}
         onChange={onChangeField}
