@@ -17,9 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to set the emulator to use when running your game. Debugger will always use the inbuilt emulator [@8bitKittyKat](https://github.com/8bitKittyKat)
 - Add ability to edit palettes from palette select menus in the World view
 - Add ability to create/edit palettes from palette selects in the World view by entering a new name in the search field
+- Add ability to set variables as either a number or fixed size array
+- Add ability to organise global variables into folders
+- Add ability to create variables directly from variable select inputs by entering a new name
+- Add ability to use array elements in script events and expressions
+- Add ability to set script parameters as "Array Reference", allowing parameters to be treated as arrays within the script
 
 ### Changed
 
+- Variables are now created as needed rather than using a preset list of 512 globals. Variables can be created from the navigator sidebar or by entering a new name in any variable select input
 - Improve actor and trigger dragging so entities keep their grabbed offset instead of snapping position to the cursor
 - Pressing `s` while creating a scene now toggles between creating an Image Scene or Tilemap Scene
 - Link Transfer events with packet size greater than 1 now require arrays for both the send and receive variables, ensuring the transferred values occupy consecutive memory
@@ -36,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where copy/paste of scenes would not transfer actor references used in prefab overrides
 - Fix issue where copy/paste of scenes would not transfer actor references used when calling scripts
 - Fix issue where copy/paste of scenes would not transfer actor references in properties used in values
+- Fix issue where copying and pasting scripts, actors, triggers, or scenes between projects could lose references to variables and constants
 - Fix issue where creating a project from a template plugin included its thumbnail.png and plugin.json in the new project's root folder
 - Fix issue where projects created from a template plugin may not have their name and author values set correctly
 - Fix issue where select dropdowns (select Actor/Scene/Palette etc) would not scroll to the selected value when opened
