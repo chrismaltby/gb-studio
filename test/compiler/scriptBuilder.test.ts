@@ -939,6 +939,73 @@ test("Should reject a missing UUID variable without exposing its id", () => {
   ).toThrow("Cannot find referenced variable");
 });
 
+test("Should make UUID variables in expressions human readable", async () => {
+  const scalarId = "11111111-1111-1111-1111-111111111111";
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [scalarId]: {
+          id: scalarId,
+          name: "Score",
+          symbol: "var_score",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  expect(sb._expressionToHumanReadable(`$${scalarId}$ + 1`)).toBe(
+    "VAR_SCORE+1",
+  );
+});
+
+test("Should make statically and dynamically indexed arrays human readable", async () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
+  const indexId = "22222222-2222-2222-2222-222222222222";
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [arrayId]: {
+          id: arrayId,
+          name: "Values",
+          symbol: "var_values",
+          type: "array",
+          size: 4,
+        },
+        [indexId]: {
+          id: indexId,
+          name: "Index",
+          symbol: "var_index",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  expect(
+    sb._expressionToHumanReadable(
+      `$${arrayId}$[2] + $${arrayId}$[$${indexId}$ + 1]`,
+    ),
+  ).toBe("VAR_VALUES[2]+VAR_VALUES[VAR_INDEX+1]");
+});
+
+test("Should make expression destinations and engine constants human readable", async () => {
+  const destination = {
+    type: "argument" as const,
+    indirect: true,
+    symbol: ".SCRIPT_ARG_INDIRECT_3_VARIABLE",
+  };
+  const { sb, output } = await createTestScriptBuilder();
+
+  sb.variableEvaluateExpression(destination, "@engine::ADVENTURE_BLANK_STATE@");
+
+  expect(output[0]).toBe(
+    "        ; Variable .SCRIPT_ARG_INDIRECT_3_VARIABLE = ADVENTURE_BLANK_STATE",
+  );
+});
+
 describe("ScriptBuilderVariable values", () => {
   const arrayId = "11111111-1111-1111-1111-111111111111";
   const indexId = "22222222-2222-2222-2222-222222222222";

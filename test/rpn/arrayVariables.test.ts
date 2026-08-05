@@ -1,4 +1,8 @@
 import tokenizer from "shared/lib/rpn/tokenizer";
+import shuntingYard from "shared/lib/rpn/shuntingYard";
+
+const array = "$11111111-1111-1111-1111-111111111111$";
+const index = "$22222222-2222-2222-2222-222222222222$";
 
 test("tokenizes a variable with a static array index", () => {
   expect(tokenizer("$11111111-1111-1111-1111-111111111111$[12]")).toEqual([
@@ -114,4 +118,59 @@ test("tokenizes nested indexed variables in an array index", () => {
       ],
     },
   ]);
+});
+
+test("converts array index operators to RPN independently of the outer expression", () => {
+  expect(shuntingYard(tokenizer(`${array}[${index} + 2 * 3] - 4`))).toEqual([
+    {
+      type: "VAR",
+      symbol: array,
+      index: [
+        { type: "VAR", symbol: index },
+        { type: "VAL", value: 2 },
+        { type: "VAL", value: 3 },
+        { type: "OP", operator: "*" },
+        { type: "OP", operator: "+" },
+      ],
+    },
+    { type: "VAL", value: 4 },
+    { type: "OP", operator: "-" },
+  ]);
+});
+
+test("handles unary operators and precedence inside an array index", () => {
+  expect(shuntingYard(tokenizer(`${array}[-${index} + 2 * 3]`))).toEqual([
+    {
+      type: "VAR",
+      symbol: array,
+      index: [
+        { type: "VAR", symbol: index },
+        { type: "OP", operator: "neg" },
+        { type: "VAL", value: 2 },
+        { type: "VAL", value: 3 },
+        { type: "OP", operator: "*" },
+        { type: "OP", operator: "+" },
+      ],
+    },
+  ]);
+});
+
+test("rejects an empty array index", () => {
+  expect(() => tokenizer(`${array}[]`)).toThrow("Array index cannot be empty");
+});
+
+test("rejects an unterminated array index", () => {
+  expect(() => tokenizer(`${array}[1 + 2`)).toThrow("Unterminated array index");
+});
+
+test("rejects an invalid expression inside an array index", () => {
+  expect(() => shuntingYard(tokenizer(`${array}[1 +]`))).toThrow(
+    "Not enough operands",
+  );
+});
+
+test("rejects mismatched parentheses inside an array index", () => {
+  expect(() => shuntingYard(tokenizer(`${array}[(1 + 2]`))).toThrow(
+    "Mismatched parenthesis",
+  );
 });

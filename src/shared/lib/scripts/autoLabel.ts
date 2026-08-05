@@ -197,7 +197,7 @@ export const getAutoLabel = (
         .replace(/\$([VLT]*[0-9]+|[a-z0-9-]{36})\$/g, (_, match) => {
           return `||variable:${match}||`;
         })
-        .replace(/@([a-z0-9-]{36})@/g, (_, match) => {
+        .replace(/@(engine::[a-z0-9$_-]+|[a-z0-9-]{36})@/gi, (_, match) => {
           return `||constant:${match}||`;
         });
     } else if (fieldType === "scene") {

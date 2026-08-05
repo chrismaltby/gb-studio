@@ -19,6 +19,7 @@ import {
   rpnTokensToScriptValue,
   sortFetchOperations,
 } from "shared/lib/scriptValue/helpers";
+import { scriptValueToString } from "shared/lib/scriptValue/format";
 import { normalizeVariableId } from "shared/lib/variables/variableIds";
 import { chunkTextOnWaitCodes } from "shared/lib/text/textCodes";
 import {
@@ -361,12 +362,40 @@ abstract class ScriptBuilderBase {
     return expression
       .replace(/\s+/g, "")
       .replace(/\n/g, "")
-      .replace(/(\$L[0-9]\$|\$T[0-1]\$|\$[0-9]+\$)/g, (symbol) => {
-        return this.getVariableAlias(symbol.replace(/\$/g, ""));
-      })
-      .replace(/@([a-z0-9-]{36})@/g, (symbol) => {
-        return this.getConstantSymbol(symbol.replace(/@/g, ""));
-      });
+      .replace(
+        /\$([VLT][0-9]|[a-z0-9-]{36}|[0-9]+)\$/gi,
+        (symbol, variableId: string) =>
+          this._isMissingVariableReference(variableId)
+            ? symbol
+            : this.getVariableAlias(variableId),
+      )
+      .replace(
+        /@(engine::[a-z0-9$_-]+|[a-z0-9-]{36})@/gi,
+        (_symbol, constantId: string) => this.getConstantSymbol(constantId),
+      );
+  };
+
+  _variableToHumanReadable = (variable: ScriptBuilderVariable): string => {
+    if (this._isVariableReference(variable)) {
+      const variableName = this._variableToHumanReadable(variable.value);
+      if (variable.index) {
+        return `${variableName}[${scriptValueToString(variable.index, {
+          variableNameForId: (id) => this._variableToHumanReadable(id),
+          constantNameForId: (id) => this.getConstantSymbol(id),
+          actorNameForId: (id) => id,
+          propertyNameForId: (property) => property,
+          directionForValue: (direction) => direction,
+        })}]`;
+      }
+      return variableName;
+    }
+    if (
+      typeof variable === "string" &&
+      this._isMissingVariableReference(variable)
+    ) {
+      return `$${variable}$`;
+    }
+    return this.getVariableAlias(variable);
   };
 
   _getFontIndex = (fontId: string) => {

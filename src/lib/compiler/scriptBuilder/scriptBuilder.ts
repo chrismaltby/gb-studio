@@ -2803,7 +2803,9 @@ class ScriptBuilder extends ScriptBuilderBase {
     expression: string,
   ) => {
     this._addComment(
-      `Variable ${variable} = ${this._expressionToHumanReadable(expression)}`,
+      `Variable ${this._variableToHumanReadable(
+        variable,
+      )} = ${this._expressionToHumanReadable(expression)}`,
     );
     this._stackPushEvaluatedExpression(expression, variable);
     this._addNL();
