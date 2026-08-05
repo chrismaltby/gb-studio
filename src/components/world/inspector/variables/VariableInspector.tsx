@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -88,6 +88,14 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
   const variable = useAppSelector((state) =>
     variableSelectors.selectById(state, id),
   );
+  const [name, setName] = useState(variable?.name ?? "");
+  const pendingRenameRef = useRef<
+    | {
+        variableId: string;
+        name: string;
+      }
+    | undefined
+  >(undefined);
   const variableIndex = useAppSelector((state) =>
     selectGlobalVariablesAll(state).findIndex((variable) => variable.id === id),
   );
@@ -118,6 +126,35 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
   );
 
   const dispatch = useAppDispatch();
+
+  const commitPendingRename = useCallback(
+    (variableId: string) => {
+      const pendingRename = pendingRenameRef.current;
+      if (!pendingRename || pendingRename.variableId !== variableId) {
+        return;
+      }
+
+      pendingRenameRef.current = undefined;
+      dispatch(
+        entitiesActions.renameVariable({
+          variableId,
+          name: pendingRename.name,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  useEffect(() => {
+    return () => commitPendingRename(id);
+  }, [commitPendingRename, id]);
+
+  useEffect(() => {
+    if (variable) {
+      setName(variable.name);
+    }
+  }, [variable]);
+
   const variableType = variable?.type ?? "number";
   const variableTypeOptions: Option[] = [
     { value: "number", label: l10n("FIELD_NUMBER") },
@@ -169,12 +206,15 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
 
   const onRename = (e: React.ChangeEvent<HTMLInputElement>) => {
     const editValue = e.currentTarget.value;
-    dispatch(
-      entitiesActions.renameVariable({
-        variableId: id,
-        name: editValue,
-      }),
-    );
+    setName(editValue);
+    pendingRenameRef.current = {
+      variableId: id,
+      name: editValue,
+    };
+  };
+
+  const onRenameFinished = () => {
+    commitPendingRename(id);
   };
 
   const onCopyVar = () => {
@@ -236,8 +276,9 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
         <EditableText
           name="name"
           placeholder={defaultLocalisedVariableName(variableIndex)}
-          value={variable?.name || ""}
+          value={name}
           onChange={onRename}
+          onBlur={onRenameFinished}
         />
         <DropdownButton
           size="small"

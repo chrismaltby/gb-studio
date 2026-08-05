@@ -13,6 +13,7 @@ import { variablesAdapter } from "store/features/entities/adapters";
 import { v4 as uuid } from "uuid";
 import { localVariableSelectTotal } from "store/features/entities/helpers";
 import { Variable, VariableType } from "shared/lib/resources/types";
+import { toValidSymbol } from "shared/lib/helpers/symbols";
 
 type AddVariablePayload = {
   variableId?: string;
@@ -118,14 +119,19 @@ const renameVariable: CaseReducer<
   PayloadAction<{ variableId: string; name: string }>
 > = (state, action) => {
   const existingVariable = state.variables.entities[action.payload.variableId];
-  if (existingVariable) {
+  if (existingVariable?.name === action.payload.name) {
+    return;
+  } else if (existingVariable) {
+    const preferredSymbol = `var_${action.payload.name}`;
     variablesAdapter.updateOne(state.variables, {
       id: action.payload.variableId,
       changes: {
         name: action.payload.name,
         symbol:
           action.payload.name.length > 0
-            ? genEntitySymbol(state, `var_${action.payload.name}`)
+            ? toValidSymbol(preferredSymbol) === existingVariable.symbol
+              ? existingVariable.symbol
+              : genEntitySymbol(state, preferredSymbol)
             : existingVariable.symbol,
       },
     });

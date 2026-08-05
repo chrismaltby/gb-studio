@@ -91,6 +91,56 @@ test("Should be able to set a variable's name", () => {
   expect(newState.variables.entities["1"]?.name).toBe("Var Name");
 });
 
+test("Should preserve the symbol when the variable name is unchanged", () => {
+  const state = reducer(
+    initialState,
+    actions.addVariable({
+      variableId: "variable-1",
+      name: "Player Health",
+    }),
+  );
+
+  const newState = reducer(
+    state,
+    actions.renameVariable({
+      variableId: "variable-1",
+      name: "Player Health",
+    }),
+  );
+
+  expect(newState.variables.entities["variable-1"]).toEqual({
+    id: "variable-1",
+    name: "Player Health",
+    symbol: "var_player_health",
+    type: "number",
+  });
+});
+
+test("Should preserve the symbol when the renamed variable sanitizes to the same symbol", () => {
+  const state = reducer(
+    initialState,
+    actions.addVariable({
+      variableId: "variable-1",
+      name: "Player Health",
+    }),
+  );
+
+  const newState = reducer(
+    state,
+    actions.renameVariable({
+      variableId: "variable-1",
+      name: "player health",
+    }),
+  );
+
+  expect(newState.variables.entities["variable-1"]).toEqual({
+    id: "variable-1",
+    name: "player health",
+    symbol: "var_player_health",
+    type: "number",
+  });
+});
+
 test("Should be able to clear a variable name without deleting it", () => {
   const state: EntitiesState = {
     ...initialState,
