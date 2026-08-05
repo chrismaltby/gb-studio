@@ -16,6 +16,7 @@ import {
   ActorPrefabNormalized,
   EntitiesState,
   ScriptEventNormalized,
+  ScriptNormalized,
   TriggerPrefabNormalized,
 } from "shared/lib/entities/entitiesTypes";
 import {
@@ -651,6 +652,74 @@ describe("nextIndexedName", () => {
 });
 
 describe("updateCustomEventArgs", () => {
+  test("Should include custom event variables referenced as values in text", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {},
+      actors: {},
+      script: ["event1"],
+    } as ScriptNormalized;
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_TEXT",
+          args: {
+            text: ["Hello $V0$!"],
+          },
+        },
+      },
+      {} as never,
+    );
+
+    expect(customEvent.variables).toEqual({
+      V0: {
+        id: "V0",
+        name: "Variable A",
+        passByReference: true,
+      },
+    });
+  });
+
+  test("Should include custom event variables referenced as characters in text", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {},
+      actors: {},
+      script: ["event1"],
+    } as ScriptNormalized;
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_TEXT",
+          args: {
+            text: ["Goodbye #V0#!"],
+          },
+        },
+      },
+      {} as never,
+    );
+
+    expect(customEvent.variables).toEqual({
+      V0: {
+        id: "V0",
+        name: "Variable A",
+        passByReference: true,
+      },
+    });
+  });
+
   test("Should include custom event variables referenced by data table fields", () => {
     const customEvent = {
       id: "customEvent1",
@@ -666,7 +735,7 @@ describe("updateCustomEventArgs", () => {
       },
       actors: {},
       script: ["event1"],
-    } as Parameters<typeof updateCustomEventArgs>[0];
+    } as ScriptNormalized;
 
     updateCustomEventArgs(
       customEvent,
@@ -728,7 +797,7 @@ describe("updateCustomEventArgs", () => {
       },
       actors: {},
       script: ["event1"],
-    } as Parameters<typeof updateCustomEventArgs>[0];
+    } as ScriptNormalized;
 
     updateCustomEventArgs(
       customEvent,
@@ -786,7 +855,7 @@ describe("updateCustomEventArgs", () => {
       variables: {},
       actors: {},
       script: ["event1", "event2"],
-    } as Parameters<typeof updateCustomEventArgs>[0];
+    } as ScriptNormalized;
 
     updateCustomEventArgs(
       customEvent,

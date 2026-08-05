@@ -1309,7 +1309,7 @@ export const updateCustomEventArgs = (
           text = args.expression;
         }
         if (text && typeof text === "string") {
-          const variablePtrs = text.match(/\$V[0-9]\$/g);
+          const variablePtrs = text.match(/\$V[0-9]\$|#V[0-9]#/g);
           if (variablePtrs) {
             variablePtrs.forEach((variablePtr: string) => {
               const variable = variablePtr[2];
