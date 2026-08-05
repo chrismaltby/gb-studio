@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   actorPrefabSelectors,
   actorSelectors,
@@ -86,6 +92,13 @@ export const ConstantInspector = ({ id }: ConstantInspectorProps) => {
     ? engineConstantsLookup?.[engineConstantName]
     : undefined;
   const [name, setName] = useState(constant?.name ?? engineConstantName);
+  const pendingRenameRef = useRef<
+    | {
+        constantId: string;
+        name: string;
+      }
+    | undefined
+  >(undefined);
   const [constantUses, setConstantUses] = useState<ConstantUse[]>([]);
   const scenes = useAppSelector((state) => sceneSelectors.selectAll(state));
   const actorsLookup = useAppSelector((state) =>
@@ -113,6 +126,34 @@ export const ConstantInspector = ({ id }: ConstantInspectorProps) => {
   );
 
   const dispatch = useAppDispatch();
+
+  const commitPendingRename = useCallback(
+    (constantId: string, updateLocalName = false) => {
+      const pendingRename = pendingRenameRef.current;
+      if (!pendingRename || pendingRename.constantId !== constantId) {
+        return;
+      }
+
+      pendingRenameRef.current = undefined;
+      const validName = pendingRename.name
+        .toLocaleUpperCase()
+        .replace(/\s/g, "_");
+      if (updateLocalName) {
+        setName(validName);
+      }
+      dispatch(
+        entitiesActions.renameConstant({
+          constantId,
+          name: validName,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  useEffect(() => {
+    return () => commitPendingRename(id);
+  }, [commitPendingRename, id]);
 
   const usesHeight = useMemo(() => {
     const top = entry?.target.getBoundingClientRect().top;
@@ -174,17 +215,14 @@ export const ConstantInspector = ({ id }: ConstantInspectorProps) => {
   const onRename = (e: React.ChangeEvent<HTMLInputElement>) => {
     const editValue = e.currentTarget.value;
     setName(editValue);
+    pendingRenameRef.current = {
+      constantId: id,
+      name: editValue,
+    };
   };
 
   const onRenameFinished = () => {
-    const validName = name.toLocaleUpperCase().replace(/\s/g, "_");
-    setName(validName);
-    dispatch(
-      entitiesActions.renameConstant({
-        constantId: id,
-        name: validName,
-      }),
-    );
+    commitPendingRename(id, true);
   };
 
   const onChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {

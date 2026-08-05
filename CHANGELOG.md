@@ -48,6 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where select dropdowns (select Actor/Scene/Palette etc) would not scroll to the selected value when opened
 - Fix issue where changing section to "Music" while already in music section would cause music playback to stop working
 - Fix issue where unused music patterns in `.uge` files could cause compiled size to be larger than in versions before 4.3.0
+- Fix issue where clicking into Constant name field and leaving without changing anything would cause compiled symbol to change
+- Fix issue where changing a Constant's name and clicking away could sometimes cause name change to be lost
 
 ## [4.3.2] - 2026-06-22
 

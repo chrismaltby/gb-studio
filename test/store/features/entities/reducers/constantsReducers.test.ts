@@ -52,3 +52,28 @@ test("Should preserve an explicitly provided zero value", () => {
 
   expect(newState.constants.entities["constant-1"]?.value).toBe(0);
 });
+
+test("Should preserve the symbol when the constant name is unchanged", () => {
+  const state = reducer(
+    initialState,
+    actions.addConstant({
+      constantId: "constant-1",
+      name: "Maximum Health",
+    }),
+  );
+
+  const newState = reducer(
+    state,
+    actions.renameConstant({
+      constantId: "constant-1",
+      name: "Maximum Health",
+    }),
+  );
+
+  expect(newState.constants.entities["constant-1"]).toEqual({
+    id: "constant-1",
+    name: "Maximum Health",
+    symbol: "const_maximum_health",
+    value: 0,
+  });
+});

@@ -78,18 +78,17 @@ const renameConstant: CaseReducer<
   PayloadAction<{ constantId: string; name: string }>
 > = (state, action) => {
   const constant = localConstantSelectById(state, action.payload.constantId);
-  const patch = {
-    name: action.payload.name,
-    symbol: genEntitySymbol(state, `const_${action.payload.name ?? "0"}`),
-  };
 
-  if (!constant) {
+  if (!constant || constant.name === action.payload.name) {
     return;
   }
 
   constantsAdapter.updateOne(state.constants, {
     id: action.payload.constantId,
-    changes: patch,
+    changes: {
+      name: action.payload.name,
+      symbol: genEntitySymbol(state, `const_${action.payload.name ?? "0"}`),
+    },
   });
 };
 
