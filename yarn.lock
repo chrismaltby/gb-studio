@@ -10487,7 +10487,7 @@ __metadata:
     react-refresh-typescript: "npm:^2.0.12"
     react-select: "npm:^5.10.2"
     react-simple-code-editor: "npm:^0.14.1"
-    react-window: "npm:^2.2.7"
+    react-window: "npm:^2.3.0"
     redux: "npm:^5.0.1"
     redux-thunk: "npm:^3.1.0"
     redux-undo: "npm:1.1.0"
@@ -15211,13 +15211,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-window@npm:^2.2.7":
-  version: 2.2.7
-  resolution: "react-window@npm:2.2.7"
+"react-window@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "react-window@npm:2.3.0"
   peerDependencies:
     react: ^18.0.0 || ^19.0.0
     react-dom: ^18.0.0 || ^19.0.0
-  checksum: 10c0/4eba3bce2083fa53ac674513078fb23d4dc3ad7dfd12ea5733863b583ea1472294df791947a2b58f27bab45138cedf7a63fdc19b0420823bf19749aa10455b81
+  checksum: 10c0/fb4ec4aea1efecf16a5ebe112a9c1e815e276efef7abf22742e146630960d68bb3aee969c50317139bcd0952a23d06e38fc16f667e80abe64835fefa78cfb64c
   languageName: node
   linkType: hard
 
