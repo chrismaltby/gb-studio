@@ -146,7 +146,7 @@ const ejectBuild = async ({
     }
   }
 
-  await applyEnginePlugins({
+  const pluginAttribution = await applyEnginePlugins({
     progress,
     warnings,
     expectedEngineVersion,
@@ -241,6 +241,8 @@ const ejectBuild = async ({
     batteryless: settings.batterylessEnabled,
   });
   await fs.writeFile(`${outputRoot}/Makefile.build`, makeDotBuildFile);
+
+  return { pluginAttribution };
 };
 
 export default ejectBuild;

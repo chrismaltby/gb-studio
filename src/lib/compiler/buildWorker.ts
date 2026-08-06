@@ -7,6 +7,7 @@ import ejectBuild from "./ejectBuild";
 import { validateEjectedBuild } from "./validate/validateEjectedBuild";
 import makeBuild, { cancelBuildCommandsInProgress } from "./makeBuild";
 import { EngineSchema } from "lib/project/loadEngineSchema";
+import { reportPluginUsage } from "./pluginUsageReport";
 
 export type BuildType = "rom" | "web" | "pocket";
 
@@ -74,7 +75,7 @@ const buildProject = async ({
     warnings,
   });
 
-  await ejectBuild({
+  const { pluginAttribution } = await ejectBuild({
     projectRoot,
     tmpPath,
     projectData: project,
@@ -92,16 +93,40 @@ const buildProject = async ({
   });
 
   if (make) {
-    await makeBuild({
-      buildRoot: outputRoot,
-      romFilename,
-      tmpPath,
-      buildType,
-      data: project,
-      debug: project.settings.generateDebugFilesEnabled,
-      progress,
-      warnings,
-    });
+    let buildError: unknown;
+    try {
+      await makeBuild({
+        buildRoot: outputRoot,
+        romFilename,
+        tmpPath,
+        buildType,
+        data: project,
+        debug: project.settings.generateDebugFilesEnabled,
+        progress,
+        warnings,
+      });
+    } catch (e) {
+      buildError = e;
+    }
+
+    // Report plugin usage even when the build failed, knowing which plugin
+    // filled bank 0 or WRAM is most useful when it no longer fits
+    const cancelled =
+      terminating ||
+      (buildError instanceof Error && buildError.message === "BUILD_CANCELLED");
+    if (project.settings.logPluginUsageAfterBuild && !cancelled) {
+      await reportPluginUsage({
+        buildRoot: outputRoot,
+        attribution: pluginAttribution,
+        cartType: project.settings.cartType,
+        progress,
+        warnings,
+      });
+    }
+
+    if (buildError) {
+      throw buildError;
+    }
   }
 
   return compiledData;

@@ -14,6 +14,38 @@ type BuildOptions = {
   compilerPreset: number;
 };
 
+/**
+ * Top of the stack, which grows downwards from here.
+ * Directly above it sits the absolute data block declared in
+ * engine/src/core/absolute.c (shadow_OAM2, BkgPalette, vwf_tile_data).
+ */
+export const STACK_TOP_ADDRESS = 0xdf00;
+
+/** shadow_OAM, declared at 0xC000 in engine/src/core/absolute.c */
+export const SHADOW_OAM_ADDRESS = 0xc000;
+export const SHADOW_OAM_SIZE = 0xa0;
+
+/**
+ * shadow_OAM2 + BkgPalette + vwf_tile_data, filling STACK_TOP_ADDRESS to the
+ * end of WRAM. Declared with AT() so it never appears in the map file.
+ */
+export const ABSOLUTE_DATA_SIZE = 0x100;
+
+/**
+ * How much room to leave for the stack below STACK_TOP_ADDRESS.
+ * The stack has no declared size, it simply grows down into whatever is
+ * beneath it, so this is the point at which we call it too tight.
+ */
+export const STACK_RESERVE_BYTES = 0x100;
+
+/**
+ * WRAM claimed by fixed engine allocations and the stack. None of it appears
+ * in the map file, so anything measuring WRAM from the map alone will report
+ * this much more free space than a game actually has.
+ */
+export const RESERVED_WRAM_BYTES =
+  SHADOW_OAM_SIZE + ABSOLUTE_DATA_SIZE + STACK_RESERVE_BYTES;
+
 export const objectPathForSource = (buildRoot: string, filename: string) =>
   Path.join(
     buildRoot,
@@ -164,7 +196,7 @@ export const buildLinkFlags = (
       "-Wl-w",
       "-Wm-yS",
       "-Wl-klib",
-      "-Wl-g.STACK=0xDF00",
+      `-Wl-g.STACK=0x${STACK_TOP_ADDRESS.toString(16).toUpperCase()}`,
       "-Wi-e",
       `-Wm-yn"${validName}"`,
     ],

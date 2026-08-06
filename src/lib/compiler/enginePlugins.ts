@@ -30,19 +30,46 @@ type EnginePluginEntry = {
 };
 
 /**
+ * Which plugin is responsible for each buildable engine source file.
+ * Used to attribute compiled memory usage back to the plugin that caused it.
+ */
+export type PluginFileAttribution = {
+  /** Source file (posix, relative to build root) -> plugin that provides it */
+  ownedFiles: Record<string, string>;
+  /** Subset of ownedFiles that replaced a stock GB Studio engine file */
+  overridesStock: string[];
+  /** Stock source file -> plugins that successfully patched it */
+  patchedFiles: Record<string, string[]>;
+};
+
+/**
+ * Only files that become object modules can be attributed a size,
+ * headers and data files are compiled into their including source.
+ */
+export const isBuildableSource = (relFile: string): boolean => {
+  const posix = pathToPosix(relFile);
+  return (
+    posix.startsWith("src/") && (posix.endsWith(".c") || posix.endsWith(".s"))
+  );
+};
+
+/**
  * Scans a plugin's engine files and warns if any would overwrite files already
  * written by a previously processed plugin. Updates writtenByPlugin in-place.
+ * Returns the posix paths of the files this plugin will write.
  */
 export const warnOnPluginFileCollisions = async (
   usedEnginePluginPath: string,
   pluginName: string,
   writtenByPlugin: Map<string, string>,
   warnings: (msg: string) => void,
-): Promise<void> => {
+): Promise<string[]> => {
   const pluginFiles = await glob("**/*", {
     cwd: usedEnginePluginPath,
     nodir: true,
   });
+
+  const writtenFiles: string[] = [];
 
   for (const relFile of pluginFiles) {
     if (isPatchFile(relFile) || isEngineManifestFile(relFile)) {
@@ -60,7 +87,10 @@ export const warnOnPluginFileCollisions = async (
       );
     }
     writtenByPlugin.set(posixRel, pluginName);
+    writtenFiles.push(posixRel);
   }
+
+  return writtenFiles;
 };
 
 export const buildSortedEnginePluginList = async (
@@ -130,6 +160,11 @@ export const applyEnginePlugins = async ({
   const enginePlugins = await buildSortedEnginePluginList(pluginsPath);
   const writtenByPlugin = new Map<string, string>();
   const allPatches: PatchInfo[] = [];
+  const attribution: PluginFileAttribution = {
+    ownedFiles: {},
+    overridesStock: [],
+    patchedFiles: {},
+  };
 
   for (const { enginePluginPath, pluginName } of enginePlugins) {
     progress(
@@ -209,25 +244,71 @@ export const applyEnginePlugins = async ({
 
     allPatches.push(...patchPaths.map((p) => ({ ...p, pluginName })));
 
-    await warnOnPluginFileCollisions(
+    // Files already written by an earlier plugin are not stock engine files,
+    // capture this before warnOnPluginFileCollisions updates writtenByPlugin
+    const writtenByEarlierPlugin = new Set(writtenByPlugin.keys());
+
+    const pluginFiles = await warnOnPluginFileCollisions(
       usedEnginePluginPath,
       pluginName,
       writtenByPlugin,
       warnings,
     );
 
+    // Attribute source files while the previous contents are still on disk,
+    // so a plugin replacing a stock engine file can be told apart from one
+    // adding a file of its own
+    for (const posixRel of pluginFiles) {
+      if (!isBuildableSource(posixRel)) {
+        continue;
+      }
+      // Plugin names are folder paths, keep them posix so reports read the
+      // same on every platform
+      attribution.ownedFiles[posixRel] = pathToPosix(pluginName);
+      const replacesStock =
+        !writtenByEarlierPlugin.has(posixRel) &&
+        (await fs.pathExists(Path.join(outputRoot, posixRel)));
+      if (replacesStock && !attribution.overridesStock.includes(posixRel)) {
+        attribution.overridesStock.push(posixRel);
+      }
+    }
+
     await copy(usedEnginePluginPath, outputRoot, {
       ignore: isPatchFile,
     });
   }
 
-  await applyPatches(
+  const appliedPatches = await applyPatches(
     allPatches,
     outputRoot,
     projectRoot,
     writtenByPlugin,
     warnings,
   );
+
+  // Only patches that applied cleanly changed the compiled output
+  for (const patch of appliedPatches) {
+    const target = pathToPosix(patch.rel.replace(/\.patch$/, ""));
+    if (!isBuildableSource(target) || !patch.pluginName) {
+      continue;
+    }
+    if (attribution.ownedFiles[target]) {
+      // Plugin provided file, patch cost is already part of the owned module
+      continue;
+    }
+    const patcher = pathToPosix(patch.pluginName);
+    const patchers = attribution.patchedFiles[target] ?? [];
+    if (!patchers.includes(patcher)) {
+      patchers.push(patcher);
+    }
+    attribution.patchedFiles[target] = patchers;
+  }
+
+  for (const patchers of Object.values(attribution.patchedFiles)) {
+    patchers.sort((a, b) => a.localeCompare(b, "en"));
+  }
+
+  return attribution;
 };
 
 /**
@@ -374,7 +455,7 @@ export const collectPatchFiles = async (
 };
 
 /**
- * Applies multiple patches and returns results for each.
+ * Applies multiple patches and returns the ones that applied cleanly.
  * When pluginName and writtenByPlugin are provided, patch conflicts caused by
  * another plugin having overwritten the target file produce a richer warning.
  */
@@ -384,9 +465,13 @@ export const applyPatches = async (
   projectRoot: string,
   writtenByPlugin: Map<string, string>,
   warnings: (msg: string) => void,
-): Promise<void> => {
+): Promise<PatchInfo[]> => {
+  const applied: PatchInfo[] = [];
   for (const patchPath of patchPaths) {
     const result = await applyPatchToFile(patchPath, outputRoot);
+    if (result.success) {
+      applied.push(patchPath);
+    }
     if (!result.success) {
       const relPath = Path.relative(projectRoot, patchPath.abs);
       if (result.error?.message === "Path outside engine root") {
@@ -423,4 +508,5 @@ export const applyPatches = async (
       }
     }
   }
+  return applied;
 };

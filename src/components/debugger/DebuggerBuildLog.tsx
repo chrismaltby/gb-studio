@@ -14,6 +14,7 @@ import {
 } from "store/features/settings/settingsState";
 import settingsActions from "store/features/settings/settingsActions";
 import DebuggerUsageData from "components/debugger/DebuggerUsageData";
+import DebuggerMemoryUsageData from "components/debugger/DebuggerMemoryUsageData";
 import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
 import useDimensions from "react-cool-dimensions";
 import editorActions from "store/features/editor/editorActions";
@@ -68,6 +69,7 @@ const UsageWrapper = styled.div`
   flex-grow: 1;
   justify-content: center;
   align-items: center;
+  gap: 10px;
 `;
 
 interface LogLineProps {
@@ -159,9 +161,31 @@ const DebuggerBuildLog = () => {
   const showRomUsageAfterBuild = useAppSelector(
     (state) => getSettings(state).showRomUsageAfterBuild,
   );
+  const showWramUsageAfterBuild = useAppSelector(
+    (state) => getSettings(state).showWramUsageAfterBuild,
+  );
+  const showBank0UsageAfterBuild = useAppSelector(
+    (state) => getSettings(state).showBank0UsageAfterBuild,
+  );
+  const logPluginUsageAfterBuild = useAppSelector(
+    (state) => getSettings(state).logPluginUsageAfterBuild,
+  );
+
+  // Usage bars share the available space, so scale the breakpoints
+  // by how many of them are currently visible
+  const visibleUsageBars = Math.max(
+    1,
+    Number(showRomUsageAfterBuild) +
+      Number(showBank0UsageAfterBuild) +
+      Number(showWramUsageAfterBuild),
+  );
 
   const { currentBreakpoint: usageBreakpoint, observe } = useDimensions({
-    breakpoints: { SM: 0, MD: 50, LG: 280 },
+    breakpoints: {
+      SM: 0,
+      MD: 50 * visibleUsageBars,
+      LG: 280 * visibleUsageBars,
+    },
     updateOnBreakpointChange: true,
   });
 
@@ -215,6 +239,27 @@ const DebuggerBuildLog = () => {
     () =>
       onChangeSettingProp("showRomUsageAfterBuild", !showRomUsageAfterBuild),
     [onChangeSettingProp, showRomUsageAfterBuild],
+  );
+  const onToggleShowBank0UsageAfterBuild = useCallback(
+    () =>
+      onChangeSettingProp(
+        "showBank0UsageAfterBuild",
+        !showBank0UsageAfterBuild,
+      ),
+    [onChangeSettingProp, showBank0UsageAfterBuild],
+  );
+  const onToggleShowWramUsageAfterBuild = useCallback(
+    () =>
+      onChangeSettingProp("showWramUsageAfterBuild", !showWramUsageAfterBuild),
+    [onChangeSettingProp, showWramUsageAfterBuild],
+  );
+  const onToggleLogPluginUsageAfterBuild = useCallback(
+    () =>
+      onChangeSettingProp(
+        "logPluginUsageAfterBuild",
+        !logPluginUsageAfterBuild,
+      ),
+    [onChangeSettingProp, logPluginUsageAfterBuild],
   );
 
   const onScroll = useCallback(() => {
@@ -316,6 +361,24 @@ const DebuggerBuildLog = () => {
           >
             {l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")}
           </MenuItem>
+          <MenuItem
+            onClick={onToggleShowBank0UsageAfterBuild}
+            icon={showBank0UsageAfterBuild ? <CheckIcon /> : <BlankIcon />}
+          >
+            {l10n("FIELD_SHOW_BANK_0_USAGE_AFTER_BUILD")}
+          </MenuItem>
+          <MenuItem
+            onClick={onToggleShowWramUsageAfterBuild}
+            icon={showWramUsageAfterBuild ? <CheckIcon /> : <BlankIcon />}
+          >
+            {l10n("FIELD_SHOW_WRAM_USAGE_AFTER_BUILD")}
+          </MenuItem>
+          <MenuItem
+            onClick={onToggleLogPluginUsageAfterBuild}
+            icon={logPluginUsageAfterBuild ? <CheckIcon /> : <BlankIcon />}
+          >
+            {l10n("FIELD_LOG_PLUGIN_USAGE_AFTER_BUILD")}
+          </MenuItem>
 
           <MenuDivider />
           <MenuItem onClick={onDeleteCache} icon={<BlankIcon />}>
@@ -328,6 +391,22 @@ const DebuggerBuildLog = () => {
               hideLabels={usageBreakpoint !== "LG"}
               forceZoom={usageBreakpoint === "SM"}
             ></DebuggerUsageData>
+          )}
+          {showBank0UsageAfterBuild && (
+            <DebuggerMemoryUsageData
+              region="bank0"
+              hideLabels={usageBreakpoint !== "LG"}
+              showPlaceholder={!showRomUsageAfterBuild}
+            ></DebuggerMemoryUsageData>
+          )}
+          {showWramUsageAfterBuild && (
+            <DebuggerMemoryUsageData
+              region="wram"
+              hideLabels={usageBreakpoint !== "LG"}
+              showPlaceholder={
+                !showRomUsageAfterBuild && !showBank0UsageAfterBuild
+              }
+            ></DebuggerMemoryUsageData>
           )}
         </UsageWrapper>
         <Button onClick={onClear}>{l10n("BUILD_CLEAR")}</Button>

@@ -45,6 +45,15 @@ export const SettingsSectionBuild = ({
   const showRomUsageAfterBuild = useAppSelector(
     (state) => state.project.present.settings.showRomUsageAfterBuild,
   );
+  const showBank0UsageAfterBuild = useAppSelector(
+    (state) => state.project.present.settings.showBank0UsageAfterBuild,
+  );
+  const showWramUsageAfterBuild = useAppSelector(
+    (state) => state.project.present.settings.showWramUsageAfterBuild,
+  );
+  const logPluginUsageAfterBuild = useAppSelector(
+    (state) => state.project.present.settings.logPluginUsageAfterBuild,
+  );
   const compilerPreset = useAppSelector(
     (state) => state.project.present.settings.compilerPreset,
   );
@@ -108,6 +117,36 @@ export const SettingsSectionBuild = ({
       dispatch(
         settingsActions.editSettings({
           showRomUsageAfterBuild: castEventToBool(e),
+        }),
+      ),
+    [dispatch],
+  );
+
+  const onChangeShowBank0UsageAfterBuild = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      dispatch(
+        settingsActions.editSettings({
+          showBank0UsageAfterBuild: castEventToBool(e),
+        }),
+      ),
+    [dispatch],
+  );
+
+  const onChangeShowWramUsageAfterBuild = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      dispatch(
+        settingsActions.editSettings({
+          showWramUsageAfterBuild: castEventToBool(e),
+        }),
+      ),
+    [dispatch],
+  );
+
+  const onChangeLogPluginUsageAfterBuild = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      dispatch(
+        settingsActions.editSettings({
+          logPluginUsageAfterBuild: castEventToBool(e),
         }),
       ),
     [dispatch],
@@ -228,6 +267,57 @@ export const SettingsSectionBuild = ({
             name="showRomUsageAfterBuild"
             checked={showRomUsageAfterBuild}
             onChange={onChangeShowRomUsageAfterBuild}
+          />
+        </SettingRowInput>
+      </SearchableSettingRow>
+
+      <SearchableSettingRow
+        searchTerm={searchTerm}
+        searchMatches={[l10n("FIELD_SHOW_BANK_0_USAGE_AFTER_BUILD")]}
+      >
+        <SettingRowLabel>
+          {l10n("FIELD_SHOW_BANK_0_USAGE_AFTER_BUILD")}
+        </SettingRowLabel>
+        <SettingRowInput>
+          <Checkbox
+            id="showBank0UsageAfterBuild"
+            name="showBank0UsageAfterBuild"
+            checked={showBank0UsageAfterBuild}
+            onChange={onChangeShowBank0UsageAfterBuild}
+          />
+        </SettingRowInput>
+      </SearchableSettingRow>
+
+      <SearchableSettingRow
+        searchTerm={searchTerm}
+        searchMatches={[l10n("FIELD_SHOW_WRAM_USAGE_AFTER_BUILD")]}
+      >
+        <SettingRowLabel>
+          {l10n("FIELD_SHOW_WRAM_USAGE_AFTER_BUILD")}
+        </SettingRowLabel>
+        <SettingRowInput>
+          <Checkbox
+            id="showWramUsageAfterBuild"
+            name="showWramUsageAfterBuild"
+            checked={showWramUsageAfterBuild}
+            onChange={onChangeShowWramUsageAfterBuild}
+          />
+        </SettingRowInput>
+      </SearchableSettingRow>
+
+      <SearchableSettingRow
+        searchTerm={searchTerm}
+        searchMatches={[l10n("FIELD_LOG_PLUGIN_USAGE_AFTER_BUILD")]}
+      >
+        <SettingRowLabel>
+          {l10n("FIELD_LOG_PLUGIN_USAGE_AFTER_BUILD")}
+        </SettingRowLabel>
+        <SettingRowInput>
+          <Checkbox
+            id="logPluginUsageAfterBuild"
+            name="logPluginUsageAfterBuild"
+            checked={logPluginUsageAfterBuild}
+            onChange={onChangeLogPluginUsageAfterBuild}
           />
         </SettingRowInput>
       </SearchableSettingRow>
