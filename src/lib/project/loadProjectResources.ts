@@ -33,6 +33,7 @@ import { readJson } from "lib/helpers/fs/readJson";
 import { Value } from "@sinclair/typebox/value";
 import type { Static, TSchema } from "@sinclair/typebox";
 import { naturalSortPaths, pathToPosix } from "shared/lib/helpers/path";
+import { migrateRawResource } from "lib/project/migration/rawResourceMigrations";
 
 const CONCURRENT_RESOURCE_LOAD_COUNT = 8;
 
@@ -199,8 +200,16 @@ export const loadProjectResources = async (
       // Invalid resource - skipping
       continue;
     }
+    const migratedResource = {
+      path: resource.path,
+      data: migrateRawResource(
+        resource.data,
+        metadataResource._version,
+        metadataResource._release,
+      ),
+    };
     for (const castFunction of castFns) {
-      if (castFunction(resource as ResourceWithPath<MinimalResource>)) {
+      if (castFunction(migratedResource as ResourceWithPath<MinimalResource>)) {
         break;
       }
     }

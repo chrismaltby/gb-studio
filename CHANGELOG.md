@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where clicking into Constant name field and leaving without changing anything would cause compiled symbol to change
 - Fix issue where changing a Constant's name and clicking away could sometimes cause name change to be lost
 - Fix issue where renaming a variable to have the same name but with different capitalisation could cause compiled symbol to change
+- Fix issue where custom variable flag names being lost when opening projects created before 5.0.0
 
 ## [4.3.2] - 2026-06-22
 

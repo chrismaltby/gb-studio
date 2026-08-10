@@ -32,6 +32,7 @@ import {
 import type { ScriptEventDefs } from "shared/lib/scripts/eventHelpers";
 import type { ProjectData } from "store/features/project/projectActions";
 import { Value } from "@sinclair/typebox/value";
+import { migrateRawResource } from "lib/project/migration/rawResourceMigrations";
 import { defaultProjectSettings } from "consts";
 import { toValidSymbol } from "shared/lib/helpers/symbols";
 
@@ -146,10 +147,16 @@ export const migrateLegacyProject = (
       chain(fixMissingSymbols("song"), encodeResource(MusicResource)),
     ),
     palettes: map(migratedProject.palettes, encodeResource(PaletteResource)),
-    variables: encodeResource(VariablesResource)({
-      _resourceType: "variables",
-      variables: migratedProject.variables,
-    }),
+    variables: encodeResource(VariablesResource)(
+      migrateRawResource(
+        {
+          _resourceType: "variables",
+          variables: migratedProject.variables,
+        },
+        migratedProject._version,
+        migratedProject._release,
+      ) as Partial<VariablesResource>,
+    ),
     engineFieldValues: encodeResource(EngineFieldValuesResource)({
       _resourceType: "engineFieldValues",
       engineFieldValues: migratedProject.engineFieldValues,
