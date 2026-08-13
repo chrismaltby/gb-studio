@@ -369,3 +369,41 @@ test.each([
     });
   },
 );
+
+test("migration keeps previously defined flags", () => {
+  const resources = {
+    ...dummyCompressedProjectResources,
+    variables: {
+      ...dummyCompressedProjectResources.variables,
+      variables: [
+        {
+          id: "3",
+          name: "Named Variable",
+          symbol: "var_1",
+          flags: {
+            flag1: "my",
+            flag2: "flag",
+            flag15: "is",
+            flag16: "kept",
+          },
+        },
+      ],
+    },
+  };
+
+  const migrated = migrate420r10To500r1.migrationFn(
+    resources as unknown as CompressedProjectResources,
+    {
+      scriptEventDefs,
+    },
+  );
+
+  const migratedVariables = migrated.variables.variables;
+  expect(migratedVariables.length).toEqual(1);
+  expect(migratedVariables[0].flags).toEqual({
+    flag1: "my",
+    flag2: "flag",
+    flag15: "is",
+    flag16: "kept",
+  });
+});

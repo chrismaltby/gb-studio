@@ -837,4 +837,24 @@ describe("TypeBox Schemas", () => {
     expect(isProjectMetadataResource(validMetadata)).toBe(true);
     expect(isProjectMetadataResource(invalidMetadata)).toBe(false);
   });
+
+  it("should keep Variable flags and default to number type when migrating to discriminated union format", () => {
+    const data = {
+      id: "myvar_id",
+      name: "My Var",
+      symbol: "var_myvar",
+      flags: {
+        flag1: "ABC",
+        flag2: "DEF",
+        flag15: "FOO",
+        flag16: "BAR",
+      },
+    };
+    const castData = Value.Cast(Variable, data);
+    expect(castData.id).toEqual(data.id);
+    expect(castData.symbol).toEqual(data.symbol);
+    expect(castData.flags).toEqual(data.flags);
+    expect(castData.type).toEqual("number");
+    expect("size" in castData).toBeFalse();
+  });
 });
