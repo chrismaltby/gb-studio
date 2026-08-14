@@ -108,6 +108,13 @@
       }
     },
     {
+      "id": "27034715",
+      "type": "user",
+      "attributes": {
+        "full_name": "Michel Iwaniec"
+      }
+    },
+    {
       "id": "64844487",
       "type": "user",
       "attributes": {
@@ -213,13 +220,6 @@
       },
       "id": "101678212",
       "type": "user"
-    },
-    {
-      "id": "27034715",
-      "type": "user",
-      "attributes": {
-        "full_name": "Michel Iwaniec"
-      }
     },
     {
       "attributes": {
