@@ -945,7 +945,7 @@
   "FIELD_NEVER_NONMODAL": "Nunca (não modal)",
   "FIELD_NONMODAL_POSITION_TOP_WARNING": "Para fechar uma caixa de diálogo não modal posicionada no topo da tela, você pode usar um evento \"Fechar diálogo não modal\" ou precisará redefinir manualmente o limite de linhas de varredura da sobreposição com um evento \"Definir limite de linhas de varredura da sobreposição\".",
   "FIELD_SET_PLAYER_MOVEMENT_PLATFORMER_ADVENTURE_WARNING": "Para definir a velocidade de Movimento do Jogador nos tipos de cena Plataforma ou Aventura, você deve usar o evento \"Atualização de Campo do Motor\" para definir os campos Velocidade de Caminhada ou Velocidade de Corrida.",
-  "FIELD_TEXT_IN_LOGO_WARNING": "Renderizar texto nas cenas de Logo causará falhas gráficas.",
+  "FIELD_TEXT_IN_LOGO_WARNING": "Renderizar texto nas cenas de logotipo causará falhas gráficas.",
   "FIELD_ANY": "Qualquer",
   "FIELD_CLOSE_DELAY": "Atraso ao fechar",
   "FIELD_CLOSE_DELAY_DESC": "Atrasar o fechamento por um período de tempo.",
