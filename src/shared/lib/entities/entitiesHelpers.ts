@@ -1190,6 +1190,47 @@ export const updateCustomEventArgs = (
   const oldVariables = customEvent.variables;
   const oldActors = customEvent.actors;
 
+  const addActor = (actor: string) => {
+    const letter = String.fromCharCode("A".charCodeAt(0) + parseInt(actor));
+    actors[actor] = {
+      id: actor,
+      name: oldActors[actor]?.name || `${l10n("FIELD_ACTOR")} ${letter}`,
+    };
+  };
+
+  const addVariable = (variable: string) => {
+    const letter = String.fromCharCode(
+      "A".charCodeAt(0) + parseInt(variable[1]),
+    );
+    const oldVariable = oldVariables[variable];
+
+    if (oldVariable?.passByReference === "array") {
+      variables[variable] = {
+        id: variable,
+        name: oldVariable?.name || `Variable ${letter}`,
+        passByReference: "array",
+        size: oldVariable?.size ?? 5,
+      };
+    } else {
+      variables[variable] = {
+        id: variable,
+        name: oldVariable?.name || `Variable ${letter}`,
+        passByReference: oldVariable?.passByReference ?? true,
+      };
+    }
+  };
+
+  const addPropertyActor = (property: string) => {
+    const actor = property && property.replace(/:.*/, "");
+    if (actor !== "player" && actor !== "$self$" && actor !== "camera") {
+      const letter = String.fromCharCode("A".charCodeAt(0) + parseInt(actor));
+      actors[actor] = {
+        id: actor,
+        name: oldActors[actor]?.name || `Actor ${letter}`,
+      };
+    }
+  };
+
   walkNormalizedScript(
     customEvent.script,
     scriptEventLookup,
@@ -1198,38 +1239,6 @@ export const updateCustomEventArgs = (
       const args = scriptEvent.args;
       if (!args) return;
       Object.keys(args).forEach((arg) => {
-        const addActor = (actor: string) => {
-          const letter = String.fromCharCode(
-            "A".charCodeAt(0) + parseInt(actor),
-          );
-          actors[actor] = {
-            id: actor,
-            name: oldActors[actor]?.name || `${l10n("FIELD_ACTOR")} ${letter}`,
-          };
-        };
-        const addVariable = (variable: string) => {
-          const letter = String.fromCharCode(
-            "A".charCodeAt(0) + parseInt(variable[1]),
-          );
-          variables[variable] = {
-            id: variable,
-            name: oldVariables[variable]?.name || `Variable ${letter}`,
-            passByReference: oldVariables[variable]?.passByReference ?? true,
-          };
-        };
-        const addPropertyActor = (property: string) => {
-          const actor = property && property.replace(/:.*/, "");
-          if (actor !== "player" && actor !== "$self$" && actor !== "camera") {
-            const letter = String.fromCharCode(
-              "A".charCodeAt(0) + parseInt(actor),
-            );
-            actors[actor] = {
-              id: actor,
-              name: oldActors[actor]?.name || `Actor ${letter}`,
-            };
-          }
-        };
-
         if (isActorField(scriptEvent.command, arg, args, scriptEventDefs)) {
           const actor = args[arg];
           if (
@@ -1313,16 +1322,8 @@ export const updateCustomEventArgs = (
           if (variablePtrs) {
             variablePtrs.forEach((variablePtr: string) => {
               const variable = variablePtr[2];
-              const letter = String.fromCharCode(
-                "A".charCodeAt(0) + parseInt(variable, 10),
-              ).toUpperCase();
               const variableId = `V${variable}`;
-              variables[variableId] = {
-                id: variableId,
-                name: oldVariables[variableId]?.name || `Variable ${letter}`,
-                passByReference:
-                  oldVariables[variableId]?.passByReference ?? true,
-              };
+              addVariable(variableId);
             });
           }
         }

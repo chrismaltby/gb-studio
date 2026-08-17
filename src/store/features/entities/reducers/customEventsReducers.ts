@@ -76,8 +76,14 @@ const editCustomEventVariablePassByReference: CaseReducer<
   if (!customEvent || !variable) {
     return;
   }
-
-  variable.passByReference = action.payload.passByReference;
+  if (action.payload.passByReference === "array") {
+    variable.passByReference = "array";
+    if (variable.passByReference === "array") {
+      variable.size = variable.size ?? 5;
+    }
+  } else {
+    variable.passByReference = action.payload.passByReference;
+  }
 };
 
 const setCustomEventSymbol: CaseReducer<

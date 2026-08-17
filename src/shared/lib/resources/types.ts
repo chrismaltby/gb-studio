@@ -421,11 +421,22 @@ export type Scene = Omit<
   triggers: Trigger[];
 };
 
-export const ScriptVariable = Type.Object({
+const ScriptVariableBase = {
   id: Type.String(),
   name: Type.String(),
-  passByReference: Type.Union([Type.Boolean(), Type.Literal("array")]),
-});
+};
+
+export const ScriptVariable = Type.Union([
+  Type.Object({
+    ...ScriptVariableBase,
+    passByReference: Type.Boolean(),
+  }),
+  Type.Object({
+    ...ScriptVariableBase,
+    passByReference: Type.Literal("array"),
+    size: Type.Integer({ minimum: 1 }),
+  }),
+]);
 
 export type ScriptVariable = Static<typeof ScriptVariable>;
 

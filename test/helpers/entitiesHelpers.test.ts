@@ -793,6 +793,7 @@ describe("updateCustomEventArgs", () => {
           id: "V1",
           name: "Existing Array",
           passByReference: "array",
+          size: 4,
         },
       },
       actors: {},
@@ -842,6 +843,7 @@ describe("updateCustomEventArgs", () => {
         id: "V1",
         name: "Existing Array",
         passByReference: "array",
+        size: 4,
       },
     });
   });

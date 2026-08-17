@@ -15,6 +15,7 @@ const customEvent = {
       id: "V1",
       name: "Array",
       passByReference: "array",
+      size: 2,
     },
   },
   actors: {
