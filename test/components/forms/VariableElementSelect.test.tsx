@@ -75,7 +75,7 @@ test("Should list fixed array elements as individual options", () => {
   });
 });
 
-test("Should use index zero for custom event array parameters", () => {
+test("Should list custom event array parameter elements as individual options", () => {
   const state = {
     editor: { type: "customEvent" },
     project: {
@@ -90,11 +90,13 @@ test("Should use index zero for custom event array parameters", () => {
                     id: "V0",
                     name: "Array A",
                     passByReference: "array",
+                    size: 3,
                   },
                   V1: {
                     id: "V1",
                     name: "Array B",
                     passByReference: "array",
+                    size: 2,
                   },
                 },
               },
@@ -141,12 +143,25 @@ test("Should use index zero for custom event array parameters", () => {
   );
 
   expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
+  expect(screen.getByText("$Array A[2]")).toBeInTheDocument();
+  expect(
+    screen.getByRole("option", { name: "Array A[0]" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("option", { name: "Array A[1]" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("option", { name: "Array A[2]" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("option", { name: "Array A[3]" }),
+  ).not.toBeInTheDocument();
 
-  fireEvent.click(screen.getByRole("option", { name: "Array B[]" }));
+  fireEvent.click(screen.getByRole("option", { name: "Array B[1]" }));
   expect(onChange).toHaveBeenCalledWith({
     type: "variable",
     value: "V1",
-    index: { type: "number", value: 0 },
+    index: { type: "number", value: 1 },
   });
 });
 
@@ -165,6 +180,7 @@ test("Should exclude custom event parameters when disabled", () => {
                     id: "V0",
                     name: "Array Reference",
                     passByReference: "array",
+                    size: 3,
                   },
                   V1: {
                     id: "V1",
@@ -227,7 +243,7 @@ test("Should exclude custom event parameters when disabled", () => {
   );
 
   expect(
-    screen.queryByRole("option", { name: "Array Reference[]" }),
+    screen.queryByRole("option", { name: "Array Reference[0]" }),
   ).not.toBeInTheDocument();
   expect(
     screen.queryByRole("option", { name: "Variable Reference" }),

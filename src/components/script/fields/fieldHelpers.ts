@@ -12,6 +12,7 @@ type VariableFieldType = NonNullable<ScriptEventFieldSchema["variableType"]>;
 export interface VariableFieldCandidate {
   id: string;
   type: VariableType;
+  size?: number;
 }
 
 const arrayVariableTypes: VariableType[] = ["array"];

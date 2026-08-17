@@ -89,8 +89,15 @@ const VariableElementSelectComponent = ({
         label: group.name,
         options: group.variables.flatMap<VariableElementOption>((variable) => {
           const definition = variablesLookup[variable.id];
-          if (definition?.type === "array") {
-            return Array.from({ length: definition.size }, (_, index) => {
+          const customEventVariable = customEvent?.variables[variable.id];
+          const arraySize =
+            definition?.type === "array"
+              ? definition.size
+              : customEventVariable?.passByReference === "array"
+                ? customEventVariable.size
+                : undefined;
+          if (arraySize !== undefined) {
+            return Array.from({ length: arraySize }, (_, index) => {
               const indexedVariable: ScriptVariableElement = {
                 type: "variable",
                 value: variable.id,
@@ -104,22 +111,6 @@ const VariableElementSelectComponent = ({
               };
             });
           }
-          if (
-            customEvent?.variables[variable.id]?.passByReference === "array"
-          ) {
-            return [
-              {
-                value: variable.id,
-                label: variable.displayName,
-                variable: {
-                  type: "variable",
-                  value: variable.id,
-                  index: { type: "number", value: 0 },
-                },
-                variableName: variable.name,
-              },
-            ];
-          }
           return [
             {
               value: variable.id,
@@ -132,15 +123,13 @@ const VariableElementSelectComponent = ({
       })),
     [customEvent, variables, variablesLookup],
   );
-  const isCustomEventArray =
-    customEvent?.variables[variableId]?.passByReference === "array";
   const currentValue = useMemo(() => {
     if (!value) {
       return undefined;
     }
     const selectedOption = findSelectOption<VariableElementOption>(
       options,
-      isCustomEventArray ? value.value : optionValue(value),
+      optionValue(value),
     );
     if (selectedOption || value.index !== undefined) {
       return selectedOption;
@@ -148,7 +137,7 @@ const VariableElementSelectComponent = ({
     return options
       .flatMap((group) => group.options)
       .find((option) => option.variable.value === value.value);
-  }, [isCustomEventArray, options, value]);
+  }, [options, value]);
   const currentVariable = variables.find(({ id }) => id === variableId);
   const valueIsLocal = variableId.startsWith("L");
   const valueIsTemp = variableId.startsWith("T");

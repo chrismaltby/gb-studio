@@ -20,6 +20,7 @@ test("Should be able to extract named variables from custom event", () => {
           V0: {
             name: "First",
             passByReference: "array",
+            size: 3,
           },
           V1: {
             name: "Second",
@@ -33,7 +34,7 @@ test("Should be able to extract named variables from custom event", () => {
       id: "V0",
       code: "V0",
       name: "First",
-      displayName: "First[]",
+      displayName: "First[3]",
       group: "SIDEBAR_PARAMETERS",
     },
     {

@@ -76,7 +76,7 @@ export const namedCustomEventVariables = (
         displayName: variableDisplayName(
           name,
           customEvent.variables[id]?.passByReference === "array"
-            ? null
+            ? customEvent.variables[id].size
             : undefined,
         ),
         group: l10n("SIDEBAR_PARAMETERS"),

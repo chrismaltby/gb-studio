@@ -25,14 +25,17 @@ export const useVariableFieldContext = (entityId: string) => {
   );
   const candidates = useMemo<VariableFieldCandidate[]>(
     () =>
-      variables.map(({ id }) => ({
-        id,
-        type:
-          variablesLookup[id]?.type ??
-          (customEvent?.variables[id]?.passByReference === "array"
-            ? "array"
-            : "number"),
-      })),
+      variables.map(({ id }) => {
+        const variable = variablesLookup[id];
+        const customEventVariable = customEvent?.variables[id];
+        if (variable?.type === "array") {
+          return { id, type: variable.type, size: variable.size };
+        }
+        if (customEventVariable?.passByReference === "array") {
+          return { id, type: "array", size: customEventVariable.size };
+        }
+        return { id, type: "number" };
+      }),
     [customEvent, variables, variablesLookup],
   );
 
