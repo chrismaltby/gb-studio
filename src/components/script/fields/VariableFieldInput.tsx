@@ -37,7 +37,7 @@ export const VariableFieldInput = ({
   const fieldVariableType = field.variableType ?? "any";
   const allowedVariableTypes =
     allowedVariableTypesForFieldType(fieldVariableType);
-  const { candidates, variablesLookup } = useVariableFieldContext(entityId);
+  const { candidates } = useVariableFieldContext(entityId);
   const variableValue = isScriptValueVariable(value) ? value : undefined;
   const variableId =
     variableValue?.value ?? (typeof value === "string" ? value : "");
@@ -46,7 +46,6 @@ export const VariableFieldInput = ({
   const variableIndex = isScriptValue(variableValue?.index)
     ? variableValue.index
     : { type: "number" as const, value: 0 };
-  const variable = variablesLookup[variableId];
 
   return (
     <IndexedVariableInputGroup>
@@ -75,7 +74,7 @@ export const VariableFieldInput = ({
           name={`${id}_index`}
           entityId={entityId}
           value={variableIndex}
-          max={variable?.type === "array" ? variable.size - 1 : undefined}
+          max={selectedCandidate?.size ? selectedCandidate.size - 1 : undefined}
           onChange={(newIndex) => {
             onChange({
               type: "variable",

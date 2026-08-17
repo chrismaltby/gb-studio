@@ -469,12 +469,7 @@ export const DataTableInput = ({
         id: variable.id,
         name: definition ? variable.name : variable.id,
         type: candidate?.type ?? "number",
-        size:
-          definition?.type === "array"
-            ? definition.size
-            : candidate?.type === "array"
-              ? 1
-              : undefined,
+        size: definition?.type === "array" ? definition.size : candidate?.size,
         isGlobal: Boolean(definition),
       };
     });

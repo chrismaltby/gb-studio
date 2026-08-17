@@ -1161,9 +1161,10 @@ const ValueSelect = ({
       );
     } else if (value.type === "variable") {
       const selectedVariable = variablesLookup[value.value];
+      const selectedCustomEventVariable = customEvent?.variables[value.value];
       const isIndexableVariable =
         selectedVariable?.type === "array" ||
-        customEvent?.variables[value.value]?.passByReference === "array";
+        selectedCustomEventVariable?.passByReference === "array";
       return (
         <ValueWrapper
           ref={previewRef}
@@ -1210,7 +1211,9 @@ const ValueSelect = ({
                   max={
                     selectedVariable?.type === "array"
                       ? selectedVariable.size - 1
-                      : undefined
+                      : selectedCustomEventVariable?.passByReference === "array"
+                        ? selectedCustomEventVariable.size - 1
+                        : undefined
                   }
                   onChange={(index) => {
                     onChange({ ...value, index });

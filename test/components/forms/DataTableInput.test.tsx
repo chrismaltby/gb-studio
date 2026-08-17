@@ -68,6 +68,7 @@ jest.mock("components/script/fields/useVariableFieldContext", () => ({
       { id: "variable-1", type: "number" },
       { id: "variable-2", type: "number" },
       { id: "array-1", type: "array" },
+      { id: "V0", type: "array", size: 4 },
     ],
     variables: [
       {
@@ -81,6 +82,7 @@ jest.mock("components/script/fields/useVariableFieldContext", () => ({
         displayName: "Variable Two",
       },
       { id: "array-1", name: "MyArray", displayName: "MyArray[5]" },
+      { id: "V0", name: "Parameter Array", displayName: "Parameter Array[4]" },
     ],
     customEvent: undefined,
     variablesLookup: {
@@ -480,6 +482,12 @@ test("Should import CSV tables through the renderer API", async () => {
           name: "Variable One",
           type: "number",
           size: undefined,
+        },
+        {
+          id: "V0",
+          name: "V0",
+          type: "array",
+          size: 4,
         },
       ]),
     );
