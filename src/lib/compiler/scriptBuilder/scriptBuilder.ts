@@ -1967,6 +1967,7 @@ class ScriptBuilder extends ScriptBuilderBase {
   _resolveArrayReferenceArgument = (
     variable: string | ScriptValue | ScriptBuilderFunctionArg,
     argumentId: string,
+    requiredSize: number,
   ): { alias: string; indirect: boolean } => {
     let rootVariable: ScriptBuilderVariable;
     if (typeof variable === "string" || this._isFunctionArg(variable)) {
@@ -1989,6 +1990,14 @@ class ScriptBuilder extends ScriptBuilderBase {
       if (!resolvedVariable.indirect || !resolvedVariable.array) {
         throw new Error(
           `Array reference argument "${argumentId}" must be an array variable`,
+        );
+      }
+      if (
+        resolvedVariable.size === undefined ||
+        resolvedVariable.size < requiredSize
+      ) {
+        throw new Error(
+          `Array reference argument "${argumentId}" requires at least ${requiredSize} elements, but the provided array has ${resolvedVariable.size ?? "unknown"}`,
         );
       }
       return {
@@ -2014,6 +2023,11 @@ class ScriptBuilder extends ScriptBuilderBase {
     if (variableDefinition?.type !== "array") {
       throw new Error(
         `Array reference argument "${argumentId}" must be an array variable`,
+      );
+    }
+    if (variableDefinition.size < requiredSize) {
+      throw new Error(
+        `Array reference argument "${argumentId}" requires at least ${requiredSize} elements, but the provided array has ${variableDefinition.size}`,
       );
     }
 
@@ -2118,6 +2132,7 @@ class ScriptBuilder extends ScriptBuilderBase {
             const arrayReference = this._resolveArrayReferenceArgument(
               variableValue,
               variableArg.id,
+              variableArg.size,
             );
             if (arrayReference.indirect) {
               this._stackPush(arrayReference.alias);
@@ -2247,6 +2262,7 @@ class ScriptBuilder extends ScriptBuilderBase {
       indirect: boolean,
       value: string,
       array = false,
+      size?: number,
     ) => {
       if (!argLookup[type].get(value)) {
         const newArg = `.SCRIPT_ARG_${
@@ -2256,6 +2272,7 @@ class ScriptBuilder extends ScriptBuilderBase {
           type: "argument",
           indirect,
           array,
+          size,
           symbol: newArg,
         });
         numArgs--;
@@ -2300,6 +2317,9 @@ class ScriptBuilder extends ScriptBuilderBase {
             variableArg.passByReference !== false,
             variableArg.id,
             variableArg.passByReference === "array",
+            variableArg.passByReference === "array"
+              ? variableArg.size
+              : undefined,
           );
         }
       }

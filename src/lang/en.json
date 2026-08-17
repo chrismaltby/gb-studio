@@ -2119,6 +2119,7 @@
   "WARNING_PLUGIN_OVERWROTE_FILE": "Plugin \"{pluginName}\" overwrote \"{filename}\" which was already written by \"{previousPlugin}\"",
   "WARNING_PLUGIN_PATCH_CONFLICT_OVERWRITTEN": "Plugin \"{pluginName}\" could not patch \"{filename}\" because it was already overwritten by plugin \"{previousPlugin}\"",
   "WARNING_TILEMAP_TOO_MANY_TILES": "Tilemap contains too many unique 8x8px tiles ({tilesetLength} where limit is {maxTilesetLength}) meaning it may not display correctly.",
+  "WARNING_ARRAY_TOO_SMALL": "Selected array is too small. This field requires at least {expectedSize} elements, but the selected array has {actualSize}.",
 
   "// 12": "Errors -------------------------------------------------------",
 

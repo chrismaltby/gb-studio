@@ -1953,6 +1953,52 @@ test("Should pass an array root to an array-reference script argument", async ()
   );
 });
 
+test("Should reject an undersized array passed to an array-reference script argument", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Small Array",
+          symbol: "var_small_array",
+          type: "array",
+          size: 2,
+        },
+      },
+      customEvents: [
+        {
+          id: "script1",
+          name: "Array Script",
+          description: "",
+          variables: {
+            V0: {
+              id: "V0",
+              name: "Array",
+              passByReference: "array",
+              size: 3,
+            },
+          },
+          actors: {},
+          symbol: "script_1",
+          script: [],
+        },
+      ],
+    },
+  );
+
+  expect(() =>
+    sb.callScript("script1", {
+      "$variable[V0]$": {
+        type: "variable",
+        value: "11111111-1111-1111-1111-111111111111",
+      },
+    }),
+  ).toThrow(
+    'Array reference argument "V0" requires at least 3 elements, but the provided array has 2',
+  );
+});
+
 test("Should reject an indexed element passed to an array-reference script argument", async () => {
   const { sb } = await createTestScriptBuilder(
     {},
@@ -2055,6 +2101,7 @@ test("Should pass an array-reference argument root to another script", async () 
               type: "argument",
               indirect: true,
               array: true,
+              size: 2,
               symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
             },
           ],
@@ -2091,6 +2138,58 @@ test("Should pass an array-reference argument root to another script", async () 
 
   expect(output).toContain(
     "        VM_PUSH_VALUE           .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+  );
+});
+
+test("Should reject an undersized forwarded array-reference argument", async () => {
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      argLookup: {
+        variable: new Map([
+          [
+            "V1",
+            {
+              type: "argument",
+              indirect: true,
+              array: true,
+              size: 2,
+              symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+            },
+          ],
+        ]),
+        actor: new Map(),
+      },
+      customEvents: [
+        {
+          id: "script1",
+          name: "Array Script",
+          description: "",
+          variables: {
+            V0: {
+              id: "V0",
+              name: "Array",
+              passByReference: "array",
+              size: 3,
+            },
+          },
+          actors: {},
+          symbol: "script_1",
+          script: [],
+        },
+      ],
+    },
+  );
+
+  expect(() =>
+    sb.callScript("script1", {
+      "$variable[V0]$": {
+        type: "variable",
+        value: "V1",
+      },
+    }),
+  ).toThrow(
+    'Array reference argument "V0" requires at least 3 elements, but the provided array has 2',
   );
 });
 

@@ -33,11 +33,12 @@ export const getScriptEventFields = (
       Object.values(customEvent?.variables || []).map((v) => {
         if (v?.passByReference === "array") {
           return {
-            label: `${v.name || ""}`,
+            label: `${v.name || ""}[${v.size}]`,
             key: `$variable[${v.id || ""}]$`,
             type: "variable",
             defaultValue: "LAST_VARIABLE",
             variableType: "arrayReference",
+            arraySize: v.size,
           } satisfies ScriptEventFieldSchema;
         }
         return {
