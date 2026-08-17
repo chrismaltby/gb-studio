@@ -36,11 +36,13 @@ describe("Custom Events", () => {
                   id: "V0",
                   name: "Variable A",
                   passByReference: "array",
+                  size: 2,
                 },
                 V1: {
                   id: "V1",
                   name: "Variable B",
                   passByReference: "array",
+                  size: 2,
                 },
               },
               script: ["scriptEvent1"],
