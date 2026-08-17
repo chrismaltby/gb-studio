@@ -35,8 +35,9 @@ import CachedScroll from "ui/util/CachedScroll";
 import { ScriptUsesList } from "components/world/inspector/scripts/ScriptUsesList";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { customEventName } from "shared/lib/entities/entitiesHelpers";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import type { ScriptVariable } from "shared/lib/resources/types";
+import { NumberInput } from "ui/form/NumberInput";
 
 interface CustomEventInspectorProps {
   id: string;
@@ -54,6 +55,17 @@ const UsesCollapsedWrapper = styled.div`
   left: 0;
   right: 17px;
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
+`;
+
+const ArrayBracket = styled.div<{ $closing?: boolean }>`
+  display: flex;
+  align-items: center;
+  padding: 0 2px;
+  ${(props) =>
+    props.$closing &&
+    css`
+      border-right: 1px solid ${props.theme.colors.input.border};
+    `}
 `;
 
 export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
@@ -146,6 +158,28 @@ export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
         }),
       );
     },
+    [customEvent, dispatch, id],
+  );
+
+  const onEditVariableSize = useCallback(
+    (key: string): React.ChangeEventHandler<HTMLInputElement> =>
+      (e) => {
+        if (!customEvent) {
+          return;
+        }
+        const variable = customEvent.variables[key];
+        if (!variable) {
+          return;
+        }
+        const size = parseInt(e.currentTarget.value, 10);
+        dispatch(
+          entitiesActions.editCustomEventVariableSize({
+            customEventId: id,
+            variableId: key,
+            size,
+          }),
+        );
+      },
     [customEvent, dispatch, id],
   );
 
@@ -366,9 +400,23 @@ export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
                                   <Input
                                     id={`variable[${i}]`}
                                     value={variable.name}
-                                    placeholder="Variable Name"
+                                    placeholder={l10n("FIELD_VARIABLE_NAME")}
                                     onChange={onEditVariableName(variable.id)}
                                   />
+                                  {variable.passByReference === "array" && (
+                                    <>
+                                      <ArrayBracket>[</ArrayBracket>
+                                      <NumberInput
+                                        id={`variable[${i}].size`}
+                                        value={variable.size}
+                                        placeholder={l10n("FIELD_SIZE")}
+                                        onChange={onEditVariableSize(
+                                          variable.id,
+                                        )}
+                                      />
+                                      <ArrayBracket $closing>]</ArrayBracket>
+                                    </>
+                                  )}
                                   <InputGroupAppend>
                                     <DropdownButton
                                       label={
