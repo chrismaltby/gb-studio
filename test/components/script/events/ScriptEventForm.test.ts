@@ -27,10 +27,11 @@ test("Should use an unindexed array-only field for array reference arguments", (
   );
 
   expect(fields).toContainEqual({
-    label: "Array",
+    label: "Array[2]",
     key: "$variable[V0]$",
     type: "variable",
     defaultValue: "LAST_VARIABLE",
     variableType: "arrayReference",
+    arraySize: 2,
   });
 });

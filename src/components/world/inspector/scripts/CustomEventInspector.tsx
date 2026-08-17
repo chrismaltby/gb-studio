@@ -171,7 +171,9 @@ export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
         if (!variable) {
           return;
         }
-        const size = parseInt(e.currentTarget.value, 10);
+        const parsedSize = e.currentTarget.valueAsNumber;
+        const size =
+          Number.isInteger(parsedSize) && parsedSize > 0 ? parsedSize : 1;
         dispatch(
           entitiesActions.editCustomEventVariableSize({
             customEventId: id,
@@ -413,6 +415,7 @@ export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
                                         onChange={onEditVariableSize(
                                           variable.id,
                                         )}
+                                        min={1}
                                       />
                                       <ArrayBracket $closing>]</ArrayBracket>
                                     </>

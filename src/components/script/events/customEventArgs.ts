@@ -19,9 +19,18 @@ export const applyCustomEventArgDefaults = (
     }
     const variableType =
       variable.passByReference === "array" ? "arrayReference" : "any";
+    const compatibleVariableCandidates =
+      variable.passByReference === "array"
+        ? variableCandidates.filter(
+            (candidate) =>
+              candidate.type === "array" &&
+              candidate.size !== undefined &&
+              candidate.size >= variable.size,
+          )
+        : variableCandidates;
     const defaultValue = defaultVariableValueForType(
       variableType,
-      variableCandidates,
+      compatibleVariableCandidates,
       preferredVariableId,
     );
     if (defaultValue === undefined) {

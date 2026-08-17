@@ -35,7 +35,7 @@ test("applies persisted defaults for custom event arguments", () => {
       { customEventId: customEvent.id },
       [
         { id: "scalar", type: "number" },
-        { id: "array", type: "array" },
+        { id: "array", type: "array", size: 2 },
       ],
       "scalar",
     ),
@@ -62,6 +62,22 @@ test("leaves an array reference unset when no array exists", () => {
   );
 
   expect(args["$variable[V1]$"]).toBeUndefined();
+});
+
+test("selects only a sufficiently sized default array reference", () => {
+  const args = applyCustomEventArgDefaults(
+    customEvent,
+    { customEventId: customEvent.id },
+    [
+      { id: "smallArray", type: "array", size: 1 },
+      { id: "largeArray", type: "array", size: 3 },
+    ],
+  );
+
+  expect(args["$variable[V1]$"]).toEqual({
+    type: "variable",
+    value: "largeArray",
+  });
 });
 
 test("preserves existing custom event arguments", () => {
