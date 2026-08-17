@@ -86,6 +86,24 @@ const editCustomEventVariablePassByReference: CaseReducer<
   }
 };
 
+const editCustomEventVariableSize: CaseReducer<
+  EntitiesState,
+  PayloadAction<{
+    customEventId: string;
+    variableId: string;
+    size: number;
+  }>
+> = (state, action) => {
+  const customEvent = state.customEvents.entities[action.payload.customEventId];
+  const variable = customEvent?.variables[action.payload.variableId];
+  if (!customEvent || !variable) {
+    return;
+  }
+  if (variable.passByReference === "array") {
+    variable.size = action.payload.size;
+  }
+};
+
 const setCustomEventSymbol: CaseReducer<
   EntitiesState,
   PayloadAction<{ customEventId: string; symbol: string }>
@@ -199,6 +217,7 @@ const customEventsReducers = {
 
   editCustomEvent,
   editCustomEventVariablePassByReference,
+  editCustomEventVariableSize,
   setCustomEventSymbol,
   removeCustomEvent,
   refreshCustomEventArgs: {

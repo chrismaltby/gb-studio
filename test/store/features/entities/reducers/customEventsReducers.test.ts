@@ -171,6 +171,118 @@ describe("Custom Events", () => {
     });
   });
 
+  describe("editCustomEventVariableSize", () => {
+    test("sets size when changing an array arg", () => {
+      const state: EntitiesState = {
+        ...initialState,
+        customEvents: {
+          entities: {
+            customEvent1: {
+              ...dummyCustomEventNormalized,
+              id: "customEvent1",
+              variables: {
+                V0: {
+                  id: "V0",
+                  name: "Variable A",
+                  passByReference: "array",
+                  size: 2,
+                },
+              },
+              script: ["scriptEvent1"],
+            },
+          },
+          ids: ["customEvent1"],
+        },
+      };
+
+      const newState = reducer(
+        state,
+        entitiesActions.editCustomEventVariableSize({
+          customEventId: "customEvent1",
+          variableId: "V0",
+          size: 10,
+        }),
+      );
+
+      expect(
+        newState.customEvents.entities.customEvent1?.variables.V0
+          ?.passByReference,
+      ).toEqual("array");
+
+      expect(
+        newState.customEvents.entities.customEvent1?.variables.V0
+          ?.passByReference === "array" &&
+          newState.customEvents.entities.customEvent1?.variables.V0?.size,
+      ).toEqual(10);
+    });
+
+    test("not set size when changing a non-array arg", () => {
+      const state: EntitiesState = {
+        ...initialState,
+        customEvents: {
+          entities: {
+            customEvent1: {
+              ...dummyCustomEventNormalized,
+              id: "customEvent1",
+              variables: {
+                V0: {
+                  id: "V0",
+                  name: "Variable A",
+                  passByReference: false,
+                },
+                V1: {
+                  id: "V1",
+                  name: "Variable B",
+                  passByReference: true,
+                },
+              },
+              script: ["scriptEvent1"],
+            },
+          },
+          ids: ["customEvent1"],
+        },
+      };
+
+      const newState1 = reducer(
+        state,
+        entitiesActions.editCustomEventVariableSize({
+          customEventId: "customEvent1",
+          variableId: "V0",
+          size: 10,
+        }),
+      );
+
+      const newState2 = reducer(
+        state,
+        entitiesActions.editCustomEventVariableSize({
+          customEventId: "customEvent1",
+          variableId: "V1",
+          size: 10,
+        }),
+      );
+
+      expect(
+        newState1.customEvents.entities.customEvent1?.variables.V0
+          ?.passByReference,
+      ).not.toEqual("array");
+
+      expect(
+        newState2.customEvents.entities.customEvent1?.variables.V1
+          ?.passByReference,
+      ).not.toEqual("array");
+
+      expect(
+        newState1.customEvents.entities.customEvent1?.variables.V0 &&
+          "size" in newState1.customEvents.entities.customEvent1.variables.V0,
+      ).toEqual(false);
+
+      expect(
+        newState2.customEvents.entities.customEvent1?.variables.V1 &&
+          "size" in newState1.customEvents.entities.customEvent1.variables.V1,
+      ).toEqual(false);
+    });
+  });
+
   describe("removeCustomEvent", () => {
     test("Should remove a custom event and clear references when deleteReferences is false", () => {
       const state: EntitiesState = {
