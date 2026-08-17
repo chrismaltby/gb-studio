@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Ukrainian localisation. [@AmakerGame](https://github.com/AmakerGame)
+- Updated Brazilian Portuguese localisation. [@Italo-Soares-Tradutor](https://github.com/Italo-Soares-Tradutor)
 
 ### Fixed
 
