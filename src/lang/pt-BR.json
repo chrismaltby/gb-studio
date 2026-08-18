@@ -1,9 +1,9 @@
 {
   "RTL": false,
-  
+
   "GBSTUDIO_DESCRIPTION": "Criador visual de jogos retrô",
   "GBSTUDIO_COPYRIGHT": "Distribuído sob a licença MIT.",
-  
+
   "// 1": "UI -------------------------------------------------------",
   "ACTOR": "Ator",
   "TRIGGER": "Gatilho",
@@ -12,7 +12,7 @@
   "CUSTOM_EVENT": "Script",
   "CONSTANT": "Constante",
   "NOTE": "Nota",
-  
+
   "// 2": "Navigator ------------------------------------------------",
   "NAV_GAME_WORLD": "Área do jogo",
   "NAV_SPRITES": "Sprites",
@@ -25,7 +25,7 @@
   "NAV_BUILD_AND_RUN": "Compilar e jogar",
   "NAV_SETTINGS": "Configurações",
   "NAV_IMAGES": "Imagens",
-  
+
   "// 3": "Toolbar --------------------------------------------------",
   "TOOLBAR_MODIFIED": "Modificado",
   "TOOLBAR_ZOOM_IN": "Ampliar zoom",
@@ -41,7 +41,7 @@
   "TOOLBAR_SAVING": "Salvando",
   "TOOLBAR_SAVING_ERROR": "Erro ao salvar",
   "TOOLBAR_WRITING_FILES": "Escrevendo no disco",
-  
+
   "// 4": "Tools ----------------------------------------------------",
   "TOOL_SELECT_LABEL": "Selecionar",
   "TOOL_ADD_LABEL": "Adicionar",
@@ -66,7 +66,7 @@
   "TOOL_TILE_PRIORITY": "Prioridade de tile",
   "TOOL_MAGIC": "Pincel mágico",
   "TOOL_SLOPE": "Pincel de rampas",
-  
+
   "// 5": "Editors --------------------------------------------------",
   "SIDEBAR_NAVIGATION": "Navegação",
   "SIDEBAR_STARTING_SCENE": "Cena inicial",
@@ -99,7 +99,7 @@
   "SIDEBAR_CONSTANTS": "Constantes",
   "SIDEBAR_ADD_CONSTANT": "Adicionar constante",
   "SIDEBAR_CONSTANT_USES": "Usos da constante",
-  
+
   "// 6": "Form Fields ----------------------------------------------",
   "FIELD_NAME": "Nome",
   "FIELD_DESCRIPTION": "Descrição",
@@ -1475,12 +1475,12 @@
   "FIELD_MERGE_DOWN": "Mesclar com o de baixo",
   "FIELD_INFO": "Informações",
   "FIELD_UNIQUE_TILES": "Tiles únicos",
-  
+
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Procurar...",
   "ASSET_EDIT": "Editar",
   "ASSET_ADD": "Adicionar",
-  
+
   "// 8": "Build ----------------------------------------------------",
   "BUILD_RUN": "Executar",
   "BUILD_EXPORT_ROM": "Exportar ROM",
@@ -1491,7 +1491,7 @@
   "BUILD_CANCEL": "Cancelar compilação",
   "BUILD_CANCELLING": "Cancelando compilação",
   "BUILD_CANCELLED": "Compilação cancelada",
-  
+
   "// 9": "Scripting Events -----------------------------------------",
   "EVENT_GROUP_ACTOR": "Ator",
   "EVENT_GROUP_CAMERA": "Câmera",
@@ -1923,7 +1923,7 @@
   "EVENT_GROUP_DATA_TABLE": "Tabela de dados",
   "EVENT_DATA_TABLE": "Busca na tabela de dados",
   "EVENT_DATA_TABLE_DESC": "Define uma matriz 2D de valores estáticos que podem ser consultados por índice, com cada coluna carregada em uma variável.",
-  
+
   "// 10": "Menu -----------------------------------------------------",
   "MENU_FILE": "Arquivo",
   "MENU_NEW_PROJECT": "Novo projeto",
@@ -2075,7 +2075,7 @@
   "MENU_DELETE_NOTE": "Excluir nota",
   "MENU_DELETE_SELECTION": "Excluir seleção",
   "MENU_INPUT": "Entrada",
-  
+
   "// 11": "Warnings -----------------------------------------------------",
   "WARNING_BACKGROUND_TOO_SMALL": "A imagem de fundo é muito pequena, deve ter pelo menos 160px por 144px",
   "WARNING_BACKGROUND_TOO_LARGE": "A imagem de fundo é muito grande, deve ter no máximo 256px por 256px",
@@ -2117,7 +2117,7 @@
   "WARNING_PLUGIN_OVERWROTE_FILE": "O plugin \"{pluginName}\" sobrescreveu \"{filename}\", que já havia sido gravado por \"{previousPlugin}\"",
   "WARNING_PLUGIN_PATCH_CONFLICT_OVERWRITTEN": "O plugin \"{pluginName}\" não pôde aplicar o patch em \"{filename}\" porque ele já havia sido sobrescrito pelo plugin \"{previousPlugin}\"",
   "WARNING_TILEMAP_TOO_MANY_TILES": "O mapa de tiles contém muitos tiles exclusivos de 8x8px ({tilesetLength}, sendo que o limite é {maxTilesetLength}), o que significa que ele pode não ser exibido corretamente.",
-  
+
   "// 12": "Errors -------------------------------------------------------",
   "ERROR_PLEASE_ENTER_PROJECT_NAME": "Por favor, insira o nome do projeto",
   "ERROR_PLEASE_ENTER_PROJECT_PATH": "Por favor, insira o diretório do projeto",
@@ -2150,7 +2150,7 @@
   "ERROR_DATA_TABLE_CSV_VARIABLE_TYPE": "A variável \"{name}\" tem o tipo incorreto para esta coluna da tabela de dados.",
   "ERROR_DATA_TABLE_CSV_ARRAY_INDEX": "O índice da matriz {index} está fora do intervalo para a variável \"{name}\".",
   "ERROR_SCENE_TARGET_LAYER_HIDDEN": "Não foi possível editar porque a camada de destino está oculta.",
-  
+
   "// 13": "Splash -------------------------------------------------------",
   "SPLASH_NEW": "Novo",
   "SPLASH_OPEN": "Abrir projeto",
@@ -2172,14 +2172,14 @@
   "SPLASH_NO_RECENT_PROJECTS": "Nenhum projeto foi aberto recentemente.",
   "SPLASH_CREDITS": "Créditos",
   "SPLASH_CONTRIBUTORS": "Contribuidores",
-  
+
   "// 14": "Dialogue Review ------------------------------------------------",
   "DIALOGUE_REVIEW": "Revisar diálogos",
   "DIALOGUE_LINE": "Linha",
   "DIALOGUE_LINES": "Linhas",
   "DIALOGUE_WORD": "Palavra",
   "DIALOGUE_WORDS": "Palavras",
-  
+
   "// 15": "Dialogs ------------------------------------------------------",
   "DIALOG_SAVE_CHANGES": "Você quer salvar as alterações feitas em \"{name}\"?",
   "DIALOG_SAVE_WARNING": "Suas alterações serão perdidas se você não salvá-las.",
@@ -2266,7 +2266,7 @@
   "DIALOG_CONVERT_MOD_REPLACE": "Arquivo .uge convertido já encontrado",
   "DIALOG_CONVERT_MOD_REPLACE_DESCRIPTION": "Um arquivo .uge chamado \"{filename}\" já existe. Deseja substituí-lo?",
   "DIALOG_UGE_REPLACE": "Substituir .uge",
-  
+
   "// 16": "Settings ----------------------------------------------------",
   "SETTINGS": "Configurações",
   "SETTINGS_SCENES": "Cenas",
@@ -2289,10 +2289,10 @@
   "SETTINGS_WEB_EXPORT": "Configurações de exportação para web",
   "SETTINGS_SPRITE": "Opções de sprite",
   "SETTINGS_PROJECTILES": "Opções de projéteis",
-  
+
   "// 17": "Palettes ---------------------------------------------------",
   "PALETTES_EDITOR": "Editor de paletas",
-  
+
   "// 18": "Error ------------------------------------------------------",
   "ERROR_TITLE": "GB Studio encontrou um erro",
   "ERROR_WHAT_CAN_I_DO": "O que posso fazer?",
@@ -2300,7 +2300,7 @@
   "ERROR_CLOSE": "Fechar",
   "ERROR_UNABLE_TO_SAVE_MUSIC_FILE": "Não foi possível salvar o arquivo de música",
   "ERROR_UNABLE_TO_SAVE_MUSIC_FILE_DESC": "Verifique se o arquivo que você está tentando editar não está como somente leitura",
-  
+
   "// 19": "Game Type --------------------------------------------------",
   "GAMETYPE_TOP_DOWN": "Visão superior 2D",
   "GAMETYPE_PLATFORMER": "Plataforma",
@@ -2308,7 +2308,7 @@
   "GAMETYPE_SHMUP": "Shoot 'Em Up",
   "GAMETYPE_POINT_N_CLICK": "Apontar e clicar",
   "GAMETYPE_LOGO": "Logotipo",
-  
+
   "// 20": "Compiler -----------------------------------------------------",
   "COMPILER_COMPILING": "Compilando",
   "COMPILER_LINKING": "Vinculando",
@@ -2340,7 +2340,7 @@
   "COMPILER_LOOKING_FOR_ENGINE_PLUGINS": "Procurando plugins do motor em {path}",
   "COMPILER_USING_ENGINE_PLUGIN": "Usando plugin do motor: {path}",
   "COMPILER_USING_ENGINE_PLUGIN_VERSION": "Usando a versão: {path}",
-  
+
   "// 21": "Messages -----------------------------------------------------",
   "MESSAGE_NO_TILESETS_FOUND": "Nenhum conjunto de tiles encontrado",
   "MESSAGE_ADD_TILESET_FILES": "Adicione arquivos .png de conjuntos de tiles à pasta assets/tilesets do projeto para criar mapas de tiles.",
