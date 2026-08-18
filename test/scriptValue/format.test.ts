@@ -134,6 +134,15 @@ describe("scriptValueToString", () => {
     expect(result).toBe("abs(-5)");
   });
 
+  test("should format an array length", () => {
+    const input: ScriptValue = {
+      type: "len",
+      value: { type: "variable", value: "array" },
+    };
+    const result = scriptValueToString(input, options);
+    expect(result).toBe("len(var_array)");
+  });
+
   test("should handle binary and operation", () => {
     const input: ScriptValue = {
       type: "and",

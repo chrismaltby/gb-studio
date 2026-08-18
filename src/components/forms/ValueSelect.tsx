@@ -9,6 +9,7 @@ import {
 } from "components/forms/VariableIndexInput";
 import {
   isInfix,
+  isArrayOperation,
   isUnaryOperation,
   isValueAtom,
   isValueOperation,
@@ -17,6 +18,7 @@ import {
   ValueAtomType,
   ValueOperatorType,
   ValueUnaryOperatorType,
+  ValueArrayOperationType,
 } from "shared/lib/scriptValue/types";
 import React, { JSX, useCallback, useContext, useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
@@ -82,7 +84,7 @@ import { assertUnreachable } from "shared/lib/helpers/assert";
 import { ActorDirection } from "shared/lib/resources/types";
 
 type ValueFunctionMenuItem = {
-  value: ValueOperatorType | ValueUnaryOperatorType;
+  value: ValueOperatorType | ValueUnaryOperatorType | ValueArrayOperationType;
   label: React.ReactNode;
   symbol?: string;
 };
@@ -94,7 +96,10 @@ const TextIcon = styled.div`
 `;
 
 const iconLookup: Record<
-  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType | "rnd",
+  | ValueAtomType
+  | ValueOperatorType
+  | ValueUnaryOperatorType
+  | ValueArrayOperationType,
   JSX.Element
 > = {
   // Value
@@ -127,6 +132,7 @@ const iconLookup: Record<
   min: <TextIcon>min</TextIcon>,
   max: <TextIcon>max</TextIcon>,
   abs: <TextIcon>abs</TextIcon>,
+  len: <TextIcon>len</TextIcon>,
   atan2: <TextIcon>atan2</TextIcon>,
   isqrt: <SquareRootIcon />,
   rnd: <TextIcon>rnd</TextIcon>,
@@ -141,7 +147,10 @@ const iconLookup: Record<
 };
 
 const l10nKeyLookup: Record<
-  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType | "rnd",
+  | ValueAtomType
+  | ValueOperatorType
+  | ValueUnaryOperatorType
+  | ValueArrayOperationType,
   L10NKey
 > = {
   // Value
@@ -174,6 +183,7 @@ const l10nKeyLookup: Record<
   min: "FIELD_MIN",
   max: "FIELD_MAX",
   abs: "FIELD_ABSOLUTE_VALUE",
+  len: "FIELD_ARRAY_LENGTH",
   atan2: "FIELD_ATAN2",
   isqrt: "FIELD_SQUARE_ROOT",
   rnd: "FIELD_RANDOM",
@@ -271,6 +281,10 @@ const functionMenuItems: ValueFunctionMenuItem[] = [
   { value: "abs", label: <L10NText l10nKey="FIELD_ABSOLUTE_VALUE" /> },
   { value: "atan2", label: "atan2" },
   { value: "isqrt", label: <L10NText l10nKey="FIELD_SQUARE_ROOT" /> },
+];
+
+const arrayMenuItems: ValueFunctionMenuItem[] = [
+  { value: "len", label: <L10NText l10nKey="FIELD_ARRAY_LENGTH" /> },
 ];
 
 const booleanOperatorMenuItems: ValueFunctionMenuItem[] = [
@@ -545,8 +559,28 @@ const ValueSelect = ({
   );
 
   const setValueFunction = useCallback(
-    (type: ValueOperatorType | ValueUnaryOperatorType) => {
-      if (isValueUnaryOperatorType(type)) {
+    (
+      type:
+        ValueOperatorType | ValueUnaryOperatorType | ValueArrayOperationType,
+    ) => {
+      if (type === "len") {
+        const defaultArrayId =
+          Object.values(customEvent?.variables ?? {}).find(
+            (variable) => variable.passByReference === "array",
+          )?.id ??
+          Object.values(variablesLookup).find(
+            (variable) => variable?.type === "array",
+          )?.id ??
+          "";
+        onChange({
+          type,
+          value: {
+            type: "variable",
+            value: defaultArrayId,
+          },
+        });
+        focus();
+      } else if (isValueUnaryOperatorType(type)) {
         onChange({
           type,
           value,
@@ -573,7 +607,7 @@ const ValueSelect = ({
         }
       }
     },
-    [focus, focusSecondChild, onChange, value],
+    [customEvent, focus, focusSecondChild, onChange, value, variablesLookup],
   );
 
   const onKeyDown = useCallback(
@@ -683,6 +717,17 @@ const ValueSelect = ({
         </MenuItem>
       )),
       <MenuDivider key="div2" />,
+      ...arrayMenuItems.map((menuItem) => (
+        <MenuItem
+          key={menuItem.value}
+          onClick={() => setValueFunction(menuItem.value)}
+          icon={value.type === menuItem.value ? <CheckIcon /> : <BlankIcon />}
+        >
+          {menuItem.label}
+          {menuItem.symbol && <MenuAccelerator accelerator={menuItem.symbol} />}
+        </MenuItem>
+      )),
+      <MenuDivider key="div3" />,
       <MenuItem
         key="rnd"
         onClick={() => setValueFunction("rnd")}
@@ -933,7 +978,10 @@ const ValueSelect = ({
       ) : null;
     }
 
-    const isOperation = isUnaryOperation(value) || isValueOperation(value);
+    const isOperation =
+      isUnaryOperation(value) ||
+      isValueOperation(value) ||
+      isArrayOperation(value);
 
     return (
       <DropWrapper ref={dragRef}>
@@ -948,7 +996,7 @@ const ValueSelect = ({
         >
           {menu}
           {isOperation ? <MenuDivider /> : null}
-          {isUnaryOperation(value) ? (
+          {isUnaryOperation(value) || isArrayOperation(value) ? (
             <MenuItem
               onClick={() => {
                 onChange(value.value);
@@ -1329,6 +1377,30 @@ const ValueSelect = ({
             />
           </InputGroup>
         </ValueWrapper>
+      );
+    } else if (value.type === "len") {
+      return (
+        <BracketsWrapper ref={previewRef} $isOver={isOver} $isFunction>
+          <OperatorWrapper ref={dropRef}>{dropdownButton}</OperatorWrapper>
+          <BracketsWrapper>
+            <VariableSelect
+              name={`${name}_valueA`}
+              entityId={entityId}
+              value={value.value.type === "variable" ? value.value.value : ""}
+              allowedVariableTypes={["array"]}
+              onChange={(newValue) => {
+                onChange({
+                  type: "len",
+                  value: {
+                    type: "variable",
+                    value: newValue,
+                  },
+                });
+              }}
+              allowRename
+            />
+          </BracketsWrapper>
+        </BracketsWrapper>
       );
     } else if (isUnaryOperation(value)) {
       return (

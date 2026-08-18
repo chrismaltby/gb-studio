@@ -1477,6 +1477,7 @@
   "FIELD_UNIQUE_TILES": "Unique Tiles",
   "FIELD_IN_ARRAY": "In Array",
   "FIELD_IN_ARRAY_DESC": "The array to loop through.",
+  "FIELD_ARRAY_LENGTH": "Array Length",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

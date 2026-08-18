@@ -320,7 +320,7 @@ export const valueFunctionToScriptOperator = (
 };
 
 export const funToScriptOperator = (
-  fun: FunctionSymbol,
+  fun: Exclude<FunctionSymbol, "len">,
 ): ScriptBuilderRPNOperation => {
   switch (fun) {
     case "min":

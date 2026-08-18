@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ability to use array elements in script events and expressions
 - Add ability to set script parameters as "Array Reference", allowing parameters to be treated as arrays within the script
 - Add "For Each Array Element" event to loop through array contents
+- Add "len" function to script values and expressions to get the size of an array
 
 ### Changed
 

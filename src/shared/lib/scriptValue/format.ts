@@ -129,6 +129,8 @@ export const scriptValueToString = (
     )} || ${scriptValueToString(value.valueB, options)})`;
   } else if (value.type === "not") {
     return `!(${scriptValueToString(value.value, options)})`;
+  } else if (value.type === "len") {
+    return `len(${scriptValueToString(value.value, options)})`;
   } else if (value.type === "shl") {
     return `(${scriptValueToString(
       value.valueA,

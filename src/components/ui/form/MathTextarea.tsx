@@ -32,6 +32,10 @@ const functionSymbols = [
     display: "max(",
   },
   {
+    id: "len(",
+    display: "len(",
+  },
+  {
     id: "atan2(",
     display: "atan2(",
   },
@@ -466,10 +470,10 @@ export const MathTextarea: FC<MathTextareaProps> = ({
         />
         <Mention
           className="Mentions__TokenFun"
-          trigger={/((m|mi|ma|ab|at)*)$/}
+          trigger={/((m|mi|ma|ab|at|l|le|len)*)$/}
           data={functionSearch}
           markup="__id__)"
-          regex={/(min|max|abs)/}
+          regex={/(min|max|abs|len)/}
         />
         <Mention
           className="Mentions__TokenOp"

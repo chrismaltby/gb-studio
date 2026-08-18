@@ -56,8 +56,14 @@ export const valueUnaryOperatorTypes = [
 ] as const;
 export type ValueUnaryOperatorType = (typeof valueUnaryOperatorTypes)[number];
 
+export const valueArrayOperationTypes = ["len"] as const;
+export type ValueArrayOperationType = (typeof valueArrayOperationTypes)[number];
+
 export type ValueType =
-  ValueAtomType | ValueOperatorType | ValueUnaryOperatorType;
+  | ValueAtomType
+  | ValueOperatorType
+  | ValueUnaryOperatorType
+  | ValueArrayOperationType;
 
 export const isValueAtomType = (type: unknown): type is ValueAtomType =>
   valueAtomTypes.includes(type as ValueAtomType);
@@ -102,6 +108,14 @@ export type RPNOperation = {
   type: ValueOperatorType;
   valueA: ScriptValue;
   valueB: ScriptValue;
+};
+
+export type RPNArrayOperation = {
+  type: ValueArrayOperationType;
+  value: {
+    type: "variable";
+    value: string;
+  };
 };
 
 export type ScriptValueVariable = {
@@ -191,7 +205,8 @@ export type ConstScriptValueAtom =
       value: string;
     };
 
-export type ScriptValue = RPNOperation | RPNUnaryOperation | ScriptValueAtom;
+export type ScriptValue =
+  RPNOperation | RPNUnaryOperation | RPNArrayOperation | ScriptValueAtom;
 
 export type ConstScriptValue = ConstScriptValueAtom;
 
@@ -209,6 +224,7 @@ type OptimisedScriptValueAtom = Exclude<
 export type OptimisedScriptValue =
   | RPNOperationWithOptimisedValues
   | RPNUnaryOperationWithOptimisedValue
+  | RPNArrayOperation
   | OptimisedScriptValueAtom;
 
 type RPNOperationWithOptimisedValues = {
@@ -283,6 +299,13 @@ export const isScriptValue = (value: unknown): value is ScriptValue => {
   if (scriptValue.type === "direction") {
     return typeof scriptValue.value === "string";
   }
+  if (scriptValue.type === "len") {
+    return (
+      scriptValue.value?.type === "variable" &&
+      typeof scriptValue.value.value === "string" &&
+      !("index" in scriptValue.value)
+    );
+  }
   if (isValueOperation(scriptValue)) {
     return (
       (isScriptValue(scriptValue.valueA) || !scriptValue.valueA) &&
@@ -332,6 +355,17 @@ export const isUnaryOperation = (
     !!value &&
     valueUnaryOperatorTypes.includes(
       value.type as unknown as ValueUnaryOperatorType,
+    )
+  );
+};
+
+export const isArrayOperation = (
+  value?: ScriptValue,
+): value is RPNArrayOperation => {
+  return (
+    !!value &&
+    valueArrayOperationTypes.includes(
+      value.type as unknown as ValueArrayOperationType,
     )
   );
 };
@@ -430,6 +464,10 @@ export type PrecompiledValueRPNOperation =
     }
   | {
       type: "memI8";
+      value: string;
+    }
+  | {
+      type: "len";
       value: string;
     }
   | {

@@ -317,7 +317,13 @@ abstract class ScriptBuilderBase {
               variable = arg;
             }
           }
-          if (this._isMissingVariableReference(ref)) {
+          if (rpnTokens[0]?.type === "FUN" && rpnTokens[0].function === "len") {
+            if (token.index) {
+              throw new Error("len() requires an array variable");
+            }
+            rpn = rpn.int16(this._getArrayInfo(variable).size);
+            rpnTokens.shift();
+          } else if (this._isMissingVariableReference(ref)) {
             rpn = rpn.int16(0);
           } else if (token.index) {
             variable = {
@@ -332,6 +338,9 @@ abstract class ScriptBuilderBase {
             rpn = rpn.refVariable(variable);
           }
         } else if (token.type === "FUN") {
+          if (token.function === "len") {
+            throw new Error("len() requires an array variable");
+          }
           const op = funToScriptOperator(token.function);
           rpn = rpn.operator(op);
         } else if (token.type === "OP") {
@@ -1308,6 +1317,10 @@ abstract class ScriptBuilderBase {
         }
         case "variable": {
           rpn.refVariable(this._scriptValueVariable(rpnOp.value, rpnOp.index));
+          break;
+        }
+        case "len": {
+          rpn.int16(this._getArrayInfo(rpnOp.value).size);
           break;
         }
         case "local": {

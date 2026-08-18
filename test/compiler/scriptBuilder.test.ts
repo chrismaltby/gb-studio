@@ -2438,6 +2438,133 @@ test("Should evaluate expressions containing engine constant array offsets", asy
   expect(output.join("\n")).not.toContain("ARRAY_PTR");
 });
 
+test("Should compile array length in a math expression as a constant", async () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [arrayId]: {
+          id: arrayId,
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+    },
+  );
+
+  sb.variableEvaluateExpression("0", `len($${arrayId}$) + 1`);
+
+  const script = output.join("\n");
+  expect(script).toContain(".R_INT16    4");
+  expect(script).not.toContain(".R_REF      VAR_ARRAY");
+});
+
+test("Should reject an indexed array length in a math expression", async () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [arrayId]: {
+          id: arrayId,
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 4,
+        },
+      },
+    },
+  );
+
+  expect(() =>
+    sb.variableEvaluateExpression("0", `len($${arrayId}$[0])`),
+  ).toThrow("len() requires an array variable");
+});
+
+test("Should compile structured array length as a constant", async () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [arrayId]: {
+          id: arrayId,
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 5,
+        },
+      },
+    },
+  );
+
+  sb.variableSetToScriptValue("0", {
+    type: "len",
+    value: { type: "variable", value: arrayId },
+  });
+
+  expect(output.join("\n")).toContain(".R_INT16    5");
+});
+
+test("Should compile custom event array parameter length as a constant", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      argLookup: {
+        variable: new Map([
+          [
+            "V0",
+            {
+              type: "argument",
+              indirect: true,
+              array: true,
+              size: 6,
+              symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+            },
+          ],
+        ]),
+        actor: new Map(),
+      },
+    },
+  );
+
+  sb.variableSetToScriptValue("0", {
+    type: "len",
+    value: { type: "variable", value: "V0" },
+  });
+
+  const script = output.join("\n");
+  expect(script).toContain(".R_INT16    6");
+  expect(script).not.toContain(".SCRIPT_ARG_INDIRECT_0_VARIABLE");
+});
+
+test("Should reject the length of a scalar variable", async () => {
+  const scalarId = "11111111-1111-1111-1111-111111111111";
+  const { sb } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        [scalarId]: {
+          id: scalarId,
+          name: "Scalar",
+          symbol: "var_scalar",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  expect(() =>
+    sb.variableSetToScriptValue("0", {
+      type: "len",
+      value: { type: "variable", value: scalarId },
+    }),
+  ).toThrow("Variable must be an array");
+});
+
 test("Should read an indexed array variable from a ScriptValue", async () => {
   const { sb, output } = await createTestScriptBuilder(
     {},

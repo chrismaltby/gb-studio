@@ -14,6 +14,19 @@ test("tokenizes a variable with a static array index", () => {
   ]);
 });
 
+test("tokenizes the len function", () => {
+  expect(tokenizer(`len(${array})`)).toEqual([
+    { type: "FUN", function: "len" },
+    { type: "LBRACE" },
+    { type: "VAR", symbol: array },
+    { type: "RBRACE" },
+  ]);
+  expect(shuntingYard(tokenizer(`len(${array})`))).toEqual([
+    { type: "VAR", symbol: array },
+    { type: "FUN", function: "len" },
+  ]);
+});
+
 test("tokenizes a variable with a variable array index", () => {
   expect(
     tokenizer(
