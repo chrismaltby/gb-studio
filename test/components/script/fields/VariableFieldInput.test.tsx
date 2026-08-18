@@ -82,7 +82,7 @@ test("does not display an unpersisted fallback array", () => {
 
 test("warns when an array reference is smaller than the required size", () => {
   setL10NData({
-    WARNING_CUSTOM_EVENT_ARRAY_TOO_SMALL:
+    WARNING_ARRAY_TOO_SMALL:
       "Requires {expectedSize} elements, selected array has {actualSize}.",
   });
   const state = {

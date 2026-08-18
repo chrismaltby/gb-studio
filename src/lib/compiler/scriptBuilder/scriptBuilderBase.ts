@@ -2543,11 +2543,14 @@ extern void __mute_mask_${symbol};
     };
   };
 
-  _assertVariableIsArrayOfMinimumSize = (
+  _getArrayInfo = (
     variable: ScriptBuilderVariable,
-    minimumSize: number,
-  ) => {
-    let rootVariable: ScriptBuilderVariable;
+  ): {
+    rootVariable: string | number | ScriptBuilderFunctionArg;
+    size: number;
+    name: string;
+  } => {
+    let rootVariable: string | number | ScriptBuilderFunctionArg;
     if (this._isVariableReference(variable)) {
       if (variable.index !== undefined) {
         throw new Error("Variable must reference the root of an array");
@@ -2562,7 +2565,14 @@ extern void __mute_mask_${symbol};
       if (!resolvedVariable.indirect || !resolvedVariable.array) {
         throw new Error("Variable must be an array");
       }
-      return;
+      if (resolvedVariable.size === undefined) {
+        throw new Error("Array size must be known at compile time");
+      }
+      return {
+        rootVariable,
+        size: resolvedVariable.size,
+        name: "script argument",
+      };
     }
 
     if (
@@ -2580,9 +2590,21 @@ extern void __mute_mask_${symbol};
     if (variableDefinition?.type !== "array") {
       throw new Error("Variable must be an array");
     }
-    if (variableDefinition.size < minimumSize) {
+    return {
+      rootVariable,
+      size: variableDefinition.size,
+      name: variableDefinition.name || variableId,
+    };
+  };
+
+  _assertVariableIsArrayOfMinimumSize = (
+    variable: ScriptBuilderVariable,
+    minimumSize: number,
+  ) => {
+    const arrayInfo = this._getArrayInfo(variable);
+    if (arrayInfo.size < minimumSize) {
       throw new Error(
-        `Array "${variableDefinition.name || variableId}" with size ${variableDefinition.size} is too small for required size ${minimumSize}`,
+        `Array "${arrayInfo.name}" with size ${arrayInfo.size} is too small for required size ${minimumSize}`,
       );
     }
   };
