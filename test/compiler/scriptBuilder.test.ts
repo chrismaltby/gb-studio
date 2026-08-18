@@ -1826,12 +1826,14 @@ test("Should link transfer multiword custom event array parameters", async () =>
     type: "argument" as const,
     indirect: true,
     array: true,
+    size: 2,
     symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
   };
   const receiveVariable = {
     type: "argument" as const,
     indirect: true,
     array: true,
+    size: 2,
     symbol: ".SCRIPT_ARG_INDIRECT_1_VARIABLE",
   };
 
@@ -2191,6 +2193,93 @@ test("Should reject an undersized forwarded array-reference argument", async () 
   ).toThrow(
     'Array reference argument "V0" requires at least 3 elements, but the provided array has 2',
   );
+});
+
+test("Should loop over every element of an array", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      variablesLookup: {
+        "11111111-1111-1111-1111-111111111111": {
+          id: "11111111-1111-1111-1111-111111111111",
+          name: "Array",
+          symbol: "var_array",
+          type: "array",
+          size: 3,
+        },
+        "22222222-2222-2222-2222-222222222222": {
+          id: "22222222-2222-2222-2222-222222222222",
+          name: "Current Value",
+          symbol: "var_current_value",
+          type: "number",
+        },
+      },
+    },
+  );
+
+  sb.arrayForEach(
+    "22222222-2222-2222-2222-222222222222",
+    {
+      type: "variable",
+      value: "11111111-1111-1111-1111-111111111111",
+    },
+    () => sb.variableInc("22222222-2222-2222-2222-222222222222"),
+  );
+
+  expect(output).toContain("        ; Array For Each");
+  expect(output).toContain("        ; Variable Increment By 1");
+  expect(
+    output.some(
+      (line) => line.includes("VM_SET_CONST") && line.includes("ARRAY_INDEX"),
+    ),
+  ).toBe(true);
+  expect(
+    output.some(
+      (line) => line.includes("VM_SET") && line.includes("VAR_CURRENT_VALUE"),
+    ),
+  ).toBe(true);
+  expect(
+    output.some(
+      (line) => line.includes(".LT") && line.includes("ARRAY_INDEX, 3"),
+    ),
+  ).toBe(true);
+  expect(output.some((line) => line.includes("VAR_ARRAY"))).toBe(true);
+});
+
+test("Should loop over every element of a custom event array parameter", async () => {
+  const { sb, output } = await createTestScriptBuilder(
+    {},
+    {
+      argLookup: {
+        variable: new Map([
+          [
+            "V0",
+            {
+              type: "argument",
+              indirect: true,
+              array: true,
+              size: 2,
+              symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+            },
+          ],
+        ]),
+        actor: new Map(),
+      },
+    },
+  );
+
+  sb.arrayForEach("0", { type: "variable", value: "V0" }, () =>
+    sb.variableInc("0"),
+  );
+
+  expect(
+    output.some((line) => line.includes(".SCRIPT_ARG_INDIRECT_0_VARIABLE")),
+  ).toBe(true);
+  expect(
+    output.some(
+      (line) => line.includes(".LT") && line.includes("ARRAY_INDEX, 2"),
+    ),
+  ).toBe(true);
 });
 
 test("Should increment an array variable with a constant index", async () => {

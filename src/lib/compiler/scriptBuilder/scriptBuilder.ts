@@ -3787,6 +3787,38 @@ class ScriptBuilder extends ScriptBuilderBase {
   // --------------------------------------------------------------------------
   // Control Flow
 
+  arrayForEach = (
+    variable: ScriptBuilderVariable,
+    array: ScriptBuilderVariable,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+  ) => {
+    const { rootVariable, size } = this._getArrayInfo(array);
+    const loopId = this.getNextLabel();
+    const indexRef = this._declareLocal("array_index", 1, true);
+    const arrayElement: ScriptBuilderVariable = {
+      type: "variable",
+      value: rootVariable,
+      index: {
+        type: "variable",
+        value: indexRef,
+      },
+    };
+
+    this._addComment("Array For Each");
+    this._setConst(indexRef, 0);
+    this._label(loopId);
+    this._setVariableToVariable(variable, arrayElement);
+    this._compilePath(truePath);
+    this._rpn() //
+      .ref(indexRef)
+      .int8(1)
+      .operator(".ADD")
+      .refSet(indexRef)
+      .stop();
+    this._ifConst(".LT", indexRef, size, loopId, 0);
+    this._addNL();
+  };
+
   whileScriptValue = (
     value: ScriptValue,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
