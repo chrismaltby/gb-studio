@@ -19,7 +19,7 @@ import {
   FormHeader,
   FormRow,
 } from "ui/form/layout/FormLayout";
-import { MenuItem } from "ui/menu/Menu";
+import { MenuDivider, MenuItem } from "ui/menu/Menu";
 import entitiesActions from "store/features/entities/entitiesActions";
 import editorActions from "store/features/editor/editorActions";
 import clipboardActions from "store/features/clipboard/clipboardActions";
@@ -44,6 +44,7 @@ import { VariableType } from "shared/lib/resources/types";
 import { findVariableUses } from "renderer/lib/workers/variableUses";
 import { isWorkerRequestAbortError } from "renderer/lib/workers/createWorkerClient";
 import { defaultLocalisedVariableName } from "shared/lib/entities/entitiesHelpers";
+import { WorldInspector } from "components/world/inspector/WorldInspector";
 
 interface VariableInspectorProps {
   id: string;
@@ -270,6 +271,17 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
     dispatch(editorActions.selectSidebar());
   };
 
+  const onRemove = useCallback(() => {
+    if (!variable) {
+      return;
+    }
+    dispatch(entitiesActions.confirmRemoveVariable(variable.id));
+  }, [dispatch, variable]);
+
+  if (!variable) {
+    return <WorldInspector />;
+  }
+
   return (
     <VariableSidebar onClick={selectSidebar}>
       <FormHeader>
@@ -296,6 +308,8 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
           <MenuItem onClick={onCopyChar}>
             {l10n("MENU_VARIABLE_COPY_EMBED_CHAR")}
           </MenuItem>
+          <MenuDivider />
+          <MenuItem onClick={onRemove}>{l10n("MENU_DELETE_VARIABLE")}</MenuItem>
         </DropdownButton>
       </FormHeader>
 
@@ -322,7 +336,7 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
               <FormField name="variableSize" label={l10n("FIELD_SIZE")}>
                 <NumberInput
                   id="variableSize"
-                  value={variable?.type === "array" ? variable.size : 1}
+                  value={variable.type === "array" ? variable.size : 1}
                   min={1}
                   step={1}
                   onChange={onChangeVariableSize}
