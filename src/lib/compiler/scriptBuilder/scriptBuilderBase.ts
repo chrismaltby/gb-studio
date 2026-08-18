@@ -321,7 +321,7 @@ abstract class ScriptBuilderBase {
             if (token.index) {
               throw new Error("len() requires an array variable");
             }
-            rpn = rpn.int16(this._getArrayInfo(variable).size);
+            rpn = rpn.int16(this._getArraySize(variable));
             rpnTokens.shift();
           } else if (this._isMissingVariableReference(ref)) {
             rpn = rpn.int16(0);
@@ -1320,7 +1320,7 @@ abstract class ScriptBuilderBase {
           break;
         }
         case "len": {
-          rpn.int16(this._getArrayInfo(rpnOp.value).size);
+          rpn.int16(this._getArraySize(rpnOp.value));
           break;
         }
         case "local": {
@@ -2556,13 +2556,7 @@ extern void __mute_mask_${symbol};
     };
   };
 
-  _getArrayInfo = (
-    variable: ScriptBuilderVariable,
-  ): {
-    rootVariable: string | number | ScriptBuilderFunctionArg;
-    size: number;
-    name: string;
-  } => {
+  _getArraySize = (variable: ScriptBuilderVariable): number => {
     let rootVariable: string | number | ScriptBuilderFunctionArg;
     if (this._isVariableReference(variable)) {
       if (variable.index !== undefined) {
@@ -2581,11 +2575,7 @@ extern void __mute_mask_${symbol};
       if (resolvedVariable.size === undefined) {
         throw new Error("Array size must be known at compile time");
       }
-      return {
-        rootVariable,
-        size: resolvedVariable.size,
-        name: "script argument",
-      };
+      return resolvedVariable.size;
     }
 
     if (
@@ -2603,21 +2593,17 @@ extern void __mute_mask_${symbol};
     if (variableDefinition?.type !== "array") {
       throw new Error("Variable must be an array");
     }
-    return {
-      rootVariable,
-      size: variableDefinition.size,
-      name: variableDefinition.name || variableId,
-    };
+    return variableDefinition.size;
   };
 
   _assertVariableIsArrayOfMinimumSize = (
     variable: ScriptBuilderVariable,
     minimumSize: number,
   ) => {
-    const arrayInfo = this._getArrayInfo(variable);
-    if (arrayInfo.size < minimumSize) {
+    const size = this._getArraySize(variable);
+    if (size < minimumSize) {
       throw new Error(
-        `Array "${arrayInfo.name}" with size ${arrayInfo.size} is too small for required size ${minimumSize}`,
+        `Array with size ${size} is too small for required size ${minimumSize}`,
       );
     }
   };

@@ -3792,7 +3792,10 @@ class ScriptBuilder extends ScriptBuilderBase {
     array: ScriptBuilderVariable,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
   ) => {
-    const { rootVariable, size } = this._getArrayInfo(array);
+    const size = this._getArraySize(array);
+    const rootVariable = this._isVariableReference(array)
+      ? array.value
+      : array;
     const loopId = this.getNextLabel();
     const indexRef = this._declareLocal("array_index", 1, true);
     const arrayElement: ScriptBuilderVariable = {

@@ -1817,7 +1817,7 @@ test("Should reject link transfers larger than a global array", async () => {
       { type: "variable", value: receiveVariableId },
       3,
     ),
-  ).toThrow('Array "Send Array" with size 2 is too small for required size 3');
+  ).toThrow("Array with size 2 is too small for required size 3");
 });
 
 test("Should link transfer multiword custom event array parameters", async () => {

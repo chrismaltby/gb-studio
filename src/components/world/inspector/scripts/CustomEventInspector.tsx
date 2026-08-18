@@ -35,7 +35,7 @@ import CachedScroll from "ui/util/CachedScroll";
 import { ScriptUsesList } from "components/world/inspector/scripts/ScriptUsesList";
 import { SplitPaneHeader } from "ui/splitpane/SplitPaneHeader";
 import { customEventName } from "shared/lib/entities/entitiesHelpers";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import type { ScriptVariable } from "shared/lib/resources/types";
 import { NumberInput } from "ui/form/NumberInput";
 import { VariableIndexBracket } from "components/forms/VariableIndexInput";
