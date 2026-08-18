@@ -2,6 +2,10 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ARRAY_FOR_EACH";
 const groups = ["EVENT_GROUP_VARIABLES", "EVENT_GROUP_CONTROL_FLOW"];
+const subGroups = {
+  EVENT_GROUP_VARIABLES: "EVENT_GROUP_CONTROL_FLOW",
+  EVENT_GROUP_CONTROL_FLOW: "EVENT_GROUP_VARIABLES",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_ARRAY_FOR_EACH_LABEL", {
@@ -42,6 +46,7 @@ module.exports = {
   description: l10n("EVENT_ARRAY_FOR_EACH_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };
