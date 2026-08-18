@@ -499,27 +499,55 @@ export const extractScriptValueActorIds = (input: ScriptValue): string[] => {
   return actorIds;
 };
 
-export const extractScriptValueVariables = (input: ScriptValue): string[] => {
-  const variables: string[] = [];
-  walkScriptValue(input, (val) => {
-    if (val.type === "variable" && !variables.includes(val.value)) {
-      variables.push(val.value);
-    } else if (val.type === "expression") {
-      const text = val.value;
-      if (text && typeof text === "string") {
-        const expressionValue = expressionToScriptValue(text);
-        const expressionVariables =
-          extractScriptValueVariables(expressionValue);
-        for (const expressionVariable of expressionVariables) {
-          if (!variables.includes(expressionVariable)) {
-            variables.push(expressionVariable);
-          }
-        }
-      }
-    }
-  });
-  return variables;
+export type ScriptValueVariableUse = {
+  id: string;
+  type: "number" | "array";
 };
+
+export const extractScriptValueVariableUses = (
+  input: ScriptValue,
+): ScriptValueVariableUse[] => {
+  const uses: ScriptValueVariableUse[] = [];
+
+  const addUse = (id: string, type: ScriptValueVariableUse["type"]) => {
+    const existingUse = uses.find((use) => use.id === id);
+    if (existingUse) {
+      if (type === "array") {
+        existingUse.type = "array";
+      }
+      return;
+    }
+    uses.push({ id, type });
+  };
+
+  const visit = (value: ScriptValue) => {
+    if (value.type === "len") {
+      addUse(value.value.value, "array");
+    } else if (value.type === "variable") {
+      addUse(value.value, value.index ? "array" : "number");
+      if (value.index) {
+        visit(value.index);
+      }
+    } else if (value.type === "expression") {
+      for (const variable of extractScriptValueVariables(
+        expressionToScriptValue(value.value),
+      )) {
+        addUse(variable, "number");
+      }
+    } else if (isValueOperation(value)) {
+      visit(value.valueA);
+      visit(value.valueB);
+    } else if (isUnaryOperation(value)) {
+      visit(value.value);
+    }
+  };
+
+  visit(input);
+  return uses;
+};
+
+export const extractScriptValueVariables = (input: ScriptValue): string[] =>
+  extractScriptValueVariableUses(input).map((use) => use.id);
 
 // recursively search script value for node containing variable, stop iterating on first match
 export const variableInScriptValue = (

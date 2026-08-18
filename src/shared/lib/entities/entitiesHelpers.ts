@@ -58,6 +58,7 @@ import {
 } from "shared/lib/scripts/walk";
 import {
   extractScriptValueActorIds,
+  extractScriptValueVariableUses,
   extractScriptValueVariables,
 } from "shared/lib/scriptValue/helpers";
 import {
@@ -1198,24 +1199,38 @@ export const updateCustomEventArgs = (
     };
   };
 
-  const addVariable = (variable: string) => {
+  const addVariable = (variable: string, requiresArray = false) => {
     const letter = String.fromCharCode(
       "A".charCodeAt(0) + parseInt(variable[1]),
     );
     const oldVariable = oldVariables[variable];
 
-    if (oldVariable?.passByReference === "array") {
+    // If variable has been defined previously then
+    // reuse name, passBy and size config
+    if (oldVariable) {
+      variables[variable] = oldVariable;
+      return;
+    }
+
+    // If variable already set as an array arg then leave it as is
+    if (variables[variable]?.passByReference === "array") {
+      return;
+    }
+
+    const variableName = `Variable ${letter}`;
+
+    if (requiresArray) {
       variables[variable] = {
         id: variable,
-        name: oldVariable?.name || `Variable ${letter}`,
+        name: variableName,
         passByReference: "array",
-        size: oldVariable?.size ?? 5,
+        size: 5,
       };
     } else {
       variables[variable] = {
         id: variable,
-        name: oldVariable?.name || `Variable ${letter}`,
-        passByReference: oldVariable?.passByReference ?? true,
+        name: variableName,
+        passByReference: true,
       };
     }
   };
@@ -1253,10 +1268,21 @@ export const updateCustomEventArgs = (
 
         if (isVariableField(scriptEvent.command, arg, args, scriptEventDefs)) {
           const variable = args[arg];
+          const field = scriptEventDefs[scriptEvent.command]?.fieldsLookup[arg];
+          const requiresArray =
+            field?.variableType === "arrayReference" ||
+            field?.variableType === "arrayElement";
           if (isScriptValueVariable(variable)) {
-            for (const variableId of extractScriptValueVariables(variable)) {
-              if (isVariableCustomEvent(variableId)) {
-                addVariable(variableId);
+            if (isVariableCustomEvent(variable.value)) {
+              addVariable(variable.value, requiresArray);
+            }
+            if (variable.index) {
+              for (const variableId of extractScriptValueVariables(
+                variable.index,
+              )) {
+                if (isVariableCustomEvent(variableId)) {
+                  addVariable(variableId);
+                }
               }
             }
           } else if (
@@ -1264,12 +1290,12 @@ export const updateCustomEventArgs = (
             variable.value &&
             isVariableCustomEvent(variable.value)
           ) {
-            addVariable(variable.value);
+            addVariable(variable.value, requiresArray);
           } else if (
             typeof variable === "string" &&
             isVariableCustomEvent(variable)
           ) {
-            addVariable(variable);
+            addVariable(variable, requiresArray);
           }
         }
         if (isPropertyField(scriptEvent.command, arg, args, scriptEventDefs)) {
@@ -1287,13 +1313,15 @@ export const updateCustomEventArgs = (
             ? (args[arg] as ScriptValue)
             : undefined;
           const actors = value ? extractScriptValueActorIds(value) : [];
-          const variables = value ? extractScriptValueVariables(value) : [];
+          const variableUses = value
+            ? extractScriptValueVariableUses(value)
+            : [];
           for (const actor of actors) {
             addPropertyActor(actor);
           }
-          for (const variable of variables) {
-            if (isVariableCustomEvent(variable)) {
-              addVariable(variable);
+          for (const variableUse of variableUses) {
+            if (isVariableCustomEvent(variableUse.id)) {
+              addVariable(variableUse.id, variableUse.type === "array");
             }
           }
         }

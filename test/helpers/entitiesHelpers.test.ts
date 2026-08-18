@@ -652,6 +652,411 @@ describe("nextIndexedName", () => {
 });
 
 describe("updateCustomEventArgs", () => {
+  test("Should infer an unused custom event variable as an array reference", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {},
+      actors: {},
+      script: ["event1"],
+    } as ScriptNormalized;
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_ARRAY_FOR_EACH",
+          args: {
+            array: { type: "variable", value: "V0" },
+          },
+        },
+      },
+      {
+        EVENT_ARRAY_FOR_EACH: {
+          id: "EVENT_ARRAY_FOR_EACH",
+          fieldsLookup: {
+            array: {
+              key: "array",
+              type: "variable",
+              variableType: "arrayReference",
+            },
+          },
+        },
+      } as never,
+    );
+
+    expect(customEvent.variables).toEqual({
+      V0: {
+        id: "V0",
+        name: "Variable A",
+        passByReference: "array",
+        size: 5,
+      },
+    });
+  });
+
+  test("Should infer an unused custom event variable used as an array element", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {},
+      actors: {},
+      script: ["event1"],
+    } as ScriptNormalized;
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_ARRAY_ELEMENT",
+          args: {
+            variable: {
+              type: "variable",
+              value: "V0",
+              index: { type: "number", value: 0 },
+            },
+          },
+        },
+      },
+      {
+        EVENT_ARRAY_ELEMENT: {
+          id: "EVENT_ARRAY_ELEMENT",
+          fieldsLookup: {
+            variable: {
+              key: "variable",
+              type: "variable",
+              variableType: "arrayElement",
+            },
+          },
+        },
+      } as never,
+    );
+
+    expect(customEvent.variables.V0).toEqual({
+      id: "V0",
+      name: "Variable A",
+      passByReference: "array",
+      size: 5,
+    });
+  });
+
+  test("Should infer an unused custom event variable used by array length", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {},
+      actors: {},
+      script: ["event1"],
+    } as ScriptNormalized;
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_VALUE",
+          args: {
+            value: {
+              type: "len",
+              value: { type: "variable", value: "V0" },
+            },
+          },
+        },
+      },
+      {
+        EVENT_VALUE: {
+          id: "EVENT_VALUE",
+          fieldsLookup: {
+            value: { key: "value", type: "value" },
+          },
+        },
+      } as never,
+    );
+
+    expect(customEvent.variables.V0).toEqual({
+      id: "V0",
+      name: "Variable A",
+      passByReference: "array",
+      size: 5,
+    });
+  });
+
+  test("Should not infer array types from textual expressions", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {},
+      actors: {},
+      script: ["event1"],
+    } as ScriptNormalized;
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_MATH",
+          args: {
+            expression: "len($V0$) + $V1$",
+          },
+        },
+      },
+      {} as never,
+    );
+
+    expect(customEvent.variables).toEqual({
+      V0: {
+        id: "V0",
+        name: "Variable A",
+        passByReference: true,
+      },
+      V1: {
+        id: "V1",
+        name: "Variable B",
+        passByReference: true,
+      },
+    });
+  });
+
+  test("Should preserve an existing custom event array size below a body requirement", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {
+        V0: {
+          id: "V0",
+          name: "Existing Array",
+          passByReference: "array",
+          size: 3,
+        },
+      },
+      actors: {},
+      script: ["event1", "event2"],
+    } as ScriptNormalized;
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_VARIABLE",
+          args: { variable: "V0" },
+        },
+        event2: {
+          id: "event2",
+          command: "EVENT_ARRAY",
+          args: { array: { type: "variable", value: "V0" } },
+        },
+      },
+      {
+        EVENT_VARIABLE: {
+          id: "EVENT_VARIABLE",
+          fieldsLookup: {
+            variable: { key: "variable", type: "variable" },
+          },
+        },
+        EVENT_ARRAY: {
+          id: "EVENT_ARRAY",
+          fieldsLookup: {
+            array: {
+              key: "array",
+              type: "variable",
+              variableType: "arrayReference",
+              arraySize: 8,
+            },
+          },
+        },
+      } as never,
+    );
+
+    expect(customEvent.variables.V0).toEqual({
+      id: "V0",
+      name: "Existing Array",
+      passByReference: "array",
+      size: 3,
+    });
+  });
+
+  test("Should use the default size when first inferring an array parameter", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {},
+      actors: {},
+      script: ["event1"],
+    } as ScriptNormalized;
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_ARRAY",
+          args: { array: { type: "variable", value: "V0" } },
+        },
+      },
+      {
+        EVENT_ARRAY: {
+          id: "EVENT_ARRAY",
+          fieldsLookup: {
+            array: {
+              key: "array",
+              type: "variable",
+              variableType: "arrayReference",
+              arraySize: 8,
+            },
+          },
+        },
+      } as never,
+    );
+
+    expect(customEvent.variables.V0).toEqual({
+      id: "V0",
+      name: "Variable A",
+      passByReference: "array",
+      size: 5,
+    });
+  });
+
+  test("Should not apply an array requirement to index dependencies", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {},
+      actors: {},
+      script: ["event1"],
+    } as ScriptNormalized;
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_ARRAY",
+          args: {
+            array: {
+              type: "variable",
+              value: "V0",
+              index: { type: "variable", value: "V1" },
+            },
+          },
+        },
+      },
+      {
+        EVENT_ARRAY: {
+          id: "EVENT_ARRAY",
+          fieldsLookup: {
+            array: {
+              key: "array",
+              type: "variable",
+              variableType: "arrayReference",
+            },
+          },
+        },
+      } as never,
+    );
+
+    expect(customEvent.variables).toEqual({
+      V0: {
+        id: "V0",
+        name: "Variable A",
+        passByReference: "array",
+        size: 5,
+      },
+      V1: {
+        id: "V1",
+        name: "Variable B",
+        passByReference: true,
+      },
+    });
+  });
+
+  test("Should not change an existing scalar parameter into an array", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {
+        V0: {
+          id: "V0",
+          name: "Existing Scalar",
+          passByReference: false,
+        },
+      },
+      actors: {},
+      script: ["event1"],
+    } as ScriptNormalized;
+
+    updateCustomEventArgs(
+      customEvent,
+      {
+        event1: {
+          id: "event1",
+          command: "EVENT_ARRAY",
+          args: { array: { type: "variable", value: "V0" } },
+        },
+      },
+      {
+        EVENT_ARRAY: {
+          id: "EVENT_ARRAY",
+          fieldsLookup: {
+            array: {
+              key: "array",
+              type: "variable",
+              variableType: "arrayReference",
+            },
+          },
+        },
+      } as never,
+    );
+
+    expect(customEvent.variables.V0).toEqual({
+      id: "V0",
+      name: "Existing Scalar",
+      passByReference: false,
+    });
+  });
+
+  test("Should remove an inferred array parameter after its last use is removed", () => {
+    const customEvent = {
+      id: "customEvent1",
+      name: "Custom Event 1",
+      description: "",
+      symbol: "custom_event_1",
+      variables: {
+        V0: {
+          id: "V0",
+          name: "Existing Array",
+          passByReference: "array",
+          size: 5,
+        },
+      },
+      actors: {},
+      script: [],
+    } as ScriptNormalized;
+
+    updateCustomEventArgs(customEvent, {}, {});
+
+    expect(customEvent.variables).toEqual({});
+  });
+
   test("Should include custom event variables referenced as values in text", () => {
     const customEvent = {
       id: "customEvent1",

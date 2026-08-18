@@ -9,6 +9,7 @@ import {
   addScriptValueToScriptValue,
   constantInScriptValue,
   expressionToScriptValue,
+  extractScriptValueVariableUses,
   extractScriptValueVariables,
   mapScriptValue,
   multiplyScriptValueConst,
@@ -1752,6 +1753,34 @@ describe("walkScriptValue", () => {
 });
 
 describe("extractScriptValueVariables", () => {
+  test("should treat textual expression references as ordinary variables", () => {
+    const input: ScriptValue = {
+      type: "expression",
+      value: "len($V0$) + $V1$",
+    };
+
+    expect(extractScriptValueVariableUses(input)).toEqual([
+      { id: "V0", type: "number" },
+      { id: "V1", type: "number" },
+    ]);
+  });
+
+  test("should resolve indexed roots separately from index dependencies", () => {
+    const input: ScriptValue = {
+      type: "variable",
+      value: "V0",
+      index: {
+        type: "variable",
+        value: "V1",
+      },
+    };
+
+    expect(extractScriptValueVariableUses(input)).toEqual([
+      { id: "V0", type: "array" },
+      { id: "V1", type: "number" },
+    ]);
+  });
+
   test("should extract single variable from a simple add operation", () => {
     const input: ScriptValue = {
       type: "add",

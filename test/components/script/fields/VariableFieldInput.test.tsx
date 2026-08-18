@@ -4,7 +4,7 @@
 
 import React from "react";
 import { VariableFieldInput } from "components/script/fields/VariableFieldInput";
-import { render, screen } from "../../../react-utils";
+import { fireEvent, render, screen } from "../../../react-utils";
 import type { UnknownAction, Store } from "@reduxjs/toolkit";
 import type { RootState } from "store/storeTypes";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
@@ -22,6 +22,84 @@ jest.mock("components/forms/VariableIndexSelect", () => ({
 
 afterEach(() => {
   clearL10NData();
+});
+
+test("allows unused custom event variables in array reference fields", () => {
+  const onChange = jest.fn();
+  const state = {
+    editor: { type: "customEvent" },
+    project: {
+      present: {
+        entities: {
+          customEvents: {
+            entities: {
+              customEvent1: {
+                id: "customEvent1",
+                variables: {
+                  V0: {
+                    id: "V0",
+                    name: "Existing Scalar",
+                    passByReference: true,
+                  },
+                  V1: {
+                    id: "V1",
+                    name: "Existing Array",
+                    passByReference: "array",
+                    size: 3,
+                  },
+                },
+              },
+            },
+            ids: ["customEvent1"],
+          },
+          variables: { entities: {}, ids: [] },
+        },
+      },
+    },
+  };
+  const store = {
+    getState: () => state,
+    dispatch: () => {},
+    subscribe: () => {},
+  } as unknown as Store<RootState, UnknownAction>;
+
+  render(
+    <ScriptEditorContext.Provider
+      value={{
+        type: "script",
+        entityType: "customEvent",
+        entityId: "customEvent1",
+        sceneId: "",
+        scriptKey: "script",
+      }}
+    >
+      <VariableFieldInput
+        id="array"
+        entityId="customEvent1"
+        field={{ type: "variable", variableType: "arrayReference" }}
+        value={undefined}
+        allowRename
+        onChange={onChange}
+      />
+    </ScriptEditorContext.Provider>,
+    store,
+    {},
+  );
+
+  fireEvent.keyDown(screen.getByRole("combobox"), { key: "ArrowDown" });
+
+  expect(
+    screen.getByRole("option", { name: "Existing Array[3]" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("option", { name: "Existing Scalar" }),
+  ).not.toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole("option", { name: "Variable C" }));
+  expect(onChange).toHaveBeenCalledWith({
+    type: "variable",
+    value: "V2",
+  });
 });
 
 test("does not display an unpersisted fallback array", () => {
