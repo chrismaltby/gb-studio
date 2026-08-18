@@ -38,6 +38,7 @@ import { customEventName } from "shared/lib/entities/entitiesHelpers";
 import styled, { css } from "styled-components";
 import type { ScriptVariable } from "shared/lib/resources/types";
 import { NumberInput } from "ui/form/NumberInput";
+import { VariableIndexBracket } from "components/forms/VariableIndexInput";
 
 interface CustomEventInspectorProps {
   id: string;
@@ -57,15 +58,8 @@ const UsesCollapsedWrapper = styled.div`
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
-const ArrayBracket = styled.div<{ $closing?: boolean }>`
-  display: flex;
-  align-items: center;
-  padding: 0 2px;
-  ${(props) =>
-    props.$closing &&
-    css`
-      border-right: 1px solid ${props.theme.colors.input.border};
-    `}
+const ArraySizeDivider = styled.div<{ $closing?: boolean }>`
+  border-right: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
 export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
@@ -407,7 +401,7 @@ export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
                                   />
                                   {variable.passByReference === "array" && (
                                     <>
-                                      <ArrayBracket>[</ArrayBracket>
+                                      <VariableIndexBracket $type="open" />
                                       <NumberInput
                                         id={`variable[${i}].size`}
                                         value={variable.size}
@@ -417,7 +411,8 @@ export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
                                         )}
                                         min={1}
                                       />
-                                      <ArrayBracket $closing>]</ArrayBracket>
+                                      <VariableIndexBracket $type="close" />
+                                      <ArraySizeDivider />
                                     </>
                                   )}
                                   <InputGroupAppend>
