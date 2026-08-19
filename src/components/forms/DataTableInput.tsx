@@ -318,7 +318,7 @@ const nextColumnVariable = (
     if (variable?.type === "array") {
       for (
         let index = previousVariable.index.value + 1;
-        index < variable.size;
+        index < variable.length;
         index++
       ) {
         const alreadyUsed = variables.some(
@@ -469,7 +469,8 @@ export const DataTableInput = ({
         id: variable.id,
         name: definition ? variable.name : variable.id,
         type: candidate?.type ?? "number",
-        size: definition?.type === "array" ? definition.size : candidate?.size,
+        length:
+          definition?.type === "array" ? definition.length : candidate?.length,
         isGlobal: Boolean(definition),
       };
     });
@@ -669,7 +670,7 @@ export const DataTableInput = ({
           const action = entitiesActions.addVariable({
             name: variable.name,
             type: variable.type,
-            ...(variable.type === "array" ? { size: variable.size } : {}),
+            ...(variable.type === "array" ? { length: variable.length } : {}),
           });
           const variableId = action.payload.variableId;
           store.dispatch(action);

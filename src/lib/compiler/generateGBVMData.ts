@@ -1314,7 +1314,7 @@ export const globalVariableOffsets = (
   let nextOffset = 0;
   const variables = Object.values(variableAliasLookup).map((variable) => {
     const offset = nextOffset;
-    const size = Math.max(1, Math.floor(variable.size ?? 1));
+    const size = Math.max(1, Math.floor(variable.length ?? 1));
     nextOffset += size;
     return {
       ...variable,

@@ -1258,9 +1258,9 @@ const ValueSelect = ({
                   min={0}
                   max={
                     selectedVariable?.type === "array"
-                      ? selectedVariable.size - 1
+                      ? selectedVariable.length - 1
                       : selectedCustomEventVariable?.passByReference === "array"
-                        ? selectedCustomEventVariable.size - 1
+                        ? selectedCustomEventVariable.length - 1
                         : undefined
                   }
                   onChange={(index) => {

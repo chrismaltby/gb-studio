@@ -1,7 +1,7 @@
 type DebuggerVariable = {
   name?: string;
   symbol: string;
-  size?: number;
+  length?: number;
   offset?: number;
 };
 
@@ -25,17 +25,17 @@ export const expandDebuggerVariables = <T extends DebuggerVariable>(
       return [];
     }
 
-    const size = Math.max(1, Math.floor(variable.size ?? 1));
+    const length = Math.max(1, Math.floor(variable.length ?? 1));
     const offset = variable.offset ?? fallbackOffset;
-    fallbackOffset = Math.max(fallbackOffset, offset + size);
+    fallbackOffset = Math.max(fallbackOffset, offset + length);
     const name = variable.name ?? variable.symbol;
 
-    return Array.from({ length: size }, (_, arrayIndex) => ({
+    return Array.from({ length }, (_, arrayIndex) => ({
       ...variable,
       arrayIndex,
-      displayName: size > 1 ? `${name}[${arrayIndex}]` : name,
+      displayName: length > 1 ? `${name}[${arrayIndex}]` : name,
       displaySymbol:
-        size > 1 ? `${variable.symbol}[${arrayIndex}]` : variable.symbol,
+        length > 1 ? `${variable.symbol}[${arrayIndex}]` : variable.symbol,
       value: variablesData[offset + arrayIndex],
     }));
   });

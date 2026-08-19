@@ -30,7 +30,7 @@ export interface NamedVariable {
   id: string; // The id to use in dropdown value
   code: string; // The code to use in dialogue (when wrapped by $ or #)
   name: string; // The plain name used when rendering mention tags
-  displayName: string; // The name, including array size, shown in lists
+  displayName: string; // The name, including array length, shown in lists
   group: string; // Group name that variable belongs to
 }
 
@@ -76,7 +76,7 @@ export const namedCustomEventVariables = (
         displayName: variableDisplayName(
           name,
           customEvent.variables[id]?.passByReference === "array"
-            ? customEvent.variables[id].size
+            ? customEvent.variables[id].length
             : undefined,
         ),
         group: l10n("SIDEBAR_PARAMETERS"),
@@ -129,7 +129,7 @@ const namedGlobalVariables = (variables: Variable[]): NamedVariable[] =>
         name,
         displayName: variableDisplayName(
           name,
-          variable.type === "array" ? variable.size : undefined,
+          variable.type === "array" ? variable.length : undefined,
         ),
         group: l10n("FIELD_GLOBAL"),
       };

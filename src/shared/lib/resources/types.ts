@@ -434,7 +434,7 @@ export const ScriptVariable = Type.Union([
   Type.Object({
     ...ScriptVariableBase,
     passByReference: Type.Literal("array"),
-    size: Type.Integer({ minimum: 1 }),
+    length: Type.Integer({ minimum: 1 }),
   }),
 ]);
 
@@ -1019,7 +1019,7 @@ export const Variable = Type.Union([
   Type.Object({
     ...VariableBase,
     type: Type.Literal("array"),
-    size: Type.Integer({ minimum: 1 }),
+    length: Type.Integer({ minimum: 1 }),
   }),
 ]);
 

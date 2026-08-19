@@ -164,7 +164,7 @@ export type VariableMapData = {
   entityType: EntityType;
   entityId: string;
   sceneId: string;
-  size?: number;
+  length?: number;
   offset?: number;
 };
 
@@ -1504,9 +1504,9 @@ const compile = async (
           entityType: "scene",
           entityId: "",
           sceneId: "",
-          size:
+          length:
             variable.type === "array"
-              ? Math.max(1, Math.floor(variable.size))
+              ? Math.max(1, Math.floor(variable.length))
               : 1,
         };
       }

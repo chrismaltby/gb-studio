@@ -972,7 +972,7 @@ test("Should make statically and dynamically indexed arrays human readable", asy
           name: "Values",
           symbol: "var_values",
           type: "array",
-          size: 4,
+          length: 4,
         },
         [indexId]: {
           id: indexId,
@@ -1117,7 +1117,7 @@ describe("ScriptBuilderVariable values", () => {
             name: "Array",
             symbol: "var_array",
             type: "array",
-            size: 4,
+            length: 4,
           },
           [indexId]: {
             id: indexId,
@@ -1574,7 +1574,7 @@ test("Should increment an array variable with a static index", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
@@ -1611,7 +1611,7 @@ test("Should reject data peek from a dynamically indexed array element", async (
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
         [sourceIndexId]: {
           id: sourceIndexId,
@@ -1658,7 +1658,7 @@ test("Should data peek into a dynamically indexed array element", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
         [destinationIndexId]: {
           id: destinationIndexId,
@@ -1750,7 +1750,7 @@ test("Should reject multiword link transfer with non-array variables", async () 
   );
 });
 
-test("Should link transfer between sufficiently sized arrays", async () => {
+test("Should link transfer between arrays of sufficient length", async () => {
   const sendVariableId = "11111111-1111-1111-1111-111111111111";
   const receiveVariableId = "22222222-2222-2222-2222-222222222222";
   const { sb, output } = await createTestScriptBuilder(
@@ -1762,14 +1762,14 @@ test("Should link transfer between sufficiently sized arrays", async () => {
           name: "Send Array",
           symbol: "var_send_array",
           type: "array",
-          size: 3,
+          length: 3,
         },
         [receiveVariableId]: {
           id: receiveVariableId,
           name: "Receive Array",
           symbol: "var_receive_array",
           type: "array",
-          size: 2,
+          length: 2,
         },
       },
     },
@@ -1798,14 +1798,14 @@ test("Should reject link transfers larger than a global array", async () => {
           name: "Send Array",
           symbol: "var_send_array",
           type: "array",
-          size: 2,
+          length: 2,
         },
         [receiveVariableId]: {
           id: receiveVariableId,
           name: "Receive Array",
           symbol: "var_receive_array",
           type: "array",
-          size: 3,
+          length: 3,
         },
       },
     },
@@ -1817,7 +1817,7 @@ test("Should reject link transfers larger than a global array", async () => {
       { type: "variable", value: receiveVariableId },
       3,
     ),
-  ).toThrow("Array with size 2 is too small for required size 3");
+  ).toThrow("Array with length 2 is too short for required length 3");
 });
 
 test("Should link transfer multiword custom event array parameters", async () => {
@@ -1826,14 +1826,14 @@ test("Should link transfer multiword custom event array parameters", async () =>
     type: "argument" as const,
     indirect: true,
     array: true,
-    size: 2,
+    length: 2,
     symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
   };
   const receiveVariable = {
     type: "argument" as const,
     indirect: true,
     array: true,
-    size: 2,
+    length: 2,
     symbol: ".SCRIPT_ARG_INDIRECT_1_VARIABLE",
   };
 
@@ -1867,7 +1867,7 @@ test("Should reject indexed arrays for multiword link transfers", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
@@ -1919,7 +1919,7 @@ test("Should pass an array root to an array-reference script argument", async ()
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
       customEvents: [
@@ -1932,7 +1932,7 @@ test("Should pass an array root to an array-reference script argument", async ()
               id: "V0",
               name: "Array",
               passByReference: "array",
-              size: 3,
+              length: 3,
             },
           },
           actors: {},
@@ -1955,7 +1955,7 @@ test("Should pass an array root to an array-reference script argument", async ()
   );
 });
 
-test("Should reject an undersized array passed to an array-reference script argument", async () => {
+test("Should reject an too-short array passed to an array-reference script argument", async () => {
   const { sb } = await createTestScriptBuilder(
     {},
     {
@@ -1965,7 +1965,7 @@ test("Should reject an undersized array passed to an array-reference script argu
           name: "Small Array",
           symbol: "var_small_array",
           type: "array",
-          size: 2,
+          length: 2,
         },
       },
       customEvents: [
@@ -1978,7 +1978,7 @@ test("Should reject an undersized array passed to an array-reference script argu
               id: "V0",
               name: "Array",
               passByReference: "array",
-              size: 3,
+              length: 3,
             },
           },
           actors: {},
@@ -2011,7 +2011,7 @@ test("Should reject an indexed element passed to an array-reference script argum
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
       customEvents: [
@@ -2024,7 +2024,7 @@ test("Should reject an indexed element passed to an array-reference script argum
               id: "V0",
               name: "Array",
               passByReference: "array",
-              size: 8,
+              length: 8,
             },
           },
           actors: {},
@@ -2070,7 +2070,7 @@ test("Should reject a scalar passed to an array-reference script argument", asyn
               id: "V0",
               name: "Array",
               passByReference: "array",
-              size: 7,
+              length: 7,
             },
           },
           actors: {},
@@ -2103,7 +2103,7 @@ test("Should pass an array-reference argument root to another script", async () 
               type: "argument",
               indirect: true,
               array: true,
-              size: 2,
+              length: 2,
               symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
             },
           ],
@@ -2120,7 +2120,7 @@ test("Should pass an array-reference argument root to another script", async () 
               id: "V0",
               name: "Array",
               passByReference: "array",
-              size: 2,
+              length: 2,
             },
           },
           actors: {},
@@ -2143,7 +2143,7 @@ test("Should pass an array-reference argument root to another script", async () 
   );
 });
 
-test("Should reject an undersized forwarded array-reference argument", async () => {
+test("Should reject a too-short forwarded array-reference argument", async () => {
   const { sb } = await createTestScriptBuilder(
     {},
     {
@@ -2155,7 +2155,7 @@ test("Should reject an undersized forwarded array-reference argument", async () 
               type: "argument",
               indirect: true,
               array: true,
-              size: 2,
+              length: 2,
               symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
             },
           ],
@@ -2172,7 +2172,7 @@ test("Should reject an undersized forwarded array-reference argument", async () 
               id: "V0",
               name: "Array",
               passByReference: "array",
-              size: 3,
+              length: 3,
             },
           },
           actors: {},
@@ -2205,7 +2205,7 @@ test("Should loop over every element of an array", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 3,
+          length: 3,
         },
         "22222222-2222-2222-2222-222222222222": {
           id: "22222222-2222-2222-2222-222222222222",
@@ -2258,7 +2258,7 @@ test("Should loop over every element of a custom event array parameter", async (
               type: "argument",
               indirect: true,
               array: true,
-              size: 2,
+              length: 2,
               symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
             },
           ],
@@ -2292,7 +2292,7 @@ test("Should increment an array variable with a constant index", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
       constantsLookup: {
@@ -2337,7 +2337,7 @@ test("Should increment an array variable with a variable index", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
         "22222222-2222-2222-2222-222222222222": {
           id: "22222222-2222-2222-2222-222222222222",
@@ -2379,7 +2379,7 @@ test("Should evaluate expressions containing array offsets", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
         "22222222-2222-2222-2222-222222222222": {
           id: "22222222-2222-2222-2222-222222222222",
@@ -2420,7 +2420,7 @@ test("Should evaluate expressions containing engine constant array offsets", asy
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
       engineConstants: {
@@ -2449,7 +2449,7 @@ test("Should compile array length in a math expression as a constant", async () 
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
@@ -2473,7 +2473,7 @@ test("Should reject an indexed array length in a math expression", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
@@ -2495,7 +2495,7 @@ test("Should compile structured array length as a constant", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 5,
+          length: 5,
         },
       },
     },
@@ -2521,7 +2521,7 @@ test("Should compile custom event array parameter length as a constant", async (
               type: "argument",
               indirect: true,
               array: true,
-              size: 6,
+              length: 6,
               symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
             },
           ],
@@ -2575,7 +2575,7 @@ test("Should read an indexed array variable from a ScriptValue", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
@@ -2602,7 +2602,7 @@ test("Should read an array using an index expression", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
         "22222222-2222-2222-2222-222222222222": {
           id: "22222222-2222-2222-2222-222222222222",
@@ -2643,14 +2643,14 @@ test("Should read an array using a nested indexed variable expression", async ()
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 8,
+          length: 8,
         },
         "22222222-2222-2222-2222-222222222222": {
           id: "22222222-2222-2222-2222-222222222222",
           name: "Other",
           symbol: "var_other",
           type: "array",
-          size: 8,
+          length: 8,
         },
         "33333333-3333-3333-3333-333333333333": {
           id: "33333333-3333-3333-3333-333333333333",
@@ -2706,7 +2706,7 @@ test("Should fold a static array index expression", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
@@ -2735,7 +2735,7 @@ test("Should reject an out of bounds constant index expression", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
       constantsLookup: {
@@ -2762,7 +2762,9 @@ test("Should reject an out of bounds constant index expression", async () => {
         valueB: { type: "number", value: 1 },
       },
     }),
-  ).toThrow('Array index 4 is out of bounds for variable "Array" with size 4');
+  ).toThrow(
+    'Array index 4 is out of bounds for variable "Array" with length 4',
+  );
 });
 
 test("Should set a camera property from an indexed ScriptValue", async () => {
@@ -2775,7 +2777,7 @@ test("Should set a camera property from an indexed ScriptValue", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
@@ -2802,7 +2804,7 @@ test("Should set an engine field from an indexed ScriptValue", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
       engineFields: {
@@ -2859,7 +2861,7 @@ test("Should replace indexed references to number variables with variable symbol
 });
 
 test.each([-1, 4])(
-  "Should reject static array index %s outside the declared size",
+  "Should reject static array index %s outside the declared length",
   async (index) => {
     const { sb } = await createTestScriptBuilder(
       {},
@@ -2870,7 +2872,7 @@ test.each([-1, 4])(
             name: "Array",
             symbol: "var_array",
             type: "array",
-            size: 4,
+            length: 4,
           },
         },
       },
@@ -2883,12 +2885,12 @@ test.each([-1, 4])(
         index: { type: "number", value: index },
       }),
     ).toThrow(
-      `Array index ${index} is out of bounds for variable "Array" with size 4`,
+      `Array index ${index} is out of bounds for variable "Array" with length 4`,
     );
   },
 );
 
-test("Should reject constant array indices outside the declared size", async () => {
+test("Should reject constant array indices outside the declared length", async () => {
   const { sb } = await createTestScriptBuilder(
     {},
     {
@@ -2898,7 +2900,7 @@ test("Should reject constant array indices outside the declared size", async () 
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
       constantsLookup: {
@@ -2921,7 +2923,9 @@ test("Should reject constant array indices outside the declared size", async () 
         value: "33333333-3333-3333-3333-333333333333",
       },
     }),
-  ).toThrow('Array index 4 is out of bounds for variable "Array" with size 4');
+  ).toThrow(
+    'Array index 4 is out of bounds for variable "Array" with length 4',
+  );
 });
 
 test("Should read an indexed array through a by-reference script argument", async () => {
@@ -3156,7 +3160,7 @@ test("Should not reuse the array pointer local while setting an indexed variable
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
         "22222222-2222-2222-2222-222222222222": {
           id: "22222222-2222-2222-2222-222222222222",
@@ -5404,7 +5408,7 @@ test("Should compile data table lookups into fixed array elements", async () => 
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
@@ -5501,7 +5505,7 @@ test("Should remap custom event variable arguments used in data table columns", 
         name: "Array",
         symbol: "var_array",
         type: "array",
-        size: 4,
+        length: 4,
       },
     },
   } as unknown as ScriptBuilderOptions);
@@ -7472,7 +7476,7 @@ _script1::
                 id: "V0",
                 name: "Array",
                 passByReference: "array",
-                size: 2,
+                length: 2,
               },
               V1: {
                 id: "V1",
@@ -7524,7 +7528,7 @@ _script1::
                 id: "V0",
                 name: "Array",
                 passByReference: "array",
-                size: 2,
+                length: 2,
               },
               V1: {
                 id: "V1",
@@ -7714,7 +7718,7 @@ _script1::
             name: "Results",
             symbol: "var_results",
             type: "array",
-            size: 20,
+            length: 20,
           },
         },
         customEvents: [

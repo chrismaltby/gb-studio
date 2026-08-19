@@ -36,13 +36,13 @@ describe("Custom Events", () => {
                   id: "V0",
                   name: "Variable A",
                   passByReference: "array",
-                  size: 2,
+                  length: 2,
                 },
                 V1: {
                   id: "V1",
                   name: "Variable B",
                   passByReference: "array",
-                  size: 2,
+                  length: 2,
                 },
               },
               script: ["scriptEvent1"],
@@ -171,8 +171,8 @@ describe("Custom Events", () => {
     });
   });
 
-  describe("editCustomEventVariableSize", () => {
-    test("sets size when changing an array arg", () => {
+  describe("editCustomEventVariableLength", () => {
+    test("sets length when changing an array arg", () => {
       const state: EntitiesState = {
         ...initialState,
         customEvents: {
@@ -185,7 +185,7 @@ describe("Custom Events", () => {
                   id: "V0",
                   name: "Variable A",
                   passByReference: "array",
-                  size: 2,
+                  length: 2,
                 },
               },
               script: ["scriptEvent1"],
@@ -197,10 +197,10 @@ describe("Custom Events", () => {
 
       const newState = reducer(
         state,
-        entitiesActions.editCustomEventVariableSize({
+        entitiesActions.editCustomEventVariableLength({
           customEventId: "customEvent1",
           variableId: "V0",
-          size: 10,
+          length: 10,
         }),
       );
 
@@ -212,11 +212,11 @@ describe("Custom Events", () => {
       expect(
         newState.customEvents.entities.customEvent1?.variables.V0
           ?.passByReference === "array" &&
-          newState.customEvents.entities.customEvent1?.variables.V0?.size,
+          newState.customEvents.entities.customEvent1?.variables.V0?.length,
       ).toEqual(10);
     });
 
-    test("not set size when changing a non-array arg", () => {
+    test("not set length when changing a non-array arg", () => {
       const state: EntitiesState = {
         ...initialState,
         customEvents: {
@@ -245,19 +245,19 @@ describe("Custom Events", () => {
 
       const newState1 = reducer(
         state,
-        entitiesActions.editCustomEventVariableSize({
+        entitiesActions.editCustomEventVariableLength({
           customEventId: "customEvent1",
           variableId: "V0",
-          size: 10,
+          length: 10,
         }),
       );
 
       const newState2 = reducer(
         state,
-        entitiesActions.editCustomEventVariableSize({
+        entitiesActions.editCustomEventVariableLength({
           customEventId: "customEvent1",
           variableId: "V1",
-          size: 10,
+          length: 10,
         }),
       );
 
@@ -273,12 +273,12 @@ describe("Custom Events", () => {
 
       expect(
         newState1.customEvents.entities.customEvent1?.variables.V0 &&
-          "size" in newState1.customEvents.entities.customEvent1.variables.V0,
+          "length" in newState1.customEvents.entities.customEvent1.variables.V0,
       ).toEqual(false);
 
       expect(
         newState2.customEvents.entities.customEvent1?.variables.V1 &&
-          "size" in newState1.customEvents.entities.customEvent1.variables.V1,
+          "length" in newState2.customEvents.entities.customEvent1.variables.V1,
       ).toEqual(false);
     });
   });

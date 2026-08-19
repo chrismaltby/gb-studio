@@ -2,7 +2,7 @@ import reducer, { initialState } from "store/features/entities/entitiesState";
 import { EntitiesState } from "shared/lib/entities/entitiesTypes";
 import actions from "store/features/entities/entitiesActions";
 
-test("Should add number variables without an array size", () => {
+test("Should add number variables without an array length", () => {
   const state: EntitiesState = {
     ...initialState,
   };
@@ -13,7 +13,7 @@ test("Should add number variables without an array size", () => {
   expect(variable).toMatchObject({
     type: "number",
   });
-  expect(variable).not.toHaveProperty("size");
+  expect(variable).not.toHaveProperty("length");
 });
 
 test("Should create a complete named number variable atomically", () => {
@@ -28,7 +28,7 @@ test("Should create a complete named number variable atomically", () => {
       variableId: "variable-1",
       name: "Player Health",
       type: "number",
-      size: 12,
+      length: 12,
       flags,
     }),
   );
@@ -48,8 +48,8 @@ test.each([
   [-4, 1],
   [3.9, 3],
 ])(
-  "Should create an array atomically and clamp size %p to %p",
-  (size, expected) => {
+  "Should create an array atomically and clamp length %p to %p",
+  (length, expected) => {
     const state: EntitiesState = {
       ...initialState,
     };
@@ -60,7 +60,7 @@ test.each([
         variableId: "array-1",
         name: "Inventory",
         type: "array",
-        size,
+        length,
         flags: { persistent: "true" },
       }),
     );
@@ -70,7 +70,7 @@ test.each([
       name: "Inventory",
       symbol: "var_inventory",
       type: "array",
-      size: expected,
+      length: expected,
       flags: { persistent: "true" },
     });
   },
@@ -151,7 +151,7 @@ test("Should be able to clear a variable name without deleting it", () => {
           name: "Var Name",
           symbol: "VAR_1",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
       ids: ["1"],
@@ -172,7 +172,7 @@ test("Should be able to clear a variable name without deleting it", () => {
     name: "",
     symbol: "VAR_1",
     type: "array",
-    size: 4,
+    length: 4,
   });
 });
 
@@ -365,7 +365,7 @@ test("Should explicitly remove a variable", () => {
           name: "Inventory",
           symbol: "var_inventory",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
@@ -441,11 +441,11 @@ test("Should be able to change a variable into an array", () => {
 
   expect(newState.variables.entities.array1).toMatchObject({
     type: "array",
-    size: 1,
+    length: 1,
   });
 });
 
-test("Should clamp array variable size to at least one", () => {
+test("Should clamp array variable length to at least one", () => {
   const state: EntitiesState = {
     ...initialState,
     variables: {
@@ -456,32 +456,34 @@ test("Should clamp array variable size to at least one", () => {
           name: "Inventory",
           symbol: "var_inventory",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
   };
 
-  const resizedState = reducer(
+  const lengthenedState = reducer(
     state,
-    actions.setVariableSize({
+    actions.setVariableLength({
       variableId: "array1",
-      size: 12,
+      length: 12,
     }),
   );
   const clampedState = reducer(
-    resizedState,
-    actions.setVariableSize({
+    lengthenedState,
+    actions.setVariableLength({
       variableId: "array1",
-      size: 0,
+      length: 0,
     }),
   );
 
-  expect(resizedState.variables.entities.array1).toMatchObject({ size: 12 });
-  expect(clampedState.variables.entities.array1).toMatchObject({ size: 1 });
+  expect(lengthenedState.variables.entities.array1).toMatchObject({
+    length: 12,
+  });
+  expect(clampedState.variables.entities.array1).toMatchObject({ length: 1 });
 });
 
-test("Should ignore size changes for number variables", () => {
+test("Should ignore length changes for number variables", () => {
   const state: EntitiesState = {
     ...initialState,
     variables: {
@@ -499,16 +501,16 @@ test("Should ignore size changes for number variables", () => {
 
   const newState = reducer(
     state,
-    actions.setVariableSize({
+    actions.setVariableLength({
       variableId: "number1",
-      size: 12,
+      length: 12,
     }),
   );
 
-  expect(newState.variables.entities.number1).not.toHaveProperty("size");
+  expect(newState.variables.entities.number1).not.toHaveProperty("length");
 });
 
-test("Should reset array size when changing back to a number", () => {
+test("Should reset array length when changing back to a number", () => {
   const state: EntitiesState = {
     ...initialState,
     variables: {
@@ -519,7 +521,7 @@ test("Should reset array size when changing back to a number", () => {
           name: "Inventory",
           symbol: "var_inventory",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
@@ -536,5 +538,5 @@ test("Should reset array size when changing back to a number", () => {
   expect(newState.variables.entities.array1).toMatchObject({
     type: "number",
   });
-  expect(newState.variables.entities.array1).not.toHaveProperty("size");
+  expect(newState.variables.entities.array1).not.toHaveProperty("length");
 });

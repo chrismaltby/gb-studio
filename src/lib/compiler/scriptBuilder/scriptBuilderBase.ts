@@ -321,7 +321,7 @@ abstract class ScriptBuilderBase {
             if (token.index) {
               throw new Error("len() requires an array variable");
             }
-            rpn = rpn.int16(this._getArraySize(variable));
+            rpn = rpn.int16(this._getArrayLength(variable));
             rpnTokens.shift();
           } else if (this._isMissingVariableReference(ref)) {
             rpn = rpn.int16(0);
@@ -1320,7 +1320,7 @@ abstract class ScriptBuilderBase {
           break;
         }
         case "len": {
-          rpn.int16(this._getArraySize(rpnOp.value));
+          rpn.int16(this._getArrayLength(rpnOp.value));
           break;
         }
         case "local": {
@@ -2556,7 +2556,7 @@ extern void __mute_mask_${symbol};
     };
   };
 
-  _getArraySize = (variable: ScriptBuilderVariable): number => {
+  _getArrayLength = (variable: ScriptBuilderVariable): number => {
     let rootVariable: string | number | ScriptBuilderFunctionArg;
     if (this._isVariableReference(variable)) {
       if (variable.index !== undefined) {
@@ -2572,10 +2572,10 @@ extern void __mute_mask_${symbol};
       if (!resolvedVariable.indirect || !resolvedVariable.array) {
         throw new Error("Variable must be an array");
       }
-      if (resolvedVariable.size === undefined) {
-        throw new Error("Array size must be known at compile time");
+      if (resolvedVariable.length === undefined) {
+        throw new Error("Array length must be known at compile time");
       }
-      return resolvedVariable.size;
+      return resolvedVariable.length;
     }
 
     if (
@@ -2593,17 +2593,17 @@ extern void __mute_mask_${symbol};
     if (variableDefinition?.type !== "array") {
       throw new Error("Variable must be an array");
     }
-    return variableDefinition.size;
+    return variableDefinition.length;
   };
 
-  _assertVariableIsArrayOfMinimumSize = (
+  _assertArrayLengthAtLeast = (
     variable: ScriptBuilderVariable,
-    minimumSize: number,
+    minimumLength: number,
   ) => {
-    const size = this._getArraySize(variable);
-    if (size < minimumSize) {
+    const length = this._getArrayLength(variable);
+    if (length < minimumLength) {
       throw new Error(
-        `Array with size ${size} is too small for required size ${minimumSize}`,
+        `Array with length ${length} is too short for required length ${minimumLength}`,
       );
     }
   };
@@ -2923,10 +2923,10 @@ extern void __mute_mask_${symbol};
         }
         if (
           staticIndex !== undefined &&
-          (staticIndex < 0 || staticIndex >= variableDefinition.size)
+          (staticIndex < 0 || staticIndex >= variableDefinition.length)
         ) {
           throw new Error(
-            `Array index ${staticIndex} is out of bounds for variable "${variableDefinition.name || variableId}" with size ${variableDefinition.size}`,
+            `Array index ${staticIndex} is out of bounds for variable "${variableDefinition.name || variableId}" with length ${variableDefinition.length}`,
           );
         }
       }
@@ -2987,9 +2987,9 @@ extern void __mute_mask_${symbol};
         entityType: "scene",
         entityId: "",
         sceneId: "",
-        size:
+        length:
           namedVariable.type === "array"
-            ? Math.max(1, Math.floor(namedVariable.size))
+            ? Math.max(1, Math.floor(namedVariable.length))
             : 1,
       };
       return symbol;

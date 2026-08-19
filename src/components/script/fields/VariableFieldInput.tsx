@@ -48,9 +48,9 @@ export const VariableFieldInput = ({
   const isArray = selectedCandidate?.type === "array";
   const isArrayTooSmall =
     isArray &&
-    selectedCandidate.size !== undefined &&
-    field.arraySize !== undefined &&
-    selectedCandidate.size < field.arraySize;
+    selectedCandidate.length !== undefined &&
+    field.arrayLength !== undefined &&
+    selectedCandidate.length < field.arrayLength;
   const variableIndex = isScriptValue(variableValue?.index)
     ? variableValue.index
     : { type: "number" as const, value: 0 };
@@ -86,7 +86,9 @@ export const VariableFieldInput = ({
             entityId={entityId}
             value={variableIndex}
             max={
-              selectedCandidate?.size ? selectedCandidate.size - 1 : undefined
+              selectedCandidate?.length
+                ? selectedCandidate.length - 1
+                : undefined
             }
             onChange={(newIndex) => {
               onChange({
@@ -104,8 +106,8 @@ export const VariableFieldInput = ({
           <FixedSpacer height={5} />
           <Alert variant="warning">
             {l10n("WARNING_ARRAY_TOO_SMALL", {
-              expectedSize: field.arraySize,
-              actualSize: selectedCandidate.size,
+              expectedLength: field.arrayLength,
+              actualLength: selectedCandidate.length,
             })}
           </Alert>
         </>

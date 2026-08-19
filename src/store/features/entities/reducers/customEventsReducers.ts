@@ -79,19 +79,19 @@ const editCustomEventVariablePassByReference: CaseReducer<
   if (action.payload.passByReference === "array") {
     variable.passByReference = "array";
     if (variable.passByReference === "array") {
-      variable.size = variable.size ?? 5;
+      variable.length = variable.length ?? 5;
     }
   } else {
     variable.passByReference = action.payload.passByReference;
   }
 };
 
-const editCustomEventVariableSize: CaseReducer<
+const editCustomEventVariableLength: CaseReducer<
   EntitiesState,
   PayloadAction<{
     customEventId: string;
     variableId: string;
-    size: number;
+    length: number;
   }>
 > = (state, action) => {
   const customEvent = state.customEvents.entities[action.payload.customEventId];
@@ -100,7 +100,7 @@ const editCustomEventVariableSize: CaseReducer<
     return;
   }
   if (variable.passByReference === "array") {
-    variable.size = action.payload.size;
+    variable.length = action.payload.length;
   }
 };
 
@@ -217,7 +217,7 @@ const customEventsReducers = {
 
   editCustomEvent,
   editCustomEventVariablePassByReference,
-  editCustomEventVariableSize,
+  editCustomEventVariableLength,
   setCustomEventSymbol,
   removeCustomEvent,
   refreshCustomEventArgs: {

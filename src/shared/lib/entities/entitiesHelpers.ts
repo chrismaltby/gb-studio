@@ -1206,7 +1206,7 @@ export const updateCustomEventArgs = (
     const oldVariable = oldVariables[variable];
 
     // If variable has been defined previously then
-    // reuse name, passBy and size config
+    // reuse name, passBy and length config
     if (oldVariable) {
       variables[variable] = oldVariable;
       return;
@@ -1224,7 +1224,7 @@ export const updateCustomEventArgs = (
         id: variable,
         name: variableName,
         passByReference: "array",
-        size: 5,
+        length: 5,
       };
     } else {
       variables[variable] = {

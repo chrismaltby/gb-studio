@@ -56,7 +56,7 @@ export const VariableNavigatorPane = ({
       const matchingUserVariables = userVariables.filter((variable) =>
         variableDisplayName(
           variable.name,
-          variable.type === "array" ? variable.size : undefined,
+          variable.type === "array" ? variable.length : undefined,
         )
           .toLocaleUpperCase()
           .includes(searchTermUpperCase),
@@ -152,7 +152,7 @@ export const VariableNavigatorPane = ({
       }
       return variableDisplayName(
         item.filename,
-        item.entity?.type === "array" ? item.entity.size : undefined,
+        item.entity?.type === "array" ? item.entity.length : undefined,
       );
     },
     [toggleFolderOpen],

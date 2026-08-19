@@ -693,7 +693,7 @@ describe("updateCustomEventArgs", () => {
         id: "V0",
         name: "Variable A",
         passByReference: "array",
-        size: 5,
+        length: 5,
       },
     });
   });
@@ -742,7 +742,7 @@ describe("updateCustomEventArgs", () => {
       id: "V0",
       name: "Variable A",
       passByReference: "array",
-      size: 5,
+      length: 5,
     });
   });
 
@@ -785,7 +785,7 @@ describe("updateCustomEventArgs", () => {
       id: "V0",
       name: "Variable A",
       passByReference: "array",
-      size: 5,
+      length: 5,
     });
   });
 
@@ -828,7 +828,7 @@ describe("updateCustomEventArgs", () => {
     });
   });
 
-  test("Should preserve an existing custom event array size below a body requirement", () => {
+  test("Should preserve an existing custom event array length below a body requirement", () => {
     const customEvent = {
       id: "customEvent1",
       name: "Custom Event 1",
@@ -839,7 +839,7 @@ describe("updateCustomEventArgs", () => {
           id: "V0",
           name: "Existing Array",
           passByReference: "array",
-          size: 3,
+          length: 3,
         },
       },
       actors: {},
@@ -874,7 +874,7 @@ describe("updateCustomEventArgs", () => {
               key: "array",
               type: "variable",
               variableType: "arrayReference",
-              arraySize: 8,
+              arrayLength: 8,
             },
           },
         },
@@ -885,11 +885,11 @@ describe("updateCustomEventArgs", () => {
       id: "V0",
       name: "Existing Array",
       passByReference: "array",
-      size: 3,
+      length: 3,
     });
   });
 
-  test("Should use the default size when first inferring an array parameter", () => {
+  test("Should use the default length when first inferring an array parameter", () => {
     const customEvent = {
       id: "customEvent1",
       name: "Custom Event 1",
@@ -917,7 +917,7 @@ describe("updateCustomEventArgs", () => {
               key: "array",
               type: "variable",
               variableType: "arrayReference",
-              arraySize: 8,
+              arrayLength: 8,
             },
           },
         },
@@ -928,7 +928,7 @@ describe("updateCustomEventArgs", () => {
       id: "V0",
       name: "Variable A",
       passByReference: "array",
-      size: 5,
+      length: 5,
     });
   });
 
@@ -977,7 +977,7 @@ describe("updateCustomEventArgs", () => {
         id: "V0",
         name: "Variable A",
         passByReference: "array",
-        size: 5,
+        length: 5,
       },
       V1: {
         id: "V1",
@@ -1045,7 +1045,7 @@ describe("updateCustomEventArgs", () => {
           id: "V0",
           name: "Existing Array",
           passByReference: "array",
-          size: 5,
+          length: 5,
         },
       },
       actors: {},
@@ -1198,7 +1198,7 @@ describe("updateCustomEventArgs", () => {
           id: "V1",
           name: "Existing Array",
           passByReference: "array",
-          size: 4,
+          length: 4,
         },
       },
       actors: {},
@@ -1248,7 +1248,7 @@ describe("updateCustomEventArgs", () => {
         id: "V1",
         name: "Existing Array",
         passByReference: "array",
-        size: 4,
+        length: 4,
       },
     });
   });

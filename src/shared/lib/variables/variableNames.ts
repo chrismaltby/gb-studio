@@ -61,13 +61,13 @@ export const globalVariableCode = (variable: string) => {
 
 export const variableDisplayName = (
   name: string,
-  arraySize?: number | null,
+  arrayLength?: number | null,
 ): string => {
-  if (arraySize === null) {
+  if (arrayLength === null) {
     return `${name}[]`;
   }
-  if (arraySize !== undefined) {
-    return `${name}[${arraySize}]`;
+  if (arrayLength !== undefined) {
+    return `${name}[${arrayLength}]`;
   }
   return name;
 };

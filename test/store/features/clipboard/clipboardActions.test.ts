@@ -87,7 +87,7 @@ const clipboardResourceState = (
     name: string;
     symbol: string;
     type: "number" | "array";
-    size?: number;
+    length?: number;
   }> = [],
   constants: Array<{
     id: string;
@@ -1446,7 +1446,7 @@ test("Should include every referenced variable and constant when copying script 
     name: "Score Array",
     symbol: "var_score_array",
     type: "array" as const,
-    size: 8,
+    length: 8,
   };
   const unusedVariable = {
     id: "22222222-2222-2222-2222-222222222222",
@@ -1514,7 +1514,7 @@ test("Should reuse compatible variables and constants with matching UUIDs", asyn
     name: "Score",
     symbol: "var_score",
     type: "array" as const,
-    size: 4,
+    length: 4,
   };
   const constant = {
     id: "22222222-2222-2222-2222-222222222222",
@@ -1558,7 +1558,7 @@ test("Should remap compatible name matches for arrays and constants", async () =
     name: "Inventory",
     symbol: "var_inventory",
     type: "array" as const,
-    size: 16,
+    length: 16,
   };
   const targetVariable = {
     ...sourceVariable,
@@ -1614,7 +1614,7 @@ test("Should create missing arrays and constants with their original UUIDs and v
     name: "Inventory",
     symbol: "var_inventory",
     type: "array" as const,
-    size: 12,
+    length: 12,
     flags: { persistent: "true" },
   };
   const constant = {
@@ -1644,7 +1644,7 @@ test("Should create missing arrays and constants with their original UUIDs and v
     variableId: variable.id,
     name: variable.name,
     type: "array",
-    size: 12,
+    length: 12,
     flags: variable.flags,
   });
   expect(actions.find(entitiesActions.addConstant.match)?.payload).toEqual({
@@ -1660,7 +1660,7 @@ test("Should reuse matching UUIDs when clipboard properties are stale", async ()
     name: "Data",
     symbol: "var_data",
     type: "array" as const,
-    size: 8,
+    length: 8,
   };
   const sourceConstant = {
     id: "22222222-2222-2222-2222-222222222222",
@@ -1675,7 +1675,7 @@ test("Should reuse matching UUIDs when clipboard properties are stale", async ()
           ...sourceVariable,
           name: "Renamed Data",
           type: "number" as const,
-          size: undefined,
+          length: undefined,
         },
       ],
       [{ ...sourceConstant, name: "Renamed Limit", value: 9 }],
@@ -1945,7 +1945,7 @@ test.each([
       name: "Counter",
       symbol: "var_counter_array",
       type: "array" as const,
-      size: 16,
+      length: 16,
     },
   },
 ])(
@@ -2002,7 +2002,7 @@ test("Should remap an incompatible legacy ID to a compatible named variable", as
     name: "Inventory",
     symbol: "var_inventory",
     type: "array" as const,
-    size: 16,
+    length: 16,
   };
   const compatibleVariable = {
     ...sourceVariable,

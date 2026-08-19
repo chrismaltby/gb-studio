@@ -90,14 +90,14 @@ const VariableElementSelectComponent = ({
         options: group.variables.flatMap<VariableElementOption>((variable) => {
           const definition = variablesLookup[variable.id];
           const customEventVariable = customEvent?.variables[variable.id];
-          const arraySize =
+          const arrayLength =
             definition?.type === "array"
-              ? definition.size
+              ? definition.length
               : customEventVariable?.passByReference === "array"
-                ? customEventVariable.size
+                ? customEventVariable.length
                 : undefined;
-          if (arraySize !== undefined) {
-            return Array.from({ length: arraySize }, (_, index) => {
+          if (arrayLength !== undefined) {
+            return Array.from({ length: arrayLength }, (_, index) => {
               const indexedVariable: ScriptVariableElement = {
                 type: "variable",
                 value: variable.id,

@@ -1967,7 +1967,7 @@ class ScriptBuilder extends ScriptBuilderBase {
   _resolveArrayReferenceArgument = (
     variable: string | ScriptValue | ScriptBuilderFunctionArg,
     argumentId: string,
-    requiredSize: number,
+    requiredLength: number,
   ): { alias: string; indirect: boolean } => {
     let rootVariable: ScriptBuilderVariable;
     if (typeof variable === "string" || this._isFunctionArg(variable)) {
@@ -1993,11 +1993,11 @@ class ScriptBuilder extends ScriptBuilderBase {
         );
       }
       if (
-        resolvedVariable.size === undefined ||
-        resolvedVariable.size < requiredSize
+        resolvedVariable.length === undefined ||
+        resolvedVariable.length < requiredLength
       ) {
         throw new Error(
-          `Array reference argument "${argumentId}" requires at least ${requiredSize} elements, but the provided array has ${resolvedVariable.size ?? "unknown"}`,
+          `Array reference argument "${argumentId}" requires at least ${requiredLength} elements, but the provided array has ${resolvedVariable.length ?? "unknown"}`,
         );
       }
       return {
@@ -2025,9 +2025,9 @@ class ScriptBuilder extends ScriptBuilderBase {
         `Array reference argument "${argumentId}" must be an array variable`,
       );
     }
-    if (variableDefinition.size < requiredSize) {
+    if (variableDefinition.length < requiredLength) {
       throw new Error(
-        `Array reference argument "${argumentId}" requires at least ${requiredSize} elements, but the provided array has ${variableDefinition.size}`,
+        `Array reference argument "${argumentId}" requires at least ${requiredLength} elements, but the provided array has ${variableDefinition.length}`,
       );
     }
 
@@ -2132,7 +2132,7 @@ class ScriptBuilder extends ScriptBuilderBase {
             const arrayReference = this._resolveArrayReferenceArgument(
               variableValue,
               variableArg.id,
-              variableArg.size,
+              variableArg.length,
             );
             if (arrayReference.indirect) {
               this._stackPush(arrayReference.alias);
@@ -2262,7 +2262,7 @@ class ScriptBuilder extends ScriptBuilderBase {
       indirect: boolean,
       value: string,
       array = false,
-      size?: number,
+      length?: number,
     ) => {
       if (!argLookup[type].get(value)) {
         const newArg = `.SCRIPT_ARG_${
@@ -2272,7 +2272,7 @@ class ScriptBuilder extends ScriptBuilderBase {
           type: "argument",
           indirect,
           array,
-          size,
+          length,
           symbol: newArg,
         });
         numArgs--;
@@ -2318,7 +2318,7 @@ class ScriptBuilder extends ScriptBuilderBase {
             variableArg.id,
             variableArg.passByReference === "array",
             variableArg.passByReference === "array"
-              ? variableArg.size
+              ? variableArg.length
               : undefined,
           );
         }
@@ -3717,8 +3717,8 @@ class ScriptBuilder extends ScriptBuilderBase {
     packetSize: number,
   ) => {
     if (packetSize > 1) {
-      this._assertVariableIsArrayOfMinimumSize(sendVariable, packetSize);
-      this._assertVariableIsArrayOfMinimumSize(receiveVariable, packetSize);
+      this._assertArrayLengthAtLeast(sendVariable, packetSize);
+      this._assertArrayLengthAtLeast(receiveVariable, packetSize);
     }
     this._sioExchangeVariables(
       this._resolveVariableAddress(sendVariable),
@@ -3792,7 +3792,7 @@ class ScriptBuilder extends ScriptBuilderBase {
     array: ScriptBuilderVariable,
     truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
   ) => {
-    const size = this._getArraySize(array);
+    const length = this._getArrayLength(array);
     const rootVariable = this._isVariableReference(array) ? array.value : array;
     const loopId = this.getNextLabel();
     const indexRef = this._declareLocal("array_index", 1, true);
@@ -3816,7 +3816,7 @@ class ScriptBuilder extends ScriptBuilderBase {
       .operator(".ADD")
       .refSet(indexRef)
       .stop();
-    this._ifConst(".LT", indexRef, size, loopId, 0);
+    this._ifConst(".LT", indexRef, length, loopId, 0);
     this._addNL();
   };
 

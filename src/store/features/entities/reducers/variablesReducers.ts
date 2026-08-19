@@ -19,7 +19,7 @@ type AddVariablePayload = {
   variableId?: string;
   name?: string;
   type?: VariableType;
-  size?: number;
+  length?: number;
   flags?: Record<string, string>;
 };
 
@@ -27,8 +27,8 @@ type PreparedAddVariablePayload = AddVariablePayload & {
   variableId: string;
 };
 
-const clampSize = (size: number | undefined) =>
-  Math.max(1, Math.floor(size || 1));
+const clampLength = (length: number | undefined) =>
+  Math.max(1, Math.floor(length || 1));
 
 const addVariable: CaseReducer<
   EntitiesState,
@@ -49,7 +49,7 @@ const addVariable: CaseReducer<
           name,
           symbol,
           type,
-          size: clampSize(action.payload.size),
+          length: clampLength(action.payload.length),
           ...(action.payload.flags !== undefined
             ? { flags: action.payload.flags }
             : {}),
@@ -86,9 +86,9 @@ const setVariableType: CaseReducer<
       ? {
           ...baseVariable,
           type: "array",
-          size:
+          length:
             existingVariable.type === "array"
-              ? clampSize(existingVariable.size)
+              ? clampLength(existingVariable.length)
               : 1,
         }
       : {
@@ -98,9 +98,9 @@ const setVariableType: CaseReducer<
   variablesAdapter.setOne(state.variables, updatedVariable);
 };
 
-const setVariableSize: CaseReducer<
+const setVariableLength: CaseReducer<
   EntitiesState,
-  PayloadAction<{ variableId: string; size: number }>
+  PayloadAction<{ variableId: string; length: number }>
 > = (state, action) => {
   const existingVariable = state.variables.entities[action.payload.variableId];
   if (!existingVariable || existingVariable.type !== "array") {
@@ -109,7 +109,7 @@ const setVariableSize: CaseReducer<
   variablesAdapter.updateOne(state.variables, {
     id: action.payload.variableId,
     changes: {
-      size: clampSize(action.payload.size),
+      length: clampLength(action.payload.length),
     },
   });
 };
@@ -221,7 +221,7 @@ const variablesReducers = {
   renameVariableFlags,
   removeVariable,
   setVariableType,
-  setVariableSize,
+  setVariableLength,
   reparentVariablesFolder,
   reparentVariable,
 } satisfies SliceCaseReducers<EntitiesState>;

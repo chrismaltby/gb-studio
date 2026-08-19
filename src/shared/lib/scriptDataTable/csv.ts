@@ -11,14 +11,14 @@ export type DataTableCSVVariable = {
   id: string;
   name: string;
   type: VariableType;
-  size?: number;
+  length?: number;
 };
 
 export type NewDataTableCSVVariable = {
   placeholder: string;
   name: string;
   type: VariableType;
-  size?: number;
+  length?: number;
 };
 
 export type ScriptDataTableImport = {
@@ -57,7 +57,7 @@ const resolveCSVVariable = (
     if (variable.type !== expectedType) {
       throw new Error(l10n("ERROR_DATA_TABLE_CSV_VARIABLE_TYPE", { name }));
     }
-    if (index !== undefined && index >= (variable.size ?? 1)) {
+    if (index !== undefined && index >= (variable.length ?? 1)) {
       throw new Error(
         l10n("ERROR_DATA_TABLE_CSV_ARRAY_INDEX", { name, index }),
       );
@@ -78,7 +78,7 @@ const resolveCSVVariable = (
     (variable) => variable.type === expectedType,
   );
   const compatibleMatches = typeMatches.filter(
-    (variable) => index === undefined || index < (variable.size ?? 1),
+    (variable) => index === undefined || index < (variable.length ?? 1),
   );
 
   if (compatibleMatches.length > 0) {
@@ -262,10 +262,10 @@ export const csvToScriptDataTable = (
         placeholder: `__new_variable_${newVariablesLookup.size}`,
         name,
         type: expectedType,
-        size: expectedType === "array" ? 1 : undefined,
+        length: expectedType === "array" ? 1 : undefined,
       };
       if (index !== undefined) {
-        newVariable.size = Math.max(newVariable.size ?? 1, index + 1);
+        newVariable.length = Math.max(newVariable.length ?? 1, index + 1);
       }
       newVariablesLookup.set(name, newVariable);
       return {
