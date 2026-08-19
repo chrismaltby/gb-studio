@@ -29,10 +29,10 @@ export const useVariableFieldContext = (entityId: string) => {
         const variable = variablesLookup[id];
         const customEventVariable = customEvent?.variables[id];
         if (variable?.type === "array") {
-          return { id, type: variable.type, size: variable.size };
+          return { id, type: variable.type, length: variable.length };
         }
         if (customEventVariable?.passByReference === "array") {
-          return { id, type: "array", size: customEventVariable.size };
+          return { id, type: "array", length: customEventVariable.length };
         }
         return { id, type: "number" };
       }),

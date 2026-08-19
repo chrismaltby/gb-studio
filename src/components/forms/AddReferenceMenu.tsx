@@ -109,7 +109,7 @@ export const variableToOption = (
   return {
     label: variableDisplayName(
       variableName(variable, index),
-      variable.type === "array" ? variable.size : undefined,
+      variable.type === "array" ? variable.length : undefined,
     ),
     value: variable.id,
     referenceType: "variable",

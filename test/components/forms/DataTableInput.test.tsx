@@ -68,7 +68,7 @@ jest.mock("components/script/fields/useVariableFieldContext", () => ({
       { id: "variable-1", type: "number" },
       { id: "variable-2", type: "number" },
       { id: "array-1", type: "array" },
-      { id: "V0", type: "array", size: 4 },
+      { id: "V0", type: "array", length: 4 },
     ],
     variables: [
       {
@@ -103,7 +103,7 @@ jest.mock("components/script/fields/useVariableFieldContext", () => ({
         name: "MyArray",
         symbol: "var_my_array",
         type: "array",
-        size: 5,
+        length: 5,
       },
     },
   }),
@@ -481,13 +481,13 @@ test("Should import CSV tables through the renderer API", async () => {
           id: "variable-1",
           name: "Variable One",
           type: "number",
-          size: undefined,
+          length: undefined,
         },
         {
           id: "V0",
           name: "V0",
           type: "array",
-          size: 4,
+          length: 4,
         },
       ]),
     );
@@ -505,7 +505,7 @@ test("Should import CSV tables through the renderer API", async () => {
   });
 });
 
-test("Should create missing variables with the required array size", async () => {
+test("Should create missing variables with the required array length", async () => {
   const onChange = jest.fn();
   mockedAPI.dataTable.importCSV.mockResolvedValueOnce({
     dataTable: {
@@ -539,7 +539,7 @@ test("Should create missing variables with the required array size", async () =>
         placeholder: "__new_variable_0",
         name: "NewArr",
         type: "array",
-        size: 5,
+        length: 5,
       },
       {
         placeholder: "__new_variable_1",
@@ -563,7 +563,7 @@ test("Should create missing variables with the required array size", async () =>
         payload: expect.objectContaining({
           name: "NewArr",
           type: "array",
-          size: 5,
+          length: 5,
         }),
       }),
     );
@@ -673,7 +673,7 @@ test("Should export CSV tables through the renderer API", () => {
         id: "variable-1",
         name: "Variable One",
         type: "number",
-        size: undefined,
+        length: undefined,
       },
     ]),
   );

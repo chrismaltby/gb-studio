@@ -105,7 +105,7 @@ const variableShapeMatches = (a: Variable, b: Variable) => {
   return (
     aType === bType &&
     (aType !== "array" ||
-      (a.type === "array" && b.type === "array" && a.size === b.size))
+      (a.type === "array" && b.type === "array" && a.length === b.length))
   );
 };
 
@@ -394,7 +394,7 @@ const reconcileClipboardResources = (
       ...(idIsAvailable ? { variableId: variable.id } : {}),
       name: variable.name,
       type: normalizedVariableType(variable),
-      ...(variable.type === "array" ? { size: variable.size } : {}),
+      ...(variable.type === "array" ? { length: variable.length } : {}),
       ...(variable.flags ? { flags: variable.flags } : {}),
     });
     dispatch(addAction);
@@ -499,7 +499,7 @@ const generateLocalVariableInsertActions = (
           variableId,
           name: variable.name,
           type: variable.type ?? "number",
-          ...(variable.type === "array" ? { size: variable.size } : {}),
+          ...(variable.type === "array" ? { length: variable.length } : {}),
           ...(variable.flags ? { flags: variable.flags } : {}),
         }),
       );

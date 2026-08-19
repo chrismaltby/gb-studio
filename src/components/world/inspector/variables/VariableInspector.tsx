@@ -237,13 +237,13 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
     }
   };
 
-  const onChangeVariableSize = (
+  const onChangeVariableLength = (
     e: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     dispatch(
-      entitiesActions.setVariableSize({
+      entitiesActions.setVariableLength({
         variableId: id,
-        size: Number(e.currentTarget.value),
+        length: Number(e.currentTarget.value),
       }),
     );
   };
@@ -333,13 +333,13 @@ export const VariableInspector = ({ id }: VariableInspectorProps) => {
               />
             </FormField>
             {variableType === "array" && (
-              <FormField name="variableSize" label={l10n("FIELD_SIZE")}>
+              <FormField name="variableLength" label={l10n("FIELD_LENGTH")}>
                 <NumberInput
-                  id="variableSize"
-                  value={variable.type === "array" ? variable.size : 1}
+                  id="variableLength"
+                  value={variable.type === "array" ? variable.length : 1}
                   min={1}
                   step={1}
-                  onChange={onChangeVariableSize}
+                  onChange={onChangeVariableLength}
                 />
               </FormField>
             )}

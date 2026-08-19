@@ -238,7 +238,7 @@ test("Should only show array variables when arrays are required", () => {
                 name: "Array",
                 symbol: "var_array",
                 type: "array",
-                size: 4,
+                length: 4,
               },
             },
             ids: ["scalar", "array"],

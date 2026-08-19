@@ -183,12 +183,12 @@ class Debug {
                       const symbol = variableData?.symbol;
                       const variableOffset =
                         variableData?.offset ?? this.globalVariables[symbol];
-                      const variableSize = Math.max(
+                      const variableLength = Math.max(
                         1,
-                        Math.floor(variableData?.size ?? 1),
+                        Math.floor(variableData?.length ?? 1),
                       );
                       if (variableOffset !== undefined) {
-                        for (let i = 0; i < variableSize; i++) {
+                        for (let i = 0; i < variableLength; i++) {
                           const index = variableOffset + i;
                           if (
                             this.prevGlobals[index] !== undefined &&

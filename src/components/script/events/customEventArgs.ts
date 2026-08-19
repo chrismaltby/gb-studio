@@ -24,8 +24,8 @@ export const applyCustomEventArgDefaults = (
         ? variableCandidates.filter(
             (candidate) =>
               candidate.type === "array" &&
-              candidate.size !== undefined &&
-              candidate.size >= variable.size,
+              candidate.length !== undefined &&
+              candidate.length >= variable.length,
           )
         : variableCandidates;
     const defaultValue = defaultVariableValueForType(

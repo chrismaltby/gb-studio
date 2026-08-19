@@ -58,7 +58,7 @@ const UsesCollapsedWrapper = styled.div`
   border-top: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
-const ArraySizeDivider = styled.div<{ $closing?: boolean }>`
+const ArrayLengthDivider = styled.div<{ $closing?: boolean }>`
   border-right: 1px solid ${(props) => props.theme.colors.input.border};
 `;
 
@@ -155,7 +155,7 @@ export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
     [customEvent, dispatch, id],
   );
 
-  const onEditVariableSize = useCallback(
+  const onEditVariableLength = useCallback(
     (key: string): React.ChangeEventHandler<HTMLInputElement> =>
       (e) => {
         if (!customEvent) {
@@ -165,14 +165,14 @@ export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
         if (!variable) {
           return;
         }
-        const parsedSize = e.currentTarget.valueAsNumber;
-        const size =
-          Number.isInteger(parsedSize) && parsedSize > 0 ? parsedSize : 1;
+        const parsedLength = e.currentTarget.valueAsNumber;
+        const length =
+          Number.isInteger(parsedLength) && parsedLength > 0 ? parsedLength : 1;
         dispatch(
-          entitiesActions.editCustomEventVariableSize({
+          entitiesActions.editCustomEventVariableLength({
             customEventId: id,
             variableId: key,
-            size,
+            length,
           }),
         );
       },
@@ -403,16 +403,16 @@ export const CustomEventInspector = ({ id }: CustomEventInspectorProps) => {
                                     <>
                                       <VariableIndexBracket $type="open" />
                                       <NumberInput
-                                        id={`variable[${i}].size`}
-                                        value={variable.size}
-                                        placeholder={l10n("FIELD_SIZE")}
-                                        onChange={onEditVariableSize(
+                                        id={`variable[${i}].length`}
+                                        value={variable.length}
+                                        placeholder={l10n("FIELD_LENGTH")}
+                                        onChange={onEditVariableLength(
                                           variable.id,
                                         )}
                                         min={1}
                                       />
                                       <VariableIndexBracket $type="close" />
-                                      <ArraySizeDivider />
+                                      <ArrayLengthDivider />
                                     </>
                                   )}
                                   <InputGroupAppend>

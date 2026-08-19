@@ -45,7 +45,7 @@ test("allows unused custom event variables in array reference fields", () => {
                     id: "V1",
                     name: "Existing Array",
                     passByReference: "array",
-                    size: 3,
+                    length: 3,
                   },
                 },
               },
@@ -116,7 +116,7 @@ test("does not display an unpersisted fallback array", () => {
                 name: "Array",
                 symbol: "var_array",
                 type: "array",
-                size: 4,
+                length: 4,
               },
             },
             ids: ["array"],
@@ -158,10 +158,10 @@ test("does not display an unpersisted fallback array", () => {
   expect(screen.getByRole("combobox")).toHaveValue("");
 });
 
-test("warns when an array reference is smaller than the required size", () => {
+test("warns when an array reference is shorter than the required length", () => {
   setL10NData({
     WARNING_ARRAY_TOO_SMALL:
-      "Requires {expectedSize} elements, selected array has {actualSize}.",
+      "Requires {expectedLength} elements, selected array has {actualLength}.",
   });
   const state = {
     editor: { type: "actor" },
@@ -176,7 +176,7 @@ test("warns when an array reference is smaller than the required size", () => {
                 name: "Array",
                 symbol: "var_array",
                 type: "array",
-                size: 4,
+                length: 4,
               },
             },
             ids: ["array"],
@@ -207,7 +207,7 @@ test("warns when an array reference is smaller than the required size", () => {
         field={{
           type: "variable",
           variableType: "arrayReference",
-          arraySize: 5,
+          arrayLength: 5,
         }}
         value={{ type: "variable", value: "array" }}
         allowRename

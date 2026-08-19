@@ -71,7 +71,7 @@ describe("compileGameGlobalsHeader", () => {
         entityType: "scene" as const,
         entityId: "",
         sceneId: "",
-        size: 3,
+        length: 3,
       },
       number: {
         id: "number",
@@ -81,7 +81,7 @@ describe("compileGameGlobalsHeader", () => {
         entityType: "scene" as const,
         entityId: "",
         sceneId: "",
-        size: 1,
+        length: 1,
       },
       secondArray: {
         id: "secondArray",
@@ -91,7 +91,7 @@ describe("compileGameGlobalsHeader", () => {
         entityType: "scene" as const,
         entityId: "",
         sceneId: "",
-        size: 2,
+        length: 2,
       },
     };
 
@@ -108,12 +108,12 @@ describe("compileGameGlobalsHeader", () => {
     expect(header).toInclude("MAX_GLOBAL_VARS 6");
     expect(
       globalVariableOffsets(variables).variables.map(
-        ({ symbol, offset, size }) => ({ symbol, offset, size }),
+        ({ symbol, offset, length }) => ({ symbol, offset, length }),
       ),
     ).toEqual([
-      { symbol: "VAR_ARRAY", offset: 0, size: 3 },
-      { symbol: "VAR_NUMBER", offset: 3, size: 1 },
-      { symbol: "VAR_SECOND_ARRAY", offset: 4, size: 2 },
+      { symbol: "VAR_ARRAY", offset: 0, length: 3 },
+      { symbol: "VAR_NUMBER", offset: 3, length: 1 },
+      { symbol: "VAR_SECOND_ARRAY", offset: 4, length: 2 },
     ]);
   });
 });

@@ -11,7 +11,7 @@ test("expands array variables into rows using compiled memory offsets", () => {
       entityType: "scene",
       entityId: "",
       sceneId: "",
-      size: 3,
+      length: 3,
       offset: 0,
     },
     VAR_NUMBER: {
@@ -22,7 +22,7 @@ test("expands array variables into rows using compiled memory offsets", () => {
       entityType: "scene",
       entityId: "",
       sceneId: "",
-      size: 1,
+      length: 1,
       offset: 3,
     },
   };
@@ -76,7 +76,7 @@ test("falls back to contiguous offsets for older debugger maps", () => {
       entityType: "scene",
       entityId: "",
       sceneId: "",
-      size: 2,
+      length: 2,
     },
     VAR_NUMBER: {
       id: "number",

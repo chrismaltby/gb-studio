@@ -65,7 +65,7 @@ describe("scriptDataTableToCSV", () => {
           rows: [{ values: [{ type: "number", value: 12 }] }],
         },
         [],
-        [{ id: "array-1", name: "MyArr", type: "array", size: 3 }],
+        [{ id: "array-1", name: "MyArr", type: "array", length: 3 }],
       ),
     ).toEqual(",MyArr[2]\nRow 1,12");
   });
@@ -90,7 +90,7 @@ describe("csvToScriptDataTable", () => {
       csvToScriptDataTable(
         ",MyArr[2]\nRow 1,12",
         [],
-        [{ id: "array-1", name: "MyArr", type: "array", size: 3 }],
+        [{ id: "array-1", name: "MyArr", type: "array", length: 3 }],
       ),
     ).toEqual({
       dataTable: {
@@ -188,7 +188,7 @@ describe("csvToScriptDataTable", () => {
         [],
         [
           { id: "variable-id", name: "Score", type: "number" },
-          { id: "array-1", name: "variable-id", type: "array", size: 2 },
+          { id: "array-1", name: "variable-id", type: "array", length: 2 },
         ],
       ),
     ).toThrow("ERROR_DATA_TABLE_CSV_VARIABLE_TYPE");
@@ -200,8 +200,8 @@ describe("csvToScriptDataTable", () => {
         "Data Table,array-id[2]\nRow 1,1",
         [],
         [
-          { id: "array-id", name: "Other", type: "array", size: 2 },
-          { id: "array-2", name: "array-id", type: "array", size: 4 },
+          { id: "array-id", name: "Other", type: "array", length: 2 },
+          { id: "array-2", name: "array-id", type: "array", length: 4 },
         ],
       ),
     ).toThrow("ERROR_DATA_TABLE_CSV_ARRAY_INDEX");
@@ -213,7 +213,7 @@ describe("csvToScriptDataTable", () => {
         "Data Table,Score\nRow 1,1",
         [],
         [
-          { id: "array-1", name: "Score", type: "array", size: 2 },
+          { id: "array-1", name: "Score", type: "array", length: 2 },
           { id: "number-1", name: "Score", type: "number" },
         ],
       ).dataTable.variables,
@@ -227,7 +227,7 @@ describe("csvToScriptDataTable", () => {
         [],
         [
           { id: "number-1", name: "Score", type: "number" },
-          { id: "array-1", name: "Score", type: "array", size: 2 },
+          { id: "array-1", name: "Score", type: "array", length: 2 },
         ],
       ).dataTable.variables,
     ).toEqual([
@@ -245,8 +245,8 @@ describe("csvToScriptDataTable", () => {
         "Data Table,Score[2]\nRow 1,1",
         [],
         [
-          { id: "array-small", name: "Score", type: "array", size: 2 },
-          { id: "array-large", name: "Score", type: "array", size: 3 },
+          { id: "array-small", name: "Score", type: "array", length: 2 },
+          { id: "array-large", name: "Score", type: "array", length: 3 },
         ],
       ).dataTable.variables,
     ).toEqual([
@@ -277,8 +277,8 @@ describe("csvToScriptDataTable", () => {
         "Data Table,Score[1]\nRow 1,1",
         [],
         [
-          { id: "array-1", name: "Score", type: "array", size: 2 },
-          { id: "array-2", name: "Score", type: "array", size: 3 },
+          { id: "array-1", name: "Score", type: "array", length: 2 },
+          { id: "array-2", name: "Score", type: "array", length: 3 },
         ],
       ).dataTable.variables,
     ).toEqual([
@@ -354,8 +354,8 @@ describe("csvToScriptDataTable", () => {
         "Data Table,Score[3]\nRow 1,1",
         [],
         [
-          { id: "array-1", name: "Score", type: "array", size: 2 },
-          { id: "array-2", name: "Score", type: "array", size: 3 },
+          { id: "array-1", name: "Score", type: "array", length: 2 },
+          { id: "array-2", name: "Score", type: "array", length: 3 },
         ],
       ),
     ).toThrow("ERROR_DATA_TABLE_CSV_ARRAY_INDEX");
@@ -376,12 +376,12 @@ describe("csvToScriptDataTable", () => {
       csvToScriptDataTable(
         "Data Table,MyArr[3]\nRow 1,1",
         [],
-        [{ id: "array-1", name: "MyArr", type: "array", size: 3 }],
+        [{ id: "array-1", name: "MyArr", type: "array", length: 3 }],
       ),
     ).toThrow("ERROR_DATA_TABLE_CSV_ARRAY_INDEX");
   });
 
-  test("Should describe missing scalar and correctly sized array variables", () => {
+  test("Should describe missing scalar and array variables with the correct length", () => {
     expect(
       csvToScriptDataTable(
         "Data Table,Score,MyArr[0],MyArr[4]\nRow 1,1,2,3",
@@ -414,7 +414,7 @@ describe("csvToScriptDataTable", () => {
           placeholder: "__new_variable_1",
           name: "MyArr",
           type: "array",
-          size: 5,
+          length: 5,
         },
       ],
     });

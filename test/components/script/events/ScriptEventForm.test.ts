@@ -11,7 +11,7 @@ test("Should use an unindexed array-only field for array reference arguments", (
         id: "V0",
         name: "Array",
         passByReference: "array",
-        size: 2,
+        length: 2,
       },
     },
     actors: {},
@@ -32,6 +32,6 @@ test("Should use an unindexed array-only field for array reference arguments", (
     type: "variable",
     defaultValue: "LAST_VARIABLE",
     variableType: "arrayReference",
-    arraySize: 2,
+    arrayLength: 2,
   });
 });

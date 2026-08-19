@@ -747,10 +747,10 @@ describe("TypeBox Schemas", () => {
       name: "Variable 2",
       symbol: "symbol_2",
       type: "array",
-      size: 4,
+      length: 4,
     };
     const missingType = { id: "var1", name: "Variable 1", symbol: "symbol" };
-    const arrayWithoutSize = {
+    const arrayWithoutLength = {
       id: "var2",
       name: "Variable 2",
       symbol: "symbol_2",
@@ -758,13 +758,13 @@ describe("TypeBox Schemas", () => {
     };
     const emptyArray = {
       ...validArrayVariable,
-      size: 0,
+      length: 0,
     };
 
     expect(() => Value.Decode(Variable, validNumberVariable)).not.toThrow();
     expect(() => Value.Decode(Variable, validArrayVariable)).not.toThrow();
     expect(() => Value.Decode(Variable, missingType)).toThrow();
-    expect(() => Value.Decode(Variable, arrayWithoutSize)).toThrow();
+    expect(() => Value.Decode(Variable, arrayWithoutLength)).toThrow();
     expect(() => Value.Decode(Variable, emptyArray)).toThrow();
   });
 
@@ -855,6 +855,6 @@ describe("TypeBox Schemas", () => {
     expect(castData.symbol).toEqual(data.symbol);
     expect(castData.flags).toEqual(data.flags);
     expect(castData.type).toEqual("number");
-    expect("size" in castData).toBeFalse();
+    expect("length" in castData).toBeFalse();
   });
 });

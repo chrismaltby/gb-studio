@@ -56,7 +56,7 @@ export type ScriptBuilderFunctionArg = {
   type: "argument";
   indirect: boolean;
   array?: boolean;
-  size?: number;
+  length?: number;
   symbol: string;
 };
 

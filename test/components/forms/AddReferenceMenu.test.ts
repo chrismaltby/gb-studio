@@ -18,7 +18,7 @@ test("builds reference options from defined variables without exposing ids", () 
       name: "Inventory",
       symbol: "var_inventory",
       type: "array",
-      size: 4,
+      length: 4,
     },
   ]);
 

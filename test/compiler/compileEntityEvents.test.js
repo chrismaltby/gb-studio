@@ -52,7 +52,7 @@ test("should compile variable fields with array indices", async () => {
           name: "Array",
           symbol: "var_array",
           type: "array",
-          size: 4,
+          length: 4,
         },
       },
     },
