@@ -153,7 +153,9 @@ test("array length only allows selecting an array reference", () => {
   expect(screen.getByText("$Array")).toBeInTheDocument();
   fireEvent.keyDown(combobox, { key: "ArrowDown" });
   expect(screen.getByRole("option", { name: "Array[10]" })).toBeInTheDocument();
-  expect(screen.getByRole("option", { name: "Variable A" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("option", { name: "Variable A" }),
+  ).toBeInTheDocument();
   expect(
     screen.queryByRole("option", { name: "Scalar" }),
   ).not.toBeInTheDocument();

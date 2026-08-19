@@ -191,13 +191,7 @@ const VariableSelectComponent = ({
           return allowedVariableTypes.includes(variableType);
         },
       ),
-    [
-      allVariables,
-      variablesLookup,
-      context,
-      customEvent,
-      allowedVariableTypes,
-    ],
+    [allVariables, variablesLookup, context, customEvent, allowedVariableTypes],
   );
 
   const options = useMemo<OptGroup[]>(() => {
