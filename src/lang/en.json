@@ -1933,6 +1933,9 @@
   "EVENT_DATA_TABLE_DESC": "Define a 2D array of static values that can be looked up by index, with each column loaded into a variable.",
   "EVENT_ARRAY_FOR_EACH": "For Each Array Element",
   "EVENT_ARRAY_FOR_EACH_DESC": "Run part of the script once for each element of an array, storing the current element in a variable.",
+  "EVENT_ARRAY_SHUFFLE": "Shuffle Array",
+  "EVENT_ARRAY_SHUFFLE_LABEL": "Shuffle {array}",
+  "EVENT_ARRAY_SHUFFLE_DESC": "Randomize the order of the elements in an array.",
 
   "// 10": "Menu -----------------------------------------------------",
 
