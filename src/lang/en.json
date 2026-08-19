@@ -1479,6 +1479,8 @@
   "FIELD_IN_ARRAY": "In Array",
   "FIELD_IN_ARRAY_DESC": "The array to loop through.",
   "FIELD_ARRAY_LENGTH": "Array Length",
+  "FIELD_VALUE_IN_ARRAY_DESC": "The value to search for.",
+  "FIELD_ARRAY_IN_ARRAY_DESC": "The array to search.",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
@@ -1936,6 +1938,9 @@
   "EVENT_ARRAY_SHUFFLE": "Shuffle Array",
   "EVENT_ARRAY_SHUFFLE_LABEL": "Shuffle {array}",
   "EVENT_ARRAY_SHUFFLE_DESC": "Randomize the order of the elements in an array.",
+  "EVENT_IF_VALUE_IN_ARRAY": "If Value In Array",
+  "EVENT_IF_VALUE_IN_ARRAY_LABEL": "If {value} In {array}",
+  "EVENT_IF_VALUE_IN_ARRAY_DESC": "Conditionally run part of the script if an array includes a specified value among its entries.",
 
   "// 10": "Menu -----------------------------------------------------",
 

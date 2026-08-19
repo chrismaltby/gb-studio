@@ -2902,6 +2902,9 @@ class ScriptBuilder extends ScriptBuilderBase {
     this._memSet(0, 0, "MAX_GLOBAL_VARS");
   };
 
+  // --------------------------------------------------------------------------
+  // Arrays
+
   arrayShuffle = (array: ScriptBuilderVariable) => {
     const length = this._getArrayLength(array);
     const rootVariable = this._isVariableReference(array) ? array.value : array;
@@ -2944,6 +2947,69 @@ class ScriptBuilder extends ScriptBuilderBase {
 
     this._rpn().ref(indexRef).int8(1).operator(".ADD").refSet(indexRef).stop();
     this._ifConst(".LT", indexRef, length, loopId, 0);
+    this._addNL();
+  };
+
+  ifValueInArray = (
+    value: ScriptValue,
+    array: ScriptBuilderVariable,
+    truePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+    falsePath: ScriptEvent[] | ScriptBuilderPathFunction = [],
+  ) => {
+    const length = this._getArrayLength(array);
+    const rootVariable = this._isVariableReference(array) ? array.value : array;
+    const loopId = this.getNextLabel();
+    const foundLabel = this.getNextLabel();
+    const notFoundLabel = this.getNextLabel();
+    const endLabel = this.getNextLabel();
+    const indexRef = this._declareLocal("array_index", 1, true);
+    const valueRef = this._declareLocal("value_ref", 1, true);
+    const tmpVariable = this._declareLocal("tmp_variable", 1, true);
+
+    const arrayElement: ScriptBuilderVariable = {
+      type: "variable",
+      value: rootVariable,
+      index: {
+        type: "variable",
+        value: indexRef,
+      },
+    };
+
+    this._addComment("If Value In Array");
+
+    const [rpnOps, fetchOps] = precompileScriptValue(
+      optimiseScriptValue(value),
+    );
+    const localsLookup = this._performFetchOperations(fetchOps);
+    this._addComment(`-- Calculate value`);
+    const rpn = this._rpn();
+    this._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.refSet(valueRef).stop();
+
+    this._addComment("-- Init index");
+    this._setConst(indexRef, 1);
+    this._label(loopId);
+
+    this._addComment("-- Set current value to temporary variable");
+    this._setVariableToVariable(tmpVariable, arrayElement);
+
+    this._addComment("-- Compare temporary variable to value");
+    this._ifVariableCmpVariable(".EQ", valueRef, tmpVariable, foundLabel, 0);
+
+    this._rpn().ref(indexRef).int8(1).operator(".ADD").refSet(indexRef).stop();
+    this._ifConst(".LT", indexRef, length, loopId, 0);
+
+    this._addComment("-- If value not found");
+    this._label(notFoundLabel);
+    this._compilePath(falsePath);
+    this._jump(endLabel);
+
+    this._addComment("-- If value found");
+    this._label(foundLabel);
+    this._compilePath(truePath);
+
+    this._label(endLabel);
+
     this._addNL();
   };
 
