@@ -1929,7 +1929,7 @@
   "EVENT_DATA_TABLE_DESC": "Zdefiniuj tabelę statycznych danych, z której wartości mogą być pobierane na podstawie numeru wiersza (indeksu). Każda kolumna zostanie wczytana do przypisanej zmiennej.",
   "EVENT_ARRAY_FOR_EACH": "Dla każdego elementu tablicy",
   "EVENT_ARRAY_FOR_EACH_DESC": "Uruchamia część skryptu raz dla każdego elementu tablicy, zapisując bieżący element w zmiennej.",
-  
+
   "// 10": "Menu -----------------------------------------------------",
 
   "MENU_FILE": "Plik",
