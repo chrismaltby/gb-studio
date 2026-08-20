@@ -5528,12 +5528,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^24.13.3, @types/node@npm:^24.9.0":
+"@types/node@npm:^24.9.0":
   version: 24.13.3
   resolution: "@types/node@npm:24.13.3"
   dependencies:
     undici-types: "npm:~7.18.0"
   checksum: 10c0/a5bc08f49b9581dcdca90e02cd77197a3c799840807664942e5cd5161a553d4d2ae8064f7e3294410d748d7d098b5c1848be7fa50c06f29c4193ab16be4e59eb
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^26.2.0":
+  version: 26.2.0
+  resolution: "@types/node@npm:26.2.0"
+  dependencies:
+    undici-types: "npm:~8.3.0"
+  checksum: 10c0/f8566d88162241eb55a46f7e4ea097188eab0aaafefea7a58e63adab8c4144eb98c08b7911452c846104c339a0f82282f5e1ed4b26b578d60709614fe2843f4d
   languageName: node
   linkType: hard
 
@@ -10405,7 +10414,7 @@ __metadata:
     "@types/fs-extra": "npm:^11.0.4"
     "@types/jest": "npm:^30.0.0"
     "@types/lodash": "npm:^4.17.24"
-    "@types/node": "npm:^24.13.3"
+    "@types/node": "npm:^26.2.0"
     "@types/pngjs": "npm:^6.0.5"
     "@types/prismjs": "npm:^1.26.6"
     "@types/ps-tree": "npm:^1.1.6"
