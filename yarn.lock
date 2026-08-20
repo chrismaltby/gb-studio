@@ -4434,22 +4434,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reforged/maker-appimage@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "@reforged/maker-appimage@npm:5.2.0"
+"@reforged/maker-appimage@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "@reforged/maker-appimage@npm:5.3.1"
   dependencies:
     "@electron-forge/maker-base": "npm:^6.0.0 || ^7.0.0"
-    "@reforged/maker-types": "npm:^2.1.0"
+    "@reforged/maker-types": "npm:^2.2.0"
     "@spacingbat3/lss": "npm:^1.0.0"
     semver: "npm:^7.3.8"
-  checksum: 10c0/90b9d7db21194fea2c555a3faaf1a071089d48afd56d281006e601a5a4654914f42e9120db18358decc5818b297e674607ffeb34ab16b9564d617bf77840c1e9
+  checksum: 10c0/2a529c1d919323a7ed08e9cea3e1877f65fc49cca042dd817c4954c9146141f604d4ad24a3f0194582270e310e3fa8bdc943b48f52f68f6be90c61bbb492f2d1
   languageName: node
   linkType: hard
 
-"@reforged/maker-types@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@reforged/maker-types@npm:2.1.0"
-  checksum: 10c0/afbb8ae8950e8ca389aaa8d4b7402f6df37156fcd250562885c57bd84585d398578737f1ebcf67906d167b05131310679a10574c5055e32578110d943c0aba4c
+"@reforged/maker-types@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@reforged/maker-types@npm:2.2.0"
+  checksum: 10c0/8db185b58f18b86f96189beb868cec7b1c2d7c4759cac4dd579097cf8c635f366e708133f540e86682a8d6042c94446c82b39efa4b29a4d7b6d69a3f269d48a1
   languageName: node
   linkType: hard
 
@@ -10392,7 +10392,7 @@ __metadata:
     "@octokit/rest": "npm:^22.0.1"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.6.2"
     "@reduxjs/toolkit": "npm:^2.12.0"
-    "@reforged/maker-appimage": "npm:^5.2.0"
+    "@reforged/maker-appimage": "npm:^5.3.1"
     "@sinclair/typebox": "npm:^0.34.52"
     "@storybook/addon-docs": "npm:^10.5.0"
     "@storybook/addon-links": "npm:^10.5.0"
