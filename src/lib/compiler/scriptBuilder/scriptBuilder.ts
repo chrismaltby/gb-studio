@@ -2909,15 +2909,13 @@ class ScriptBuilder extends ScriptBuilderBase {
     array: ScriptBuilderVariable,
     values: ScriptValue[],
   ) => {
-    const arrayLength = this._getArrayLength(array);
-    const valuesLength = values.length;
+    const length = this._getArrayLength(array);
     const rootVariable = this._isVariableReference(array) ? array.value : array;
-    const length = Math.min(arrayLength, valuesLength);
 
     this._addComment("Array Set");
     const rpn = this._rpn();
     for (let i = 0; i < length; i++) {
-      const value = values[i];
+      const value = values?.[i] ?? { type: "number", value: 0 };
       const [rpnOps, fetchOps] = precompileScriptValue(
         optimiseScriptValue(value),
       );
@@ -2932,7 +2930,6 @@ class ScriptBuilder extends ScriptBuilderBase {
         },
       });
     }
-
     rpn.stop();
 
     this._addNL();
