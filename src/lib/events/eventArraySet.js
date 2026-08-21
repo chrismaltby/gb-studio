@@ -26,23 +26,8 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { variableSetToScriptValue, _getArrayLength } = helpers;
-
-  if (_getArrayLength(input.array) < input.arrayValues.length) {
-    throw new Error(
-      `Trying to initialize an array with ${input.arrayValues.length} elements, but the provided array has ${_getArrayLength(input.array)}`,
-    );
-  }
-
-  input.arrayValues.forEach((value, i) => {
-    variableSetToScriptValue(
-      {
-        ...input.array,
-        index: { type: "number", value: i },
-      },
-      value,
-    );
-  });
+  const { arraySetToScriptValues } = helpers;
+  arraySetToScriptValues(input.array, input.arrayValues);
 };
 
 module.exports = {

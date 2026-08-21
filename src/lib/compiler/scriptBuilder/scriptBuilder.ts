@@ -2905,6 +2905,39 @@ class ScriptBuilder extends ScriptBuilderBase {
   // --------------------------------------------------------------------------
   // Arrays
 
+  arraySetToScriptValues = (
+    array: ScriptBuilderVariable,
+    values: ScriptValue[],
+  ) => {
+    const arrayLength = this._getArrayLength(array);
+    const valuesLength = values.length;
+    const rootVariable = this._isVariableReference(array) ? array.value : array;
+    const length = Math.min(arrayLength, valuesLength);
+
+    this._addComment("Array Set");
+    const rpn = this._rpn();
+    for (let i = 0; i < length; i++) {
+      const value = values[i];
+      const [rpnOps, fetchOps] = precompileScriptValue(
+        optimiseScriptValue(value),
+      );
+      const localsLookup = this._performFetchOperations(fetchOps);
+      this._performValueRPN(rpn, rpnOps, localsLookup);
+      rpn.refSetVariable({
+        type: "variable",
+        value: rootVariable,
+        index: {
+          type: "number",
+          value: i,
+        },
+      });
+    }
+
+    rpn.stop();
+
+    this._addNL();
+  };
+
   arrayShuffle = (array: ScriptBuilderVariable) => {
     const length = this._getArrayLength(array);
     const rootVariable = this._isVariableReference(array) ? array.value : array;
