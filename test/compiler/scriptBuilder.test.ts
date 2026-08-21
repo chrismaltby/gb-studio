@@ -7840,3 +7840,497 @@ _script1::
 `);
   });
 });
+
+describe("arraySetToScriptValues", () => {
+  test("should set array to constant values", async () => {
+    const arrayId = "11111111-1111-1111-1111-111111111111";
+
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: {
+            id: arrayId,
+            name: "Array",
+            symbol: "var_array",
+            type: "array",
+            length: 3,
+          },
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues(arrayId, [
+      { type: "number", value: 10 },
+      { type: "number", value: 11 },
+      { type: "number", value: 12 },
+    ]);
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_INT16    10",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 0)/",
+      "            .R_INT16    11",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 1)/",
+      "            .R_INT16    12",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 2)/",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
+  test("should zero out array for missing values", async () => {
+    const arrayId = "11111111-1111-1111-1111-111111111111";
+
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: {
+            id: arrayId,
+            name: "Array",
+            symbol: "var_array",
+            type: "array",
+            length: 3,
+          },
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues(arrayId, [{ type: "number", value: 42 }]);
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_INT16    42",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 0)/",
+      "            .R_INT16    0",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 1)/",
+      "            .R_INT16    0",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 2)/",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+});
+
+describe("arraySetToScriptValues", () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
+  const sourceId = "22222222-2222-2222-2222-222222222222";
+
+  const arrayVariable = (length: number) => ({
+    id: arrayId,
+    name: "Array",
+    symbol: "var_array",
+    type: "array" as const,
+    length,
+  });
+
+  const indirectArrayArg = (
+    symbol = ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+    length: number,
+  ) => ({
+    type: "argument" as const,
+    indirect: true,
+    array: true,
+    length,
+    symbol,
+  });
+
+  test("should set array to constant values", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(3),
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues(arrayId, [
+      { type: "number", value: 10 },
+      { type: "number", value: 11 },
+      { type: "number", value: 12 },
+    ]);
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_INT16    10",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 0)/",
+      "            .R_INT16    11",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 1)/",
+      "            .R_INT16    12",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 2)/",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
+  test("should zero out array for missing values", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(3),
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues(arrayId, [{ type: "number", value: 42 }]);
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_INT16    42",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 0)/",
+      "            .R_INT16    0",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 1)/",
+      "            .R_INT16    0",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 2)/",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
+  test("should zero out entire array when given no values", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(3),
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues(arrayId, []);
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_INT16    0",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 0)/",
+      "            .R_INT16    0",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 1)/",
+      "            .R_INT16    0",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 2)/",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
+  test("should ignore values beyond array length", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(2),
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues(arrayId, [
+      { type: "number", value: 10 },
+      { type: "number", value: 20 },
+      { type: "number", value: 30 },
+    ]);
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_INT16    10",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 0)/",
+      "            .R_INT16    20",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 1)/",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
+  test("should accept array root variable reference", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(2),
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues(
+      {
+        type: "variable",
+        value: arrayId,
+      },
+      [
+        { type: "number", value: 10 },
+        { type: "number", value: 20 },
+      ],
+    );
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_INT16    10",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 0)/",
+      "            .R_INT16    20",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 1)/",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
+  test("should set array elements from variables", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(2),
+          [sourceId]: {
+            id: sourceId,
+            name: "Source",
+            symbol: "var_source",
+            type: "number",
+          },
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues(arrayId, [
+      {
+        type: "variable",
+        value: sourceId,
+      },
+      {
+        type: "number",
+        value: 20,
+      },
+    ]);
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_REF      VAR_SOURCE",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 0)/",
+      "            .R_INT16    20",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 1)/",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
+  test("should set indirect array to constant values", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        argLookup: {
+          actor: new Map(),
+          variable: new Map([
+            ["V0", indirectArrayArg(".SCRIPT_ARG_INDIRECT_0_VARIABLE", 3)],
+          ]),
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues("V0", [
+      { type: "number", value: 10 },
+      { type: "number", value: 20 },
+      { type: "number", value: 30 },
+    ]);
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_INT16    10",
+      "            .R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_INT16    20",
+      "            .R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_INT16    1",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP0_ARRAY_ADDR",
+      "            .R_REF_SET_IND .LOCAL_TMP0_ARRAY_ADDR",
+      "            .R_INT16    30",
+      "            .R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_INT16    2",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP0_ARRAY_ADDR",
+      "            .R_REF_SET_IND .LOCAL_TMP0_ARRAY_ADDR",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
+  test("should zero out missing values in indirect array", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        argLookup: {
+          actor: new Map(),
+          variable: new Map([
+            ["V0", indirectArrayArg(".SCRIPT_ARG_INDIRECT_0_VARIABLE", 3)],
+          ]),
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues("V0", [{ type: "number", value: 42 }]);
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_INT16    42",
+      "            .R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_INT16    0",
+      "            .R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_INT16    1",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP0_ARRAY_ADDR",
+      "            .R_REF_SET_IND .LOCAL_TMP0_ARRAY_ADDR",
+      "            .R_INT16    0",
+      "            .R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_INT16    2",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP0_ARRAY_ADDR",
+      "            .R_REF_SET_IND .LOCAL_TMP0_ARRAY_ADDR",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
+  test("should not calculate an offset for single element indirect array", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        argLookup: {
+          actor: new Map(),
+          variable: new Map([
+            ["V0", indirectArrayArg(".SCRIPT_ARG_INDIRECT_0_VARIABLE", 1)],
+          ]),
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues("V0", [{ type: "number", value: 42 }]);
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_INT16    42",
+      "            .R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
+  test("should accept indirect array root variable reference", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        argLookup: {
+          actor: new Map(),
+          variable: new Map([
+            ["V0", indirectArrayArg(".SCRIPT_ARG_INDIRECT_0_VARIABLE", 2)],
+          ]),
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues(
+      {
+        type: "variable",
+        value: "V0",
+      },
+      [
+        { type: "number", value: 10 },
+        { type: "number", value: 20 },
+      ],
+    );
+
+    expect(output).toEqual([
+      "        ; Array Set",
+      "        VM_RPN",
+      "            .R_INT16    10",
+      "            .R_REF_SET_IND .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_INT16    20",
+      "            .R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_INT16    1",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP0_ARRAY_ADDR",
+      "            .R_REF_SET_IND .LOCAL_TMP0_ARRAY_ADDR",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
+  test("should reject non-array variable", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: {
+            id: arrayId,
+            name: "Variable",
+            symbol: "var_value",
+            type: "number",
+          },
+        },
+      },
+    );
+
+    expect(() =>
+      sb.arraySetToScriptValues(arrayId, [{ type: "number", value: 10 }]),
+    ).toThrow();
+  });
+
+  test("should reject indexed array variable", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(3),
+        },
+      },
+    );
+
+    expect(() =>
+      sb.arraySetToScriptValues(
+        {
+          type: "variable",
+          value: arrayId,
+          index: {
+            type: "number",
+            value: 1,
+          },
+        },
+        [{ type: "number", value: 10 }],
+      ),
+    ).toThrow();
+  });
+
+  test("should reject indirect argument that is not an array", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        argLookup: {
+          actor: new Map(),
+          variable: new Map([
+            [
+              "V0",
+              {
+                type: "argument" as const,
+                indirect: true,
+                array: false,
+                symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+              },
+            ],
+          ]),
+        },
+      },
+    );
+
+    expect(() =>
+      sb.arraySetToScriptValues("V0", [{ type: "number", value: 10 }]),
+    ).toThrow();
+  });
+});
