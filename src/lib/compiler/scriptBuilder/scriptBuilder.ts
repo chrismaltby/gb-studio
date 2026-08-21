@@ -2914,22 +2914,49 @@ class ScriptBuilder extends ScriptBuilderBase {
 
     this._addComment("Array Set");
     const rpn = this._rpn();
-    for (let i = 0; i < length; i++) {
-      const value = values?.[i] ?? { type: "number", value: 0 };
-      const [rpnOps, fetchOps] = precompileScriptValue(
-        optimiseScriptValue(value),
-      );
-      const localsLookup = this._performFetchOperations(fetchOps);
-      this._performValueRPN(rpn, rpnOps, localsLookup);
-      rpn.refSetVariable({
-        type: "variable",
-        value: rootVariable,
-        index: {
-          type: "number",
-          value: i,
-        },
-      });
+
+    if (this._isIndirectVariable(rootVariable)) {
+      const addrRef = this._declareLocal("array_addr", 1, true);
+      const alias = this.getVariableAlias(rootVariable);
+
+      for (let i = 0; i < length; i++) {
+        const value = values?.[i] ?? { type: "number", value: 0 };
+        const [rpnOps, fetchOps] = precompileScriptValue(
+          optimiseScriptValue(value),
+        );
+        const localsLookup = this._performFetchOperations(fetchOps);
+        this._performValueRPN(rpn, rpnOps, localsLookup);
+
+        if (i === 0) {
+          rpn.refSetInd(alias);
+        } else {
+          rpn
+            .ref(alias)
+            .int16(i)
+            .operator(".ADD")
+            .refSet(addrRef)
+            .refSetInd(addrRef);
+        }
+      }
+    } else {
+      for (let i = 0; i < length; i++) {
+        const value = values?.[i] ?? { type: "number", value: 0 };
+        const [rpnOps, fetchOps] = precompileScriptValue(
+          optimiseScriptValue(value),
+        );
+        const localsLookup = this._performFetchOperations(fetchOps);
+        this._performValueRPN(rpn, rpnOps, localsLookup);
+        rpn.refSetVariable({
+          type: "variable",
+          value: rootVariable,
+          index: {
+            type: "number",
+            value: i,
+          },
+        });
+      }
     }
+
     rpn.stop();
 
     this._addNL();

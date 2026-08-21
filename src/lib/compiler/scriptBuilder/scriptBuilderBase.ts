@@ -1155,6 +1155,8 @@ abstract class ScriptBuilderBase {
         rpnCmd(".R_STOP");
         this._addCmd("VM_RPN");
         output.forEach((cmd: string) => {
+          const localSymbols = cmd.match(/\.LOCAL_[A-Z0-9_]+/g) ?? [];
+          localSymbols.forEach((symbol) => this._markLocalUse(symbol));
           this.output.push(cmd);
         });
         this.stackPtr += rpnStackSize;
