@@ -70,6 +70,7 @@ import ValueSelect, {
 import {
   isConstScriptValue,
   isScriptValue,
+  isScriptValueArray,
   isScriptValueVariable,
   isScriptVariableElement,
   ScriptValue,
@@ -885,7 +886,7 @@ const ScriptEventFormInput = ({
       <ArraySet
         name={id}
         variableId={argVariableId(args.array) ?? ""}
-        value={args.arrayValues as ScriptValue[]}
+        value={isScriptValueArray(value) ? value : []}
         entityId={entityId}
         onChange={onChangeField}
       />

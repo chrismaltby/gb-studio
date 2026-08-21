@@ -18,7 +18,7 @@ const fields = [
     defaultValue: "LAST_VARIABLE",
   },
   {
-    key: "arrayValues",
+    key: "values",
     description: l10n("FIELD_ARRAY_VALUES_SET_DESC"),
     type: "arraySet",
     defaultValue: [],
@@ -27,7 +27,7 @@ const fields = [
 
 const compile = (input, helpers) => {
   const { arraySetToScriptValues } = helpers;
-  arraySetToScriptValues(input.array, input.arrayValues);
+  arraySetToScriptValues(input.array, input.values);
 };
 
 module.exports = {
