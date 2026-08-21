@@ -12,6 +12,7 @@ const autoLabel = (fetchArg) => {
 const fields = [
   {
     key: "array",
+    label: l10n("FIELD_ARRAY"),
     description: l10n("FIELD_ARRAY_DESC"),
     type: "variable",
     variableType: "arrayReference",
