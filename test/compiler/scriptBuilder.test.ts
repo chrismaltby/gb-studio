@@ -54,6 +54,9 @@ const createTestScriptBuilder = async (
   return { sb, output };
 };
 
+const withoutComments = (output: string[]) =>
+  output.filter((line) => !line.trimStart().startsWith(";"));
+
 test("Should be able to set active actor to player", async () => {
   const output: string[] = [];
   const scriptEventHandlers = await getTestScriptHandlers();
@@ -8332,5 +8335,332 @@ describe("arraySetToScriptValues", () => {
     expect(() =>
       sb.arraySetToScriptValues("V0", [{ type: "number", value: 10 }]),
     ).toThrow();
+  });
+});
+
+describe("arrayShuffle", () => {
+  const arrayId = "11111111-1111-1111-1111-111111111111";
+
+  const arrayVariable = (length: number) => ({
+    id: arrayId,
+    name: "Array",
+    symbol: "var_array",
+    type: "array" as const,
+    length,
+  });
+
+  const indirectArrayArg = (
+    symbol = ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+    length: number,
+  ) => ({
+    type: "argument" as const,
+    indirect: true,
+    array: true,
+    length,
+    symbol,
+  });
+
+  test("should shuffle array", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(5),
+        },
+      },
+    );
+
+    sb.arrayShuffle(arrayId);
+
+    expect(withoutComments(output)).toEqual([
+      "        VM_SET_CONST            .LOCAL_TMP0_ARRAY_INDEX, 1",
+      "1$:",
+      "        VM_RPN",
+      "            .R_INT16    VAR_ARRAY",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_OPERATOR .RND",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_INT16    VAR_ARRAY",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF_IND  .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF_IND  .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF_SET_IND .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF_SET_IND .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_INT8     1",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_STOP",
+      "        VM_IF_CONST             .LT, .LOCAL_TMP0_ARRAY_INDEX, 5, 1$, 0",
+      "",
+    ]);
+  });
+
+  test("should shuffle two element array", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(2),
+        },
+      },
+    );
+
+    sb.arrayShuffle(arrayId);
+
+    expect(withoutComments(output)).toEqual([
+      "        VM_SET_CONST            .LOCAL_TMP0_ARRAY_INDEX, 1",
+      "1$:",
+      "        VM_RPN",
+      "            .R_INT16    VAR_ARRAY",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_OPERATOR .RND",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_INT16    VAR_ARRAY",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF_IND  .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF_IND  .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF_SET_IND .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF_SET_IND .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_INT8     1",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_STOP",
+      "        VM_IF_CONST             .LT, .LOCAL_TMP0_ARRAY_INDEX, 2, 1$, 0",
+      "",
+    ]);
+  });
+
+  test("should emit nothing for single element array", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(1),
+        },
+      },
+    );
+
+    sb.arrayShuffle(arrayId);
+
+    expect(withoutComments(output)).toEqual([]);
+  });
+
+  test("should accept array root variable reference", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(3),
+        },
+      },
+    );
+
+    sb.arrayShuffle({
+      type: "variable",
+      value: arrayId,
+    });
+
+    expect(withoutComments(output)).toEqual([
+      "        VM_SET_CONST            .LOCAL_TMP0_ARRAY_INDEX, 1",
+      "1$:",
+      "        VM_RPN",
+      "            .R_INT16    VAR_ARRAY",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_OPERATOR .RND",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_INT16    VAR_ARRAY",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF_IND  .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF_IND  .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF_SET_IND .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF_SET_IND .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_INT8     1",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_STOP",
+      "        VM_IF_CONST             .LT, .LOCAL_TMP0_ARRAY_INDEX, 3, 1$, 0",
+      "",
+    ]);
+  });
+
+  test("should shuffle indirect array", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        argLookup: {
+          actor: new Map(),
+          variable: new Map([
+            ["V0", indirectArrayArg(".SCRIPT_ARG_INDIRECT_0_VARIABLE", 5)],
+          ]),
+        },
+      },
+    );
+
+    sb.arrayShuffle("V0");
+
+    expect(withoutComments(output)).toEqual([
+      "        VM_SET_CONST            .LOCAL_TMP0_ARRAY_INDEX, 1",
+      "1$:",
+      "        VM_RPN",
+      "            .R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_OPERATOR .RND",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF_IND  .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF_IND  .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF_SET_IND .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF_SET_IND .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_INT8     1",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_STOP",
+      "        VM_IF_CONST             .LT, .LOCAL_TMP0_ARRAY_INDEX, 5, 1$, 0",
+      "",
+    ]);
+  });
+
+  test("should accept indirect array root variable reference", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        argLookup: {
+          actor: new Map(),
+          variable: new Map([
+            ["V0", indirectArrayArg(".SCRIPT_ARG_INDIRECT_0_VARIABLE", 3)],
+          ]),
+        },
+      },
+    );
+
+    sb.arrayShuffle({
+      type: "variable",
+      value: "V0",
+    });
+
+    expect(withoutComments(output)).toEqual([
+      "        VM_SET_CONST            .LOCAL_TMP0_ARRAY_INDEX, 1",
+      "1$:",
+      "        VM_RPN",
+      "            .R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_OPERATOR .RND",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF      .SCRIPT_ARG_INDIRECT_0_VARIABLE",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF_IND  .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF_IND  .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF_SET_IND .LOCAL_TMP2_RND_ARRAY_PTR",
+      "            .R_REF_SET_IND .LOCAL_TMP1_ARRAY_PTR",
+      "            .R_REF      .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_INT8     1",
+      "            .R_OPERATOR .ADD",
+      "            .R_REF_SET  .LOCAL_TMP0_ARRAY_INDEX",
+      "            .R_STOP",
+      "        VM_IF_CONST             .LT, .LOCAL_TMP0_ARRAY_INDEX, 3, 1$, 0",
+      "",
+    ]);
+  });
+
+  test("should emit nothing for single element indirect array", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {},
+      {
+        argLookup: {
+          actor: new Map(),
+          variable: new Map([
+            ["V0", indirectArrayArg(".SCRIPT_ARG_INDIRECT_0_VARIABLE", 1)],
+          ]),
+        },
+      },
+    );
+
+    sb.arrayShuffle("V0");
+
+    expect(output).toEqual([]);
+  });
+
+  test("should reject non-array variable", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: {
+            id: arrayId,
+            name: "Variable",
+            symbol: "var_value",
+            type: "number",
+          },
+        },
+      },
+    );
+
+    expect(() => sb.arrayShuffle(arrayId)).toThrow();
+  });
+
+  test("should reject indexed array variable", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(3),
+        },
+      },
+    );
+
+    expect(() =>
+      sb.arrayShuffle({
+        type: "variable",
+        value: arrayId,
+        index: {
+          type: "number",
+          value: 1,
+        },
+      }),
+    ).toThrow();
+  });
+
+  test("should reject indirect argument that is not an array", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {},
+      {
+        argLookup: {
+          actor: new Map(),
+          variable: new Map([
+            [
+              "V0",
+              {
+                type: "argument" as const,
+                indirect: true,
+                array: false,
+                symbol: ".SCRIPT_ARG_INDIRECT_0_VARIABLE",
+              },
+            ],
+          ]),
+        },
+      },
+    );
+
+    expect(() => sb.arrayShuffle("V0")).toThrow();
   });
 });

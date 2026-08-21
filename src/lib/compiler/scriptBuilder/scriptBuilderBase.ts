@@ -1105,6 +1105,14 @@ abstract class ScriptBuilderBase {
         rpnStackSize++;
         return rpn;
       },
+      addrVariable: (variable: ScriptBuilderVariable) => {
+        const alias = variableAlias(variable);
+        if (this._isIndirectVariable(variable)) {
+          return rpn.ref(alias);
+        } else {
+          return rpn.int16(alias);
+        }
+      },
       actorId: (id: ScriptBuilderVariable) => {
         const actorId = this.resolveActorId(id);
         switch (actorId.type) {
@@ -1149,6 +1157,10 @@ abstract class ScriptBuilderBase {
         if (!rpnUnaryOperators.includes(op)) {
           rpnStackSize--;
         }
+        return rpn;
+      },
+      comment: (text: string) => {
+        output.push(`            ; ${text}`);
         return rpn;
       },
       stop: () => {

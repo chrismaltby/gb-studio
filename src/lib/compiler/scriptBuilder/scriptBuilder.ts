@@ -2964,46 +2964,54 @@ class ScriptBuilder extends ScriptBuilderBase {
 
   arrayShuffle = (array: ScriptBuilderVariable) => {
     const length = this._getArrayLength(array);
+    if (length < 2) {
+      return;
+    }
+
     const rootVariable = this._isVariableReference(array) ? array.value : array;
+
     const loopId = this.getNextLabel();
     const indexRef = this._declareLocal("array_index", 1, true);
-    const rndIndexRef = this._declareLocal("rnd_array_index", 1, true);
-    const tmpVariable = this._declareLocal("tmp_variable", 1, true);
-
-    const arrayElement: ScriptBuilderVariable = {
-      type: "variable",
-      value: rootVariable,
-      index: {
-        type: "variable",
-        value: indexRef,
-      },
-    };
-
-    const rndArrayElement: ScriptBuilderVariable = {
-      type: "variable",
-      value: rootVariable,
-      index: {
-        type: "variable",
-        value: rndIndexRef,
-      },
-    };
+    const arrayPtrRef = this._declareLocal("array_ptr", 1, true);
+    const rndArrayPtrRef = this._declareLocal("rnd_array_ptr", 1, true);
 
     this._addComment("Array Shuffle");
+
     this._setConst(indexRef, 1);
     this._label(loopId);
 
-    this._addComment("-- Random index between 0 and the current index");
-    this._rpn().ref(indexRef).operator(".RND").refSet(rndIndexRef).stop();
+    const rpn = this._rpn();
 
-    this._addComment("-- Assign random element to temporal variable");
-    this._setVariableToVariable(tmpVariable, rndArrayElement);
-    this._addComment("-- Assign current element to random element");
-    this._setVariableToVariable(rndArrayElement, arrayElement);
-    this._addComment("-- Assign temporal variable to current element");
-    this._setVariableToVariable(arrayElement, tmpVariable);
+    rpn
+      .comment("rndArrayPtr = &array[random(0, index)]")
+      .addrVariable(rootVariable)
+      .ref(indexRef)
+      .operator(".RND")
+      .operator(".ADD")
+      .refSet(rndArrayPtrRef)
 
-    this._rpn().ref(indexRef).int8(1).operator(".ADD").refSet(indexRef).stop();
+      .comment("arrayPtr = &array[index]")
+      .addrVariable(rootVariable)
+      .ref(indexRef)
+      .operator(".ADD")
+      .refSet(arrayPtrRef)
+
+      .comment("Swap")
+      .refInd(rndArrayPtrRef)
+      .refInd(arrayPtrRef)
+      .refSetInd(rndArrayPtrRef)
+      .refSetInd(arrayPtrRef)
+
+      .comment("index++")
+      .ref(indexRef)
+      .int8(1)
+      .operator(".ADD")
+      .refSet(indexRef)
+
+      .stop();
+
     this._ifConst(".LT", indexRef, length, loopId, 0);
+
     this._addNL();
   };
 
