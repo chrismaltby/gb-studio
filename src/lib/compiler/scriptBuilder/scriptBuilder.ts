@@ -2986,6 +2986,8 @@ class ScriptBuilder extends ScriptBuilderBase {
       .comment("rndArrayPtr = &array[random(0, index)]")
       .addrVariable(rootVariable)
       .ref(indexRef)
+      .int8(1)
+      .operator(".ADD")
       .operator(".RND")
       .operator(".ADD")
       .refSet(rndArrayPtrRef)
