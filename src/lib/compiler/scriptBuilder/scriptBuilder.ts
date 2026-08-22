@@ -3025,20 +3025,10 @@ class ScriptBuilder extends ScriptBuilderBase {
     const rootVariable = this._isVariableReference(array) ? array.value : array;
     const loopId = this.getNextLabel();
     const foundLabel = this.getNextLabel();
-    const notFoundLabel = this.getNextLabel();
     const endLabel = this.getNextLabel();
     const indexRef = this._declareLocal("array_index", 1, true);
     const valueRef = this._declareLocal("value_ref", 1, true);
-    const tmpVariable = this._declareLocal("tmp_variable", 1, true);
-
-    const arrayElement: ScriptBuilderVariable = {
-      type: "variable",
-      value: rootVariable,
-      index: {
-        type: "variable",
-        value: indexRef,
-      },
-    };
+    const arrayPtrRef = this._declareLocal("array_ptr", 1, true);
 
     this._addComment("If Value In Array");
 
@@ -3046,26 +3036,47 @@ class ScriptBuilder extends ScriptBuilderBase {
       optimiseScriptValue(value),
     );
     const localsLookup = this._performFetchOperations(fetchOps);
-    this._addComment(`-- Calculate value`);
-    const rpn = this._rpn();
-    this._performValueRPN(rpn, rpnOps, localsLookup);
-    rpn.refSet(valueRef).stop();
 
-    this._addComment("-- Init index");
-    this._setConst(indexRef, 1);
+    const setupRpn = this._rpn();
+    setupRpn.comment("searchValue = value");
+    this._performValueRPN(setupRpn, rpnOps, localsLookup);
+
+    setupRpn
+      .refSet(valueRef)
+      .comment("index = 0")
+      .int8(0)
+      .refSet(indexRef)
+      .stop();
+
     this._label(loopId);
 
-    this._addComment("-- Set current value to temporary variable");
-    this._setVariableToVariable(tmpVariable, arrayElement);
+    this._rpn()
+      .comment("arrayPtr = &array[index]")
+      .addrVariable(rootVariable)
+      .ref(indexRef)
+      .operator(".ADD")
+      .refSet(arrayPtrRef)
 
-    this._addComment("-- Compare temporary variable to value");
-    this._ifVariableCmpVariable(".EQ", valueRef, tmpVariable, foundLabel, 0);
+      .comment("array[index] == searchValue")
+      .refInd(arrayPtrRef)
+      .ref(valueRef)
+      .operator(".EQ")
 
-    this._rpn().ref(indexRef).int8(1).operator(".ADD").refSet(indexRef).stop();
+      .comment("index++")
+      .ref(indexRef)
+      .int8(1)
+      .operator(".ADD")
+      .refSet(indexRef)
+
+      .stop();
+
+    // If value found
+    this._ifConst(".NE", ".ARG0", 0, foundLabel, 1);
+
+    // If array elements remaining
     this._ifConst(".LT", indexRef, length, loopId, 0);
 
     this._addComment("-- If value not found");
-    this._label(notFoundLabel);
     this._compilePath(falsePath);
     this._jump(endLabel);
 
