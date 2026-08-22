@@ -119,3 +119,62 @@ test("ignores argument shapes without a matching schema field", () => {
     extractVariableIdsFromScriptEvent(scriptEvent, scriptEventDefs),
   ).toEqual([]);
 });
+
+test("extracts variable IDs from array set values", () => {
+  const defs = {
+    EVENT_ARRAY_SET_TEST: {
+      fieldsLookup: {
+        values: { type: "arraySet" },
+      },
+    },
+  } as unknown as ScriptEventDefs;
+
+  const scriptEvent: ScriptEvent = {
+    id: "event1",
+    command: "EVENT_ARRAY_SET_TEST",
+    args: {
+      values: [
+        { type: "variable", value: "12" },
+        {
+          type: "add",
+          valueA: { type: "variable", value: "13" },
+          valueB: { type: "expression", value: "$14$ + 1" },
+        },
+        {
+          type: "variable",
+          value: "15",
+          index: {
+            type: "add",
+            valueA: { type: "variable", value: "16" },
+            valueB: { type: "number", value: 1 },
+          },
+        },
+        { type: "number", value: 42 },
+      ],
+    },
+  };
+
+  expect(extractVariableIdsFromScriptEvent(scriptEvent, defs).sort()).toEqual(
+    ["12", "13", "14", "15", "16"].sort(),
+  );
+});
+
+test("ignores invalid array set values", () => {
+  const defs = {
+    EVENT_ARRAY_SET_TEST: {
+      fieldsLookup: {
+        values: { type: "arraySet" },
+      },
+    },
+  } as unknown as ScriptEventDefs;
+
+  const scriptEvent: ScriptEvent = {
+    id: "event1",
+    command: "EVENT_ARRAY_SET_TEST",
+    args: {
+      values: "not-an-array",
+    },
+  };
+
+  expect(extractVariableIdsFromScriptEvent(scriptEvent, defs)).toEqual([]);
+});

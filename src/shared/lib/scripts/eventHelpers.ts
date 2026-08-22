@@ -11,7 +11,10 @@ import {
 } from "shared/lib/resources/types";
 import { walkNormalizedScript, walkScript } from "shared/lib/scripts/walk";
 import { mapScriptValue } from "shared/lib/scriptValue/helpers";
-import { isScriptValue } from "shared/lib/scriptValue/types";
+import {
+  isScriptValue,
+  isScriptValueArray,
+} from "shared/lib/scriptValue/types";
 import type { ScriptValue } from "shared/lib/scriptValue/types";
 
 export type ScriptEventDefs = Record<string, ScriptEventDef>;
@@ -65,6 +68,10 @@ export const remapActorReferencesInEventArgs = (
         }
       } else if (field && isScriptValue(arg)) {
         memo[key] = remapActorReferencesInScriptValue(arg, actorMapping);
+      } else if (field && isScriptValueArray(arg)) {
+        memo[key] = arg.map((val) =>
+          remapActorReferencesInScriptValue(val, actorMapping),
+        );
       }
       return memo;
     },

@@ -7,6 +7,7 @@ import {
 } from "shared/lib/scriptValue/helpers";
 import {
   isScriptValue,
+  isScriptValueArray,
   isScriptValueVariable,
 } from "shared/lib/scriptValue/types";
 import { normalizeVariableId } from "shared/lib/variables/variableIds";
@@ -124,6 +125,14 @@ export const extractVariableIdsFromScriptEvent = (
     if (field?.type === "value") {
       if (isScriptValue(value)) {
         extractScriptValueVariables(value).forEach(addVariableId);
+      }
+    }
+
+    if (field?.type === "arraySet") {
+      if (isScriptValueArray(value)) {
+        value.forEach((val) =>
+          extractScriptValueVariables(val).forEach(addVariableId),
+        );
       }
     }
 

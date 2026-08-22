@@ -381,6 +381,146 @@ module.exports = {
 
     expect(args).toEqual({ property });
   });
+
+  test("should replace actor ids referenced in array set values", async () => {
+    const scriptEventHandler = await loadScriptEventHandlerFromTrustedString(
+      `
+const id = "EVENT_TEST";
+
+const fields = [{
+  key: "values",
+  type: "arraySet",
+}];
+
+module.exports = {
+  id,
+  fields,
+};
+`,
+      "",
+      noOpFileReader,
+    );
+
+    const args = remapActorReferencesInEventArgs(
+      "EVENT_TEST",
+      {
+        values: [
+          {
+            type: "property",
+            target: "actor1",
+            property: "xpos",
+          },
+          {
+            type: "number",
+            value: 10,
+          },
+          {
+            type: "add",
+            valueA: {
+              type: "property",
+              target: "actor2",
+              property: "ypos",
+            },
+            valueB: {
+              type: "property",
+              target: "actor3",
+              property: "direction",
+            },
+          },
+        ],
+      },
+      {
+        actor1: "actor4",
+        actor2: "actor5",
+        actor3: "actor6",
+      },
+      { EVENT_TEST: scriptEventHandler },
+    );
+
+    expect(args).toEqual({
+      values: [
+        {
+          type: "property",
+          target: "actor4",
+          property: "xpos",
+        },
+        {
+          type: "number",
+          value: 10,
+        },
+        {
+          type: "add",
+          valueA: {
+            type: "property",
+            target: "actor5",
+            property: "ypos",
+          },
+          valueB: {
+            type: "property",
+            target: "actor6",
+            property: "direction",
+          },
+        },
+      ],
+    });
+  });
+
+  test("should preserve unmapped actor ids in array set values", async () => {
+    const scriptEventHandler = await loadScriptEventHandlerFromTrustedString(
+      `
+const id = "EVENT_TEST";
+
+const fields = [{
+  key: "values",
+  type: "arraySet",
+}];
+
+module.exports = {
+  id,
+  fields,
+};
+`,
+      "",
+      noOpFileReader,
+    );
+
+    const args = remapActorReferencesInEventArgs(
+      "EVENT_TEST",
+      {
+        values: [
+          {
+            type: "property",
+            target: "actor1",
+            property: "xpos",
+          },
+          {
+            type: "property",
+            target: "actor2",
+            property: "ypos",
+          },
+        ],
+      },
+      {
+        actor1: "actor3",
+      },
+      { EVENT_TEST: scriptEventHandler },
+    );
+
+    expect(args).toEqual({
+      values: [
+        {
+          type: "property",
+          target: "actor3",
+          property: "xpos",
+        },
+        {
+          type: "property",
+          target: "actor2",
+          property: "ypos",
+        },
+      ],
+    });
+  });
 });
 
 describe("remapActorReferencesInEventOverrides", () => {
