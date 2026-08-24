@@ -1583,7 +1583,7 @@
   "EVENT_LOOP_WHILE": "Loop While",
   "EVENT_LOOP_WHILE_DESC": "Run part of the script in a loop while an expression is true.",
   "EVENT_ARRAY_SET": "Array Set To Values",
-  "EVENT_ARRAY_SET_DESC": "Set the elemnts of the specified array to defined values.",
+  "EVENT_ARRAY_SET_DESC": "Set the elements of the specified array to defined values.",
   "EVENT_GROUP": "Event Group",
   "EVENT_GROUP_DESC": "Alows you to group together parts of your script for organizational purposes.",
   "EVENT_COMMENT": "Comment",
