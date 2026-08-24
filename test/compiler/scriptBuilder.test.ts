@@ -9078,3 +9078,87 @@ describe("ifValueInArray", () => {
     ).toThrow();
   });
 });
+
+describe("RPN local references", () => {
+  const expectLocalsNotToOverlap = (
+    localA: { addr: number; size: number },
+    localB: { addr: number; size: number },
+  ) => {
+    expect(
+      localA.addr + localA.size <= localB.addr ||
+        localB.addr + localB.size <= localA.addr,
+    ).toBe(true);
+  };
+
+  test("should ensure RPN locals don't overlap", async () => {
+    const { sb } = await createTestScriptBuilder();
+
+    const localA = sb._declareLocal("a", 4, true);
+
+    const rpn = sb._rpn();
+    rpn.ref(localA);
+
+    const tmpC = sb._declareLocal("c", 1, true);
+    sb._setConst(tmpC, 123);
+
+    const localB = sb._declareLocal("b", 4, true);
+    sb._setConst(localB, 2);
+
+    rpn.ref(localB).operator(".ADD").stop();
+
+    sb._packLocals();
+
+    const packedA = sb.localsLookup[localA];
+    const packedB = sb.localsLookup[localB];
+
+    expectLocalsNotToOverlap(packedA, packedB);
+  });
+
+  test("should ensure RPN offset locals don't overlap", async () => {
+    const { sb } = await createTestScriptBuilder();
+
+    const localA = sb._declareLocal("a", 4, true);
+
+    const rpn = sb._rpn();
+    rpn.ref(sb._localRef(localA, 1));
+
+    const tmpC = sb._declareLocal("c", 1, true);
+    sb._setConst(tmpC, 123);
+
+    const localB = sb._declareLocal("b", 4, true);
+    sb._setConst(localB, 2);
+
+    rpn.ref(localB).operator(".ADD").stop();
+
+    sb._packLocals();
+
+    const packedA = sb.localsLookup[localA];
+    const packedB = sb.localsLookup[localB];
+
+    expectLocalsNotToOverlap(packedA, packedB);
+  });
+
+  test("should ensure RPN locals used when writing don't overlap", async () => {
+    const { sb } = await createTestScriptBuilder();
+
+    const localA = sb._declareLocal("a", 1, true);
+
+    const rpn = sb._rpn();
+    rpn.int16(1).refSet(localA);
+
+    const tmpC = sb._declareLocal("c", 1, true);
+    sb._setConst(tmpC, 123);
+
+    const localB = sb._declareLocal("b", 1, true);
+    sb._setConst(localB, 2);
+
+    rpn.ref(localB).stop();
+
+    sb._packLocals();
+
+    const packedA = sb.localsLookup[localA];
+    const packedB = sb.localsLookup[localB];
+
+    expectLocalsNotToOverlap(packedA, packedB);
+  });
+});
