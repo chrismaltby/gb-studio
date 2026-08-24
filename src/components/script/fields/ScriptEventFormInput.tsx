@@ -73,7 +73,6 @@ import {
   isScriptValueArray,
   isScriptValueVariable,
   isScriptVariableElement,
-  ScriptValue,
 } from "shared/lib/scriptValue/types";
 import { FlagField } from "ui/form/FlagField";
 import { FlagSelect } from "components/forms/FlagSelect";
