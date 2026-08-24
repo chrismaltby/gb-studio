@@ -4,9 +4,9 @@ test("Should use an array reference and compile variable set to value for each i
   const mockArraySetToScriptValues = jest.fn();
   const array = { type: "variable", value: "array", size: 3 };
   const values = [
-    { value: { type: "number", value: 10 } },
-    { value: { type: "number", value: 11 } },
-    { value: { type: "number", value: 12 } },
+    { type: "number", value: 10 },
+    { type: "number", value: 11 },
+    { type: "number", value: 12 },
   ];
 
   compile(
@@ -16,7 +16,6 @@ test("Should use an array reference and compile variable set to value for each i
     },
     {
       arraySetToScriptValues: mockArraySetToScriptValues,
-      _getArrayLength: () => array.size,
     },
   );
 
