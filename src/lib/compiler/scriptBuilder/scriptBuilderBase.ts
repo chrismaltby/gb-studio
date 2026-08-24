@@ -1033,6 +1033,7 @@ abstract class ScriptBuilderBase {
     const output: string[] = [];
     let rpnStackSize = 0;
     const variableAliases = new Map<ScriptBuilderVariable, string>();
+    const referencedLocals = new Set<string>();
 
     const variableAlias = (variable: ScriptBuilderVariable) => {
       const cachedAlias = variableAliases.get(variable);
@@ -1048,14 +1049,13 @@ abstract class ScriptBuilderBase {
       cmd: string,
       ...args: Array<ScriptBuilderStackVariable>
     ) => {
-      output.push(
-        this._padCmd(
-          cmd,
-          args.map((d) => this._offsetStackAddr(d)).join(", "),
-          12,
-          12,
-        ),
-      );
+      const formattedArgs = args.map((arg) => {
+        const formatted = this._offsetStackAddr(arg);
+        const localSymbols = formatted.match(/\.LOCAL_[A-Z0-9_]+/g) ?? [];
+        localSymbols.forEach((symbol) => referencedLocals.add(symbol));
+        return formatted;
+      });
+      output.push(this._padCmd(cmd, formattedArgs.join(", "), 12, 12));
     };
 
     const rpn = {
@@ -1105,6 +1105,14 @@ abstract class ScriptBuilderBase {
         rpnStackSize++;
         return rpn;
       },
+      addrVariable: (variable: ScriptBuilderVariable) => {
+        const alias = variableAlias(variable);
+        if (this._isIndirectVariable(variable)) {
+          return rpn.ref(alias);
+        } else {
+          return rpn.int16(alias);
+        }
+      },
       actorId: (id: ScriptBuilderVariable) => {
         const actorId = this.resolveActorId(id);
         switch (actorId.type) {
@@ -1151,9 +1159,18 @@ abstract class ScriptBuilderBase {
         }
         return rpn;
       },
+      comment: (text: string) => {
+        output.push(`            ; ${text}`);
+        return rpn;
+      },
       stop: () => {
         rpnCmd(".R_STOP");
         this._addCmd("VM_RPN");
+
+        referencedLocals.forEach((symbol) => {
+          this._markLocalUse(symbol);
+        });
+
         output.forEach((cmd: string) => {
           this.output.push(cmd);
         });

@@ -343,6 +343,13 @@ export const isConstScriptValue = (
   return false;
 };
 
+export const isScriptValueArray = (value: unknown): value is ScriptValue[] => {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+  return value.every(isScriptValue);
+};
+
 export type ScriptValueFunction = ScriptValue & { type: ValueOperatorType };
 export type ScriptValueUnaryOperation = ScriptValue & {
   type: ValueUnaryOperatorType;

@@ -70,6 +70,7 @@ import ValueSelect, {
 import {
   isConstScriptValue,
   isScriptValue,
+  isScriptValueArray,
   isScriptValueVariable,
   isScriptVariableElement,
 } from "shared/lib/scriptValue/types";
@@ -86,6 +87,7 @@ import { VariableElementSelect } from "components/forms/VariableElementSelect";
 import { isScriptDataTable } from "shared/lib/scriptDataTable/types";
 import { VariableFieldInput } from "./VariableFieldInput";
 import { defaultValueForUnionType } from "./fieldHelpers";
+import { ArraySet } from "components/forms/ArraySet";
 
 interface ScriptEventFormInputProps {
   id: string;
@@ -877,6 +879,16 @@ const ScriptEventFormInput = ({
           onChange={onChangeField}
         />
       </OffscreenSkeletonInput>
+    );
+  } else if (type === "arraySet") {
+    return (
+      <ArraySet
+        name={id}
+        variableId={argVariableId(args.array) ?? ""}
+        value={isScriptValueArray(value) ? value : []}
+        entityId={entityId}
+        onChange={onChangeField}
+      />
     );
   } else if (type === "engineFieldValue") {
     const engineField = engineFieldsLookup[args.engineFieldKey as string];
