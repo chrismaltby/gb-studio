@@ -2,6 +2,9 @@ const l10n = require("../helpers/l10n").default;
 
 const id = "EVENT_ARRAY_SHUFFLE";
 const groups = ["EVENT_GROUP_VARIABLES"];
+const subGroups = {
+  EVENT_GROUP_VARIABLES: "FIELD_ARRAY",
+};
 
 const autoLabel = (fetchArg) => {
   return l10n("EVENT_ARRAY_SHUFFLE_LABEL", {
@@ -30,6 +33,7 @@ module.exports = {
   description: l10n("EVENT_ARRAY_SHUFFLE_DESC"),
   autoLabel,
   groups,
+  subGroups,
   fields,
   compile,
 };
