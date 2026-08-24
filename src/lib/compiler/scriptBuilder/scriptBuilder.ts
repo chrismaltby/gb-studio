@@ -2913,6 +2913,22 @@ class ScriptBuilder extends ScriptBuilderBase {
     const rootVariable = this._isVariableReference(array) ? array.value : array;
 
     this._addComment("Array Set");
+
+    const compiledValues = Array.from({ length }, (_, i) => {
+      const value = values?.[i] ?? { type: "number", value: 0 };
+
+      const [rpnOps, fetchOps] = precompileScriptValue(
+        optimiseScriptValue(value),
+        `array_${i}_`,
+      );
+
+      return { rpnOps, fetchOps };
+    });
+
+    const localsLookup = this._performFetchOperations(
+      compiledValues.flatMap(({ fetchOps }) => fetchOps),
+    );
+
     const rpn = this._rpn();
 
     if (this._isIndirectVariable(rootVariable)) {
@@ -2920,12 +2936,7 @@ class ScriptBuilder extends ScriptBuilderBase {
       const alias = this.getVariableAlias(rootVariable);
 
       for (let i = 0; i < length; i++) {
-        const value = values?.[i] ?? { type: "number", value: 0 };
-        const [rpnOps, fetchOps] = precompileScriptValue(
-          optimiseScriptValue(value),
-        );
-        const localsLookup = this._performFetchOperations(fetchOps);
-        this._performValueRPN(rpn, rpnOps, localsLookup);
+        this._performValueRPN(rpn, compiledValues[i].rpnOps, localsLookup);
 
         if (i === 0) {
           rpn.refSetInd(alias);
@@ -2940,12 +2951,8 @@ class ScriptBuilder extends ScriptBuilderBase {
       }
     } else {
       for (let i = 0; i < length; i++) {
-        const value = values?.[i] ?? { type: "number", value: 0 };
-        const [rpnOps, fetchOps] = precompileScriptValue(
-          optimiseScriptValue(value),
-        );
-        const localsLookup = this._performFetchOperations(fetchOps);
-        this._performValueRPN(rpn, rpnOps, localsLookup);
+        this._performValueRPN(rpn, compiledValues[i].rpnOps, localsLookup);
+
         rpn.refSetVariable({
           type: "variable",
           value: rootVariable,

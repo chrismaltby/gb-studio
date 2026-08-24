@@ -8127,6 +8127,66 @@ describe("arraySetToScriptValues", () => {
     ]);
   });
 
+  test("should set array from property values reusing fetch", async () => {
+    const { sb, output } = await createTestScriptBuilder(
+      {
+        actors: [
+          {
+            id: "actor1",
+          },
+          {
+            id: "actor2",
+          },
+        ],
+      },
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(3),
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues(arrayId, [
+      {
+        type: "property",
+        target: "actor1",
+        property: "xpos",
+      },
+      {
+        type: "property",
+        target: "actor1",
+        property: "ypos",
+      },
+      {
+        type: "property",
+        target: "actor2",
+        property: "xpos",
+      },
+    ]);
+
+    expect(withoutComments(output)).toEqual([
+      "        VM_SET_CONST            .LOCAL_TMP0_ACTOR_POS, 1",
+      "        VM_ACTOR_GET_POS        .LOCAL_TMP0_ACTOR_POS",
+      "        VM_SET_CONST            .LOCAL_TMP1_ACTOR_POS, 2",
+      "        VM_ACTOR_GET_POS        .LOCAL_TMP1_ACTOR_POS",
+      "        VM_RPN",
+      "            .R_REF      ^/(.LOCAL_TMP0_ACTOR_POS + 1)/",
+      "            .R_INT16    8",
+      "            .R_OPERATOR .SHR",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 0)/",
+      "            .R_REF      ^/(.LOCAL_TMP0_ACTOR_POS + 2)/",
+      "            .R_INT16    8",
+      "            .R_OPERATOR .SHR",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 1)/",
+      "            .R_REF      ^/(.LOCAL_TMP1_ACTOR_POS + 1)/",
+      "            .R_INT16    8",
+      "            .R_OPERATOR .SHR",
+      "            .R_REF_SET  ^/(VAR_ARRAY + 2)/",
+      "            .R_STOP",
+      "",
+    ]);
+  });
+
   test("should not calculate an offset for single element indirect array", async () => {
     const { sb, output } = await createTestScriptBuilder(
       {},
