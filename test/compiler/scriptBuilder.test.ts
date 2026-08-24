@@ -8187,6 +8187,52 @@ describe("arraySetToScriptValues", () => {
     ]);
   });
 
+  test("should not overlap fetched locals used by array value RPN", async () => {
+    const { sb } = await createTestScriptBuilder(
+      {
+        actors: [
+          {
+            id: "actor1",
+          },
+          {
+            id: "actor2",
+          },
+        ],
+      },
+      {
+        variablesLookup: {
+          [arrayId]: arrayVariable(2),
+        },
+      },
+    );
+
+    sb.arraySetToScriptValues(arrayId, [
+      {
+        type: "property",
+        target: "actor1",
+        property: "xpos",
+      },
+      {
+        type: "property",
+        target: "actor2",
+        property: "xpos",
+      },
+    ]);
+
+    sb._packLocals();
+
+    const actor1Pos = sb.localsLookup[".LOCAL_TMP0_ACTOR_POS"];
+    const actor2Pos = sb.localsLookup[".LOCAL_TMP1_ACTOR_POS"];
+
+    expect(actor1Pos.size).toBe(4);
+    expect(actor2Pos.size).toBe(4);
+
+    expect(
+      actor1Pos.addr + actor1Pos.size <= actor2Pos.addr ||
+        actor2Pos.addr + actor2Pos.size <= actor1Pos.addr,
+    ).toBe(true);
+  });
+
   test("should not calculate an offset for single element indirect array", async () => {
     const { sb, output } = await createTestScriptBuilder(
       {},
