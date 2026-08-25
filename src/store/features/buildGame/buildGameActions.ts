@@ -14,6 +14,7 @@ type BuildGameOptions = {
   buildType?: BuildType;
   exportBuild?: boolean;
   debugEnabled?: boolean;
+  tempPreview?: boolean;
   startSceneId?: string;
   startX?: number;
   startY?: number;
@@ -30,6 +31,7 @@ const buildGame =
     buildType = "web",
     exportBuild = false,
     debugEnabled = false,
+    tempPreview = false,
     startSceneId,
     startX,
     startY,
@@ -80,6 +82,7 @@ const buildGame =
           engineSchema,
           exportBuild,
           debugEnabled,
+          ...(tempPreview ? { tempPreview: true } : {}),
         },
       );
     } catch {

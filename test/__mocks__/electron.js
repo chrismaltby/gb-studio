@@ -29,6 +29,14 @@ module.exports = {
     shouldUseDarkColors: false,
     on: jest.fn(),
   },
+  safeStorage: {
+    isEncryptionAvailable: jest.fn().mockReturnValue(true),
+    getSelectedStorageBackend: jest.fn().mockReturnValue("keychain"),
+    encryptString: jest.fn((value) => Buffer.from(`encrypted:${value}`)),
+    decryptString: jest.fn((value) =>
+      value.toString().replace(/^encrypted:/, ""),
+    ),
+  },
   clipboard: {
     readText: jest.fn(),
     readBuffer: jest.fn(),

@@ -122,6 +122,16 @@ const AppToolbar: FC = () => {
     [dispatch],
   );
 
+  const onShareTempPreview = useCallback(() => {
+    dispatch(
+      buildGameActions.buildGame({
+        buildType: "web",
+        exportBuild: false,
+        tempPreview: true,
+      }),
+    );
+  }, [dispatch]);
+
   const setSection = useCallback(
     (section: NavigationSection) => () => {
       dispatch(navigationActions.setSection(section));
@@ -300,6 +310,9 @@ const AppToolbar: FC = () => {
           <MenuItem onClick={onBuild("web")}>
             {l10n("TOOLBAR_EXPORT_WEB")}{" "}
             <MenuAccelerator accelerator="CommandOrControl+Shift+N" />
+          </MenuItem>
+          <MenuItem onClick={onShareTempPreview}>
+            {l10n("TOOLBAR_SHARE_TEMP_PREVIEW")}
           </MenuItem>
           <MenuItem onClick={onBuild("pocket")}>
             {l10n("TOOLBAR_EXPORT_POCKET")}

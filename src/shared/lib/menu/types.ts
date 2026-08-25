@@ -21,6 +21,7 @@ export type MenuListenerKey =
   | "updateEmulatorMuted"
   | "run"
   | "build"
+  | "tempPreview"
   | "ejectEngine"
   | "ejectWebTemplate"
   | "exportProjectSrc"

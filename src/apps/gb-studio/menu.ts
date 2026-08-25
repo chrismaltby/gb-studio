@@ -47,6 +47,7 @@ const listeners: Record<MenuListenerKey, MenuListenerFn[]> = {
   updateEmulatorMuted: [],
   run: [],
   build: [],
+  tempPreview: [],
   ejectEngine: [],
   ejectWebTemplate: [],
   exportProjectSrc: [],
@@ -283,6 +284,12 @@ const buildMenu = async ({
               accelerator: "CommandOrControl+Shift+N",
               click() {
                 notifyListeners("build", "web");
+              },
+            },
+            {
+              label: l10n("MENU_SHARE_TEMP_PREVIEW"),
+              click() {
+                notifyListeners("tempPreview");
               },
             },
             {

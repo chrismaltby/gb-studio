@@ -406,6 +406,16 @@ API.events.menu.build.subscribe((_, buildType) => {
   );
 });
 
+API.events.menu.tempPreview.subscribe(() => {
+  store.dispatch(
+    buildGameActions.buildGame({
+      buildType: "web",
+      exportBuild: false,
+      tempPreview: true,
+    }),
+  );
+});
+
 API.events.menu.ejectEngine.subscribe(() => {
   store.dispatch(buildGameActions.ejectEngine());
 });

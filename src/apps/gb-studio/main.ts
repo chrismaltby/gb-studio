@@ -154,6 +154,20 @@ import {
   removeUserRepo,
 } from "lib/pluginManager/repo";
 import confirmOpenURL from "lib/electron/dialog/confirmOpenURL";
+import { TempMdClient } from "lib/tempPreview/tempMdClient";
+import {
+  deleteTempPreview,
+  loadTempPreview,
+  saveTempPreview,
+} from "lib/tempPreview/tempPreviewStorage";
+import {
+  chooseExistingTempPreviewAction,
+  confirmCreateTempPreview,
+  confirmRevokeTempPreview,
+  showTempPreviewError,
+  showTempPreviewReady,
+  showTempPreviewRevoked,
+} from "lib/electron/dialog/tempPreviewDialogs";
 import { getPluginsInProject } from "lib/pluginManager/project";
 import {
   ensureGlobalPluginsPath,
@@ -1544,7 +1558,7 @@ ipcMain.handle(
 ipcMain.handle(
   "project:build",
   async (event, project: ProjectResources, options: BuildOptions) => {
-    const { exportBuild, buildType } = options;
+    const { exportBuild, buildType, tempPreview = false } = options;
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
     const tmpPath = await getTmp();
@@ -1585,6 +1599,35 @@ ipcMain.handle(
       buildType,
     );
     try {
+      const currentTempPreview = tempPreview
+        ? await loadTempPreview(projectPath)
+        : undefined;
+      if (tempPreview && currentTempPreview) {
+        const action = chooseExistingTempPreviewAction(currentTempPreview);
+        if (action === "cancel") {
+          return;
+        }
+        if (action === "copy") {
+          clipboard.writeText(currentTempPreview.canonicalUrl);
+          return;
+        }
+        if (action === "open") {
+          await shell.openExternal(currentTempPreview.canonicalUrl);
+          return;
+        }
+        if (action === "revoke") {
+          if (!confirmRevokeTempPreview()) {
+            return;
+          }
+          await new TempMdClient().revoke(currentTempPreview);
+          await deleteTempPreview(projectPath);
+          showTempPreviewRevoked();
+          return;
+        }
+      } else if (tempPreview && !confirmCreateTempPreview()) {
+        return;
+      }
+
       const compiledData = await buildProject(project, {
         ...options,
         projectRoot,
@@ -1592,10 +1635,31 @@ ipcMain.handle(
         romFilename,
         tmpPath,
         debugEnabled: debuggerEnabled,
-        useCustomWebTemplate: exportBuild,
+        useCustomWebTemplate: exportBuild || tempPreview,
         progress,
         warnings,
       });
+
+      if (tempPreview) {
+        buildLog(`-`);
+        buildLog(l10n("COMPILER_PUBLISHING_TEMP_PREVIEW"));
+        const record = await new TempMdClient().publish(
+          Path.join(outputRoot, "build", "web"),
+          project.metadata.name || "GB Studio Preview",
+          currentTempPreview,
+        );
+        const { persistent } = await saveTempPreview(projectPath, record);
+        const readyAction = showTempPreviewReady(record, persistent);
+        if (readyAction === "copy") {
+          clipboard.writeText(record.canonicalUrl);
+        } else if (readyAction === "open") {
+          void shell.openExternal(record.canonicalUrl);
+        }
+        buildLog(l10n("COMPILER_TEMP_PREVIEW_READY"));
+        const buildTime = Date.now() - buildStartTime;
+        buildLog(`${l10n("COMPILER_BUILD_TIME")}: ${msToHumanTime(buildTime)}`);
+        return;
+      }
 
       if (exportBuild) {
         await copy(
@@ -1700,6 +1764,9 @@ ipcMain.handle(
         buildLog(l10n("BUILD_CANCELLED"));
       } else if (e instanceof Error) {
         buildErr(e.toString());
+      }
+      if (tempPreview) {
+        showTempPreviewError(e);
       }
       throw e;
     }
@@ -2376,6 +2443,10 @@ menu.on("run", (debugEnabled) => {
 
 menu.on("build", (buildType) => {
   sendToProjectWindow("menu:build", buildType);
+});
+
+menu.on("tempPreview", () => {
+  sendToProjectWindow("menu:temp-preview");
 });
 
 menu.on("ejectEngine", () => {

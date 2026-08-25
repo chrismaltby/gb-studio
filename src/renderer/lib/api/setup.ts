@@ -83,6 +83,7 @@ export type BuildOptions = {
   engineSchema: EngineSchema;
   exportBuild: boolean;
   debugEnabled?: boolean;
+  tempPreview?: boolean;
 };
 
 export type RecentProjectData = {
@@ -545,6 +546,10 @@ const APISetup = {
         createSubscribeAPI<
           (event: IpcRendererEvent, buildType: BuildType) => void
         >("menu:build"),
+      tempPreview:
+        createSubscribeAPI<(event: IpcRendererEvent) => void>(
+          "menu:temp-preview",
+        ),
       ejectEngine:
         createSubscribeAPI<(event: IpcRendererEvent) => void>(
           "menu:eject-engine",
