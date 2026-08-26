@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve actor and trigger dragging so entities keep their grabbed offset instead of snapping position to the cursor
 - Pressing `s` while creating a scene now toggles between creating an Image Scene or Tilemap Scene
 - Link Transfer events with packet size greater than 1 now require arrays for both the send and receive variables, ensuring the transferred values occupy consecutive memory
+- Identical scripts are now deduped in ROM reusing existing scripts, e.g. using prefab actor in two scenes will use only a single script where possible [@Mico27](https://github.com/Mico27)
 - Updated Polish localisation. [@ReptiIe](https://github.com/ReptiIe)
 - Updated Japanese localisation. [@tomo666](https://github.com/tomo666)
 - Updated Ukrainian localisation. [@AmakerGame](https://github.com/AmakerGame)

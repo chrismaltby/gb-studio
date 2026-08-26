@@ -138,6 +138,7 @@ import { createLinkToResource } from "shared/lib/helpers/resourceLinks";
 import difference from "lodash/difference";
 import { toProjectileHash } from "./scriptBuilder/helpers";
 import { variableName } from "shared/lib/entities/entitiesHelpers";
+import { gbvmScriptChecksum } from "lib/compiler/gbvm/buildHelpers";
 
 type CompiledTilemapData = {
   symbol: string;
@@ -1544,6 +1545,7 @@ const compile = async (
     }
   > = {};
   const additionalScriptsCache: Record<string, string> = {};
+  const entityScriptsCache: Record<string, string> = {};
   const recursiveSymbolMap: Record<string, string> = {};
   const compiledAssetsCache: Record<string, string> = {};
 
@@ -1641,6 +1643,16 @@ const compile = async (
           isFunction: false,
           debugEnabled,
         });
+
+        if (!debugEnabled) {
+          // If GBVM matches an existing script, reuse symbol from cache
+          const scriptHash = gbvmScriptChecksum(compiledScript);
+          const existingScriptName = entityScriptsCache[scriptHash];
+          if (existingScriptName) {
+            return existingScriptName;
+          }
+          entityScriptsCache[scriptHash] = scriptName;
+        }
 
         output[`${scriptName}.s`] = compiledScript;
         output[`${scriptName}.h`] = compileScriptHeader(scriptName);
