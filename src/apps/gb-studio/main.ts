@@ -1553,7 +1553,8 @@ ipcMain.handle(
     const sgbEnabled =
       project.settings.sgbEnabled && project.settings.colorMode !== "color";
     const debuggerEnabled =
-      options.debugEnabled || project.settings.debuggerEnabled;
+      !exportBuild &&
+      (options.debugEnabled || project.settings.debuggerEnabled);
     const colorOnly = project.settings.colorMode === "color";
 
     if (firstBuild) {
