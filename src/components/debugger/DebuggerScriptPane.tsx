@@ -10,9 +10,11 @@ import { CodeViewer } from "ui/form/CodeEditor";
 import { ScriptEditorCtx } from "shared/lib/scripts/context";
 import { ScriptEditorContext } from "components/script/context/ScriptEditorContext";
 import {
+  actorPrefabSelectors,
   actorSelectors,
   customEventSelectors,
   sceneSelectors,
+  triggerPrefabSelectors,
   triggerSelectors,
 } from "store/features/entities/entitiesSelectors";
 import {
@@ -179,26 +181,9 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
 
   const currentScriptSymbol =
     currentThread?.closestGBVMSymbol?.scriptSymbol ?? "";
+  const debugCtx = currentThread?.closestGBVMSymbol;
 
   const currentGBVMScript = gbvmScripts[`${currentScriptSymbol}.s`] ?? "";
-
-  const scriptCtx: ScriptEditorCtx | undefined = useMemo(
-    () =>
-      currentThread?.closestGBVMSymbol
-        ? {
-            type:
-              currentThread.closestGBVMSymbol.entityType === "customEvent"
-                ? "script"
-                : "entity",
-            entityType: currentThread.closestGBVMSymbol.entityType,
-            entityId: currentThread.closestGBVMSymbol.entityId,
-            sceneId: currentThread.closestGBVMSymbol.sceneId,
-            scriptKey: currentThread.closestGBVMSymbol.scriptKey,
-            executingId: currentThread.closestGBVMSymbol?.scriptEventId ?? "",
-          }
-        : undefined,
-    [currentThread?.closestGBVMSymbol],
-  );
 
   const currentScriptLineNum = useMemo(() => {
     if (
@@ -217,17 +202,62 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
   }, [currentGBVMScript, currentThread?.closestSymbol]);
 
   const actor = useAppSelector((state) =>
-    actorSelectors.selectById(state, scriptCtx?.entityId ?? ""),
+    actorSelectors.selectById(state, debugCtx?.entityId ?? ""),
   );
   const trigger = useAppSelector((state) =>
-    triggerSelectors.selectById(state, scriptCtx?.entityId ?? ""),
+    triggerSelectors.selectById(state, debugCtx?.entityId ?? ""),
+  );
+  const actorPrefab = useAppSelector((state) =>
+    actorPrefabSelectors.selectById(state, actor?.prefabId ?? ""),
+  );
+  const triggerPrefab = useAppSelector((state) =>
+    triggerPrefabSelectors.selectById(state, trigger?.prefabId ?? ""),
   );
   const customEvent = useAppSelector((state) =>
-    customEventSelectors.selectById(state, scriptCtx?.entityId ?? ""),
+    customEventSelectors.selectById(state, debugCtx?.entityId ?? ""),
   );
   const scene = useAppSelector((state) =>
-    sceneSelectors.selectById(state, scriptCtx?.sceneId ?? ""),
+    sceneSelectors.selectById(state, debugCtx?.sceneId ?? ""),
   );
+
+  const scriptCtx: ScriptEditorCtx | undefined = useMemo(() => {
+    if (!debugCtx) {
+      return undefined;
+    }
+
+    if (debugCtx.entityType === "actor" && actorPrefab) {
+      return {
+        type: "prefab",
+        entityType: "actorPrefab",
+        entityId: actorPrefab.id,
+        instanceId: debugCtx.entityId,
+        sceneId: debugCtx.sceneId,
+        scriptKey: debugCtx.scriptKey,
+        executingId: debugCtx.scriptEventId,
+      };
+    }
+
+    if (debugCtx.entityType === "trigger" && triggerPrefab) {
+      return {
+        type: "prefab",
+        entityType: "triggerPrefab",
+        entityId: triggerPrefab.id,
+        instanceId: debugCtx.entityId,
+        sceneId: debugCtx.sceneId,
+        scriptKey: debugCtx.scriptKey,
+        executingId: debugCtx.scriptEventId,
+      };
+    }
+
+    return {
+      type: debugCtx.entityType === "customEvent" ? "script" : "entity",
+      entityType: debugCtx.entityType,
+      entityId: debugCtx.entityId,
+      sceneId: debugCtx.sceneId,
+      scriptKey: debugCtx.scriptKey,
+      executingId: debugCtx.scriptEventId,
+    };
+  }, [actorPrefab, debugCtx, triggerPrefab]);
 
   const currentScript = useMemo(() => {
     if (!scriptCtx) {
@@ -235,15 +265,32 @@ const DebuggerScriptPane = ({ collapsible }: DebuggerScriptPaneProps) => {
     }
     if (scriptCtx.entityType === "actor" && actor) {
       return actor[scriptCtx.scriptKey as ActorScriptKey];
-    } else if (scriptCtx.entityType === "trigger" && trigger) {
+    }
+    if (scriptCtx.entityType === "actorPrefab" && actorPrefab) {
+      return actorPrefab[scriptCtx.scriptKey as ActorScriptKey];
+    }
+    if (scriptCtx.entityType === "trigger" && trigger) {
       return trigger[scriptCtx.scriptKey as TriggerScriptKey];
-    } else if (scriptCtx.entityType === "scene" && scene) {
+    }
+    if (scriptCtx.entityType === "triggerPrefab" && triggerPrefab) {
+      return triggerPrefab[scriptCtx.scriptKey as TriggerScriptKey];
+    }
+    if (scriptCtx.entityType === "scene" && scene) {
       return scene[scriptCtx.scriptKey as SceneScriptKey];
-    } else if (scriptCtx.entityType === "customEvent" && customEvent) {
+    }
+    if (scriptCtx.entityType === "customEvent" && customEvent) {
       return customEvent.script;
     }
     return [];
-  }, [actor, scriptCtx, scene, trigger, customEvent]);
+  }, [
+    actor,
+    actorPrefab,
+    customEvent,
+    scene,
+    scriptCtx,
+    trigger,
+    triggerPrefab,
+  ]);
 
   const onPlayPause = useCallback(() => {
     if (isPaused) {

@@ -18,7 +18,11 @@ const Separator = styled.span`
 const DebuggerScriptCtxBreadcrumb = ({
   context,
 }: DebuggerScriptCtxBreadcrumbProps) => {
-  const { sceneId, entityType, entityId, scriptKey } = context;
+  const { sceneId, entityType, entityId, instanceId, scriptKey } = context;
+
+  const actorId = entityType === "actorPrefab" ? instanceId : entityId;
+  const triggerId = entityType === "triggerPrefab" ? instanceId : entityId;
+
   return (
     <>
       {sceneId && entityType !== "customEvent" && (
@@ -27,18 +31,19 @@ const DebuggerScriptCtxBreadcrumb = ({
           <Separator>/</Separator>
         </>
       )}
-      {entityType === "actor" && (
+      {(entityType === "actor" || entityType === "actorPrefab") && actorId && (
         <>
-          <DebuggerActorLink id={entityId} sceneId={sceneId} />
+          <DebuggerActorLink id={actorId} sceneId={sceneId} />
           <Separator>/</Separator>
         </>
       )}
-      {entityType === "trigger" && (
-        <>
-          <DebuggerTriggerLink id={entityId} sceneId={sceneId} />
-          <Separator>/</Separator>
-        </>
-      )}
+      {(entityType === "trigger" || entityType === "triggerPrefab") &&
+        triggerId && (
+          <>
+            <DebuggerTriggerLink id={triggerId} sceneId={sceneId} />
+            <Separator>/</Separator>
+          </>
+        )}
       {entityType === "customEvent" && (
         <>
           <DebuggerCustomEventLink id={entityId} />
