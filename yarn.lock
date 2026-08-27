@@ -4793,21 +4793,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-links@npm:^10.5.0":
-  version: 10.5.0
-  resolution: "@storybook/addon-links@npm:10.5.0"
+"@storybook/addon-links@npm:^10.5.10":
+  version: 10.5.10
+  resolution: "@storybook/addon-links@npm:10.5.10"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
   peerDependencies:
     "@types/react": ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-    storybook: ^10.5.0
+    storybook: ^10.5.10
   peerDependenciesMeta:
     "@types/react":
       optional: true
     react:
       optional: true
-  checksum: 10c0/e8f3124fadf85533e560077e7ab86fa4deb022ab36e6e9de921f6c1815427a3084ac515d62bac216aead6cc695acc20b9f5fc364ac2bf438f186c3b4befcd11e
+  checksum: 10c0/7834e46d69ccec57f7db08901277d098182399b8b24b72e82c83c3c9f32c4a228dc51317c74bf31713e03694d3c1d57a7a28d50edc4cf5efadf41d8f9bee08e9
   languageName: node
   linkType: hard
 
@@ -10415,7 +10415,7 @@ __metadata:
     "@reforged/maker-appimage": "npm:^5.3.1"
     "@sinclair/typebox": "npm:^0.34.52"
     "@storybook/addon-docs": "npm:^10.5.0"
-    "@storybook/addon-links": "npm:^10.5.0"
+    "@storybook/addon-links": "npm:^10.5.10"
     "@storybook/addon-themes": "npm:^10.5.0"
     "@storybook/react-webpack5": "npm:^10.5.0"
     "@testing-library/dom": "npm:^10.4.1"
