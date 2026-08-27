@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where changing a Constant's name and clicking away could sometimes cause name change to be lost
 - Fix issue where renaming a variable to have the same name but with different capitalisation could cause compiled symbol to change
 - Fix issue where debugger wouldn't display prefab scripts
+- Fix issue where new projects would git ignore FX Hammer files by default
 
 ## [4.3.2] - 2026-06-22
 
