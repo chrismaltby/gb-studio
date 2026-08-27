@@ -185,7 +185,7 @@
     "webpack": "^5.108.4",
     "webpack-bundle-analyzer": "^5.3.1",
     "webpack-cli": "^7.2.1",
-    "webpack-dev-server": "5.2.6",
+    "webpack-dev-server": "6.0.0",
     "workbox-webpack-plugin": "^7.4.0"
   },
   "packageManager": "yarn@4.17.1+sha256.471ffb15e0523663865bbf46a69e7d157ecf532412eb436c48dfab6e3f2abe88",
