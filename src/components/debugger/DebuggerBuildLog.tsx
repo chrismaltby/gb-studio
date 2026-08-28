@@ -1,25 +1,11 @@
 import React, { useCallback, useLayoutEffect, useRef } from "react";
 import styled, { css } from "styled-components";
-import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
-import consoleActions from "store/features/console/consoleActions";
-import buildGameActions from "store/features/buildGame/buildGameActions";
 import { useAppDispatch, useAppSelector } from "store/hooks";
-import { DropdownButton } from "ui/buttons/DropdownButton";
-import { MenuDivider, MenuItem } from "ui/menu/Menu";
-import { CheckIcon, BlankIcon } from "ui/icons/Icons";
-import {
-  SettingsState,
-  getSettings,
-} from "store/features/settings/settingsState";
-import settingsActions from "store/features/settings/settingsActions";
-import DebuggerUsageData from "components/debugger/DebuggerUsageData";
-import { ConsistentWidthLabel } from "ui/util/ConsistentWidthLabel";
-import useDimensions from "react-cool-dimensions";
 import editorActions from "store/features/editor/editorActions";
 import { ConsoleLink } from "store/features/console/consoleState";
-import { StyledButton } from "ui/buttons/style";
 import { ResourceLinkedText } from "ui/links/ResourceLinkedText";
+import { DebuggerBuildFooter } from "components/debugger/DebuggerBuildFooter";
 
 const PIN_TO_BOTTOM_RANGE = 100;
 
@@ -45,29 +31,6 @@ const Terminal = styled.div`
   white-space: pre-wrap;
   overflow: auto;
   user-select: text;
-`;
-
-const ButtonToolbar = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 10px;
-
-  ${StyledButton} {
-    height: 24px;
-    line-height: 24px;
-  }
-
-  > * ~ * {
-    margin-left: 10px;
-  }
-`;
-
-const UsageWrapper = styled.div`
-  display: flex;
-  flex-grow: 1;
-  justify-content: center;
-  align-items: center;
 `;
 
 interface LogLineProps {
@@ -142,80 +105,12 @@ const DebuggerBuildLog = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const shouldPinToBottomRef = useRef(true);
 
-  const dispatch = useAppDispatch();
-
   const output = useAppSelector((state) => state.console.output);
   const warnings = useAppSelector((state) => state.console.warnings);
   const status = useAppSelector((state) => state.console.status);
-  const openBuildLogOnWarnings = useAppSelector(
-    (state) => getSettings(state).openBuildLogOnWarnings,
-  );
-  const generateDebugFilesEnabled = useAppSelector(
-    (state) => getSettings(state).generateDebugFilesEnabled,
-  );
-  const openBuildFolderOnExport = useAppSelector(
-    (state) => getSettings(state).openBuildFolderOnExport,
-  );
-  const showRomUsageAfterBuild = useAppSelector(
-    (state) => getSettings(state).showRomUsageAfterBuild,
-  );
-
-  const { currentBreakpoint: usageBreakpoint, observe } = useDimensions({
-    breakpoints: { SM: 0, MD: 50, LG: 280 },
-    updateOnBreakpointChange: true,
-  });
-
   // Only show the latest 500 lines during build
   // show full output on complete
   const outputLines = status === "complete" ? output : output.slice(-500);
-
-  const onDeleteCache = useCallback(() => {
-    dispatch(buildGameActions.deleteBuildCache());
-  }, [dispatch]);
-
-  const onRun = useCallback(() => {
-    dispatch(buildGameActions.buildGame());
-  }, [dispatch]);
-
-  const onClear = useCallback(() => {
-    dispatch(consoleActions.clearConsole());
-  }, [dispatch]);
-
-  const onChangeSettingProp = useCallback(
-    <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
-      dispatch(
-        settingsActions.editSettings({
-          [key]: value,
-        }),
-      );
-    },
-    [dispatch],
-  );
-
-  const onToggleOpenBuildLogOnWarnings = useCallback(
-    () =>
-      onChangeSettingProp("openBuildLogOnWarnings", !openBuildLogOnWarnings),
-    [onChangeSettingProp, openBuildLogOnWarnings],
-  );
-
-  const onToggleGenerateDebugFilesEnabled = useCallback(
-    () =>
-      onChangeSettingProp(
-        "generateDebugFilesEnabled",
-        !generateDebugFilesEnabled,
-      ),
-    [onChangeSettingProp, generateDebugFilesEnabled],
-  );
-  const onToggleOpenBuildFolderOnExport = useCallback(
-    () =>
-      onChangeSettingProp("openBuildFolderOnExport", !openBuildFolderOnExport),
-    [onChangeSettingProp, openBuildFolderOnExport],
-  );
-  const onToggleShowRomUsageAfterBuild = useCallback(
-    () =>
-      onChangeSettingProp("showRomUsageAfterBuild", !showRomUsageAfterBuild),
-    [onChangeSettingProp, showRomUsageAfterBuild],
-  );
 
   const onScroll = useCallback(() => {
     const scrollEl = scrollRef.current;
@@ -277,61 +172,7 @@ const DebuggerBuildLog = () => {
           </div>
         )}
       </Terminal>
-      <ButtonToolbar>
-        <Button
-          onClick={status !== "cancelled" ? onRun : undefined}
-          disabled={status === "cancelled"}
-        >
-          <ConsistentWidthLabel
-            label={
-              status === "running" || status === "cancelled"
-                ? l10n("BUILD_CANCEL")
-                : l10n("BUILD_RUN")
-            }
-            possibleValues={[l10n("BUILD_CANCEL"), l10n("BUILD_RUN")]}
-          />
-        </Button>
-        <DropdownButton label={l10n("SETTINGS_BUILD")} openUpwards>
-          <MenuItem
-            onClick={onToggleOpenBuildLogOnWarnings}
-            icon={openBuildLogOnWarnings ? <CheckIcon /> : <BlankIcon />}
-          >
-            {l10n("FIELD_OPEN_BUILD_LOG_ON_WARNINGS")}
-          </MenuItem>
-          <MenuItem
-            onClick={onToggleGenerateDebugFilesEnabled}
-            icon={generateDebugFilesEnabled ? <CheckIcon /> : <BlankIcon />}
-          >
-            {l10n("FIELD_GENERATE_DEBUG_FILES")}
-          </MenuItem>
-          <MenuItem
-            onClick={onToggleOpenBuildFolderOnExport}
-            icon={openBuildFolderOnExport ? <CheckIcon /> : <BlankIcon />}
-          >
-            {l10n("FIELD_OPEN_BUILD_FOLDER_ON_EXPORT")}
-          </MenuItem>
-          <MenuItem
-            onClick={onToggleShowRomUsageAfterBuild}
-            icon={showRomUsageAfterBuild ? <CheckIcon /> : <BlankIcon />}
-          >
-            {l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")}
-          </MenuItem>
-
-          <MenuDivider />
-          <MenuItem onClick={onDeleteCache} icon={<BlankIcon />}>
-            {l10n("BUILD_EMPTY_BUILD_CACHE")}
-          </MenuItem>
-        </DropdownButton>
-        <UsageWrapper ref={observe}>
-          {showRomUsageAfterBuild && (
-            <DebuggerUsageData
-              hideLabels={usageBreakpoint !== "LG"}
-              forceZoom={usageBreakpoint === "SM"}
-            ></DebuggerUsageData>
-          )}
-        </UsageWrapper>
-        <Button onClick={onClear}>{l10n("BUILD_CLEAR")}</Button>
-      </ButtonToolbar>
+      <DebuggerBuildFooter showClear />
     </Wrapper>
   );
 };

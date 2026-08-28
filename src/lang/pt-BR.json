@@ -1274,7 +1274,6 @@
   "FIELD_SPRITE_MODE_OVERRIDE": "Substituição do modo de sprite",
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "Definir substituição do modo de sprite",
   "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Abrir pasta da compilação ao exportar",
-  "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "Exibir uso de ROM após compilar",
   "FIELD_ROM_FILENAME": "Nome do arquivo ROM",
   "FIELD_2_WAY": "2 Vias",
   "FIELD_4_WAY": "4 Vias",

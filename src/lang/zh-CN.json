@@ -1265,7 +1265,6 @@
   "FIELD_SPRITE_MODE_OVERRIDE": "精灵模式覆盖",
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "设置精灵模式覆盖",
   "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "导出时打开构建文件夹",
-  "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "构建后显示 ROM 占用空间",
   "FIELD_ROM_FILENAME": "ROM 文件名",
   "FIELD_2_WAY": "双向",
   "FIELD_4_WAY": "四向",

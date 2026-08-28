@@ -1235,7 +1235,6 @@
   "FIELD_SPRITE_MODE_OVERRIDE": "Forcer le mode de sprite",
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "Définir le mode de sprite forcé",
   "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Ouvrir le dossier de compilation à l’export",
-  "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "Afficher l’utilisation de la ROM après compilation",
   "FIELD_ROM_FILENAME": "Nom de la ROM",
   "FIELD_4_WAY": "4 directions",
   "FIELD_8_WAY": "8 directions",

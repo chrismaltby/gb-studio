@@ -984,7 +984,6 @@ export const SettingsResource = Type.Object({
   runSceneSelectionOnly: Type.Boolean(),
   spriteMode: SpriteModeSetting,
   openBuildFolderOnExport: Type.Boolean(),
-  showRomUsageAfterBuild: Type.Boolean(),
   romFilename: Type.String(),
   defaultSceneTypeId: Type.String(),
   disabledSceneTypeIds: Type.Array(Type.String()),

@@ -1268,7 +1268,6 @@
   "FIELD_SPRITE_MODE_OVERRIDE": "スプライトモードの上書き",
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "スプライトモードの上書き設定",
   "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "エクスポート時にビルドフォルダを開く",
-  "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "ビルド後に ROM 使用量を表示する",
   "FIELD_ROM_FILENAME": "ROM ファイル名",
   "FIELD_2_WAY": "2 方向",
   "FIELD_4_WAY": "4 方向",
