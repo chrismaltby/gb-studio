@@ -62,7 +62,7 @@ const DebuggerPanes = () => {
 
   const initialized = useAppSelector((state) => state.debug.initialized);
   const buildStatus = useAppSelector((state) => state.console.status);
-  const isLogOpen = useAppSelector((state) => state.debug.isLogOpen);
+  const activePane = useAppSelector((state) => state.debug.activePane);
 
   const running = buildStatus === "running";
 
@@ -84,7 +84,7 @@ const DebuggerPanes = () => {
         ? 2
         : 1;
 
-  if (isLogOpen) {
+  if (activePane === "buildLog") {
     return (
       <Wrapper ref={wrapperEl}>
         <DebuggerBuildLog />

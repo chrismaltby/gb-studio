@@ -43,9 +43,9 @@ const setupBuildLogListener = (openBuildLogOnWarnings: boolean) => {
 };
 
 const buildLogActions = [
-  settingsActions.editSettings({ debuggerEnabled: true }),
+  settingsActions.editSettings({ buildAndDebugPaneEnabled: true }),
   navigationActions.setSection("world"),
-  debuggerActions.setIsLogOpen(true),
+  debuggerActions.setActivePane("buildLog"),
 ];
 
 test("Should open the build log after console error output", () => {

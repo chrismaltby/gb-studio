@@ -6,6 +6,7 @@ import { denormalizeProject } from "store/features/project/projectActions";
 import settingsActions from "store/features/settings/settingsActions";
 import type { AppThunk } from "store/storeTypes";
 import { actions as webTemplatesActions } from "store/features/webTemplates/webTemplatesState";
+import type { DebuggerPane } from "store/features/debugger/debuggerState";
 
 export type BuildType = "web" | "rom" | "pocket";
 export type ProjectExportType = "src" | "data";
@@ -19,10 +20,18 @@ type BuildGameOptions = {
   startY?: number;
 };
 
+export const shouldRunWithDebugger = (
+  explicitDebugEnabled: boolean | undefined,
+  buildAndDebugPaneEnabled: boolean,
+  activePane: DebuggerPane,
+): boolean =>
+  explicitDebugEnabled === true ||
+  (buildAndDebugPaneEnabled && activePane === "debugger");
+
 const openBuildLog = (dispatch: Parameters<AppThunk>[0]) => {
-  dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+  dispatch(settingsActions.editSettings({ buildAndDebugPaneEnabled: true }));
   dispatch(navigationActions.setSection("world"));
-  dispatch(debuggerActions.setIsLogOpen(true));
+  dispatch(debuggerActions.setActivePane("buildLog"));
 };
 
 const buildGame =
@@ -36,6 +45,12 @@ const buildGame =
   }: BuildGameOptions = {}): AppThunk<Promise<void>> =>
   async (dispatch, getState) => {
     const state = getState();
+
+    const shouldDebug = shouldRunWithDebugger(
+      debugEnabled,
+      state.project.present.settings.buildAndDebugPaneEnabled,
+      state.debug.activePane,
+    );
 
     if (state.console.status === "cancelled") {
       return;
@@ -79,7 +94,7 @@ const buildGame =
           buildType,
           engineSchema,
           exportBuild,
-          debugEnabled,
+          debugEnabled: shouldDebug,
         },
       );
     } catch {

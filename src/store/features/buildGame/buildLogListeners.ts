@@ -21,10 +21,10 @@ export const registerBuildLogListeners = (
       }
 
       listenerApi.dispatch(
-        settingsActions.editSettings({ debuggerEnabled: true }),
+        settingsActions.editSettings({ buildAndDebugPaneEnabled: true }),
       );
       listenerApi.dispatch(navigationActions.setSection("world"));
-      listenerApi.dispatch(debuggerActions.setIsLogOpen(true));
+      listenerApi.dispatch(debuggerActions.setActivePane("buildLog"));
     },
   });
 
@@ -39,10 +39,10 @@ export const registerBuildLogListeners = (
       }
 
       listenerApi.dispatch(
-        settingsActions.editSettings({ debuggerEnabled: true }),
+        settingsActions.editSettings({ buildAndDebugPaneEnabled: true }),
       );
       listenerApi.dispatch(navigationActions.setSection("world"));
-      listenerApi.dispatch(debuggerActions.setIsLogOpen(true));
+      listenerApi.dispatch(debuggerActions.setActivePane("buildLog"));
     },
   });
 };

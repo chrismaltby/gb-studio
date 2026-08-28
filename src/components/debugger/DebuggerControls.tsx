@@ -6,15 +6,16 @@ import { Button } from "ui/buttons/Button";
 import { PlayStartIcon, PauseIcon, NextIcon, StepIcon } from "ui/icons/Icons";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import debuggerActions from "store/features/debugger/debuggerActions";
+import type { DebuggerPane } from "store/features/debugger/debuggerState";
 import settingsActions from "store/features/settings/settingsActions";
 
 const DebuggerControls = () => {
   const dispatch = useAppDispatch();
   const initialized = useAppSelector((state) => state.debug.initialized);
   const isPaused = useAppSelector((state) => state.debug.isPaused);
-  const isLogOpen = useAppSelector((state) => state.debug.isLogOpen);
-  const debuggerEnabled = useAppSelector(
-    (state) => state.project.present.settings.debuggerEnabled,
+  const activePane = useAppSelector((state) => state.debug.activePane);
+  const buildAndDebugPaneEnabled = useAppSelector(
+    (state) => state.project.present.settings.buildAndDebugPaneEnabled,
   );
 
   const onPlayPause = useCallback(() => {
@@ -33,14 +34,25 @@ const DebuggerControls = () => {
     API.debugger.stepFrame();
   }, []);
 
-  const onToggleBuildLog = useCallback(() => {
-    if (!debuggerEnabled) {
-      dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
-      dispatch(debuggerActions.setIsLogOpen(true));
-    } else {
-      dispatch(debuggerActions.setIsLogOpen(!isLogOpen));
-    }
-  }, [debuggerEnabled, dispatch, isLogOpen]);
+  const onSelectPane = useCallback(
+    (pane: DebuggerPane) => {
+      if (!buildAndDebugPaneEnabled) {
+        dispatch(
+          settingsActions.editSettings({ buildAndDebugPaneEnabled: true }),
+        );
+      }
+      dispatch(debuggerActions.setActivePane(pane));
+    },
+    [buildAndDebugPaneEnabled, dispatch],
+  );
+
+  const onSelectDebugger = useCallback(() => {
+    onSelectPane("debugger");
+  }, [onSelectPane]);
+
+  const onSelectBuildLog = useCallback(() => {
+    onSelectPane("buildLog");
+  }, [onSelectPane]);
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -98,8 +110,24 @@ const DebuggerControls = () => {
       <FixedSpacer width={10} />
       <Button
         size="small"
-        variant={isLogOpen && debuggerEnabled ? "primary" : "transparent"}
-        onClick={onToggleBuildLog}
+        variant={
+          buildAndDebugPaneEnabled && activePane === "debugger"
+            ? "underlined"
+            : "transparent"
+        }
+        onClick={onSelectDebugger}
+      >
+        {l10n("FIELD_DEBUGGER")}
+      </Button>
+      <FixedSpacer width={5} />
+      <Button
+        size="small"
+        variant={
+          buildAndDebugPaneEnabled && activePane === "buildLog"
+            ? "underlined"
+            : "transparent"
+        }
+        onClick={onSelectBuildLog}
       >
         {l10n("FIELD_BUILD_LOG" as L10NKey)}
       </Button>

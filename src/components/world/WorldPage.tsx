@@ -45,8 +45,8 @@ const WorldPage = () => {
   const showNavigator = useAppSelector(
     (state) => state.project.present.settings.showNavigator,
   );
-  const debuggerEnabled = useAppSelector(
-    (state) => state.project.present.settings.debuggerEnabled,
+  const buildAndDebugPaneEnabled = useAppSelector(
+    (state) => state.project.present.settings.buildAndDebugPaneEnabled,
   );
 
   const [leftPaneWidth, setLeftPaneSize, startLeftPaneResize] = useResizable({
@@ -91,21 +91,21 @@ const WorldPage = () => {
     windowWidth - (showNavigator ? leftPaneWidth : 0) - rightPaneWidth;
   const [debuggerPaneHeight, setDebuggerPaneSize, onResizeDebugger] =
     useResizable({
-      initialSize: debuggerEnabled ? 400 : 30,
+      initialSize: buildAndDebugPaneEnabled ? 400 : 30,
       direction: "top",
       minSize: 30,
       maxSize: windowHeight - 100,
       onResizeComplete: (height) => {
-        if (height === 30 && debuggerEnabled) {
+        if (height === 30 && buildAndDebugPaneEnabled) {
           dispatch(
             settingsActions.editSettings({
-              debuggerEnabled: false,
+              buildAndDebugPaneEnabled: false,
             }),
           );
-        } else if (height > 30 && !debuggerEnabled) {
+        } else if (height > 30 && !buildAndDebugPaneEnabled) {
           dispatch(
             settingsActions.editSettings({
-              debuggerEnabled: true,
+              buildAndDebugPaneEnabled: true,
             }),
           );
         }
@@ -117,14 +117,14 @@ const WorldPage = () => {
       setDebuggerPaneSize(windowHeight * 0.5);
       dispatch(
         settingsActions.editSettings({
-          debuggerEnabled: true,
+          buildAndDebugPaneEnabled: true,
         }),
       );
     } else {
       setDebuggerPaneSize(30);
       dispatch(
         settingsActions.editSettings({
-          debuggerEnabled: false,
+          buildAndDebugPaneEnabled: false,
         }),
       );
     }
@@ -132,17 +132,22 @@ const WorldPage = () => {
 
   // Keep track of if debugger is visible
   // If not and it has become visible open to default height
-  const debugOpenRef = useRef(debuggerEnabled);
+  const debugOpenRef = useRef(buildAndDebugPaneEnabled);
   useEffect(() => {
     if (
-      debuggerEnabled &&
-      debugOpenRef.current !== debuggerEnabled &&
+      buildAndDebugPaneEnabled &&
+      debugOpenRef.current !== buildAndDebugPaneEnabled &&
       debuggerPaneHeight <= 30
     ) {
       setDebuggerPaneSize(windowHeight * 0.5);
     }
-    debugOpenRef.current = debuggerEnabled;
-  }, [debuggerEnabled, debuggerPaneHeight, setDebuggerPaneSize, windowHeight]);
+    debugOpenRef.current = buildAndDebugPaneEnabled;
+  }, [
+    buildAndDebugPaneEnabled,
+    debuggerPaneHeight,
+    setDebuggerPaneSize,
+    windowHeight,
+  ]);
 
   useEffect(() => {
     prevWindowWidthRef.current = windowWidth;
@@ -285,7 +290,7 @@ const WorldPage = () => {
             collapsed={debuggerPaneHeight <= 30}
             buttons={<DebuggerControls />}
           >
-            {l10n("FIELD_DEBUGGER")}
+            {l10n("FIELD_BUILD_AND_DEBUG")}
           </SplitPaneHeader>
           {debuggerPaneHeight > 30 && (
             <div style={{ height: debuggerPaneHeight - 30 }}>

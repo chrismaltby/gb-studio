@@ -14,6 +14,8 @@ const APIMock = {
     showProjectWindow: () => Promise.resolve(),
   },
   project: {
+    build: () => Promise.resolve(),
+    buildCancel: () => Promise.resolve(),
     ejectWebTemplate: () => Promise.resolve(undefined),
     loadProject: () => Promise.resolve({}),
     removeAsset: () => Promise.resolve(true),

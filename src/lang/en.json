@@ -1483,6 +1483,7 @@
   "FIELD_IN_ARRAY_TO_SEARCH_DESC": "The array to search.",
   "FIELD_VALUES": "Values",
   "FIELD_ARRAY_DESC": "The array to use.",
+  "FIELD_BUILD_AND_DEBUG": "Build & Debug",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
