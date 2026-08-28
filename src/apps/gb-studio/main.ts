@@ -1552,9 +1552,7 @@ ipcMain.handle(
     const colorMode = project.settings.colorMode;
     const sgbEnabled =
       project.settings.sgbEnabled && project.settings.colorMode !== "color";
-    const debuggerEnabled =
-      !exportBuild &&
-      (options.debugEnabled || project.settings.debuggerEnabled);
+    const debugEnabled = !exportBuild && options.debugEnabled;
     const colorOnly = project.settings.colorMode === "color";
 
     if (firstBuild) {
@@ -1592,7 +1590,7 @@ ipcMain.handle(
         outputRoot,
         romFilename,
         tmpPath,
-        debugEnabled: debuggerEnabled,
+        debugEnabled,
         useCustomWebTemplate: exportBuild,
         progress,
         warnings,
@@ -1643,7 +1641,7 @@ ipcMain.handle(
           : String((await settingsGet("emulatorPath")) || "");
         const romPath = Path.join(outputRoot, "build", "rom", romFilename);
 
-        if (debuggerEnabled && emulatorPath === "") {
+        if (debugEnabled && emulatorPath === "") {
           const { memoryMap, globalVariables } = await readDebuggerSymbols(
             outputRoot,
             romStem,
@@ -1678,7 +1676,7 @@ ipcMain.handle(
           createPlay(
             `file://${outputRoot}/build/web/index.html`,
             sgbEnabled && colorMode === "mono",
-            debuggerEnabled,
+            debugEnabled,
           );
         } else if (emulatorPath === SYSTEM_DEFAULT_APP) {
           open(romPath);

@@ -52,7 +52,7 @@ const userSettingKeys: (keyof SettingsResource)[] = [
   "showCollisionSlopeTiles",
   "showCollisionSlopeTiles",
   "favoriteEvents",
-  "debuggerEnabled",
+  "buildAndDebugPaneEnabled",
   "debuggerScriptType",
   "debuggerVariablesFilter",
   "debuggerCollapsedPanes",

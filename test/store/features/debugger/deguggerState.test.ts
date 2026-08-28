@@ -7,10 +7,10 @@ import reducer, {
 test("Should open the build log on any console errors", () => {
   const state: DebuggerState = {
     ...initialState,
-    isLogOpen: false,
+    activePane: "debugger",
   };
-  const action = actions.setIsLogOpen(true);
+  const action = actions.setActivePane("buildLog");
 
   const newState = reducer(state, action);
-  expect(newState.isLogOpen).toBe(true);
+  expect(newState.activePane).toBe("buildLog");
 });

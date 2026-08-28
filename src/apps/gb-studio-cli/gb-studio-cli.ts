@@ -83,7 +83,7 @@ const main = async (
     tmpPath,
     outputRoot,
     romFilename,
-    debugEnabled: project.settings.debuggerEnabled,
+    debugEnabled: false,
     make: command !== "export",
     progress,
     warnings,

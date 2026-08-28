@@ -476,10 +476,10 @@ API.events.debugger.symbols.subscribe(
         gbvmScripts,
       }),
     );
-    if (!store.getState().project.present.settings.debuggerEnabled) {
+    if (!store.getState().project.present.settings.buildAndDebugPaneEnabled) {
       store.dispatch(
         settingsActions.editSettings({
-          debuggerEnabled: true,
+          buildAndDebugPaneEnabled: true,
         }),
       );
     }

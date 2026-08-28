@@ -4,6 +4,8 @@ import type { UsageData } from "lib/compiler/romUsage";
 import isEqual from "lodash/isEqual";
 import type { DebuggerScriptContext } from "shared/lib/debugger/types";
 
+export type DebuggerPane = "debugger" | "buildLog";
+
 export interface DebuggerState {
   initialized: boolean;
   variableSymbols: string[];
@@ -16,7 +18,7 @@ export interface DebuggerState {
   scriptContexts: DebuggerScriptContext[];
   currentSceneSymbol: string;
   isPaused: boolean;
-  isLogOpen: boolean;
+  activePane: DebuggerPane;
   usageData: UsageData | null;
 }
 
@@ -32,7 +34,7 @@ export const initialState: DebuggerState = {
   scriptContexts: [],
   currentSceneSymbol: "",
   isPaused: true,
-  isLogOpen: false,
+  activePane: "debugger",
   usageData: null,
 };
 
@@ -71,7 +73,7 @@ const debuggerSlice = createSlice({
     ) => {
       if (!state.isPaused && action.payload.isPaused) {
         // Debugger became paused, close build log
-        state.isLogOpen = false;
+        state.activePane = "debugger";
       }
       state.isPaused = action.payload.isPaused;
       state.vramPreview = action.payload.vramPreview;
@@ -86,8 +88,8 @@ const debuggerSlice = createSlice({
       }
       state.currentSceneSymbol = action.payload.currentSceneSymbol;
     },
-    setIsLogOpen: (state, action: PayloadAction<boolean>) => {
-      state.isLogOpen = action.payload;
+    setActivePane: (state, action: PayloadAction<DebuggerPane>) => {
+      state.activePane = action.payload;
     },
     setUsageData: (state, action: PayloadAction<UsageData>) => {
       state.usageData = action.payload;

@@ -962,7 +962,7 @@ export const SettingsResource = Type.Object({
   customControlsB: Type.Array(Type.String()),
   customControlsStart: Type.Array(Type.String()),
   customControlsSelect: Type.Array(Type.String()),
-  debuggerEnabled: Type.Boolean(),
+  buildAndDebugPaneEnabled: Type.Boolean(),
   debuggerScriptType: DebuggerScriptType,
   debuggerVariablesFilter: DebuggerVariablesFilterType,
   debuggerCollapsedPanes: Type.Array(Type.String()),
