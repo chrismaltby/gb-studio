@@ -54,6 +54,10 @@ const DebuggerControls = () => {
     onSelectPane("buildLog");
   }, [onSelectPane]);
 
+  const onSelectRomUsage = useCallback(() => {
+    onSelectPane("romUsage");
+  }, [onSelectPane]);
+
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "F8") {
@@ -118,6 +122,18 @@ const DebuggerControls = () => {
         onClick={onSelectDebugger}
       >
         {l10n("FIELD_DEBUGGER")}
+      </Button>
+      <FixedSpacer width={5} />
+      <Button
+        size="small"
+        variant={
+          buildAndDebugPaneEnabled && activePane === "romUsage"
+            ? "underlined"
+            : "transparent"
+        }
+        onClick={onSelectRomUsage}
+      >
+        {l10n("FIELD_ROM_USAGE")}
       </Button>
       <FixedSpacer width={5} />
       <Button

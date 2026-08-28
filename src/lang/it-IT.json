@@ -1246,7 +1246,6 @@
   "FIELD_SPRITE_MODE_OVERRIDE": "Sovrascrittura Modalità Sprite",
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "Imposta Sovrascrittura Modalità Sprite",
   "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Apri Cartella Build All'Esportazione",
-  "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "Mostra Utilizzo ROM Dopo Compilazione",
   "FIELD_ROM_FILENAME": "Nome File ROM",
   "FIELD_4_WAY": "4-Vie",
   "FIELD_8_WAY": "8-Vie",

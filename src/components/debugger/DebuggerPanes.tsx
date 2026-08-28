@@ -12,6 +12,7 @@ import buildGameActions from "store/features/buildGame/buildGameActions";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
 import DebuggerBuildLog from "components/debugger/DebuggerBuildLog";
+import DebuggerRomUsage from "components/debugger/DebuggerRomUsage";
 
 const COL1_WIDTH = 290;
 const COL2_WIDTH = 350;
@@ -88,6 +89,14 @@ const DebuggerPanes = () => {
     return (
       <Wrapper ref={wrapperEl}>
         <DebuggerBuildLog />
+      </Wrapper>
+    );
+  }
+
+  if (activePane === "romUsage") {
+    return (
+      <Wrapper ref={wrapperEl}>
+        <DebuggerRomUsage />
       </Wrapper>
     );
   }

@@ -4,7 +4,7 @@ import type { UsageData } from "lib/compiler/romUsage";
 import isEqual from "lodash/isEqual";
 import type { DebuggerScriptContext } from "shared/lib/debugger/types";
 
-export type DebuggerPane = "debugger" | "buildLog";
+export type DebuggerPane = "debugger" | "buildLog" | "romUsage";
 
 export interface DebuggerState {
   initialized: boolean;

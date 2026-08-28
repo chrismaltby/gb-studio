@@ -1275,7 +1275,6 @@
   "FIELD_SPRITE_MODE_OVERRIDE": "Nadpisanie trybu grafiki",
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "Ustaw nadpisanie trybu grafiki",
   "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Otwórz folder kompilacji po eksporcie",
-  "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "Wyświetl zużycie ROM po kompilacji",
   "FIELD_ROM_FILENAME": "Nazwa pliku ROM",
   "FIELD_2_WAY": "2-kierunkowy",
   "FIELD_4_WAY": "4-kierunkowy",

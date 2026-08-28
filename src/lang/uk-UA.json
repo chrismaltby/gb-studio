@@ -1258,7 +1258,6 @@
   "FIELD_SPRITE_MODE_OVERRIDE": "Перевизначення режиму спрайтів",
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "Встановити перевизначення режиму спрайтів",
   "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Відкрити папку збірки після експорту",
-  "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "Показати використання ROM після збірки",
   "FIELD_ROM_FILENAME": "Назва файлу ROM",
   "FIELD_2_WAY": "2 напрямки",
   "FIELD_4_WAY": "4 напрямки",
