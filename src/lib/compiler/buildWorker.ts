@@ -24,6 +24,21 @@ export type BuildWorkerData = {
   l10nData: L10NLookup;
 };
 
+type CompiledData = Awaited<ReturnType<typeof compileData>>;
+
+export type BuildResult =
+  | {
+      buildStatus: "success";
+      compiledData: CompiledData;
+    }
+  | {
+      buildStatus: "failed";
+      error: string;
+    }
+  | {
+      buildStatus: "cancelled";
+    };
+
 export type BuildTaskResponse =
   | {
       action: "progress";
@@ -42,12 +57,12 @@ export type BuildTaskResponse =
   | {
       action: "complete";
       threadId: number;
-      payload: Awaited<ReturnType<typeof compileData>>;
+      payload: BuildResult;
     };
 
 let terminating = false;
 
-const buildProject = async ({
+export const buildProject = async ({
   project,
   projectRoot,
   engineSchema,
@@ -100,20 +115,36 @@ const buildProject = async ({
       cartType: project.settings.cartType,
       sources: buildSources,
     });
-    await makeBuild({
-      buildRoot: outputRoot,
-      romFilename,
-      tmpPath,
-      buildType,
-      data: project,
-      debug: project.settings.generateDebugFilesEnabled,
-      progress,
-      warnings,
-      manifest,
-    });
+    try {
+      await makeBuild({
+        buildRoot: outputRoot,
+        romFilename,
+        tmpPath,
+        buildType,
+        data: project,
+        debug: project.settings.generateDebugFilesEnabled,
+        progress,
+        warnings,
+        manifest,
+      });
+    } catch (error) {
+      const cancelled =
+        terminating ||
+        (error instanceof Error && error.message === "BUILD_CANCELLED");
+      if (cancelled) {
+        return { buildStatus: "cancelled" } as const;
+      }
+      return {
+        buildStatus: "failed",
+        error: error instanceof Error ? error.toString() : String(error),
+      } as const;
+    }
   }
 
-  return compiledData;
+  return {
+    buildStatus: "success",
+    compiledData,
+  } as const;
 };
 
 const progress = (message: string) => {
@@ -151,7 +182,15 @@ const run = async () => {
     }
     warnings(String(e));
     console.error("buildTask process terminated with error:", e);
-    process.exit(1);
+    send({
+      action: "complete",
+      threadId,
+      payload: {
+        buildStatus: "failed",
+        error: e instanceof Error ? e.toString() : String(e),
+      },
+    });
+    process.exit(0);
   }
 };
 

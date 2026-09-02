@@ -72,7 +72,7 @@ const buildGame =
     const selectionIds = state.editor.sceneSelectionIds;
 
     try {
-      await API.project.build(
+      const buildResult = await API.project.build(
         {
           ...project,
           scenes:
@@ -97,6 +97,9 @@ const buildGame =
           debugEnabled: shouldDebug,
         },
       );
+      if (buildResult?.buildStatus === "failed") {
+        openBuildLog(dispatch);
+      }
     } catch {
       openBuildLog(dispatch);
     }
