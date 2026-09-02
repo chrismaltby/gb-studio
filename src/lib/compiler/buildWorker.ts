@@ -7,6 +7,7 @@ import ejectBuild from "./ejectBuild";
 import { validateEjectedBuild } from "./validate/validateEjectedBuild";
 import makeBuild, { cancelBuildCommandsInProgress } from "./makeBuild";
 import { EngineSchema } from "lib/project/loadEngineSchema";
+import { createBuildManifest, resolveBuildSources } from "./buildManifest";
 
 export type BuildType = "rom" | "web" | "pocket";
 
@@ -92,6 +93,13 @@ const buildProject = async ({
   });
 
   if (make) {
+    const buildSources = await resolveBuildSources(outputRoot);
+    const manifest = createBuildManifest({
+      buildRoot: outputRoot,
+      romFilename,
+      cartType: project.settings.cartType,
+      sources: buildSources,
+    });
     await makeBuild({
       buildRoot: outputRoot,
       romFilename,
@@ -101,6 +109,7 @@ const buildProject = async ({
       debug: project.settings.generateDebugFilesEnabled,
       progress,
       warnings,
+      manifest,
     });
   }
 
