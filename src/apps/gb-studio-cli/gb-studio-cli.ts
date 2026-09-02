@@ -89,7 +89,13 @@ const main = async (
     warnings,
   });
 
-  await result;
+  const buildResult = await result;
+  if (buildResult.buildStatus === "cancelled") {
+    throw new Error("BUILD_CANCELLED");
+  }
+  if (buildResult.buildStatus === "failed") {
+    throw new Error(buildResult.error);
+  }
 
   if (command === "export") {
     if (onlyData) {

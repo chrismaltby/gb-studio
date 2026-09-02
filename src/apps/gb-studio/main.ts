@@ -1584,7 +1584,7 @@ ipcMain.handle(
       buildType,
     );
     try {
-      const compiledData = await buildProject(project, {
+      const buildResult = await buildProject(project, {
         ...options,
         projectRoot,
         outputRoot,
@@ -1595,6 +1595,16 @@ ipcMain.handle(
         progress,
         warnings,
       });
+      const { buildStatus } = buildResult;
+      if (buildStatus === "cancelled") {
+        buildLog(l10n("BUILD_CANCELLED"));
+        return { buildStatus };
+      }
+      if (buildStatus === "failed") {
+        buildErr(buildResult.error);
+        return { buildStatus };
+      }
+      const { compiledData } = buildResult;
 
       if (exportBuild) {
         await copy(
@@ -1688,6 +1698,7 @@ ipcMain.handle(
 
       const buildTime = Date.now() - buildStartTime;
       buildLog(`${l10n("COMPILER_BUILD_TIME")}: ${msToHumanTime(buildTime)}`);
+      return { buildStatus };
     } catch (e) {
       if (typeof e === "string") {
         buildErr(e);
@@ -1774,7 +1785,7 @@ ipcMain.handle(
         colorOnly,
         "rom",
       );
-      await buildProject(project, {
+      const buildResult = await buildProject(project, {
         projectRoot,
         outputRoot,
         romFilename,
@@ -1786,6 +1797,12 @@ ipcMain.handle(
         progress,
         warnings,
       });
+      if (buildResult.buildStatus === "cancelled") {
+        throw new Error("BUILD_CANCELLED");
+      }
+      if (buildResult.buildStatus === "failed") {
+        throw new Error(buildResult.error);
+      }
 
       const exportRoot = Path.join(projectRoot, "build", "src");
 

@@ -3,6 +3,7 @@ import buildGameActions, {
   shouldRunWithDebugger,
 } from "store/features/buildGame/buildGameActions";
 import settingsActions from "store/features/settings/settingsActions";
+import debuggerActions from "store/features/debugger/debuggerActions";
 import { dummyRootState } from "../../../dummydata";
 import type { RootState } from "store/storeTypes";
 
@@ -52,7 +53,9 @@ test("Should run with debugging when build and run is used with the visible Debu
       },
     },
   };
-  const build = jest.spyOn(API.project, "build").mockResolvedValue(undefined);
+  const build = jest
+    .spyOn(API.project, "build")
+    .mockResolvedValue({ buildStatus: "success" });
 
   await buildGameActions.buildGame({ buildType: "web" })(
     jest.fn(),
@@ -63,6 +66,21 @@ test("Should run with debugging when build and run is used with the visible Debu
   expect(build).toHaveBeenCalledWith(
     expect.anything(),
     expect.objectContaining({ debugEnabled: true }),
+  );
+});
+
+test("Should open the build log when a build returns a failed outcome", async () => {
+  jest.spyOn(API.project, "build").mockResolvedValue({ buildStatus: "failed" });
+  const dispatch = jest.fn();
+
+  await buildGameActions.buildGame({ buildType: "web" })(
+    dispatch,
+    () => dummyRootState,
+    undefined,
+  );
+
+  expect(dispatch).toHaveBeenCalledWith(
+    debuggerActions.setActivePane("buildLog"),
   );
 });
 
