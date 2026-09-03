@@ -91,7 +91,7 @@ beforeEach(() => {
 
 test("returns compiled data after a successful build", async () => {
   await expect(buildProject(options)).resolves.toEqual({
-    buildStatus: "success",
+    status: "success",
     compiledData: {},
   });
 });
@@ -101,14 +101,14 @@ test("returns make failures instead of throwing", async () => {
   mockedMakeBuild.mockRejectedValue(buildError);
 
   await expect(buildProject(options)).resolves.toEqual({
-    buildStatus: "failed",
+    status: "failed",
     error: buildError.toString(),
   });
 });
 
 test("does not create a manifest when make is disabled", async () => {
   await expect(buildProject({ ...options, make: false })).resolves.toEqual({
-    buildStatus: "success",
+    status: "success",
     compiledData: {},
   });
 

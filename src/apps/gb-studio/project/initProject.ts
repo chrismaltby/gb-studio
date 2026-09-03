@@ -467,33 +467,10 @@ API.events.debugger.data.subscribe((_, packet) => {
   }
 });
 
-API.events.debugger.symbols.subscribe(
-  (_, { variableMap, sceneMap, gbvmScripts }) => {
-    store.dispatch(
-      debuggerActions.setSymbols({
-        variableDataBySymbol: variableMap,
-        sceneMap,
-        gbvmScripts,
-      }),
-    );
-    if (!store.getState().project.present.settings.buildAndDebugPaneEnabled) {
-      store.dispatch(
-        settingsActions.editSettings({
-          buildAndDebugPaneEnabled: true,
-        }),
-      );
-    }
-  },
-);
-
 API.events.debugger.disconnected.subscribe(() => {
   store.dispatch(debuggerActions.disconnect());
 });
 
 API.events.project.saveProgress.subscribe((_, completed, total) => {
   store.dispatch(projectActions.setSaveWriteProgress({ completed, total }));
-});
-
-API.events.debugger.romusage.subscribe((_, usageData) => {
-  store.dispatch(debuggerActions.setUsageData(usageData));
 });

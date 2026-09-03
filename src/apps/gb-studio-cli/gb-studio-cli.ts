@@ -90,10 +90,10 @@ const main = async (
   });
 
   const buildResult = await result;
-  if (buildResult.buildStatus === "cancelled") {
+  if (buildResult.status === "cancelled") {
     throw new Error("BUILD_CANCELLED");
   }
-  if (buildResult.buildStatus === "failed") {
+  if (buildResult.status === "failed") {
     throw new Error(buildResult.error);
   }
 

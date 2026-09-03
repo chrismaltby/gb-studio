@@ -85,6 +85,26 @@ export type BuildOptions = {
   debugEnabled?: boolean;
 };
 
+export type DebuggerSymbols = {
+  variableDataBySymbol: Record<string, VariableMapData>;
+  sceneMap: Record<string, SceneMapData>;
+  gbvmScripts: Record<string, string>;
+};
+
+export type ProjectBuildResult =
+  | {
+      status: "success";
+      usage: UsageData;
+      debuggerSymbols?: DebuggerSymbols;
+    }
+  | {
+      status: "failed";
+      error: string;
+    }
+  | {
+      status: "cancelled";
+    };
+
 export type RecentProjectData = {
   name: string;
   dir: string;
@@ -279,7 +299,10 @@ const APISetup = {
     updateProjectWindowMenu: (state: ProjectWindowMenuState) =>
       ipcRenderer.invoke("project:update-project-window-menu", state),
     close: () => ipcRenderer.invoke("close-project"),
-    build: (data: ProjectResources, options: BuildOptions) =>
+    build: (
+      data: ProjectResources,
+      options: BuildOptions,
+    ): Promise<ProjectBuildResult> =>
       ipcRenderer.invoke("project:build", data, options),
     buildCancel: () => ipcRenderer.invoke("project:build-cancel"),
     onBuildLog: (
@@ -578,23 +601,9 @@ const APISetup = {
       data: createSubscribeAPI<
         (event: IpcRendererEvent, data: DebuggerDataPacket) => void
       >("debugger:data"),
-      symbols: createSubscribeAPI<
-        (
-          event: IpcRendererEvent,
-          data: {
-            variableMap: Record<string, VariableMapData>;
-            sceneMap: Record<string, SceneMapData>;
-            gbvmScripts: Record<string, string>;
-          },
-        ) => void
-      >("debugger:symbols"),
       disconnected: createSubscribeAPI<(event: IpcRendererEvent) => void>(
         "debugger:disconnected",
       ),
-      romusage:
-        createSubscribeAPI<(event: IpcRendererEvent, data: UsageData) => void>(
-          "debugger:romusage",
-        ),
     },
     project: {
       saveProgress: createSubscribeAPI<

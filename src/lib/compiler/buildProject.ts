@@ -61,18 +61,18 @@ const buildProject = async (
     buildResult = await result;
   } catch (error) {
     return cancelling
-      ? { buildStatus: "cancelled" }
+      ? { status: "cancelled" }
       : {
-          buildStatus: "failed",
+          status: "failed",
           error: error instanceof Error ? error.toString() : String(error),
         };
   }
 
   if (cancelling) {
-    return { buildStatus: "cancelled" };
+    return { status: "cancelled" };
   }
 
-  if (buildResult.buildStatus !== "success") {
+  if (buildResult.status !== "success") {
     return buildResult;
   }
 
@@ -96,7 +96,7 @@ const buildProject = async (
     }
   } catch (error) {
     return {
-      buildStatus: "failed",
+      status: "failed",
       error: error instanceof Error ? error.toString() : String(error),
     };
   }

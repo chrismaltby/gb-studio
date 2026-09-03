@@ -28,15 +28,15 @@ type CompiledData = Awaited<ReturnType<typeof compileData>>;
 
 export type BuildResult =
   | {
-      buildStatus: "success";
+      status: "success";
       compiledData: CompiledData;
     }
   | {
-      buildStatus: "failed";
+      status: "failed";
       error: string;
     }
   | {
-      buildStatus: "cancelled";
+      status: "cancelled";
     };
 
 export type BuildTaskResponse =
@@ -132,17 +132,17 @@ export const buildProject = async ({
         terminating ||
         (error instanceof Error && error.message === "BUILD_CANCELLED");
       if (cancelled) {
-        return { buildStatus: "cancelled" } as const;
+        return { status: "cancelled" } as const;
       }
       return {
-        buildStatus: "failed",
+        status: "failed",
         error: error instanceof Error ? error.toString() : String(error),
       } as const;
     }
   }
 
   return {
-    buildStatus: "success",
+    status: "success",
     compiledData,
   } as const;
 };
@@ -186,7 +186,7 @@ const run = async () => {
       action: "complete",
       threadId,
       payload: {
-        buildStatus: "failed",
+        status: "failed",
         error: e instanceof Error ? e.toString() : String(e),
       },
     });

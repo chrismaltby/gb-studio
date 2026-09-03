@@ -6,6 +6,7 @@ import settingsActions from "store/features/settings/settingsActions";
 import debuggerActions from "store/features/debugger/debuggerActions";
 import { dummyRootState } from "../../../dummydata";
 import type { RootState } from "store/storeTypes";
+import type { UsageData } from "lib/compiler/romUsage";
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -55,7 +56,7 @@ test("Should run with debugging when build and run is used with the visible Debu
   };
   const build = jest
     .spyOn(API.project, "build")
-    .mockResolvedValue({ buildStatus: "success" });
+    .mockResolvedValue({ status: "success", usage: {} as UsageData });
 
   await buildGameActions.buildGame({ buildType: "web" })(
     jest.fn(),
@@ -70,7 +71,9 @@ test("Should run with debugging when build and run is used with the visible Debu
 });
 
 test("Should open the build log when a build returns a failed outcome", async () => {
-  jest.spyOn(API.project, "build").mockResolvedValue({ buildStatus: "failed" });
+  jest
+    .spyOn(API.project, "build")
+    .mockResolvedValue({ status: "failed", error: "Failed" });
   const dispatch = jest.fn();
 
   await buildGameActions.buildGame({ buildType: "web" })(

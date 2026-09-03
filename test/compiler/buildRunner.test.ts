@@ -51,7 +51,7 @@ test.each([0, 1])(
 
     mockWorkerHandlers.exit?.(exitCode);
 
-    await expect(result).resolves.toEqual({ buildStatus: "cancelled" });
+    await expect(result).resolves.toEqual({ status: "cancelled" });
   },
 );
 
@@ -74,10 +74,10 @@ test("resolves cancellation when the worker completes after cancellation", async
     action: "complete",
     threadId: 1,
     payload: {
-      buildStatus: "failed",
+      status: "failed",
       error: "BUILD_CANCELLED",
     },
   });
 
-  await expect(result).resolves.toEqual({ buildStatus: "cancelled" });
+  await expect(result).resolves.toEqual({ status: "cancelled" });
 });

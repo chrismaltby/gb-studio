@@ -39,6 +39,8 @@ import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDial
 import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
 import type {
   BuildOptions,
+  DebuggerSymbols,
+  ProjectBuildResult,
   ProjectWindowMenuState,
   RecentProjectData,
 } from "renderer/lib/api/setup";
@@ -1543,7 +1545,11 @@ ipcMain.handle(
 
 ipcMain.handle(
   "project:build",
-  async (event, project: ProjectResources, options: BuildOptions) => {
+  async (
+    event,
+    project: ProjectResources,
+    options: BuildOptions,
+  ): Promise<ProjectBuildResult> => {
     const { exportBuild, buildType } = options;
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
@@ -1595,14 +1601,14 @@ ipcMain.handle(
         progress,
         warnings,
       });
-      const { buildStatus } = buildResult;
-      if (buildStatus === "cancelled") {
+      const { status } = buildResult;
+      if (status === "cancelled") {
         buildLog(l10n("BUILD_CANCELLED"));
-        return { buildStatus };
+        return { status };
       }
-      if (buildStatus === "failed") {
+      if (status === "failed") {
         buildErr(buildResult.error);
-        return { buildStatus };
+        return { status, error: buildResult.error };
       }
       const { compiledData } = buildResult;
 
@@ -1636,7 +1642,7 @@ ipcMain.handle(
         warnings,
       });
 
-      sendToProjectWindow("debugger:romusage", usageData);
+      let debuggerSymbols: DebuggerSymbols | undefined = undefined;
 
       if (buildType === "web" && !exportBuild) {
         buildLog(`-`);
@@ -1671,11 +1677,11 @@ ipcMain.handle(
           const gbvmScripts = pickBy(compiledData.files, (_, key) =>
             key.endsWith(".s"),
           );
-          sendToProjectWindow("debugger:symbols", {
-            variableMap: compiledData.variableMap,
+          debuggerSymbols = {
+            variableDataBySymbol: compiledData.variableMap,
             sceneMap: compiledData.sceneMap,
             gbvmScripts,
-          });
+          };
         } else if (emulatorPath !== "") {
           if (playWindow) {
             playWindow.close();
@@ -1698,7 +1704,7 @@ ipcMain.handle(
 
       const buildTime = Date.now() - buildStartTime;
       buildLog(`${l10n("COMPILER_BUILD_TIME")}: ${msToHumanTime(buildTime)}`);
-      return { buildStatus };
+      return { status, usage: usageData, debuggerSymbols };
     } catch (e) {
       if (typeof e === "string") {
         buildErr(e);
@@ -1797,10 +1803,10 @@ ipcMain.handle(
         progress,
         warnings,
       });
-      if (buildResult.buildStatus === "cancelled") {
+      if (buildResult.status === "cancelled") {
         throw new Error("BUILD_CANCELLED");
       }
-      if (buildResult.buildStatus === "failed") {
+      if (buildResult.status === "failed") {
         throw new Error(buildResult.error);
       }
 
