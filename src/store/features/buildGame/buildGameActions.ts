@@ -97,8 +97,22 @@ const buildGame =
           debugEnabled: shouldDebug,
         },
       );
-      if (buildResult?.buildStatus === "failed") {
+      if (buildResult.status === "failed") {
         openBuildLog(dispatch);
+      }
+
+      if (buildResult.status === "success") {
+        dispatch(debuggerActions.setUsageData(buildResult.usage));
+        if (buildResult.debuggerSymbols) {
+          dispatch(debuggerActions.setSymbols(buildResult.debuggerSymbols));
+          if (!getState().project.present.settings.buildAndDebugPaneEnabled) {
+            dispatch(
+              settingsActions.editSettings({
+                buildAndDebugPaneEnabled: true,
+              }),
+            );
+          }
+        }
       }
     } catch {
       openBuildLog(dispatch);

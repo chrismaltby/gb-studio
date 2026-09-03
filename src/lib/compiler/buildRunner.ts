@@ -39,7 +39,7 @@ export const buildRunner = ({
     worker.on("message", (message: BuildTaskResponse) => {
       if (cancelling) {
         if (message.action === "complete") {
-          resolve({ buildStatus: "cancelled" });
+          resolve({ status: "cancelled" });
         }
         return;
       }
@@ -56,7 +56,7 @@ export const buildRunner = ({
     });
     worker.on("exit", (code) => {
       if (cancelling) {
-        resolve({ buildStatus: "cancelled" });
+        resolve({ status: "cancelled" });
       } else if (code !== 0) {
         reject(code ?? 1);
       }

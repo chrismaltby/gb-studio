@@ -29,7 +29,7 @@ describe("buildProject outcomes", () => {
   test("returns worker failures instead of throwing", async () => {
     mockedBuildRunner.mockReturnValue({
       result: Promise.resolve({
-        buildStatus: "failed",
+        status: "failed",
         error: "link failed",
       }),
       kill: jest.fn(),
@@ -37,7 +37,7 @@ describe("buildProject outcomes", () => {
 
     await expect(buildProject(dummyProjectResources, options)).resolves.toEqual(
       {
-        buildStatus: "failed",
+        status: "failed",
         error: "link failed",
       },
     );
@@ -51,7 +51,7 @@ describe("buildProject outcomes", () => {
 
     await expect(buildProject(dummyProjectResources, options)).resolves.toEqual(
       {
-        buildStatus: "failed",
+        status: "failed",
         error: "Error: worker exited",
       },
     );
@@ -69,7 +69,7 @@ describe("buildProject outcomes", () => {
     cancelCompileStepsInProgress();
     rejectBuild(new Error("worker exited"));
 
-    await expect(build).resolves.toEqual({ buildStatus: "cancelled" });
+    await expect(build).resolves.toEqual({ status: "cancelled" });
     expect(kill).toHaveBeenCalledTimes(1);
   });
 });
