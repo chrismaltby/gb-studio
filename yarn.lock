@@ -8086,7 +8086,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cosmiconfig@npm:^7.0.0, cosmiconfig@npm:^7.0.1":
+"cosmiconfig@npm:^7.0.0":
   version: 7.1.0
   resolution: "cosmiconfig@npm:7.1.0"
   dependencies:
@@ -10150,33 +10150,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fork-ts-checker-webpack-plugin@npm:^7.2.13":
-  version: 7.3.0
-  resolution: "fork-ts-checker-webpack-plugin@npm:7.3.0"
-  dependencies:
-    "@babel/code-frame": "npm:^7.16.7"
-    chalk: "npm:^4.1.2"
-    chokidar: "npm:^3.5.3"
-    cosmiconfig: "npm:^7.0.1"
-    deepmerge: "npm:^4.2.2"
-    fs-extra: "npm:^10.0.0"
-    memfs: "npm:^3.4.1"
-    minimatch: "npm:^3.0.4"
-    node-abort-controller: "npm:^3.0.1"
-    schema-utils: "npm:^3.1.1"
-    semver: "npm:^7.3.5"
-    tapable: "npm:^2.2.1"
-  peerDependencies:
-    typescript: ">3.6.0"
-    vue-template-compiler: "*"
-    webpack: ^5.11.0
-  peerDependenciesMeta:
-    vue-template-compiler:
-      optional: true
-  checksum: 10c0/00a3dad0815178db485317d8909dc1171c0bb97e43dac004a74048b36ddc0260db188fcb5eebb01a54fb280a82acf55e5a5d09e1e55ffa80b77ad41e5c8ba539
-  languageName: node
-  linkType: hard
-
 "fork-ts-checker-webpack-plugin@npm:^9.1.0":
   version: 9.1.0
   resolution: "fork-ts-checker-webpack-plugin@npm:9.1.0"
@@ -10483,7 +10456,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^7.1.1"
     eslint-plugin-storybook: "npm:^10.5.0"
     focus-visible: "npm:^5.2.1"
-    fork-ts-checker-webpack-plugin: "npm:^7.2.13"
+    fork-ts-checker-webpack-plugin: "npm:^9.1.0"
     fs-extra: "npm:^11.4.0"
     fuse.js: "npm:^6.4.6"
     git-revision-webpack-plugin: "npm:^5.0.0"
