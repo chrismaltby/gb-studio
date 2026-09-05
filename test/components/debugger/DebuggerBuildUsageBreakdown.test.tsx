@@ -149,6 +149,8 @@ test("shows the overview after a complete build", () => {
     },
     overview,
     plugins,
+    scripts: [],
+    sources: [],
   };
 
   render(<DebuggerRomUsage />);

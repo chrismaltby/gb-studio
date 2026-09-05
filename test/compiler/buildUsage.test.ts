@@ -58,6 +58,17 @@ const usageData = {
   ],
 };
 
+const scriptMap = {
+  project: [
+    {
+      sceneId: "",
+      entityId: "custom-event-1",
+      entityType: "customEvent" as const,
+      scriptKey: "script",
+    },
+  ],
+};
+
 const modules: BuildModuleUsage[] = [
   {
     sourceFile: "src/core/engine.c",
@@ -198,6 +209,7 @@ describe("collectBuildUsage", () => {
     await expect(
       collectBuildUsage({
         manifest,
+        scriptMap,
         tmpPath: "/tmp",
         progress,
         warnings,
@@ -241,6 +253,27 @@ describe("collectBuildUsage", () => {
               replacesDefault: false,
             },
           ],
+        },
+      ],
+      scripts: [
+        {
+          symbol: "project",
+          size: 2100,
+          sources: scriptMap.project,
+        },
+      ],
+      sources: [
+        {
+          sourceFile: "src/core/engine.c",
+          usage: { bank0: 6000, wram: 1000, bankedRom: 3000 },
+        },
+        {
+          sourceFile: "src/data/project.c",
+          usage: { bank0: 100, wram: 0, bankedRom: 2000 },
+        },
+        {
+          sourceFile: "src/plugin.c",
+          usage: { bank0: 0, wram: 0, bankedRom: 100 },
         },
       ],
     });
@@ -292,6 +325,7 @@ describe("collectBuildUsage", () => {
 
     const result = await collectBuildUsage({
       manifest,
+      scriptMap,
       tmpPath: "/tmp",
       progress,
       warnings,
@@ -349,6 +383,7 @@ describe("collectBuildUsage", () => {
     await expect(
       collectBuildUsage({
         manifest,
+        scriptMap,
         tmpPath: "/tmp",
         progress,
         warnings,
@@ -365,6 +400,7 @@ describe("collectBuildUsage", () => {
     await expect(
       collectBuildUsage({
         manifest,
+        scriptMap,
         tmpPath: "/tmp",
         progress,
         warnings,

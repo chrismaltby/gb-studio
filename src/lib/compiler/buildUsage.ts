@@ -1,4 +1,6 @@
+import Path from "path";
 import romUsage, { type RomUsageBank, type RomUsageData } from "./romUsage";
+import type { CompiledScriptSource } from "./compileData";
 import type { CartType } from "shared/lib/resources/types";
 import type { BuildManifest } from "lib/compiler/buildManifest";
 import {
@@ -37,6 +39,17 @@ export type BuildUsageMemory = {
   wram: MemoryRegionUsage;
 };
 
+export type BuildUsageScript = {
+  symbol: string;
+  size: number;
+  sources: CompiledScriptSource[];
+};
+
+export type BuildUsageSource = {
+  sourceFile: string;
+  usage: RegionUsage;
+};
+
 export type BuildUsageOverview = {
   cartType: CartType;
   engine: RegionUsage;
@@ -68,6 +81,8 @@ export type UsageData =
       memory: BuildUsageMemory;
       overview: BuildUsageOverview;
       plugins: BuildUsagePlugin[];
+      scripts: BuildUsageScript[];
+      sources: BuildUsageSource[];
     }
   | {
       status: "unavailable";
@@ -242,11 +257,13 @@ export const calculateMemoryUsage = (
 
 export const collectBuildUsage = async ({
   manifest,
+  scriptMap,
   tmpPath,
   progress,
   warnings,
 }: {
   manifest: BuildManifest;
+  scriptMap: Record<string, CompiledScriptSource[]>;
   tmpPath: string;
   progress: (message: string) => void;
   warnings: (message: string) => void;
@@ -257,6 +274,24 @@ export const collectBuildUsage = async ({
       allowMissing: false,
     });
     const plugins = analysePluginUsage(modules);
+    const usageSources: BuildUsageSource[] = modules.map((module) => ({
+      sourceFile: module.sourceFile,
+      usage: module.usage,
+    }));
+    const scripts: BuildUsageScript[] = usageSources
+      .map((source) => {
+        const symbol = Path.basename(
+          source.sourceFile,
+          Path.extname(source.sourceFile),
+        );
+        return {
+          symbol,
+          size: source.usage.bank0 + source.usage.bankedRom,
+          sources: scriptMap[symbol] ?? [],
+        };
+      })
+      .filter((script) => script.sources.length > 0)
+      .sort((left, right) => right.size - left.size);
 
     const usageData = await romUsage({
       manifest,
@@ -288,6 +323,8 @@ export const collectBuildUsage = async ({
         total,
       ),
       plugins,
+      scripts,
+      sources: usageSources,
     };
   } catch (error) {
     warnings(error instanceof Error ? error.message : String(error));

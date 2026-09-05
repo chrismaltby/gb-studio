@@ -67,6 +67,8 @@ const completeUsage = {
     remaining: { bank0: 16 * 1024, wram: 8 * 1024, bankedRom: 255 * 16 * 1024 },
   },
   plugins: [],
+  scripts: [],
+  sources: [],
 };
 
 const manifest: BuildManifest = {
@@ -349,7 +351,7 @@ describe("Electron Main Process", () => {
     const buildHandler = getIpcHandler("project:build");
     mockedBuildProject.mockResolvedValue({
       status: "success",
-      compiledData: {} as never,
+      compiledData: { scriptMap: {} } as never,
       manifest,
     });
     mockedCollectBuildUsage.mockResolvedValue(completeUsage);
@@ -362,6 +364,7 @@ describe("Electron Main Process", () => {
 
     expect(mockedCollectBuildUsage).toHaveBeenCalledWith({
       manifest,
+      scriptMap: {},
       tmpPath: "/tmp",
       progress: expect.any(Function),
       warnings: expect.any(Function),

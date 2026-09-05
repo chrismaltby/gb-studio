@@ -1636,6 +1636,7 @@ ipcMain.handle(
 
       const usage = await collectBuildUsage({
         manifest,
+        scriptMap: compiledData.scriptMap,
         tmpPath,
         progress,
         warnings,
