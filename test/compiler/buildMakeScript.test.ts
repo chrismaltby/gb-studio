@@ -35,7 +35,7 @@ const makeManifest = (
     return {
       sourcePath,
       objectPath: Path.join(buildRoot, "obj", `${filename}.o`),
-      packedObjectPath: Path.join(buildRoot, "obj", `${filename}.rel`),
+      origin: { type: "engine" as const },
     };
   }),
 });

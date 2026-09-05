@@ -95,7 +95,7 @@ export const buildProject = async ({
     warnings,
   });
 
-  await ejectBuild({
+  const { pluginAttribution } = await ejectBuild({
     projectRoot,
     tmpPath,
     projectData: project,
@@ -112,7 +112,7 @@ export const buildProject = async ({
     warnings,
   });
 
-  const buildSources = await resolveBuildSources(outputRoot);
+  const buildSources = await resolveBuildSources(outputRoot, pluginAttribution);
 
   const manifest = createBuildManifest({
     buildRoot: outputRoot,

@@ -116,7 +116,9 @@ test("returns a manifest without running make when make is disabled", async () =
     manifest,
   });
 
-  expect(mockedResolveBuildSources).toHaveBeenCalledWith("/build");
+  expect(mockedResolveBuildSources).toHaveBeenCalledWith("/build", {
+    ownedFiles: {},
+  });
   expect(mockedCreateBuildManifest).toHaveBeenCalledWith({
     buildRoot: "/build",
     romFilename: "game.gb",

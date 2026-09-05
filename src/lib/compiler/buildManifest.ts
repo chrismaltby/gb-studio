@@ -2,11 +2,17 @@ import Path from "path";
 import { glob } from "lib/helpers/glob";
 import { pathToPosix } from "shared/lib/helpers/path";
 import type { CartType } from "shared/lib/resources/types";
+import type { PluginFileAttribution } from "lib/compiler/enginePlugins";
+
+export type BuildSourceOrigin =
+  | { type: "engine" }
+  | { type: "project" }
+  | { type: "plugin"; pluginName: string; replacesDefault: boolean };
 
 export type BuildSource = {
   sourcePath: string;
   objectPath: string;
-  packedObjectPath: string;
+  origin: BuildSourceOrigin;
 };
 
 type BuildArtifacts = {
@@ -24,16 +30,23 @@ export type BuildManifest = {
 
 export const resolveBuildSources = async (
   buildRoot: string,
+  attribution: PluginFileAttribution,
 ): Promise<BuildSource[]> => {
   const sourceFiles = await glob("src/**/*.@(c|s)", { cwd: buildRoot });
 
   const sources = sourceFiles.map((sourceFile) => {
     const sourcePath = pathToPosix(sourceFile);
     const sourceName = Path.basename(sourcePath, Path.extname(sourcePath));
+    const plugin = attribution.ownedFiles[sourcePath];
+    const origin: BuildSourceOrigin = plugin
+      ? { type: "plugin", ...plugin }
+      : sourcePath.startsWith("src/data/")
+        ? { type: "project" }
+        : { type: "engine" };
     return {
       sourcePath,
       objectPath: Path.join(buildRoot, "obj", `${sourceName}.o`),
-      packedObjectPath: Path.join(buildRoot, "obj", `${sourceName}.rel`),
+      origin,
     };
   });
 

@@ -17,22 +17,22 @@ describe("BuildManifest", () => {
     await fs.remove(buildRoot);
   });
 
-  test("records exact object/packed object paths for every buildable source", async () => {
+  test("records the exact object path for every buildable source", async () => {
     await fs.outputFile(Path.join(buildRoot, "src/core/core.c"), "");
     await fs.outputFile(Path.join(buildRoot, "src/data/scene.c"), "");
 
-    const sources = await resolveBuildSources(buildRoot);
+    const sources = await resolveBuildSources(buildRoot, { ownedFiles: {} });
 
     expect(sources).toEqual([
       {
         sourcePath: "src/core/core.c",
         objectPath: Path.join(buildRoot, "obj", "core.o"),
-        packedObjectPath: Path.join(buildRoot, "obj", "core.rel"),
+        origin: { type: "engine" },
       },
       {
         sourcePath: "src/data/scene.c",
         objectPath: Path.join(buildRoot, "obj", "scene.o"),
-        packedObjectPath: Path.join(buildRoot, "obj", "scene.rel"),
+        origin: { type: "project" },
       },
     ]);
   });
@@ -40,18 +40,37 @@ describe("BuildManifest", () => {
   test("returns source paths using posix separators", async () => {
     await fs.outputFile(Path.join(buildRoot, "src/data/scene.c"), "");
 
-    const sources = await resolveBuildSources(buildRoot);
+    const sources = await resolveBuildSources(buildRoot, { ownedFiles: {} });
 
     expect(sources[0]?.sourcePath).toBe("src/data/scene.c");
+  });
+
+  test("records plugin source ownership", async () => {
+    await fs.outputFile(Path.join(buildRoot, "src/plugin.c"), "");
+
+    const sources = await resolveBuildSources(buildRoot, {
+      ownedFiles: {
+        "src/plugin.c": {
+          pluginName: "ExamplePlugin",
+          replacesDefault: true,
+        },
+      },
+    });
+
+    expect(sources[0]?.origin).toEqual({
+      type: "plugin",
+      pluginName: "ExamplePlugin",
+      replacesDefault: true,
+    });
   });
 
   test("rejects source basenames that would overwrite the same object", async () => {
     await fs.outputFile(Path.join(buildRoot, "src/core/shared.c"), "");
     await fs.outputFile(Path.join(buildRoot, "src/data/shared.c"), "");
 
-    await expect(resolveBuildSources(buildRoot)).rejects.toThrow(
-      "produce the same object",
-    );
+    await expect(
+      resolveBuildSources(buildRoot, { ownedFiles: {} }),
+    ).rejects.toThrow("produce the same object");
   });
 
   test("creates a manifest with the exact ROM/map/NOI artifact paths for the ROM filename", () => {
@@ -76,7 +95,7 @@ describe("BuildManifest", () => {
       {
         sourcePath: "src/core/core.c",
         objectPath: Path.join(buildRoot, "obj/core.o"),
-        packedObjectPath: Path.join(buildRoot, "obj/core.rel"),
+        origin: { type: "engine" as const },
       },
     ];
 
