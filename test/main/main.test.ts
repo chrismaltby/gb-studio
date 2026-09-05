@@ -54,6 +54,18 @@ const completeUsage = {
     bank0: { used: 50, size: 16 * 1024 },
     wram: { used: 25, size: 8 * 1024 },
   },
+  overview: {
+    cartType: "mbc5" as const,
+    engine: { bank0: 0, wram: 0, bankedRom: 0 },
+    musicDriver: { bank0: 0, wram: 0, bankedRom: 0 },
+    gbdkRuntime: { bank0: 0, wram: 0, bankedRom: 0 },
+    project: { bank0: 0, wram: 0, bankedRom: 0 },
+    plugins: { bank0: 0, wram: 0, bankedRom: 0 },
+    reserved: { bank0: 0, wram: 0, bankedRom: 0 },
+    total: { bank0: 0, wram: 0, bankedRom: 0 },
+    maximum: { bank0: 16 * 1024, wram: 8 * 1024, bankedRom: 255 * 16 * 1024 },
+    remaining: { bank0: 16 * 1024, wram: 8 * 1024, bankedRom: 255 * 16 * 1024 },
+  },
 };
 
 const manifest: BuildManifest = {
@@ -386,9 +398,7 @@ describe("Electron Main Process", () => {
 
   test("keeps a successful project build successful when usage analysis fails", async () => {
     const buildHandler = getIpcHandler("project:build");
-    const failedUsage = {
-      status: "failed" as const,
-    };
+    const failedUsage = { status: "unavailable" as const };
     mockedBuildProject.mockResolvedValue({
       status: "success",
       compiledData: {} as never,

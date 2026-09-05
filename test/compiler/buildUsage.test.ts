@@ -6,6 +6,11 @@ import {
 } from "lib/compiler/buildUsage";
 import romUsage, { parseRomUsage } from "lib/compiler/romUsage";
 import type { BuildManifest } from "lib/compiler/buildManifest";
+import {
+  analyseBuildObjects,
+  analyseMusicDriverUsage,
+  type BuildModuleUsage,
+} from "lib/compiler/buildModuleUsage";
 import { readFileSync } from "fs";
 
 jest.mock("lib/compiler/romUsage", () => ({
@@ -13,8 +18,19 @@ jest.mock("lib/compiler/romUsage", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
+jest.mock("lib/compiler/buildModuleUsage", () => ({
+  analyseBuildObjects: jest.fn(),
+  analyseMusicDriverUsage: jest.fn(),
+}));
 
 const mockedRomUsage = romUsage as jest.MockedFunction<typeof romUsage>;
+const mockedAnalyseBuildObjects = analyseBuildObjects as jest.MockedFunction<
+  typeof analyseBuildObjects
+>;
+const mockedAnalyseMusicDriverUsage =
+  analyseMusicDriverUsage as jest.MockedFunction<
+    typeof analyseMusicDriverUsage
+  >;
 
 const KB = 1024;
 const MB = 1024 * 1024;
@@ -41,6 +57,28 @@ const usageData = {
     { name: "WRAM_HI_0", size: 4096, used: 1000 },
   ],
 };
+
+const modules: BuildModuleUsage[] = [
+  {
+    sourceFile: "src/core/engine.c",
+    origin: { type: "engine" },
+    usage: { bank0: 6000, wram: 1000, bankedRom: 3000 },
+  },
+  {
+    sourceFile: "src/data/project.c",
+    origin: { type: "project" },
+    usage: { bank0: 100, wram: 0, bankedRom: 2000 },
+  },
+  {
+    sourceFile: "src/plugin.c",
+    origin: {
+      type: "plugin",
+      pluginName: "ExamplePlugin",
+      replacesDefault: false,
+    },
+    usage: { bank0: 0, wram: 0, bankedRom: 100 },
+  },
+];
 
 describe("calculateMemoryUsage", () => {
   test("classifies banks from bundled romusage 1.3.2 output", () => {
@@ -148,6 +186,12 @@ describe("collectBuildUsage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockedRomUsage.mockResolvedValue(usageData);
+    mockedAnalyseBuildObjects.mockResolvedValue(modules);
+    mockedAnalyseMusicDriverUsage.mockResolvedValue({
+      bank0: 500,
+      wram: 100,
+      bankedRom: 0,
+    });
   });
 
   test("returns complete aggregate memory after a successful build", async () => {
@@ -170,6 +214,22 @@ describe("collectBuildUsage", () => {
         bank0: { used: 12000, size: 16384 },
         wram: { used: 3000, size: 8192 },
       },
+      overview: {
+        cartType: "mbc3",
+        engine: { bank0: 6000, wram: 1000, bankedRom: 3000 },
+        musicDriver: { bank0: 500, wram: 100, bankedRom: 0 },
+        gbdkRuntime: { bank0: 5400, wram: 1228, bankedRom: 2900 },
+        project: { bank0: 100, wram: 0, bankedRom: 2000 },
+        plugins: { bank0: 0, wram: 0, bankedRom: 100 },
+        reserved: { bank0: 0, wram: 672, bankedRom: 0 },
+        total: { bank0: 12000, wram: 3000, bankedRom: 8000 },
+        maximum: { bank0: 16384, wram: 8192, bankedRom: 127 * 16384 },
+        remaining: {
+          bank0: 4384,
+          wram: 5192,
+          bankedRom: 126 * 16384 + 8384,
+        },
+      },
     });
     expect(mockedRomUsage).toHaveBeenCalledWith({
       manifest,
@@ -177,6 +237,40 @@ describe("collectBuildUsage", () => {
       progress,
       warnings,
     });
+    expect(mockedAnalyseBuildObjects).toHaveBeenCalledWith({
+      manifest,
+      allowMissing: false,
+    });
+    expect(mockedAnalyseMusicDriverUsage).toHaveBeenCalledWith({
+      manifest,
+    });
+  });
+
+  test("reports unavailable usage rather than a negative runtime", async () => {
+    mockedAnalyseBuildObjects.mockResolvedValue([
+      {
+        sourceFile: "src/core/too-large.c",
+        origin: { type: "engine" },
+        usage: { bank0: 12001, wram: 0, bankedRom: 0 },
+      },
+    ]);
+    mockedAnalyseMusicDriverUsage.mockResolvedValue({
+      bank0: 0,
+      wram: 0,
+      bankedRom: 0,
+    });
+
+    await expect(
+      collectBuildUsage({
+        manifest,
+        tmpPath: "/tmp",
+        progress,
+        warnings,
+      }),
+    ).resolves.toEqual({ status: "unavailable" });
+    expect(warnings).toHaveBeenCalledWith(
+      expect.stringContaining("exceeds linked bank0 usage"),
+    );
   });
 
   test("reports analysis failure when romusage fails after a successful build", async () => {
@@ -189,7 +283,7 @@ describe("collectBuildUsage", () => {
         progress,
         warnings,
       }),
-    ).resolves.toEqual({ status: "failed" });
+    ).resolves.toEqual({ status: "unavailable" });
     expect(warnings).toHaveBeenCalledWith("romusage failed");
   });
 });
