@@ -5,8 +5,13 @@
 import React from "react";
 import { render, screen, within } from "../../react-utils";
 import DebuggerRomUsageOverview from "components/debugger/DebuggerRomUsageOverview";
+import { DebuggerPluginUsage } from "components/debugger/DebuggerPluginUsage";
 import DebuggerRomUsage from "components/debugger/DebuggerRomUsage";
-import type { BuildUsageOverview, UsageData } from "lib/compiler/buildUsage";
+import type {
+  BuildUsageOverview,
+  BuildUsagePlugin,
+  UsageData,
+} from "lib/compiler/buildUsage";
 
 let mockUsageData: UsageData | null = null;
 
@@ -36,6 +41,25 @@ const overview: BuildUsageOverview = {
   maximum: { bank0: 16384, wram: 8192, bankedRom: 255 * 16384 },
   remaining: { bank0: 1425, wram: 1239, bankedRom: 255 * 16384 - 87498 },
 };
+
+const plugins: BuildUsagePlugin[] = [
+  {
+    pluginName: "Example Plugin",
+    usage: { bank0: 1024, wram: 20, bankedRom: 2048 },
+    files: [
+      {
+        sourceFile: "src/plugin-added.c",
+        usage: { bank0: 1024, wram: 0, bankedRom: 2048 },
+        replacesDefault: false,
+      },
+      {
+        sourceFile: "src/core/actor.c",
+        usage: { bank0: 0, wram: 20, bankedRom: 0 },
+        replacesDefault: true,
+      },
+    ],
+  },
+];
 
 test("renders the normalized usage overview without recalculating rows", () => {
   render(<DebuggerRomUsageOverview overview={overview} />);
@@ -71,6 +95,45 @@ test("uses the selected cartridge's banked ROM capacity for the total", () => {
   );
 });
 
+test("renders plugin totals, individual source files, and replacement markers", () => {
+  render(<DebuggerPluginUsage plugins={plugins} />);
+
+  expect(screen.getByText("FIELD_PLUGIN_MEMORY_USAGE")).toBeInTheDocument();
+  const rows = screen.getAllByRole("row");
+  expect(rows).toHaveLength(4);
+  expect(within(rows[1]).getByText("Example Plugin")).toBeInTheDocument();
+  expect(within(rows[1]).getByText("1 KiB")).toBeInTheDocument();
+  expect(within(rows[1]).getByText("2 KiB")).toBeInTheDocument();
+  expect(within(rows[2]).getByText(/src\/plugin-added\.c/)).toBeInTheDocument();
+  expect(within(rows[3]).getByText(/src\/core\/actor\.c/)).toHaveTextContent(
+    "FIELD_REPLACES_DEFAULT_ENGINE_FILE",
+  );
+});
+
+test("only highlights individual plugin files that exceed one bank", () => {
+  render(
+    <DebuggerPluginUsage
+      plugins={[
+        {
+          pluginName: "Large Plugin",
+          usage: { bank0: 0, wram: 0, bankedRom: 40 * 1024 },
+          files: [
+            {
+              sourceFile: "src/large.c",
+              usage: { bank0: 0, wram: 0, bankedRom: 20 * 1024 },
+              replacesDefault: false,
+            },
+          ],
+        },
+      ]}
+    />,
+  );
+
+  const rows = screen.getAllByRole("row");
+  expect(within(rows[1]).getByText("40 KiB").tagName).toBe("TD");
+  expect(within(rows[2]).getByText("20 KiB").tagName).toBe("SPAN");
+});
+
 test("shows the overview after a complete build", () => {
   mockUsageData = {
     status: "complete",
@@ -85,11 +148,12 @@ test("shows the overview after a complete build", () => {
       wram: { used: 256, size: 8 * 1024 },
     },
     overview,
-    plugins: [],
+    plugins,
   };
 
   render(<DebuggerRomUsage />);
 
   expect(screen.getByText("FIELD_MEMORY_USAGE")).toBeInTheDocument();
   expect(screen.getByText("FIELD_GBDK_RUNTIME")).toBeInTheDocument();
+  expect(screen.getByText("FIELD_PLUGIN_MEMORY_USAGE")).toBeInTheDocument();
 });

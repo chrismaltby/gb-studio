@@ -7,6 +7,7 @@ import { Card } from "ui/cards/Card";
 import { bytesToHumanReadable } from "shared/lib/helpers/formatBytes";
 import type { MemoryRegionUsage } from "lib/compiler/buildUsage";
 import DebuggerRomUsageOverview from "components/debugger/DebuggerRomUsageOverview";
+import { DebuggerPluginUsage } from "components/debugger/DebuggerPluginUsage";
 import { FixedSpacer } from "ui/spacing/Spacing";
 
 const Wrapper = styled.div`
@@ -172,6 +173,12 @@ const DebuggerRomUsage = () => {
         </Summary>
         <FixedSpacer height={20} />
         <DebuggerRomUsageOverview overview={usageData.overview} />
+        {usageData.plugins.length > 0 && (
+          <>
+            <FixedSpacer height={20} />
+            <DebuggerPluginUsage plugins={usageData.plugins} />
+          </>
+        )}
       </Content>
       <DebuggerBuildFooter />
     </Wrapper>

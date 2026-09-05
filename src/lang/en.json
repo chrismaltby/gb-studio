@@ -1502,6 +1502,9 @@
   "FIELD_BANKED_ROM": "Banked ROM",
   "FIELD_MUSIC_DRIVER": "Music Driver",
   "FIELD_GBDK_RUNTIME": "GBDK Library and Runtime",
+  "FIELD_PLUGIN_MEMORY_USAGE": "Plugin Memory Usage",
+  "FIELD_PLUGIN": "Plugin",
+  "FIELD_REPLACES_DEFAULT_ENGINE_FILE": "Replaces default engine file",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",
