@@ -142,6 +142,10 @@ export interface ScriptBuilderOptions<
     {
       symbol: string;
       compiledScript: string;
+      sceneId?: string;
+      entityId?: string;
+      entityType?: ScriptBuilderEntityType;
+      scriptKey?: string;
     }
   >;
   additionalOutput: Record<

@@ -3389,6 +3389,11 @@ extern void __mute_mask_${symbol};
     this.options.additionalScripts[symbol] = {
       symbol,
       compiledScript: compiledSubScript,
+      sceneId: this.options.scene.id,
+      entityId:
+        options?.entity?.id ?? this.options.entity?.id ?? this.options.scene.id,
+      entityType: options?.entityType ?? this.options.entityType,
+      scriptKey: options?.entityScriptKey ?? this.options.entityScriptKey,
     };
 
     // Store generate symbols in cache

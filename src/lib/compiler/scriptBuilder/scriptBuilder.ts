@@ -2447,6 +2447,9 @@ class ScriptBuilder extends ScriptBuilderBase {
 
     const symbol = this._compileSubScript("custom", script, inputSymbol, {
       argLookup,
+      entity: customEvent,
+      entityType: "customEvent",
+      entityScriptKey: "script",
     });
 
     const result = {
