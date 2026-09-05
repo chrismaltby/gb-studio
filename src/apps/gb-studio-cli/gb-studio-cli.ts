@@ -11,6 +11,8 @@ import { BuildType } from "lib/compiler/buildWorker";
 import { loadEngineSchema } from "lib/project/loadEngineSchema";
 import { getROMFilename } from "shared/lib/helpers/filePaths";
 import { exportWebBuild } from "lib/compiler/webBuild";
+import { collectBuildUsage } from "lib/compiler/buildUsage";
+import formatBuildUsageReport from "shared/lib/compiler/formatBuildUsageReport";
 
 declare const VERSION: string;
 
@@ -18,6 +20,7 @@ type Command = "export" | "make:rom" | "make:pocket" | "make:web";
 
 type CLIOptions = {
   onlyData?: boolean;
+  usage?: boolean;
   verbose?: boolean;
 };
 
@@ -52,7 +55,7 @@ const main = async (
   const tmpBuildDir = Path.join(tmpPath, "_gbsbuild");
   const outputRoot = tmpBuildDir;
 
-  const { onlyData, verbose } = program.opts<CLIOptions>();
+  const { onlyData, usage, verbose } = program.opts<CLIOptions>();
 
   const progress = (message: string) => {
     if (verbose) {
@@ -84,12 +87,23 @@ const main = async (
     outputRoot,
     romFilename,
     debugEnabled: false,
-    make: command !== "export",
+    make: command !== "export" || Boolean(usage),
     progress,
     warnings,
   });
 
   const buildResult = await result;
+  if (usage && "manifest" in buildResult) {
+    const usageData = await collectBuildUsage({
+      manifest: buildResult.manifest,
+      scriptMap: buildResult.compiledData.scriptMap,
+      mode: buildResult.status === "success" ? "complete" : "partial",
+      tmpPath,
+      progress,
+      warnings,
+    });
+    console.log(formatBuildUsageReport(usageData, project));
+  }
   if (buildResult.status === "cancelled") {
     throw new Error("BUILD_CANCELLED");
   }
@@ -162,6 +176,7 @@ program
   });
 
 program.option("-d, --onlyData", "Only replace data folder in destination");
+program.option("-u, --usage", "Print ROM usage report");
 program.option("-v, --verbose", "Verbose output");
 
 program.parse(process.argv);
