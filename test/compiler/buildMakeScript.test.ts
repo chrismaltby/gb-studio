@@ -1,6 +1,10 @@
 import Path from "path";
 import { pathExists } from "fs-extra";
-import { buildLinkFile, getBuildCommands } from "lib/compiler/buildMakeScript";
+import {
+  buildLinkFile,
+  buildLinkFlags,
+  getBuildCommands,
+} from "lib/compiler/buildMakeScript";
 import type { BuildManifest } from "lib/compiler/buildManifest";
 
 jest.mock("fs-extra");
@@ -80,5 +84,21 @@ describe("buildMakeScript", () => {
         Path.join("C:\\build", "obj", "bar.o"),
       ].join("\n"),
     );
+  });
+
+  test("always compiles and links with the hUGETracker music driver", async () => {
+    mockedPathExists.mockResolvedValue(false as never);
+    const manifest = makeManifest("C:\\build", ["src/core/foo.c"]);
+
+    const commands = await getBuildCommands(manifest, defaultBuildOptions);
+    const linkFlags = buildLinkFlags(
+      "obj/linkfile.lk",
+      "game.gb",
+      "GB Studio",
+      "mbc5",
+    );
+
+    expect(commands[0]?.args).toContain("-DHUGE_TRACKER");
+    expect(linkFlags).toContain("-Wl-lhUGEDriver.lib");
   });
 });
