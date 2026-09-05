@@ -66,6 +66,7 @@ describe("buildProject outcomes", () => {
     mockedBuildRunner.mockReturnValue({
       result: Promise.resolve({
         status: "failed",
+        stage: "prepare",
         error: "link failed",
       }),
       kill: jest.fn(),
@@ -74,26 +75,32 @@ describe("buildProject outcomes", () => {
     await expect(buildProject(dummyProjectResources, options)).resolves.toEqual(
       {
         status: "failed",
+        stage: "prepare",
         error: "link failed",
       },
     );
   });
 
-  test("converts worker process errors into failed outcomes", async () => {
+  test("returns normalized worker process failures", async () => {
     mockedBuildRunner.mockReturnValue({
-      result: Promise.reject(new Error("worker exited")),
+      result: Promise.resolve({
+        status: "failed",
+        stage: "prepare",
+        error: "Error: worker exited",
+      }),
       kill: jest.fn(),
     });
 
     await expect(buildProject(dummyProjectResources, options)).resolves.toEqual(
       {
         status: "failed",
+        stage: "prepare",
         error: "Error: worker exited",
       },
     );
   });
 
-  test("returns an export failure without successful build data", async () => {
+  test("returns an export failure with successful build artifacts", async () => {
     mockedBuildRunner.mockReturnValue({
       result: Promise.resolve({
         status: "success",
@@ -108,21 +115,24 @@ describe("buildProject outcomes", () => {
       buildProject(dummyProjectResources, { ...options, buildType: "web" }),
     ).resolves.toEqual({
       status: "failed",
+      stage: "export",
       error: "Error: export failed",
+      compiledData: {},
+      manifest: {},
     });
   });
 
   test("returns cancellation instead of throwing", async () => {
-    let rejectBuild: (reason: Error) => void = () => {};
-    const result = new Promise<never>((_resolve, reject) => {
-      rejectBuild = reject;
+    let resolveBuild: (result: { status: "cancelled" }) => void = () => {};
+    const result = new Promise<{ status: "cancelled" }>((resolve) => {
+      resolveBuild = resolve;
     });
     const kill = jest.fn();
     mockedBuildRunner.mockReturnValue({ result, kill });
 
     const build = buildProject(dummyProjectResources, options);
     cancelCompileStepsInProgress();
-    rejectBuild(new Error("worker exited"));
+    resolveBuild({ status: "cancelled" });
 
     await expect(build).resolves.toEqual({ status: "cancelled" });
     expect(kill).toHaveBeenCalledTimes(1);

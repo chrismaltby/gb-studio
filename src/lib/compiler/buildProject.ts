@@ -4,7 +4,7 @@ import { ProjectResources } from "shared/lib/resources/types";
 import { buildRunner } from "./buildRunner";
 import { EngineSchema } from "lib/project/loadEngineSchema";
 import { exportWebBuild } from "./webBuild";
-import type { BuildResult } from "./buildWorker";
+import type { BuildResult } from "./buildResult";
 
 type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
@@ -20,7 +20,6 @@ type BuildOptions = {
   warnings: (msg: string) => void;
 };
 
-let cancelling = false;
 let cancelFunction: (() => void) | undefined;
 
 const buildProject = async (
@@ -39,8 +38,6 @@ const buildProject = async (
     warnings = (_msg: string) => {},
   }: BuildOptions,
 ): Promise<BuildResult> => {
-  cancelling = false;
-
   const { result, kill } = buildRunner({
     project,
     buildType,
@@ -56,20 +53,9 @@ const buildProject = async (
   });
 
   cancelFunction = kill;
-  let buildResult: BuildResult;
-  try {
-    buildResult = await result;
-  } catch (error) {
-    return cancelling
-      ? { status: "cancelled" }
-      : {
-          status: "failed",
-          error: error instanceof Error ? error.toString() : String(error),
-        };
-  }
-
-  if (cancelling) {
-    return { status: "cancelled" };
+  const buildResult = await result;
+  if (cancelFunction === kill) {
+    cancelFunction = undefined;
   }
 
   if (buildResult.status !== "success") {
@@ -97,14 +83,16 @@ const buildProject = async (
   } catch (error) {
     return {
       status: "failed",
+      stage: "export",
       error: error instanceof Error ? error.toString() : String(error),
+      compiledData: buildResult.compiledData,
+      manifest: buildResult.manifest,
     };
   }
   return buildResult;
 };
 
 export const cancelCompileStepsInProgress = () => {
-  cancelling = true;
   if (cancelFunction) {
     cancelFunction();
   }

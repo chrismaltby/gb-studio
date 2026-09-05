@@ -75,9 +75,124 @@ test("resolves cancellation when the worker completes after cancellation", async
     threadId: 1,
     payload: {
       status: "failed",
+      stage: "prepare",
       error: "BUILD_CANCELLED",
     },
   });
 
   await expect(result).resolves.toEqual({ status: "cancelled" });
+});
+
+test("resolves cancellation when the worker errors after cancellation", async () => {
+  const { result, kill } = buildRunner({
+    project: dummyProjectResources,
+    buildType: "rom",
+    projectRoot: "/project",
+    tmpPath: "/tmp",
+    engineSchema: {} as never,
+    outputRoot: "/build",
+    romFilename: "game.gb",
+    make: true,
+    progress: jest.fn(),
+    warnings: jest.fn(),
+  });
+
+  kill();
+  mockWorkerHandlers.error?.(new Error("worker stopped"));
+
+  await expect(result).resolves.toEqual({ status: "cancelled" });
+});
+
+test("resolves worker errors as preparation failures", async () => {
+  const { result } = buildRunner({
+    project: dummyProjectResources,
+    buildType: "rom",
+    projectRoot: "/project",
+    tmpPath: "/tmp",
+    engineSchema: {} as never,
+    outputRoot: "/build",
+    romFilename: "game.gb",
+    make: true,
+    progress: jest.fn(),
+    warnings: jest.fn(),
+  });
+
+  mockWorkerHandlers.error?.(new Error("worker failed"));
+
+  await expect(result).resolves.toEqual({
+    status: "failed",
+    stage: "prepare",
+    error: "Error: worker failed",
+  });
+});
+
+test("resolves worker construction errors as preparation failures", async () => {
+  jest.mocked(Worker).mockImplementationOnce(() => {
+    throw new Error("worker could not start");
+  });
+
+  const { result } = buildRunner({
+    project: dummyProjectResources,
+    buildType: "rom",
+    projectRoot: "/project",
+    tmpPath: "/tmp",
+    engineSchema: {} as never,
+    outputRoot: "/build",
+    romFilename: "game.gb",
+    make: true,
+    progress: jest.fn(),
+    warnings: jest.fn(),
+  });
+
+  await expect(result).resolves.toEqual({
+    status: "failed",
+    stage: "prepare",
+    error: "Error: worker could not start",
+  });
+});
+
+test("resolves an unexpected worker exit as a preparation failure", async () => {
+  const { result } = buildRunner({
+    project: dummyProjectResources,
+    buildType: "rom",
+    projectRoot: "/project",
+    tmpPath: "/tmp",
+    engineSchema: {} as never,
+    outputRoot: "/build",
+    romFilename: "game.gb",
+    make: true,
+    progress: jest.fn(),
+    warnings: jest.fn(),
+  });
+
+  mockWorkerHandlers.exit?.(1);
+
+  await expect(result).resolves.toEqual({
+    status: "failed",
+    stage: "prepare",
+    error: "Build worker exited with code 1",
+  });
+});
+
+test("resolves an early zero-code exit as a preparation failure", async () => {
+  const { result } = buildRunner({
+    project: dummyProjectResources,
+    buildType: "rom",
+    projectRoot: "/project",
+    tmpPath: "/tmp",
+    engineSchema: {} as never,
+    outputRoot: "/build",
+    romFilename: "game.gb",
+    make: true,
+    progress: jest.fn(),
+    warnings: jest.fn(),
+  });
+
+  mockWorkerHandlers.exit?.(0);
+
+  await expect(result).resolves.toEqual({
+    status: "failed",
+    stage: "prepare",
+    error: "Build worker exited before returning a result",
+  });
 });

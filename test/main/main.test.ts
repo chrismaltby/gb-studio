@@ -364,6 +364,7 @@ describe("Electron Main Process", () => {
     const buildHandler = getIpcHandler("project:build");
     mockedBuildProject.mockResolvedValue({
       status: "failed",
+      stage: "prepare",
       error: "link failed",
     });
 

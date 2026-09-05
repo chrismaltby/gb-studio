@@ -105,8 +105,23 @@ test("returns make failures instead of throwing", async () => {
 
   await expect(buildProject(options)).resolves.toEqual({
     status: "failed",
+    stage: "make",
+    error: buildError.toString(),
+    compiledData: {},
+    manifest,
+  });
+});
+
+test("returns preparation failures without build artifacts", async () => {
+  const buildError = new Error("compile failed");
+  mockedCompileData.mockRejectedValue(buildError);
+
+  await expect(buildProject(options)).resolves.toEqual({
+    status: "failed",
+    stage: "prepare",
     error: buildError.toString(),
   });
+  expect(mockedMakeBuild).not.toHaveBeenCalled();
 });
 
 test("returns a manifest without running make when make is disabled", async () => {

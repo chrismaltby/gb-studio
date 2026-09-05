@@ -7,11 +7,8 @@ import ejectBuild from "./ejectBuild";
 import { validateEjectedBuild } from "./validate/validateEjectedBuild";
 import makeBuild, { cancelBuildCommandsInProgress } from "./makeBuild";
 import { EngineSchema } from "lib/project/loadEngineSchema";
-import {
-  createBuildManifest,
-  resolveBuildSources,
-  type BuildManifest,
-} from "./buildManifest";
+import { createBuildManifest, resolveBuildSources } from "./buildManifest";
+import type { BuildArtifacts, BuildWorkerResult } from "./buildResult";
 
 export type BuildType = "rom" | "web" | "pocket";
 
@@ -27,22 +24,6 @@ export type BuildWorkerData = {
   debugEnabled?: boolean;
   l10nData: L10NLookup;
 };
-
-type CompiledData = Awaited<ReturnType<typeof compileData>>;
-
-export type BuildResult =
-  | {
-      status: "success";
-      compiledData: CompiledData;
-      manifest: BuildManifest;
-    }
-  | {
-      status: "failed";
-      error: string;
-    }
-  | {
-      status: "cancelled";
-    };
 
 export type BuildTaskResponse =
   | {
@@ -62,10 +43,8 @@ export type BuildTaskResponse =
   | {
       action: "complete";
       threadId: number;
-      payload: BuildResult;
+      payload: BuildWorkerResult;
     };
-
-let terminating = false;
 
 export const buildProject = async ({
   project,
@@ -78,48 +57,53 @@ export const buildProject = async ({
   make,
   debugEnabled,
   l10nData,
-}: BuildWorkerData) => {
-  // Initialise l10n
-  setL10NData(l10nData);
-
-  // Load script event handlers + plugins
-  const scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
-
-  const compiledData = await compileData(project, {
-    projectRoot,
-    engineSchema,
-    scriptEventHandlers,
-    tmpPath,
-    debugEnabled,
-    progress,
-    warnings,
-  });
-
-  const { pluginAttribution } = await ejectBuild({
-    projectRoot,
-    tmpPath,
-    projectData: project,
-    engineSchema,
-    outputRoot,
-    compiledData,
-    progress,
-    warnings,
-  });
-
-  await validateEjectedBuild({
-    buildRoot: outputRoot,
-    progress,
-    warnings,
-  });
-
-  const buildSources = await resolveBuildSources(outputRoot, pluginAttribution);
-
-  const manifest = createBuildManifest({
-    buildRoot: outputRoot,
-    romFilename,
-    cartType: project.settings.cartType,
-    sources: buildSources,
-  });
+}: BuildWorkerData): Promise<BuildWorkerResult> => {
+  let artifacts: BuildArtifacts;
+  try {
+    setL10NData(l10nData);
+    const scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
+    const compiledData = await compileData(project, {
+      projectRoot,
+      engineSchema,
+      scriptEventHandlers,
+      tmpPath,
+      debugEnabled,
+      progress,
+      warnings,
+    });
+    const { pluginAttribution } = await ejectBuild({
+      projectRoot,
+      tmpPath,
+      projectData: project,
+      engineSchema,
+      outputRoot,
+      compiledData,
+      progress,
+      warnings,
+    });
+    await validateEjectedBuild({
+      buildRoot: outputRoot,
+      progress,
+      warnings,
+    });
+    const buildSources = await resolveBuildSources(
+      outputRoot,
+      pluginAttribution,
+    );
+    const manifest = createBuildManifest({
+      buildRoot: outputRoot,
+      romFilename,
+      cartType: project.settings.cartType,
+      sources: buildSources,
+    });
+    artifacts = { compiledData, manifest };
+  } catch (error) {
+    return {
+      status: "failed",
+      stage: "prepare",
+      error: error instanceof Error ? error.toString() : String(error),
+    };
+  }
 
   if (make) {
     try {
@@ -132,27 +116,22 @@ export const buildProject = async ({
         debug: project.settings.generateDebugFilesEnabled,
         progress,
         warnings,
-        manifest,
+        manifest: artifacts.manifest,
       });
     } catch (error) {
-      const cancelled =
-        terminating ||
-        (error instanceof Error && error.message === "BUILD_CANCELLED");
-      if (cancelled) {
-        return { status: "cancelled" } as const;
-      }
       return {
         status: "failed",
+        stage: "make",
         error: error instanceof Error ? error.toString() : String(error),
-      } as const;
+        ...artifacts,
+      };
     }
   }
 
   return {
     status: "success",
-    compiledData,
-    manifest,
-  } as const;
+    ...artifacts,
+  };
 };
 
 const progress = (message: string) => {
@@ -180,31 +159,13 @@ const send = (msg: BuildTaskResponse) => {
 };
 
 const run = async () => {
-  try {
-    const res = await buildProject(workerData);
-    send({ action: "complete", threadId, payload: res });
-    process.exit(0);
-  } catch (e) {
-    if (terminating) {
-      return;
-    }
-    warnings(String(e));
-    console.error("buildTask process terminated with error:", e);
-    send({
-      action: "complete",
-      threadId,
-      payload: {
-        status: "failed",
-        error: e instanceof Error ? e.toString() : String(e),
-      },
-    });
-    process.exit(0);
-  }
+  const result = await buildProject(workerData);
+  send({ action: "complete", threadId, payload: result });
+  process.exit(0);
 };
 
 parentPort?.on("message", async (message: { action: string }) => {
   if (message.action === "terminate") {
-    terminating = true;
     await cancelBuildCommandsInProgress();
     process.exit(1);
   }
