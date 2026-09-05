@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add "For Each Array Element" event to loop through array contents
 - Add "len" function to script values and expressions to get the size of an array
 - Add array helper events "Array Set To Values", "Shuffle Array" and "If Value In Array" [@pau-tomas](https://github.com/pau-tomas)
+- Add "ROM Usage" tab to debugger
+- Add Bank 0, WRAM, and plugin memory usage to "ROM Usage" tab [@Mico27](https://github.com/Mico27)
+- Add ability to view memory usage of assets and scripts in "ROM Usage" tab
+- Add ability to generate ROM usage report from CLI using `-u` / `--usage` flag
 
 ### Changed
 

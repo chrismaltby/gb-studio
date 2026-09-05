@@ -77,10 +77,12 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
   Export GBDK project from gbsproj to out directory
 
 - **Export Data**
+
   ```bash
   > $(yarn bin gb-studio-cli) export -d path/to/project.gbsproj out/
   ```
   Export only src/data and include/data from gbsproj to out directory
+
 - **Make ROM**
 
   ```bash
@@ -102,6 +104,14 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
   > $(yarn bin gb-studio-cli) make:web path/to/project.gbsproj out/
   ```
   Make a Web build from gbsproj
+
+- **Make ROM with Usage Report**
+
+  ```bash
+  > $(yarn bin gb-studio-cli) make:rom path/to/project.gbsproj out/game.gb --usage
+  ```
+
+  Make a ROM file from gbsproj and print a ROM usage report to stdout
 
 ## GBS Music
 
