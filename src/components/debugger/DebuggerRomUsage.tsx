@@ -6,6 +6,8 @@ import { DebuggerBuildFooter } from "components/debugger/DebuggerBuildFooter";
 import { Card } from "ui/cards/Card";
 import { bytesToHumanReadable } from "shared/lib/helpers/formatBytes";
 import type { MemoryRegionUsage } from "lib/compiler/buildUsage";
+import DebuggerRomUsageOverview from "components/debugger/DebuggerRomUsageOverview";
+import { FixedSpacer } from "ui/spacing/Spacing";
 
 const Wrapper = styled.div`
   display: flex;
@@ -165,9 +167,11 @@ const DebuggerRomUsage = () => {
               <UsageBarUsed style={{ width: `${maxUsedPercent}%` }} />
             </UsageBar>
           </Card>
-          <MemoryCard label={l10n("FIELD_ROM_BANK_0")} usage={memory.bank0} />
+          <MemoryCard label={l10n("FIELD_BANK_0")} usage={memory.bank0} />
           <MemoryCard label="WRAM" usage={memory.wram} />
         </Summary>
+        <FixedSpacer height={20} />
+        <DebuggerRomUsageOverview overview={usageData.overview} />
       </Content>
       <DebuggerBuildFooter />
     </Wrapper>
