@@ -27,7 +27,7 @@ import type {
   DebuggerDataPacket,
 } from "shared/lib/debugger/types";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
-import type { UsageData } from "lib/compiler/romUsage";
+import type { UsageData } from "lib/compiler/buildUsage";
 import type { Asset, AssetType } from "shared/lib/helpers/assets";
 import type { Patrons } from "scripts/fetchPatrons";
 import type { LoadProjectResult } from "lib/project/loadProjectData";

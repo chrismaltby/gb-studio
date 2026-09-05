@@ -1,6 +1,6 @@
 import { createSlice, original, PayloadAction } from "@reduxjs/toolkit";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
-import type { UsageData } from "lib/compiler/romUsage";
+import type { UsageData } from "lib/compiler/buildUsage";
 import isEqual from "lodash/isEqual";
 import type { DebuggerScriptContext } from "shared/lib/debugger/types";
 

@@ -7,6 +7,12 @@ import {
   createSplash,
 } from "../../src/apps/gb-studio/main";
 import { checkForUpdate } from "lib/helpers/updateChecker";
+import buildProject from "lib/compiler/buildProject";
+import { collectBuildUsage } from "lib/compiler/buildUsage";
+import getTmp from "lib/helpers/getTmp";
+import { clearAppCache } from "lib/helpers/cache";
+import { dummyProjectResources } from "../dummydata";
+import type { BuildManifest } from "lib/compiler/buildManifest";
 
 jest.mock("electron");
 jest.mock("electron-settings");
@@ -19,6 +25,10 @@ jest.mock("@octokit/rest", () => ({
   })),
 }));
 jest.mock("lib/helpers/updateChecker");
+jest.mock("lib/compiler/buildProject");
+jest.mock("lib/compiler/buildUsage");
+jest.mock("lib/helpers/getTmp");
+jest.mock("lib/helpers/cache");
 jest.mock("lib/project/createProject");
 jest.mock("../../src/apps/gb-studio/menu");
 
@@ -27,6 +37,44 @@ const mockedSettings = jest.mocked(settings);
 const mockedCheckForUpdate = jest.mocked(checkForUpdate);
 const mockedReadFile = jest.mocked(readFile);
 const mockedWriteFile = jest.mocked(writeFile);
+const mockedBuildProject = jest.mocked(buildProject);
+const mockedCollectBuildUsage = jest.mocked(collectBuildUsage);
+const mockedGetTmp = jest.mocked(getTmp);
+const mockedClearAppCache = jest.mocked(clearAppCache);
+
+const completeUsage = {
+  status: "complete" as const,
+  memory: {
+    rom: {
+      used: 100,
+      size: 4 * 1024 * 1024,
+      requiredSize: 128 * 1024,
+      nextSize: 256 * 1024,
+      usedPercent: (100 * 100) / (128 * 1024),
+      maxUsedPercent: (100 * 100) / (4 * 1024 * 1024),
+    },
+    bank0: { used: 50, size: 16 * 1024 },
+    wram: { used: 25, size: 8 * 1024 },
+  },
+};
+
+const manifest: BuildManifest = {
+  buildRoot: "/tmp/_gbsbuild",
+  cartType: "mbc5",
+  sources: [],
+  artifacts: {
+    romPath: "/tmp/_gbsbuild/build/rom/game.gb",
+    mapPath: "/tmp/_gbsbuild/build/rom/game.map",
+    noiPath: "/tmp/_gbsbuild/build/rom/game.noi",
+  },
+};
+
+const buildOptions = {
+  buildType: "rom" as const,
+  engineSchema: {} as never,
+  exportBuild: false,
+  debugEnabled: false,
+};
 
 const getIpcHandler = (channel: string) => {
   const handlerCall = mockedElectron.ipcMain.handle.mock.calls.find(
@@ -47,6 +95,10 @@ describe("Electron Main Process", () => {
     mockedSettings.get.mockReset();
     mockedReadFile.mockReset();
     mockedWriteFile.mockReset();
+    mockedBuildProject.mockReset();
+    mockedCollectBuildUsage.mockReset();
+    mockedGetTmp.mockReset().mockResolvedValue("/tmp");
+    mockedClearAppCache.mockReset().mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -279,6 +331,78 @@ describe("Electron Main Process", () => {
         ],
       },
       newVariables: [],
+    });
+  });
+
+  test("collects and returns usage after a successful project build", async () => {
+    const buildHandler = getIpcHandler("project:build");
+    mockedBuildProject.mockResolvedValue({
+      status: "success",
+      compiledData: {} as never,
+      manifest,
+    });
+    mockedCollectBuildUsage.mockResolvedValue(completeUsage);
+
+    const result = await buildHandler?.(
+      {},
+      dummyProjectResources,
+      buildOptions,
+    );
+
+    expect(mockedCollectBuildUsage).toHaveBeenCalledWith({
+      manifest,
+      tmpPath: "/tmp",
+      progress: expect.any(Function),
+      warnings: expect.any(Function),
+    });
+    expect(result).toEqual({
+      status: "success",
+      usage: completeUsage,
+      debuggerSymbols: undefined,
+    });
+  });
+
+  test("does not collect usage after a failed project build", async () => {
+    const buildHandler = getIpcHandler("project:build");
+    mockedBuildProject.mockResolvedValue({
+      status: "failed",
+      error: "link failed",
+    });
+
+    await expect(
+      buildHandler?.({}, dummyProjectResources, buildOptions),
+    ).resolves.toEqual({ status: "failed", error: "link failed" });
+    expect(mockedCollectBuildUsage).not.toHaveBeenCalled();
+  });
+
+  test("does not collect usage after a cancelled project build", async () => {
+    const buildHandler = getIpcHandler("project:build");
+    mockedBuildProject.mockResolvedValue({ status: "cancelled" });
+
+    await expect(
+      buildHandler?.({}, dummyProjectResources, buildOptions),
+    ).resolves.toEqual({ status: "cancelled" });
+    expect(mockedCollectBuildUsage).not.toHaveBeenCalled();
+  });
+
+  test("keeps a successful project build successful when usage analysis fails", async () => {
+    const buildHandler = getIpcHandler("project:build");
+    const failedUsage = {
+      status: "failed" as const,
+    };
+    mockedBuildProject.mockResolvedValue({
+      status: "success",
+      compiledData: {} as never,
+      manifest,
+    });
+    mockedCollectBuildUsage.mockResolvedValue(failedUsage);
+
+    await expect(
+      buildHandler?.({}, dummyProjectResources, buildOptions),
+    ).resolves.toEqual({
+      status: "success",
+      usage: failedUsage,
+      debuggerSymbols: undefined,
     });
   });
 });

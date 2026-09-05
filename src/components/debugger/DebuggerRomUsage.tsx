@@ -1,14 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "styled-components";
 import l10n from "shared/lib/lang/l10n";
 import { useAppSelector } from "store/hooks";
 import { DebuggerBuildFooter } from "components/debugger/DebuggerBuildFooter";
 import { Card } from "ui/cards/Card";
-import {
-  bytesToHumanReadable,
-  calculateRomUsageStats,
-  MAX_ROM_SIZE,
-} from "shared/lib/compiler/romUsageStats";
+import { bytesToHumanReadable } from "shared/lib/helpers/formatBytes";
 
 const Wrapper = styled.div`
   display: flex;
@@ -74,47 +70,42 @@ const UsageBarUsed = styled.div`
 
 const DebuggerRomUsage = () => {
   const usageData = useAppSelector((state) => state.debug.usageData);
-
-  const stats = useMemo(
-    () => (usageData ? calculateRomUsageStats(usageData) : null),
-    [usageData],
-  );
+  const memory = usageData?.status === "complete" ? usageData.memory : null;
+  const rom = memory?.rom;
 
   return (
     <Wrapper>
       <Content>
-        {!stats ? (
+        {!rom ? (
           <EmptyState>{l10n("FIELD_RUN_A_BUILD_USAGE_DESC")}</EmptyState>
         ) : (
           <Summary>
             <Card>
               <StatLabel>{l10n("FIELD_ROM_USED")}</StatLabel>
               <StatValue>
-                {bytesToHumanReadable(stats.used)} /{" "}
-                {bytesToHumanReadable(stats.requiredSize)}
+                {bytesToHumanReadable(rom.used)} /{" "}
+                {bytesToHumanReadable(rom.requiredSize)}
               </StatValue>
               <StatDetail>
-                {stats.nextSize
-                  ? `${l10n("FIELD_ROM_NEXT_SIZE")}: ${bytesToHumanReadable(stats.nextSize)}`
-                  : `${l10n("FIELD_ROM_MAX_SIZE")}: ${bytesToHumanReadable(MAX_ROM_SIZE)}`}
+                {rom.nextSize
+                  ? `${l10n("FIELD_ROM_NEXT_SIZE")}: ${bytesToHumanReadable(rom.nextSize)}`
+                  : `${l10n("FIELD_ROM_MAX_SIZE")}: ${bytesToHumanReadable(rom.size)}`}
               </StatDetail>
 
               <UsageBar>
-                <UsageBarUsed style={{ width: `${stats.romUsedPercent}%` }} />
+                <UsageBarUsed style={{ width: `${rom.usedPercent}%` }} />
               </UsageBar>
             </Card>
             <Card>
               <StatLabel>{l10n("FIELD_ROM_MAX_CAPACITY")}</StatLabel>
-              <StatValue>{stats.maxRomUsedPercent.toFixed(1)}%</StatValue>
+              <StatValue>{rom.maxUsedPercent.toFixed(1)}%</StatValue>
               <StatDetail>
-                {bytesToHumanReadable(stats.used)} /{" "}
-                {bytesToHumanReadable(MAX_ROM_SIZE)}
+                {bytesToHumanReadable(rom.used)} /{" "}
+                {bytesToHumanReadable(rom.size)}
               </StatDetail>
 
               <UsageBar>
-                <UsageBarUsed
-                  style={{ width: `${stats.maxRomUsedPercent}%` }}
-                />
+                <UsageBarUsed style={{ width: `${rom.maxUsedPercent}%` }} />
               </UsageBar>
             </Card>
           </Summary>

@@ -90,9 +90,12 @@ beforeEach(() => {
 });
 
 test("returns compiled data after a successful build", async () => {
-  await expect(buildProject(options)).resolves.toEqual({
+  const result = await buildProject(options);
+
+  expect(result).toEqual({
     status: "success",
     compiledData: {},
+    manifest,
   });
 });
 
@@ -106,13 +109,19 @@ test("returns make failures instead of throwing", async () => {
   });
 });
 
-test("does not create a manifest when make is disabled", async () => {
+test("returns a manifest without running make when make is disabled", async () => {
   await expect(buildProject({ ...options, make: false })).resolves.toEqual({
     status: "success",
     compiledData: {},
+    manifest,
   });
 
-  expect(mockedResolveBuildSources).not.toHaveBeenCalled();
-  expect(mockedCreateBuildManifest).not.toHaveBeenCalled();
+  expect(mockedResolveBuildSources).toHaveBeenCalledWith("/build");
+  expect(mockedCreateBuildManifest).toHaveBeenCalledWith({
+    buildRoot: "/build",
+    romFilename: "game.gb",
+    cartType: "mbc5",
+    sources: [],
+  });
   expect(mockedMakeBuild).not.toHaveBeenCalled();
 });

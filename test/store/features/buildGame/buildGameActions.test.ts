@@ -6,7 +6,7 @@ import settingsActions from "store/features/settings/settingsActions";
 import debuggerActions from "store/features/debugger/debuggerActions";
 import { dummyRootState } from "../../../dummydata";
 import type { RootState } from "store/storeTypes";
-import type { UsageData } from "lib/compiler/romUsage";
+import type { UsageData } from "lib/compiler/buildUsage";
 
 afterEach(() => {
   jest.restoreAllMocks();

@@ -47,6 +47,7 @@ import type {
 import buildProject, {
   cancelCompileStepsInProgress,
 } from "lib/compiler/buildProject";
+import { collectBuildUsage } from "lib/compiler/buildUsage";
 import {
   ejectDefaultWebTemplate,
   listProjectWebTemplates,
@@ -140,7 +141,6 @@ import { loadProjectResourceChecksums } from "lib/project/loadResourceChecksums"
 import confirmDeletePrefab from "lib/electron/dialog/confirmDeletePrefab";
 import confirmUnpackPrefab from "lib/electron/dialog/confirmUnpackPrefab";
 import confirmReplacePrefab from "lib/electron/dialog/confirmReplacePrefab";
-import romUsage from "lib/compiler/romUsage";
 import { msToHumanTime } from "shared/lib/helpers/time";
 import confirmDeletePreset from "lib/electron/dialog/confirmDeletePreset";
 import confirmApplyPreset from "lib/electron/dialog/confirmApplyPreset";
@@ -1610,7 +1610,7 @@ ipcMain.handle(
         buildErr(buildResult.error);
         return { status, error: buildResult.error };
       }
-      const { compiledData } = buildResult;
+      const { compiledData, manifest } = buildResult;
 
       if (exportBuild) {
         await copy(
@@ -1634,10 +1634,9 @@ ipcMain.handle(
         );
       }
 
-      const usageData = await romUsage({
-        buildRoot: outputRoot,
-        romStem,
-        tmpPath: await getTmp(),
+      const usage = await collectBuildUsage({
+        manifest,
+        tmpPath,
         progress,
         warnings,
       });
@@ -1704,7 +1703,7 @@ ipcMain.handle(
 
       const buildTime = Date.now() - buildStartTime;
       buildLog(`${l10n("COMPILER_BUILD_TIME")}: ${msToHumanTime(buildTime)}`);
-      return { status, usage: usageData, debuggerSymbols };
+      return { status, usage, debuggerSymbols };
     } catch (e) {
       if (typeof e === "string") {
         buildErr(e);
