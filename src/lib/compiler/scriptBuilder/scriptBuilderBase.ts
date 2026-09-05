@@ -1811,15 +1811,16 @@ abstract class ScriptBuilderBase {
     )}${textCodeSetSpeed(2)}${textCodeGotoRel(1, -1)}${textCodeSetFont(0)}`;
   };
 
-  _loadAndDisplayText = (inputText: string) => {
+  _loadAndDisplayText = (inputText: string, prependTokens: Token[] = []) => {
     let waitArgsRef = "";
     let lastWait = -1;
     // Split into chunks where wait frames code is found
     const chunks = chunkTextOnWaitCodes(inputText);
+
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
 
-      this._loadTokens(chunk.tokens);
+      this._loadTokens(prependTokens.concat(chunk.tokens));
       this._displayText(i !== 0);
 
       if (chunk.action?.type === "wait") {
@@ -1865,6 +1866,34 @@ abstract class ScriptBuilderBase {
       usedVariableAliases.push(missingVariableAlias);
     };
 
+    const processVariableReference = (variableId: string) => {
+      const variable = this._isMissingVariableReference(variableId)
+        ? undefined
+        : this._resolveVariableRef(variableId);
+      if (!variable) {
+        addMissingVariableAlias();
+      } else if (this._isFunctionArg(variable)) {
+        if (this._isIndirectVariable(variable)) {
+          const localRef = this._declareLocal(
+            `text_arg${indirectVars.length}`,
+            1,
+            true,
+          );
+          indirectVars.unshift({
+            local: localRef,
+            arg: variable.symbol,
+          });
+          usedVariableAliases.push(this._rawOffsetStackAddr(localRef));
+        } else {
+          usedVariableAliases.push(this._rawOffsetStackAddr(variable.symbol));
+        }
+      } else {
+        usedVariableAliases.push(
+          this.getVariableAlias(normalizeVariableId(variable)),
+        );
+      }
+    };
+
     textTokens.forEach((token) => {
       if (token.type === "text") {
         text += encodeString(token.value, font?.mapping);
@@ -1881,31 +1910,8 @@ abstract class ScriptBuilderBase {
         token.type === "speedVariable" ||
         token.type === "fontVariable"
       ) {
-        const variable = this._isMissingVariableReference(token.variableId)
-          ? undefined
-          : this._resolveVariableRef(token.variableId);
-        if (!variable) {
-          addMissingVariableAlias();
-        } else if (this._isFunctionArg(variable)) {
-          if (this._isIndirectVariable(variable)) {
-            const localRef = this._declareLocal(
-              `text_arg${indirectVars.length}`,
-              1,
-              true,
-            );
-            indirectVars.unshift({
-              local: localRef,
-              arg: variable.symbol,
-            });
-            usedVariableAliases.push(this._rawOffsetStackAddr(localRef));
-          } else {
-            usedVariableAliases.push(this._rawOffsetStackAddr(variable.symbol));
-          }
-        } else {
-          usedVariableAliases.push(
-            this.getVariableAlias(normalizeVariableId(variable)),
-          );
-        }
+        processVariableReference(token.variableId);
+
         if (token.type === "variable" && token.fixedLength !== undefined) {
           text += `%D${token.fixedLength}`;
         } else if (token.type === "variable") {
@@ -1916,6 +1922,14 @@ abstract class ScriptBuilderBase {
           text += "%t";
         } else if (token.type === "fontVariable") {
           text += "%f";
+        }
+      } else if (token.type === "gotoxyvariable") {
+        processVariableReference(token.xVariableId);
+        processVariableReference(token.yVariableId);
+        if (token.relative) {
+          text += `\\004%c%c`;
+        } else {
+          text += `\\003%c%c`;
         }
       } else if (token.type === "speed") {
         text += textCodeSetSpeed(token.speed);

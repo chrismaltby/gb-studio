@@ -183,3 +183,38 @@ export const migrate420r10To500r1: ProjectResourcesMigration = {
     migrateFrom420r10To500r1Variables,
   ]),
 };
+
+// Migrate text draw event coordinates from number to value
+export const migrateFrom500r1To500r2TextDraw: ScriptEventMigrationFn = (
+  scriptEvent,
+) => {
+  if (
+    scriptEvent.command !== "EVENT_TEXT_DRAW" ||
+    typeof scriptEvent.args?.x !== "number" ||
+    typeof scriptEvent.args?.y !== "number"
+  ) {
+    return scriptEvent;
+  }
+  return {
+    ...scriptEvent,
+    args: {
+      ...scriptEvent.args,
+      x: {
+        type: "number",
+        value: scriptEvent.args.x,
+      },
+      y: {
+        type: "number",
+        value: scriptEvent.args.y,
+      },
+    },
+  };
+};
+
+export const migrate500r1To500r2: ProjectResourcesMigration = {
+  from: { version: "5.0.0", release: "1" },
+  to: { version: "5.0.0", release: "2" },
+  migrationFn: pipeMigrationFns([
+    createScriptEventsMigrator(migrateFrom500r1To500r2TextDraw),
+  ]),
+};
