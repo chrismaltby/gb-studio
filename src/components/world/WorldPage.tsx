@@ -37,6 +37,9 @@ const WorldPage = () => {
   const navigatorSidebarWidth = useAppSelector(
     (state) => state.editor.navigatorSidebarWidth,
   );
+  const storedDebuggerPaneHeight = useAppSelector(
+    (state) => state.editor.debuggerPaneHeight,
+  );
   const windowSize = useWindowSize();
   const prevWindowWidthRef = useRef<number>(0);
   const windowWidth = windowSize.width || 0;
@@ -91,11 +94,12 @@ const WorldPage = () => {
     windowWidth - (showNavigator ? leftPaneWidth : 0) - rightPaneWidth;
   const [debuggerPaneHeight, setDebuggerPaneSize, onResizeDebugger] =
     useResizable({
-      initialSize: buildAndDebugPaneEnabled ? 400 : 30,
+      initialSize: buildAndDebugPaneEnabled ? storedDebuggerPaneHeight : 30,
       direction: "top",
       minSize: 30,
       maxSize: windowHeight - 100,
       onResizeComplete: (height) => {
+        dispatch(editorActions.resizeDebuggerPane(height));
         if (height === 30 && buildAndDebugPaneEnabled) {
           dispatch(
             settingsActions.editSettings({
@@ -112,23 +116,31 @@ const WorldPage = () => {
       },
     });
 
+  const setDebuggerPaneHeight = useCallback(
+    (height: number) => {
+      setDebuggerPaneSize(height);
+      dispatch(editorActions.resizeDebuggerPane(height));
+    },
+    [dispatch, setDebuggerPaneSize],
+  );
+
   const toggleDebuggerPane = useCallback(() => {
     if (debuggerPaneHeight === 30) {
-      setDebuggerPaneSize(windowHeight * 0.5);
+      setDebuggerPaneHeight(windowHeight * 0.5);
       dispatch(
         settingsActions.editSettings({
           buildAndDebugPaneEnabled: true,
         }),
       );
     } else {
-      setDebuggerPaneSize(30);
+      setDebuggerPaneHeight(30);
       dispatch(
         settingsActions.editSettings({
           buildAndDebugPaneEnabled: false,
         }),
       );
     }
-  }, [debuggerPaneHeight, dispatch, setDebuggerPaneSize, windowHeight]);
+  }, [debuggerPaneHeight, dispatch, setDebuggerPaneHeight, windowHeight]);
 
   // Keep track of if debugger is visible
   // If not and it has become visible open to default height
@@ -139,13 +151,13 @@ const WorldPage = () => {
       debugOpenRef.current !== buildAndDebugPaneEnabled &&
       debuggerPaneHeight <= 30
     ) {
-      setDebuggerPaneSize(windowHeight * 0.5);
+      setDebuggerPaneHeight(windowHeight * 0.5);
     }
     debugOpenRef.current = buildAndDebugPaneEnabled;
   }, [
     buildAndDebugPaneEnabled,
     debuggerPaneHeight,
-    setDebuggerPaneSize,
+    setDebuggerPaneHeight,
     windowHeight,
   ]);
 

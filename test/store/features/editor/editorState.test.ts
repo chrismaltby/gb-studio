@@ -507,6 +507,16 @@ test("Should force world sidebar to be larger than 280px", () => {
   expect(newState.worldSidebarWidth).toBe(280);
 });
 
+test("Should be able to resize debugger pane", () => {
+  const state: EditorState = {
+    ...initialState,
+    debuggerPaneHeight: 400,
+  };
+  const action = actions.resizeDebuggerPane(320);
+  const newState = reducer(state, action);
+  expect(newState.debuggerPaneHeight).toBe(320);
+});
+
 test("Should be able to resize files sidebar", () => {
   const state: EditorState = {
     ...initialState,
