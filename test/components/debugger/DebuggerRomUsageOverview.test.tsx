@@ -17,7 +17,10 @@ let mockUsageData: UsageData | null = null;
 
 jest.mock("store/hooks", () => ({
   useAppSelector: (selector: (state: unknown) => unknown) =>
-    selector({ debug: { usageData: mockUsageData } }),
+    selector({
+      debug: { usageData: mockUsageData },
+      console: { status: "success" },
+    }),
 }));
 
 jest.mock("components/debugger/DebuggerBuildFooter", () => ({
