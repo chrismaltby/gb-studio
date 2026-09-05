@@ -50,11 +50,24 @@ export type BuildUsageOverview = {
   remaining: RegionUsage;
 };
 
+export type BuildUsagePluginFile = {
+  sourceFile: string;
+  usage: RegionUsage;
+  replacesDefault: boolean;
+};
+
+export type BuildUsagePlugin = {
+  pluginName: string;
+  usage: RegionUsage;
+  files: BuildUsagePluginFile[];
+};
+
 export type UsageData =
   | {
       status: "complete";
       memory: BuildUsageMemory;
       overview: BuildUsageOverview;
+      plugins: BuildUsagePlugin[];
     }
   | {
       status: "unavailable";
@@ -139,6 +152,40 @@ const usageForOrigin = (
       emptyRegionUsage(),
     );
 
+const analysePluginUsage = (
+  modules: BuildModuleUsage[],
+): BuildUsagePlugin[] => {
+  const pluginsByName = new Map<string, BuildUsagePlugin>();
+
+  for (const module of modules) {
+    if (module.origin.type !== "plugin") {
+      continue;
+    }
+
+    const plugin = pluginsByName.get(module.origin.pluginName) ?? {
+      pluginName: module.origin.pluginName,
+      usage: emptyRegionUsage(),
+      files: [],
+    };
+    plugin.usage = addRegionUsage(plugin.usage, module.usage);
+    plugin.files.push({
+      sourceFile: module.sourceFile,
+      usage: module.usage,
+      replacesDefault: module.origin.replacesDefault,
+    });
+    pluginsByName.set(plugin.pluginName, plugin);
+  }
+
+  return [...pluginsByName.values()]
+    .sort((left, right) => left.pluginName.localeCompare(right.pluginName))
+    .map((plugin) => ({
+      ...plugin,
+      files: plugin.files.sort((left, right) =>
+        left.sourceFile.localeCompare(right.sourceFile),
+      ),
+    }));
+};
+
 const buildUsageOverview = (
   modules: BuildModuleUsage[],
   musicDriver: RegionUsage,
@@ -209,6 +256,7 @@ export const collectBuildUsage = async ({
       manifest,
       allowMissing: false,
     });
+    const plugins = analysePluginUsage(modules);
 
     const usageData = await romUsage({
       manifest,
@@ -239,6 +287,7 @@ export const collectBuildUsage = async ({
         manifest.cartType,
         total,
       ),
+      plugins,
     };
   } catch (error) {
     warnings(error instanceof Error ? error.message : String(error));

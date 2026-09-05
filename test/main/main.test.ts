@@ -66,6 +66,7 @@ const completeUsage = {
     maximum: { bank0: 16 * 1024, wram: 8 * 1024, bankedRom: 255 * 16 * 1024 },
     remaining: { bank0: 16 * 1024, wram: 8 * 1024, bankedRom: 255 * 16 * 1024 },
   },
+  plugins: [],
 };
 
 const manifest: BuildManifest = {

@@ -230,6 +230,19 @@ describe("collectBuildUsage", () => {
           bankedRom: 126 * 16384 + 8384,
         },
       },
+      plugins: [
+        {
+          pluginName: "ExamplePlugin",
+          usage: { bank0: 0, wram: 0, bankedRom: 100 },
+          files: [
+            {
+              sourceFile: "src/plugin.c",
+              usage: { bank0: 0, wram: 0, bankedRom: 100 },
+              replacesDefault: false,
+            },
+          ],
+        },
+      ],
     });
     expect(mockedRomUsage).toHaveBeenCalledWith({
       manifest,
@@ -244,6 +257,79 @@ describe("collectBuildUsage", () => {
     expect(mockedAnalyseMusicDriverUsage).toHaveBeenCalledWith({
       manifest,
     });
+  });
+
+  test("groups plugin files, preserves replacements, and sorts deterministically", async () => {
+    mockedAnalyseBuildObjects.mockResolvedValue([
+      {
+        sourceFile: "src/z-added.c",
+        origin: {
+          type: "plugin",
+          pluginName: "ExamplePlugin",
+          replacesDefault: false,
+        },
+        usage: { bank0: 10, wram: 20, bankedRom: 30 },
+      },
+      {
+        sourceFile: "src/core/actor.c",
+        origin: {
+          type: "plugin",
+          pluginName: "ExamplePlugin",
+          replacesDefault: true,
+        },
+        usage: { bank0: 40, wram: 50, bankedRom: 60 },
+      },
+      {
+        sourceFile: "src/another.c",
+        origin: {
+          type: "plugin",
+          pluginName: "AnotherPlugin",
+          replacesDefault: false,
+        },
+        usage: { bank0: 1, wram: 2, bankedRom: 3 },
+      },
+    ]);
+
+    const result = await collectBuildUsage({
+      manifest,
+      tmpPath: "/tmp",
+      progress,
+      warnings,
+    });
+
+    expect(result.status).toBe("complete");
+    if (result.status !== "complete") {
+      return;
+    }
+    expect(result.plugins).toEqual([
+      {
+        pluginName: "AnotherPlugin",
+        usage: { bank0: 1, wram: 2, bankedRom: 3 },
+        files: [
+          {
+            sourceFile: "src/another.c",
+            usage: { bank0: 1, wram: 2, bankedRom: 3 },
+            replacesDefault: false,
+          },
+        ],
+      },
+      {
+        pluginName: "ExamplePlugin",
+        usage: { bank0: 50, wram: 70, bankedRom: 90 },
+        files: [
+          {
+            sourceFile: "src/core/actor.c",
+            usage: { bank0: 40, wram: 50, bankedRom: 60 },
+            replacesDefault: true,
+          },
+          {
+            sourceFile: "src/z-added.c",
+            usage: { bank0: 10, wram: 20, bankedRom: 30 },
+            replacesDefault: false,
+          },
+        ],
+      },
+    ]);
   });
 
   test("reports unavailable usage rather than a negative runtime", async () => {

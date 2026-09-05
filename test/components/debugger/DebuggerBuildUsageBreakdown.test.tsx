@@ -85,6 +85,7 @@ test("shows the overview after a complete build", () => {
       wram: { used: 256, size: 8 * 1024 },
     },
     overview,
+    plugins: [],
   };
 
   render(<DebuggerRomUsage />);
