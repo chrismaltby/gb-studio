@@ -1488,6 +1488,9 @@
   "FIELD_ROM_MAX_CAPACITY": "Max ROM Capacity",
   "FIELD_ROM_NEXT_SIZE": "Next Size",
   "FIELD_ROM_MAX_SIZE": "Max Size",
+  "FIELD_MEMORY_USAGE_FREE": "{freeSpace} free",
+  "FIELD_MEMORY_USAGE_OVER": "{overflow} over capacity",
+  "FIELD_ROM_BANK_0": "Bank 0",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

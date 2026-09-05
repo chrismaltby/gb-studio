@@ -47,11 +47,9 @@ const completeUsage = {
   memory: {
     rom: {
       used: 100,
-      size: 4 * 1024 * 1024,
-      requiredSize: 128 * 1024,
+      size: 128 * 1024,
+      maxSize: 4 * 1024 * 1024,
       nextSize: 256 * 1024,
-      usedPercent: (100 * 100) / (128 * 1024),
-      maxUsedPercent: (100 * 100) / (4 * 1024 * 1024),
     },
     bank0: { used: 50, size: 16 * 1024 },
     wram: { used: 25, size: 8 * 1024 },

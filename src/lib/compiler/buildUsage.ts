@@ -19,10 +19,8 @@ export type MemoryRegionUsage = {
 };
 
 export type RomMemoryUsage = MemoryRegionUsage & {
-  requiredSize: number;
+  maxSize: number;
   nextSize?: number;
-  usedPercent: number;
-  maxUsedPercent: number;
 };
 
 export type BuildUsageMemory = {
@@ -70,24 +68,20 @@ const sumUsage = (
   return { used, size };
 };
 
-const calculateRomUsage = (
-  used: number,
-  maxRomSize: number,
-): RomMemoryUsage => {
-  const requiredSize =
-    ROM_SIZES.find((size) => size >= used && size <= maxRomSize) ?? maxRomSize;
+const calculateRomUsage = (used: number, maxSize: number): RomMemoryUsage => {
+  const size =
+    ROM_SIZES.find((romSize) => romSize >= used && romSize <= maxSize) ??
+    maxSize;
 
   const nextSize = ROM_SIZES.find(
-    (size) => size > requiredSize && size <= maxRomSize,
+    (romSize) => romSize > size && romSize <= maxSize,
   );
 
   return {
     used,
-    size: maxRomSize,
-    requiredSize,
+    size,
+    maxSize,
     ...(nextSize !== undefined ? { nextSize } : {}),
-    usedPercent: Math.min(100, (used * 100) / requiredSize),
-    maxUsedPercent: Math.min(100, (used * 100) / maxRomSize),
   };
 };
 

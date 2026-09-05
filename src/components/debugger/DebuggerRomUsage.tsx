@@ -5,6 +5,7 @@ import { useAppSelector } from "store/hooks";
 import { DebuggerBuildFooter } from "components/debugger/DebuggerBuildFooter";
 import { Card } from "ui/cards/Card";
 import { bytesToHumanReadable } from "shared/lib/helpers/formatBytes";
+import type { MemoryRegionUsage } from "lib/compiler/buildUsage";
 
 const Wrapper = styled.div`
   display: flex;
@@ -19,6 +20,7 @@ const Content = styled.div`
   flex-grow: 1;
   padding: 16px;
   overflow: auto;
+  container-type: inline-size;
   user-select: text;
   border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
 `;
@@ -36,8 +38,16 @@ const EmptyState = styled.div`
 
 const Summary = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: minmax(250px, 1fr);
   gap: 10px;
+
+  @container (min-width: 510px) {
+    grid-template-columns: repeat(2, minmax(250px, 1fr));
+  }
+
+  @container (min-width: 1030px) {
+    grid-template-columns: repeat(4, minmax(250px, 1fr));
+  }
 `;
 
 const StatLabel = styled.div`
@@ -63,55 +73,102 @@ const UsageBar = styled.div`
   background: ${(props) => props.theme.colors.input.border};
 `;
 
-const UsageBarUsed = styled.div`
+const UsageBarUsed = styled.div<{ $overflow?: boolean }>`
   height: 100%;
-  background: ${(props) => props.theme.colors.highlight};
+  background: ${(props) =>
+    props.$overflow ? "#e20e2b" : props.theme.colors.highlight};
 `;
+
+interface MemoryCardProps {
+  label: string;
+  usage: MemoryRegionUsage;
+}
+
+const usedPercent = (used: number, size: number) =>
+  size > 0 ? Math.min(100, (used * 100) / size) : 0;
+
+const MemoryCard = ({ label, usage }: MemoryCardProps) => {
+  const { used, size } = usage;
+  const overflow = size > 0 && used > size;
+
+  return (
+    <Card>
+      <StatLabel>{label}</StatLabel>
+      <StatValue>
+        {bytesToHumanReadable(used)} / {bytesToHumanReadable(size)}
+      </StatValue>
+      <StatDetail>
+        {overflow
+          ? l10n("FIELD_MEMORY_USAGE_OVER", {
+              overflow: bytesToHumanReadable(used - size),
+            })
+          : l10n("FIELD_MEMORY_USAGE_FREE", {
+              freeSpace: bytesToHumanReadable(size - used),
+            })}
+      </StatDetail>
+      <UsageBar>
+        <UsageBarUsed
+          $overflow={overflow}
+          style={{ width: `${usedPercent(used, size)}%` }}
+        />
+      </UsageBar>
+    </Card>
+  );
+};
 
 const DebuggerRomUsage = () => {
   const usageData = useAppSelector((state) => state.debug.usageData);
-  const memory = usageData?.status === "complete" ? usageData.memory : null;
-  const rom = memory?.rom;
+
+  if (usageData?.status !== "complete") {
+    return (
+      <Wrapper>
+        <Content>
+          <EmptyState>{l10n("FIELD_RUN_A_BUILD_USAGE_DESC")}</EmptyState>
+        </Content>
+        <DebuggerBuildFooter />
+      </Wrapper>
+    );
+  }
+
+  const memory = usageData.memory;
+  const rom = memory.rom;
+  const romUsedPercent = usedPercent(rom.used, rom.size);
+  const maxUsedPercent = usedPercent(rom.used, rom.maxSize);
 
   return (
     <Wrapper>
       <Content>
-        {!rom ? (
-          <EmptyState>{l10n("FIELD_RUN_A_BUILD_USAGE_DESC")}</EmptyState>
-        ) : (
-          <Summary>
-            <Card>
-              <StatLabel>{l10n("FIELD_ROM_USED")}</StatLabel>
-              <StatValue>
-                {bytesToHumanReadable(rom.used)} /{" "}
-                {bytesToHumanReadable(rom.requiredSize)}
-              </StatValue>
-              <StatDetail>
-                {rom.nextSize
-                  ? `${l10n("FIELD_ROM_NEXT_SIZE")}: ${bytesToHumanReadable(rom.nextSize)}`
-                  : `${l10n("FIELD_ROM_MAX_SIZE")}: ${bytesToHumanReadable(rom.size)}`}
-              </StatDetail>
-
-              <UsageBar>
-                <UsageBarUsed style={{ width: `${rom.usedPercent}%` }} />
-              </UsageBar>
-            </Card>
-            <Card>
-              <StatLabel>{l10n("FIELD_ROM_MAX_CAPACITY")}</StatLabel>
-              <StatValue>{rom.maxUsedPercent.toFixed(1)}%</StatValue>
-              <StatDetail>
-                {bytesToHumanReadable(rom.used)} /{" "}
-                {bytesToHumanReadable(rom.size)}
-              </StatDetail>
-
-              <UsageBar>
-                <UsageBarUsed style={{ width: `${rom.maxUsedPercent}%` }} />
-              </UsageBar>
-            </Card>
-          </Summary>
-        )}
+        <Summary>
+          <Card>
+            <StatLabel>{l10n("FIELD_ROM_USED")}</StatLabel>
+            <StatValue>
+              {bytesToHumanReadable(rom.used)} /{" "}
+              {bytesToHumanReadable(rom.size)}
+            </StatValue>
+            <StatDetail>
+              {rom.nextSize
+                ? `${l10n("FIELD_ROM_NEXT_SIZE")}: ${bytesToHumanReadable(rom.nextSize)}`
+                : `${l10n("FIELD_ROM_MAX_SIZE")}: ${bytesToHumanReadable(rom.maxSize)}`}
+            </StatDetail>
+            <UsageBar>
+              <UsageBarUsed style={{ width: `${romUsedPercent}%` }} />
+            </UsageBar>
+          </Card>
+          <Card>
+            <StatLabel>{l10n("FIELD_ROM_MAX_CAPACITY")}</StatLabel>
+            <StatValue>{maxUsedPercent.toFixed(1)}%</StatValue>
+            <StatDetail>
+              {bytesToHumanReadable(rom.used)} /{" "}
+              {bytesToHumanReadable(rom.maxSize)}
+            </StatDetail>
+            <UsageBar>
+              <UsageBarUsed style={{ width: `${maxUsedPercent}%` }} />
+            </UsageBar>
+          </Card>
+          <MemoryCard label={l10n("FIELD_ROM_BANK_0")} usage={memory.bank0} />
+          <MemoryCard label="WRAM" usage={memory.wram} />
+        </Summary>
       </Content>
-
       <DebuggerBuildFooter />
     </Wrapper>
   );
