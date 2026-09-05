@@ -21,13 +21,12 @@ const DebuggerTriggerLink = ({ id, sceneId }: DebuggerTriggerLinkProps) => {
 
   const onSelect = useCallback(() => {
     dispatch(
-      editorActions.selectTrigger({
+      editorActions.openEditorResourceById({
+        type: "trigger",
         sceneId,
         triggerId: id,
       }),
     );
-    dispatch(editorActions.editSearchTerm(""));
-    dispatch(editorActions.editSearchTerm(sceneId));
   }, [dispatch, id, sceneId]);
 
   if (!trigger) {

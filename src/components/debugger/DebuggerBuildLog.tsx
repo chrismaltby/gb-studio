@@ -67,27 +67,31 @@ const BuildLogLine = ({ text, type, link }: BuildLogLineProps) => {
           onClick={() => {
             if (link.type === "customEvent") {
               dispatch(
-                editorActions.selectCustomEvent({
+                editorActions.openEditorResourceById({
+                  type: "customEvent",
                   customEventId: link.entityId,
                 }),
               );
             } else if (link.type === "actor") {
               dispatch(
-                editorActions.selectActor({
+                editorActions.openEditorResourceById({
+                  type: "actor",
                   actorId: link.entityId,
                   sceneId: link.sceneId,
                 }),
               );
             } else if (link.type === "trigger") {
               dispatch(
-                editorActions.selectTrigger({
+                editorActions.openEditorResourceById({
+                  type: "trigger",
                   triggerId: link.entityId,
                   sceneId: link.sceneId,
                 }),
               );
             } else if (link.type === "scene") {
               dispatch(
-                editorActions.selectScene({
+                editorActions.openEditorResourceById({
+                  type: "scene",
                   sceneId: link.sceneId,
                 }),
               );

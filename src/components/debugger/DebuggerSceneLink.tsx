@@ -17,9 +17,9 @@ const DebuggerSceneLink = ({ id }: DebuggerSceneLinkProps) => {
   );
 
   const onSelect = useCallback(() => {
-    dispatch(editorActions.selectScene({ sceneId: id }));
-    dispatch(editorActions.editSearchTerm(""));
-    dispatch(editorActions.editSearchTerm(id));
+    dispatch(
+      editorActions.openEditorResourceById({ type: "scene", sceneId: id }),
+    );
   }, [dispatch, id]);
 
   if (!scene) {

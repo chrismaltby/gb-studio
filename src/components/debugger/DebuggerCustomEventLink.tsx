@@ -19,7 +19,12 @@ const DebuggerCustomEventLink = ({ id }: DebuggerCustomEventLinkProps) => {
   );
 
   const onSelect = useCallback(() => {
-    dispatch(editorActions.selectCustomEvent({ customEventId: id }));
+    dispatch(
+      editorActions.openEditorResourceById({
+        type: "customEvent",
+        customEventId: id,
+      }),
+    );
   }, [dispatch, id]);
 
   if (!customEvent) {
