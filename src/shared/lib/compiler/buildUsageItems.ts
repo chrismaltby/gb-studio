@@ -85,7 +85,6 @@ export const buildUsageAssetSourceTypeLabel = (type: BuildAssetSourceType) => {
     case "projectiles":
       return l10n("FIELD_PROJECTILES");
     case "tileset":
-    case "bank2Tileset":
       return l10n("FIELD_TILESET");
     case "cgbTileset":
       return l10n("FIELD_CGB_TILESET");

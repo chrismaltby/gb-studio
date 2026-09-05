@@ -41,7 +41,7 @@ describe("matchBuildAssetSource", () => {
     ).toEqual({
       type: "sprite",
       symbol: "sprite_player",
-      sourceType: "bank2Tileset",
+      sourceType: "cgbTileset",
     });
     expect(
       matchBuildAssetSource(

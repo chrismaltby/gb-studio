@@ -12,7 +12,6 @@ export type BuildAssetSourceType =
   | "projectiles"
   | "tileset"
   | "cgbTileset"
-  | "bank2Tileset"
   | "tilemap"
   | "tilemapAttr";
 
@@ -43,7 +42,7 @@ const SCENE_SUFFIXES: [string, BuildAssetSourceType][] = [
 
 const SPRITE_SUFFIXES: [string, BuildAssetSourceType][] = [
   ["_tileset", "tileset"],
-  ["_bank2_tileset", "bank2Tileset"],
+  ["_bank2_tileset", "cgbTileset"],
 ];
 
 const BACKGROUND_SUFFIXES: [string, BuildAssetSourceType][] = [
