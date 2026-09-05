@@ -98,6 +98,9 @@ const buildGame =
         },
       );
       if (buildResult.status === "failed") {
+        if (buildResult.stage !== "prepare") {
+          dispatch(debuggerActions.setUsageData(buildResult.usage));
+        }
         openBuildLog(dispatch);
       }
 

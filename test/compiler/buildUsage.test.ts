@@ -210,6 +210,7 @@ describe("collectBuildUsage", () => {
       collectBuildUsage({
         manifest,
         scriptMap,
+        mode: "complete",
         tmpPath: "/tmp",
         progress,
         warnings,
@@ -292,6 +293,43 @@ describe("collectBuildUsage", () => {
     });
   });
 
+  test("returns current object usage without reading linked artifacts in partial mode", async () => {
+    mockedAnalyseBuildObjects.mockResolvedValue([
+      {
+        sourceFile: "src/data/project.s",
+        origin: { type: "project" },
+        usage: { bank0: 0, wram: 4, bankedRom: 20682 },
+      },
+    ]);
+
+    await expect(
+      collectBuildUsage({
+        manifest,
+        scriptMap,
+        mode: "partial",
+        tmpPath: "/tmp",
+        progress,
+        warnings,
+      }),
+    ).resolves.toEqual({
+      status: "partial",
+      plugins: [],
+      scripts: [{ symbol: "project", size: 20682, sources: scriptMap.project }],
+      sources: [
+        {
+          sourceFile: "src/data/project.s",
+          usage: { bank0: 0, wram: 4, bankedRom: 20682 },
+        },
+      ],
+    });
+    expect(mockedAnalyseBuildObjects).toHaveBeenCalledWith({
+      manifest,
+      allowMissing: true,
+    });
+    expect(mockedRomUsage).not.toHaveBeenCalled();
+    expect(mockedAnalyseMusicDriverUsage).not.toHaveBeenCalled();
+  });
+
   test("groups plugin files, preserves replacements, and sorts deterministically", async () => {
     mockedAnalyseBuildObjects.mockResolvedValue([
       {
@@ -326,6 +364,7 @@ describe("collectBuildUsage", () => {
     const result = await collectBuildUsage({
       manifest,
       scriptMap,
+      mode: "complete",
       tmpPath: "/tmp",
       progress,
       warnings,
@@ -384,6 +423,7 @@ describe("collectBuildUsage", () => {
       collectBuildUsage({
         manifest,
         scriptMap,
+        mode: "complete",
         tmpPath: "/tmp",
         progress,
         warnings,
@@ -401,6 +441,7 @@ describe("collectBuildUsage", () => {
       collectBuildUsage({
         manifest,
         scriptMap,
+        mode: "complete",
         tmpPath: "/tmp",
         progress,
         warnings,

@@ -1515,6 +1515,7 @@
   "FIELD_CGB_TILESET": "CGB Tileset",
   "FIELD_COLLISIONS": "Collisions",
   "FIELD_PROJECTILES": "Projectiles",
+  "FIELD_BUILD_FAILED_INFO": "The most recent build failed, some usage data may be missing",
 
   "// 7": "Asset Viewer ---------------------------------------------",
   "ASSET_SEARCH": "Search...",

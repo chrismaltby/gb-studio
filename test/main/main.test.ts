@@ -365,6 +365,7 @@ describe("Electron Main Process", () => {
     expect(mockedCollectBuildUsage).toHaveBeenCalledWith({
       manifest,
       scriptMap: {},
+      mode: "complete",
       tmpPath: "/tmp",
       progress: expect.any(Function),
       warnings: expect.any(Function),
@@ -386,7 +387,11 @@ describe("Electron Main Process", () => {
 
     await expect(
       buildHandler?.({}, dummyProjectResources, buildOptions),
-    ).resolves.toEqual({ status: "failed", error: "link failed" });
+    ).resolves.toEqual({
+      status: "failed",
+      stage: "prepare",
+      error: "link failed",
+    });
     expect(mockedCollectBuildUsage).not.toHaveBeenCalled();
   });
 

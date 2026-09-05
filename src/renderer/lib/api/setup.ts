@@ -99,7 +99,14 @@ export type ProjectBuildResult =
     }
   | {
       status: "failed";
+      stage: "prepare";
       error: string;
+    }
+  | {
+      status: "failed";
+      stage: "make" | "export";
+      error: string;
+      usage: UsageData;
     }
   | {
       status: "cancelled";

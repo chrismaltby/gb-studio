@@ -1608,7 +1608,23 @@ ipcMain.handle(
       }
       if (status === "failed") {
         buildErr(buildResult.error);
-        return { status, error: buildResult.error };
+        if (buildResult.stage === "prepare") {
+          return { status, stage: buildResult.stage, error: buildResult.error };
+        }
+        const usage = await collectBuildUsage({
+          manifest: buildResult.manifest,
+          scriptMap: buildResult.compiledData.scriptMap,
+          mode: buildResult.stage === "make" ? "partial" : "complete",
+          tmpPath,
+          progress,
+          warnings,
+        });
+        return {
+          status,
+          stage: buildResult.stage,
+          error: buildResult.error,
+          usage,
+        };
       }
       const { compiledData, manifest } = buildResult;
 
@@ -1637,6 +1653,7 @@ ipcMain.handle(
       const usage = await collectBuildUsage({
         manifest,
         scriptMap: compiledData.scriptMap,
+        mode: "complete",
         tmpPath,
         progress,
         warnings,

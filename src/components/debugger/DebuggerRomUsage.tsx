@@ -11,6 +11,7 @@ import { DebuggerPluginUsage } from "components/debugger/DebuggerPluginUsage";
 import { FixedSpacer } from "ui/spacing/Spacing";
 import DebuggerDataUsage from "components/debugger/DebuggerDataUsage";
 import CachedScroll from "ui/util/CachedScroll";
+import { Alert } from "ui/alerts/Alert";
 
 const Wrapper = styled.div`
   display: flex;
@@ -129,7 +130,7 @@ const DebuggerRomUsage = () => {
 
   const running = buildStatus === "running";
 
-  if (usageData?.status !== "complete") {
+  if (!usageData || usageData.status === "unavailable") {
     return (
       <Wrapper>
         <Content>
@@ -146,6 +147,37 @@ const DebuggerRomUsage = () => {
 
   const showPlugins = usageData.plugins.length > 0;
   const showData = usageData.scripts.length > 0 || usageData.sources.length > 0;
+
+  if (usageData.status === "partial") {
+    return (
+      <Wrapper>
+        <Content>
+          <CachedScroll cacheKey="debugger-rom-usage">
+            <ScrollContent>
+              <Alert variant="warning">{l10n("FIELD_BUILD_FAILED_INFO")}</Alert>
+              {showPlugins && (
+                <>
+                  <FixedSpacer height={20} />
+                  <DebuggerPluginUsage plugins={usageData.plugins} />
+                </>
+              )}
+              {showData && (
+                <>
+                  <FixedSpacer height={20} />
+                  <DebuggerDataUsage
+                    scripts={usageData.scripts}
+                    sources={usageData.sources}
+                  />
+                </>
+              )}
+            </ScrollContent>
+          </CachedScroll>
+        </Content>
+        <DebuggerBuildFooter />
+      </Wrapper>
+    );
+  }
+
   const memory = usageData.memory;
   const rom = memory.rom;
   const romUsedPercent = usedPercent(rom.used, rom.size);

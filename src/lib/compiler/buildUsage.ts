@@ -85,6 +85,12 @@ export type UsageData =
       sources: BuildUsageSource[];
     }
   | {
+      status: "partial";
+      plugins: BuildUsagePlugin[];
+      scripts: BuildUsageScript[];
+      sources: BuildUsageSource[];
+    }
+  | {
       status: "unavailable";
     };
 
@@ -258,12 +264,14 @@ export const calculateMemoryUsage = (
 export const collectBuildUsage = async ({
   manifest,
   scriptMap,
+  mode,
   tmpPath,
   progress,
   warnings,
 }: {
   manifest: BuildManifest;
   scriptMap: Record<string, CompiledScriptSource[]>;
+  mode: "complete" | "partial";
   tmpPath: string;
   progress: (message: string) => void;
   warnings: (message: string) => void;
@@ -271,7 +279,7 @@ export const collectBuildUsage = async ({
   try {
     const modules = await analyseBuildObjects({
       manifest,
-      allowMissing: false,
+      allowMissing: mode === "partial",
     });
     const plugins = analysePluginUsage(modules);
     const usageSources: BuildUsageSource[] = modules.map((module) => ({
@@ -292,6 +300,10 @@ export const collectBuildUsage = async ({
       })
       .filter((script) => script.sources.length > 0)
       .sort((left, right) => right.size - left.size);
+
+    if (mode === "partial") {
+      return { status: "partial", plugins, scripts, sources: usageSources };
+    }
 
     const usageData = await romUsage({
       manifest,

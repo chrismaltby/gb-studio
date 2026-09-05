@@ -71,9 +71,11 @@ test("Should run with debugging when build and run is used with the visible Debu
 });
 
 test("Should open the build log when a build returns a failed outcome", async () => {
-  jest
-    .spyOn(API.project, "build")
-    .mockResolvedValue({ status: "failed", error: "Failed" });
+  jest.spyOn(API.project, "build").mockResolvedValue({
+    status: "failed",
+    stage: "prepare",
+    error: "Failed",
+  });
   const dispatch = jest.fn();
 
   await buildGameActions.buildGame({ buildType: "web" })(
