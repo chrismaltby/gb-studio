@@ -82,7 +82,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockedLoadScriptEventHandlers.mockResolvedValue({});
   mockedCompileData.mockResolvedValue({} as never);
-  mockedEjectBuild.mockResolvedValue(undefined);
+  mockedEjectBuild.mockResolvedValue({ pluginAttribution: { ownedFiles: {} } });
   mockedValidateEjectedBuild.mockResolvedValue(undefined);
   mockedResolveBuildSources.mockResolvedValue([]);
   mockedCreateBuildManifest.mockReturnValue(manifest);

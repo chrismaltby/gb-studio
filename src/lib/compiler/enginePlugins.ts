@@ -29,6 +29,23 @@ type EnginePluginEntry = {
   order: number;
 };
 
+export type PluginFileAttribution = {
+  ownedFiles: Record<
+    string,
+    {
+      pluginName: string;
+      replacesDefault: boolean;
+    }
+  >;
+};
+
+export const isBuildableSource = (relFile: string): boolean => {
+  const posix = pathToPosix(relFile);
+  return (
+    posix.startsWith("src/") && (posix.endsWith(".c") || posix.endsWith(".s"))
+  );
+};
+
 /**
  * Scans a plugin's engine files and warns if any would overwrite files already
  * written by a previously processed plugin. Updates writtenByPlugin in-place.
@@ -38,12 +55,13 @@ export const warnOnPluginFileCollisions = async (
   pluginName: string,
   writtenByPlugin: Map<string, string>,
   warnings: (msg: string) => void,
-): Promise<void> => {
+): Promise<string[]> => {
   const pluginFiles = await glob("**/*", {
     cwd: usedEnginePluginPath,
     nodir: true,
   });
 
+  const writtenFiles: string[] = [];
   for (const relFile of pluginFiles) {
     if (isPatchFile(relFile) || isEngineManifestFile(relFile)) {
       continue;
@@ -60,7 +78,9 @@ export const warnOnPluginFileCollisions = async (
       );
     }
     writtenByPlugin.set(posixRel, pluginName);
+    writtenFiles.push(posixRel);
   }
+  return writtenFiles;
 };
 
 export const buildSortedEnginePluginList = async (
@@ -130,6 +150,7 @@ export const applyEnginePlugins = async ({
   const enginePlugins = await buildSortedEnginePluginList(pluginsPath);
   const writtenByPlugin = new Map<string, string>();
   const allPatches: PatchInfo[] = [];
+  const attribution: PluginFileAttribution = { ownedFiles: {} };
 
   for (const { enginePluginPath, pluginName } of enginePlugins) {
     progress(
@@ -209,25 +230,50 @@ export const applyEnginePlugins = async ({
 
     allPatches.push(...patchPaths.map((p) => ({ ...p, pluginName })));
 
-    await warnOnPluginFileCollisions(
+    const writtenByEarlierPlugin = new Set(writtenByPlugin.keys());
+    const pluginFiles = await warnOnPluginFileCollisions(
       usedEnginePluginPath,
       pluginName,
       writtenByPlugin,
       warnings,
     );
 
+    for (const sourcePath of pluginFiles) {
+      if (!isBuildableSource(sourcePath)) continue;
+      const previousAttribution = attribution.ownedFiles[sourcePath];
+      attribution.ownedFiles[sourcePath] = {
+        pluginName: pathToPosix(pluginName),
+        replacesDefault:
+          previousAttribution?.replacesDefault ??
+          (!writtenByEarlierPlugin.has(sourcePath) &&
+            (await fs.pathExists(Path.join(outputRoot, sourcePath)))),
+      };
+    }
+
     await copy(usedEnginePluginPath, outputRoot, {
       ignore: isPatchFile,
     });
   }
 
-  await applyPatches(
+  const appliedPatches = await applyPatches(
     allPatches,
     outputRoot,
     projectRoot,
     writtenByPlugin,
     warnings,
   );
+
+  for (const patch of appliedPatches) {
+    const sourcePath = pathToPosix(patch.rel.replace(/\.patch$/, ""));
+    if (!patch.pluginName || !isBuildableSource(sourcePath)) continue;
+    const previousAttribution = attribution.ownedFiles[sourcePath];
+    attribution.ownedFiles[sourcePath] = {
+      pluginName: pathToPosix(patch.pluginName),
+      replacesDefault: previousAttribution?.replacesDefault ?? true,
+    };
+  }
+
+  return attribution;
 };
 
 /**
@@ -374,7 +420,7 @@ export const collectPatchFiles = async (
 };
 
 /**
- * Applies multiple patches and returns results for each.
+ * Applies multiple patches and returns the patches that applied successfully.
  * When pluginName and writtenByPlugin are provided, patch conflicts caused by
  * another plugin having overwritten the target file produce a richer warning.
  */
@@ -384,10 +430,13 @@ export const applyPatches = async (
   projectRoot: string,
   writtenByPlugin: Map<string, string>,
   warnings: (msg: string) => void,
-): Promise<void> => {
+): Promise<PatchInfo[]> => {
+  const appliedPatches: PatchInfo[] = [];
   for (const patchPath of patchPaths) {
     const result = await applyPatchToFile(patchPath, outputRoot);
-    if (!result.success) {
+    if (result.success) {
+      appliedPatches.push(patchPath);
+    } else {
       const relPath = Path.relative(projectRoot, patchPath.abs);
       if (result.error?.message === "Path outside engine root") {
         warnings(
@@ -423,4 +472,5 @@ export const applyPatches = async (
       }
     }
   }
+  return appliedPatches;
 };
