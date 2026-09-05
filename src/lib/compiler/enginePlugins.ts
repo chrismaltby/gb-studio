@@ -151,6 +151,9 @@ export const applyEnginePlugins = async ({
   const writtenByPlugin = new Map<string, string>();
   const allPatches: PatchInfo[] = [];
   const attribution: PluginFileAttribution = { ownedFiles: {} };
+  const defaultBuildSources = new Set(
+    (await glob("src/**/*.@(c|s)", { cwd: outputRoot })).map(pathToPosix),
+  );
 
   for (const { enginePluginPath, pluginName } of enginePlugins) {
     progress(
@@ -230,7 +233,6 @@ export const applyEnginePlugins = async ({
 
     allPatches.push(...patchPaths.map((p) => ({ ...p, pluginName })));
 
-    const writtenByEarlierPlugin = new Set(writtenByPlugin.keys());
     const pluginFiles = await warnOnPluginFileCollisions(
       usedEnginePluginPath,
       pluginName,
@@ -245,8 +247,7 @@ export const applyEnginePlugins = async ({
         pluginName: pathToPosix(pluginName),
         replacesDefault:
           previousAttribution?.replacesDefault ??
-          (!writtenByEarlierPlugin.has(sourcePath) &&
-            (await fs.pathExists(Path.join(outputRoot, sourcePath)))),
+          defaultBuildSources.has(sourcePath),
       };
     }
 
