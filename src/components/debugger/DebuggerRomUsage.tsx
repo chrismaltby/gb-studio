@@ -9,23 +9,27 @@ import type { MemoryRegionUsage } from "lib/compiler/buildUsage";
 import DebuggerRomUsageOverview from "components/debugger/DebuggerRomUsageOverview";
 import { DebuggerPluginUsage } from "components/debugger/DebuggerPluginUsage";
 import { FixedSpacer } from "ui/spacing/Spacing";
+import DebuggerDataUsage from "components/debugger/DebuggerDataUsage";
+import CachedScroll from "ui/util/CachedScroll";
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  overflow: auto;
   font-size: 11px;
 `;
 
 const Content = styled.div`
   flex-grow: 1;
+  overflow: hidden;
+  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
+`;
+
+const ScrollContent = styled.div`
   padding: 16px;
-  overflow: auto;
   container-type: inline-size;
   user-select: text;
-  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
 `;
 
 const EmptyState = styled.div`
@@ -121,18 +125,27 @@ const MemoryCard = ({ label, usage }: MemoryCardProps) => {
 
 const DebuggerRomUsage = () => {
   const usageData = useAppSelector((state) => state.debug.usageData);
+  const buildStatus = useAppSelector((state) => state.console.status);
+
+  const running = buildStatus === "running";
 
   if (usageData?.status !== "complete") {
     return (
       <Wrapper>
         <Content>
-          <EmptyState>{l10n("FIELD_RUN_A_BUILD_USAGE_DESC")}</EmptyState>
+          <EmptyState>
+            {running
+              ? l10n("FIELD_BUILDING")
+              : l10n("FIELD_RUN_A_BUILD_USAGE_DESC")}
+          </EmptyState>
         </Content>
         <DebuggerBuildFooter />
       </Wrapper>
     );
   }
 
+  const showPlugins = usageData.plugins.length > 0;
+  const showData = usageData.scripts.length > 0 || usageData.sources.length > 0;
   const memory = usageData.memory;
   const rom = memory.rom;
   const romUsedPercent = usedPercent(rom.used, rom.size);
@@ -141,44 +154,57 @@ const DebuggerRomUsage = () => {
   return (
     <Wrapper>
       <Content>
-        <Summary>
-          <Card>
-            <StatLabel>{l10n("FIELD_ROM_USED")}</StatLabel>
-            <StatValue>
-              {bytesToHumanReadable(rom.used)} /{" "}
-              {bytesToHumanReadable(rom.size)}
-            </StatValue>
-            <StatDetail>
-              {rom.nextSize
-                ? `${l10n("FIELD_ROM_NEXT_SIZE")}: ${bytesToHumanReadable(rom.nextSize)}`
-                : `${l10n("FIELD_ROM_MAX_SIZE")}: ${bytesToHumanReadable(rom.maxSize)}`}
-            </StatDetail>
-            <UsageBar>
-              <UsageBarUsed style={{ width: `${romUsedPercent}%` }} />
-            </UsageBar>
-          </Card>
-          <Card>
-            <StatLabel>{l10n("FIELD_ROM_MAX_CAPACITY")}</StatLabel>
-            <StatValue>{maxUsedPercent.toFixed(1)}%</StatValue>
-            <StatDetail>
-              {bytesToHumanReadable(rom.used)} /{" "}
-              {bytesToHumanReadable(rom.maxSize)}
-            </StatDetail>
-            <UsageBar>
-              <UsageBarUsed style={{ width: `${maxUsedPercent}%` }} />
-            </UsageBar>
-          </Card>
-          <MemoryCard label={l10n("FIELD_BANK_0")} usage={memory.bank0} />
-          <MemoryCard label="WRAM" usage={memory.wram} />
-        </Summary>
-        <FixedSpacer height={20} />
-        <DebuggerRomUsageOverview overview={usageData.overview} />
-        {usageData.plugins.length > 0 && (
-          <>
+        <CachedScroll cacheKey="debugger-rom-usage">
+          <ScrollContent>
+            <Summary>
+              <Card>
+                <StatLabel>{l10n("FIELD_ROM_USED")}</StatLabel>
+                <StatValue>
+                  {bytesToHumanReadable(rom.used)} /{" "}
+                  {bytesToHumanReadable(rom.size)}
+                </StatValue>
+                <StatDetail>
+                  {rom.nextSize
+                    ? `${l10n("FIELD_ROM_NEXT_SIZE")}: ${bytesToHumanReadable(rom.nextSize)}`
+                    : `${l10n("FIELD_ROM_MAX_SIZE")}: ${bytesToHumanReadable(rom.maxSize)}`}
+                </StatDetail>
+                <UsageBar>
+                  <UsageBarUsed style={{ width: `${romUsedPercent}%` }} />
+                </UsageBar>
+              </Card>
+              <Card>
+                <StatLabel>{l10n("FIELD_ROM_MAX_CAPACITY")}</StatLabel>
+                <StatValue>{maxUsedPercent.toFixed(1)}%</StatValue>
+                <StatDetail>
+                  {bytesToHumanReadable(rom.used)} /{" "}
+                  {bytesToHumanReadable(rom.maxSize)}
+                </StatDetail>
+                <UsageBar>
+                  <UsageBarUsed style={{ width: `${maxUsedPercent}%` }} />
+                </UsageBar>
+              </Card>
+              <MemoryCard label={l10n("FIELD_BANK_0")} usage={memory.bank0} />
+              <MemoryCard label="WRAM" usage={memory.wram} />
+            </Summary>
             <FixedSpacer height={20} />
-            <DebuggerPluginUsage plugins={usageData.plugins} />
-          </>
-        )}
+            <DebuggerRomUsageOverview overview={usageData.overview} />
+            {showPlugins && (
+              <>
+                <FixedSpacer height={20} />
+                <DebuggerPluginUsage plugins={usageData.plugins} />
+              </>
+            )}
+            {showData && (
+              <>
+                <FixedSpacer height={20} />
+                <DebuggerDataUsage
+                  scripts={usageData.scripts}
+                  sources={usageData.sources}
+                />
+              </>
+            )}
+          </ScrollContent>
+        </CachedScroll>
       </Content>
       <DebuggerBuildFooter />
     </Wrapper>

@@ -147,6 +147,21 @@ export const ActorScripts = ({ actor, sceneId }: ActorScriptsProps) => {
     }
   }, [scriptMode, actor?.collisionGroup, collisionTabs, defaultTabs]);
 
+  useEffect(() => {
+    if (tabs.includes(lastScriptTab) && lastScriptTab !== scriptMode)
+      setScriptMode(lastScriptTab as keyof ScriptHandlers);
+  }, [lastScriptTab, scriptMode, tabs]);
+
+  useEffect(() => {
+    if (
+      secondaryTabs.includes(lastScriptTabSecondary) &&
+      lastScriptTabSecondary !== scriptModeSecondary
+    )
+      setScriptModeSecondary(
+        lastScriptTabSecondary as keyof ScriptHandlers["hit"],
+      );
+  }, [lastScriptTabSecondary, scriptModeSecondary, secondaryTabs]);
+
   const dispatch = useAppDispatch();
 
   const onChangeScriptMode = (mode: keyof ScriptHandlers) => {

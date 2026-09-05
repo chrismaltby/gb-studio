@@ -3,8 +3,11 @@ import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
 import type { UsageData } from "lib/compiler/buildUsage";
 import isEqual from "lodash/isEqual";
 import type { DebuggerScriptContext } from "shared/lib/debugger/types";
+import type { BuildUsageItemType } from "shared/lib/compiler/buildUsageItems";
 
 export type DebuggerPane = "debugger" | "buildLog" | "romUsage";
+export type DataUsageSortKey = "size" | "name" | "filename" | "type";
+export type DataUsageFilter = "all" | BuildUsageItemType;
 
 export interface DebuggerState {
   initialized: boolean;
@@ -20,6 +23,10 @@ export interface DebuggerState {
   isPaused: boolean;
   activePane: DebuggerPane;
   usageData: UsageData | null;
+  dataUsageSearchTerm: string;
+  dataUsageFilter: DataUsageFilter;
+  dataUsageSortKey: DataUsageSortKey;
+  dataUsageSortAsc: boolean;
 }
 
 export const initialState: DebuggerState = {
@@ -36,6 +43,10 @@ export const initialState: DebuggerState = {
   isPaused: true,
   activePane: "debugger",
   usageData: null,
+  dataUsageSearchTerm: "",
+  dataUsageFilter: "all",
+  dataUsageSortKey: "size",
+  dataUsageSortAsc: false,
 };
 
 const debuggerSlice = createSlice({
@@ -93,6 +104,18 @@ const debuggerSlice = createSlice({
     },
     setUsageData: (state, action: PayloadAction<UsageData>) => {
       state.usageData = action.payload;
+    },
+    setDataUsageSearchTerm: (state, action: PayloadAction<string>) => {
+      state.dataUsageSearchTerm = action.payload;
+    },
+    setDataUsageFilter: (state, action: PayloadAction<DataUsageFilter>) => {
+      state.dataUsageFilter = action.payload;
+    },
+    setDataUsageSortKey: (state, action: PayloadAction<DataUsageSortKey>) => {
+      state.dataUsageSortKey = action.payload;
+    },
+    setDataUsageSortAsc: (state, action: PayloadAction<boolean>) => {
+      state.dataUsageSortAsc = action.payload;
     },
   },
 });

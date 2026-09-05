@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ScriptEditor from "components/script/ScriptEditor";
 import { castEventToInt } from "renderer/lib/helpers/castEventValue";
 import { WorldInspector } from "components/world/inspector/WorldInspector";
@@ -391,6 +391,22 @@ export const SceneInspector = ({ id }: SceneInspectorProps) => {
   const [scriptModeSecondary, setScriptModeSecondary] = useState<
     keyof ScriptHandlers["hit"]
   >(initialSecondaryTab as keyof ScriptHandlers["hit"]);
+
+  useEffect(() => {
+    if (tabs.includes(lastScriptTab) && lastScriptTab !== scriptMode)
+      setScriptMode(lastScriptTab as keyof ScriptHandlers);
+  }, [lastScriptTab, scriptMode, tabs]);
+
+  useEffect(() => {
+    if (
+      secondaryTabs.includes(lastScriptTabSecondary) &&
+      lastScriptTabSecondary !== scriptModeSecondary
+    )
+      setScriptModeSecondary(
+        lastScriptTabSecondary as keyof ScriptHandlers["hit"],
+      );
+  }, [lastScriptTabSecondary, scriptModeSecondary, secondaryTabs]);
+
   const lockScriptEditor = useAppSelector(
     (state) => state.editor.lockScriptEditor,
   );

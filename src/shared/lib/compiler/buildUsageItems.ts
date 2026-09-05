@@ -55,6 +55,49 @@ export type BuildUsageAssetItem = BuildUsageItemBase & {
 
 export type BuildUsageItem = BuildUsageScriptItem | BuildUsageAssetItem;
 
+export const buildUsageItemTypeLabel = (type: BuildUsageItemType) => {
+  switch (type) {
+    case "script":
+      return l10n("FIELD_SCRIPT");
+    case "scene":
+      return l10n("FIELD_SCENE");
+    case "sprite":
+      return l10n("FIELD_SPRITE");
+    case "background":
+      return l10n("FIELD_BACKGROUND");
+    case "music":
+      return l10n("FIELD_MUSIC");
+    case "sound":
+      return l10n("FIELD_SOUND");
+  }
+};
+
+export const buildUsageAssetSourceTypeLabel = (type: BuildAssetSourceType) => {
+  switch (type) {
+    case "actors":
+      return l10n("FIELD_ACTORS");
+    case "collisions":
+      return l10n("FIELD_COLLISIONS");
+    case "triggers":
+      return l10n("FIELD_TRIGGERS");
+    case "sprites":
+      return l10n("FIELD_SPRITES");
+    case "projectiles":
+      return l10n("FIELD_PROJECTILES");
+    case "tileset":
+    case "bank2Tileset":
+      return l10n("FIELD_TILESET");
+    case "cgbTileset":
+      return l10n("FIELD_CGB_TILESET");
+    case "tilemap":
+      return l10n("FIELD_TILEMAP");
+    case "tilemapAttr":
+      return l10n("FIELD_TILEMAP_ATTR");
+    case "data":
+      return undefined;
+  }
+};
+
 const scriptKeyLabel = (source: CompiledScriptSource) => {
   switch (source.scriptKey) {
     case "script":
