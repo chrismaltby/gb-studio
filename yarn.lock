@@ -10537,7 +10537,7 @@ __metadata:
     uuid: "npm:^14.0.1"
     wavefile: "npm:^11.0.0"
     webpack: "npm:^5.108.4"
-    webpack-bundle-analyzer: "npm:^5.3.1"
+    webpack-bundle-analyzer: "npm:^5.3.2"
     webpack-cli: "npm:^7.2.1"
     webpack-dev-server: "npm:5.2.6"
     workbox-webpack-plugin: "npm:^7.4.0"
@@ -18079,9 +18079,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-bundle-analyzer@npm:^5.3.1":
-  version: 5.3.1
-  resolution: "webpack-bundle-analyzer@npm:5.3.1"
+"webpack-bundle-analyzer@npm:^5.3.2":
+  version: 5.3.2
+  resolution: "webpack-bundle-analyzer@npm:5.3.2"
   dependencies:
     "@discoveryjs/json-ext": "npm:^0.6.3"
     acorn: "npm:^8.0.4"
@@ -18095,7 +18095,7 @@ __metadata:
     ws: "npm:^8.19.0"
   bin:
     webpack-bundle-analyzer: lib/bin/analyzer.js
-  checksum: 10c0/7697c462ca83f345761c59104708f22c53efcfeacd41561880efc51096af3887f8eb4b9bd8b538cabee8ba2536a14d4551fe0cbcc34ffc2443eaf3018aca096c
+  checksum: 10c0/e03f5d0c9173e55448992084419ae4405f04c0215e4ee5bc6a7d7a2da8b629240f943d0113dbaf5ebf152c136f3878a3482962b9fb2891ddbb0fb7fd69f3f76d
   languageName: node
   linkType: hard
 
