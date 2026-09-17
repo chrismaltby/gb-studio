@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where debugger wouldn't display prefab scripts
 - Fix issue where new projects would git ignore FX Hammer files by default
 - Fix issue where cloning a pattern in the music editor could cause application to crash [@jackwalkerlabs](https://github.com/jackwalkerlabs)
+- Fix issue where using Bitwise Right Shift followed by Left Shift could cause scripts to be incorrectly optimised
 
 ## [4.3.2] - 2026-06-22
 

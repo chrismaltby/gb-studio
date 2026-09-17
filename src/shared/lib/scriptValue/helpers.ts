@@ -995,7 +995,7 @@ export const peepholeRPN = (
       }
     }
 
-    // SHR N followed by SHL N = noop
+    // SHR N followed by SHL N = clear lower N bits
     if (
       i + 3 < rpn.length &&
       rpn[i].type === "number" &&
@@ -1005,7 +1005,13 @@ export const peepholeRPN = (
     ) {
       const shrAmount = (rpn[i] as { value: number }).value;
       const shlAmount = (rpn[i + 2] as { value: number }).value;
+
       if (shrAmount === shlAmount) {
+        const mask = ~((1 << shlAmount) - 1) & 0xffff;
+
+        optimised.push({ type: "number", value: mask });
+        optimised.push({ type: "bAND" });
+
         i += 4;
         continue;
       }

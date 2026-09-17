@@ -14,6 +14,7 @@ import {
   mapScriptValue,
   multiplyScriptValueConst,
   optimiseScriptValue,
+  peepholeRPN,
   precompileScriptValue,
   someInScriptValue,
   sortFetchOperations,
@@ -2563,5 +2564,103 @@ describe("expressions", () => {
         },
       },
     });
+  });
+});
+
+describe("peepholeRPN", () => {
+  test("should combine matching SHR N, ADD constant, SHL N", () => {
+    expect(
+      peepholeRPN([
+        { type: "variable", value: "L0" },
+        { type: "number", value: 3 },
+        { type: "shr" },
+        { type: "number", value: 2 },
+        { type: "add" },
+        { type: "number", value: 3 },
+        { type: "shl" },
+      ]),
+    ).toEqual([
+      { type: "variable", value: "L0" },
+      { type: "number", value: 16 },
+      { type: "add" },
+      { type: "number", value: 0xfff8 },
+      { type: "bAND" },
+    ]);
+  });
+
+  test("should combine matching SHR N, SUB constant, SHL N", () => {
+    expect(
+      peepholeRPN([
+        { type: "variable", value: "L0" },
+        { type: "number", value: 3 },
+        { type: "shr" },
+        { type: "number", value: 2 },
+        { type: "sub" },
+        { type: "number", value: 3 },
+        { type: "shl" },
+      ]),
+    ).toEqual([
+      { type: "variable", value: "L0" },
+      { type: "number", value: 16 },
+      { type: "sub" },
+      { type: "number", value: 0xfff8 },
+      { type: "bAND" },
+    ]);
+  });
+
+  test("should not combine SHR X, SUB constant, SHL Y when bit shifts differ", () => {
+    expect(
+      peepholeRPN([
+        { type: "variable", value: "L0" },
+        { type: "number", value: 3 },
+        { type: "shr" },
+        { type: "number", value: 2 },
+        { type: "sub" },
+        { type: "number", value: 2 },
+        { type: "shl" },
+      ]),
+    ).toEqual([
+      { type: "variable", value: "L0" },
+      { type: "number", value: 3 },
+      { type: "shr" },
+      { type: "number", value: 2 },
+      { type: "sub" },
+      { type: "number", value: 2 },
+      { type: "shl" },
+    ]);
+  });
+
+  test("should clear lower N bits replacing SHR N, SHL N", () => {
+    expect(
+      peepholeRPN([
+        { type: "variable", value: "L0" },
+        { type: "number", value: 3 },
+        { type: "shr" },
+        { type: "number", value: 3 },
+        { type: "shl" },
+      ]),
+    ).toEqual([
+      { type: "variable", value: "L0" },
+      { type: "number", value: 0xfff8 },
+      { type: "bAND" },
+    ]);
+  });
+
+  test("should not clear lower bits for SHR X, SHL Y when bit shifts differ", () => {
+    expect(
+      peepholeRPN([
+        { type: "variable", value: "L0" },
+        { type: "number", value: 3 },
+        { type: "shr" },
+        { type: "number", value: 2 },
+        { type: "shl" },
+      ]),
+    ).toEqual([
+      { type: "variable", value: "L0" },
+      { type: "number", value: 3 },
+      { type: "shr" },
+      { type: "number", value: 2 },
+      { type: "shl" },
+    ]);
   });
 });
