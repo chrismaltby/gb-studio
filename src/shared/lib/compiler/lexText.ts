@@ -46,7 +46,7 @@ export type Token =
       relative?: boolean;
     }
   | {
-      type: "gotoxyvariable";
+      type: "gotoxyVariable";
       xVariableId: string;
       yVariableId: string;
       relative?: boolean;

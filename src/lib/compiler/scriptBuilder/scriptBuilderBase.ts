@@ -1877,7 +1877,11 @@ abstract class ScriptBuilderBase {
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
 
-      this._loadTokens(prependTokens.concat(chunk.tokens));
+      const tokens =
+        i === 0 ? prependTokens.concat(chunk.tokens) : chunk.tokens;
+
+      this._loadTokens(tokens);
+
       this._displayText(i !== 0);
 
       if (chunk.action?.type === "wait") {
@@ -1980,7 +1984,7 @@ abstract class ScriptBuilderBase {
         } else if (token.type === "fontVariable") {
           text += "%f";
         }
-      } else if (token.type === "gotoxyvariable") {
+      } else if (token.type === "gotoxyVariable") {
         processVariableReference(token.xVariableId);
         processVariableReference(token.yVariableId);
         if (token.relative) {
@@ -2166,6 +2170,46 @@ abstract class ScriptBuilderBase {
       );
     } else {
       this._addCmd("VM_DISPLAY_TEXT");
+    }
+  };
+
+  _drawText = (
+    inputText: string,
+    positionToken: Extract<Token, { type: "gotoxy" | "gotoxyVariable" }>,
+    location: "background" | "overlay",
+  ) => {
+    const { settings } = this.options;
+    const isColor = settings.colorMode !== "mono";
+
+    if (isColor) {
+      this._stackPushConst(0);
+      this._getMemUInt8(".ARG0", "overlay_priority");
+      this._setConstMemUInt8("overlay_priority", 0);
+    }
+
+    if (location === "background") {
+      this._setTextLayer(".TEXT_LAYER_BKG");
+    } else {
+      this._setTextLayer(".TEXT_LAYER_WIN");
+    }
+
+    this._loadAndDisplayText(inputText, [
+      positionToken,
+      {
+        type: "speed",
+        speed: 0,
+      },
+    ]);
+
+    this._overlayWait(false, [".UI_WAIT_TEXT"]);
+
+    if (location === "background") {
+      this._setTextLayer(".TEXT_LAYER_WIN");
+    }
+
+    if (isColor) {
+      this._setMemUInt8("overlay_priority", ".ARG0");
+      this._stackPop(1);
     }
   };
 

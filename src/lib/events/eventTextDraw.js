@@ -73,20 +73,8 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { textDraw, textDrawScriptValue, getConstantValue } = helpers;
-
-  if (input.x.type === "number" && input.y.type === "number") {
-    textDraw(input.text, input.x.value, input.y.value, input.location);
-  } else if (input.x.type === "constant" && input.y.type === "constant") {
-    textDraw(
-      input.text,
-      getConstantValue(input.x.value),
-      getConstantValue(input.y.value),
-      input.location,
-    );
-  } else {
-    textDrawScriptValue(input.text, input.x, input.y, input.location);
-  }
+  const { textDrawScriptValue } = helpers;
+  textDrawScriptValue(input.text, input.x, input.y, input.location);
 };
 
 module.exports = {

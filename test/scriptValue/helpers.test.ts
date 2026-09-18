@@ -996,6 +996,68 @@ test("should precompile to list of required operations", () => {
   ]);
 });
 
+test("resolves constants when expression can collapse to a number", () => {
+  const [ops] = precompileScriptValue(
+    {
+      type: "add",
+      valueA: { type: "constant", value: "constant1" },
+      valueB: { type: "number", value: 2 },
+    },
+    "",
+    {
+      resolveConstants: (id) => {
+        expect(id).toBe("constant1");
+        return 3;
+      },
+    },
+  );
+
+  expect(ops).toEqual([{ type: "number", value: 5 }]);
+});
+
+test("resolves constants when expression is just a single constant", () => {
+  const [ops] = precompileScriptValue(
+    { type: "constant", value: "constant1" },
+    "",
+    {
+      resolveConstants: (id) => {
+        expect(id).toBe("constant1");
+        return 3;
+      },
+    },
+  );
+
+  expect(ops).toEqual([{ type: "number", value: 3 }]);
+});
+
+test("preserves constant symbols when expression cannot collapse to a number", () => {
+  const [ops] = precompileScriptValue(
+    {
+      type: "add",
+      valueA: { type: "variable", value: "variable1" },
+      valueB: { type: "constant", value: "constant1" },
+    },
+    "",
+    {
+      resolveConstants: () => 3,
+    },
+  );
+
+  expect(ops).toEqual([
+    {
+      type: "variable",
+      value: "variable1",
+    },
+    {
+      type: "constant",
+      value: "constant1",
+    },
+    {
+      type: "add",
+    },
+  ]);
+});
+
 test("should convert expression ($00$ + 8) to script value", () => {
   const input = "$00$ + 8";
   expect(expressionToScriptValue(input)).toEqual({
@@ -2944,6 +3006,31 @@ describe("precompileScriptValue ASM expressions", () => {
     expect(rpnOps).not.toContainEqual(
       expect.objectContaining({ type: "asmExpression" }),
     );
+  });
+
+  test("preserves constant symbols in static ASM expressions that cannot collapse to a number", () => {
+    const [ops] = precompileScriptValue(
+      {
+        type: "add",
+        valueA: { type: "numberSymbol", value: "SOME_SYMBOL" },
+        valueB: { type: "constant", value: "constant1" },
+      },
+      "",
+      {
+        resolveConstants: () => 3,
+      },
+    );
+
+    expect(ops).toEqual([
+      {
+        type: "asmExpression",
+        value: {
+          type: "add",
+          valueA: { type: "numberSymbol", value: "SOME_SYMBOL" },
+          valueB: { type: "constant", value: "constant1" },
+        },
+      },
+    ]);
   });
 });
 
