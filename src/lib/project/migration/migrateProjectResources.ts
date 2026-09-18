@@ -16,7 +16,10 @@ import {
   migrate420r8To420r9,
   migrate420r9To420r10,
 } from "./versions/410to420";
-import { migrate420r10To500r1 } from "lib/project/migration/versions/420to500";
+import {
+  migrate420r10To500r1,
+  migrate500r1To500r2,
+} from "lib/project/migration/versions/420to500";
 
 const migrations: ProjectResourcesMigration[] = [
   // 4.1.0 to 4.2.0
@@ -32,6 +35,7 @@ const migrations: ProjectResourcesMigration[] = [
   migrate420r9To420r10,
   // 4.2.0 to 5.0.0
   migrate420r10To500r1,
+  migrate500r1To500r2,
 ];
 
 const lastMigration = migrations[migrations.length - 1];

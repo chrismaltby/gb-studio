@@ -4,9 +4,13 @@ import {
   migrateFrom420r10To500r1DataPeek,
   migrateFrom420r10To500r1DataTables,
   migrateFrom420r10To500r1Variables,
+  migrateFrom500r1To500r2TextDraw,
 } from "lib/project/migration/versions/420to500";
 import type { ScriptEventDefs } from "shared/lib/scripts/scriptDefHelpers";
-import type { CompressedProjectResources } from "shared/lib/resources/types";
+import type {
+  CompressedProjectResources,
+  ScriptEvent,
+} from "shared/lib/resources/types";
 import {
   dummyCompressedProjectResources,
   dummyScriptResource,
@@ -405,5 +409,28 @@ test("migration keeps previously defined flags", () => {
     flag2: "flag",
     flag15: "is",
     flag16: "kept",
+  });
+});
+
+describe("migrateFrom500r1To500r2Event", () => {
+  test("should migrate text draw variables to values", () => {
+    const scriptEvent: ScriptEvent = {
+      id: "event1",
+      command: "EVENT_TEXT_DRAW",
+      args: {
+        text: "Lorem ipsum dolor sit amet",
+        x: 80,
+        y: 120,
+        location: "overlay",
+      },
+    };
+    const output = migrateFrom500r1To500r2TextDraw(scriptEvent, {
+      scriptEventDefs,
+    });
+
+    expect(output.args?.text).toEqual("Lorem ipsum dolor sit amet");
+    expect(output.args?.x).toEqual({ type: "number", value: 80 });
+    expect(output.args?.y).toEqual({ type: "number", value: 120 });
+    expect(output.args?.location).toEqual("overlay");
   });
 });

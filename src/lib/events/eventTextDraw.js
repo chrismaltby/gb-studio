@@ -36,21 +36,27 @@ const fields = [
     key: `x`,
     label: l10n("FIELD_X"),
     description: l10n("FIELD_X_DESC"),
-    type: "number",
+    type: "value",
     min: 0,
     max: 19,
+    defaultValue: {
+      type: "number",
+      value: 1,
+    },
     width: "50%",
-    defaultValue: 1,
   },
   {
     key: `y`,
     label: l10n("FIELD_Y"),
     description: l10n("FIELD_Y_DESC"),
-    type: "number",
+    type: "value",
     min: 0,
     max: 17,
+    defaultValue: {
+      type: "number",
+      value: 1,
+    },
     width: "50%",
-    defaultValue: 1,
   },
   {
     key: `location`,
@@ -67,8 +73,8 @@ const fields = [
 ];
 
 const compile = (input, helpers) => {
-  const { textDraw } = helpers;
-  textDraw(input.text, input.x, input.y, input.location);
+  const { textDrawScriptValue } = helpers;
+  textDrawScriptValue(input.text, input.x, input.y, input.location);
 };
 
 module.exports = {

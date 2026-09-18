@@ -623,17 +623,33 @@ const isASMStaticScriptValue = (
   return false;
 };
 
+export type PrecompileScriptValueOptions = {
+  resolveConstants?: (id: string) => number;
+};
+
 export const precompileScriptValue = (
   input: ScriptValue,
   localsLabel = "",
-  rpnOperations: PrecompiledValueRPNOperation[] = [],
-  fetchOperations: PrecompiledValueFetch[] = [],
+  { resolveConstants }: PrecompileScriptValueOptions = {},
 ): [PrecompiledValueRPNOperation[], PrecompiledValueFetch[]] => {
+  const resolvedInput = resolveConstants
+    ? optimiseScriptValue(
+        mapScriptValue(input, (node) =>
+          node.type === "constant"
+            ? {
+                type: "number",
+                value: resolveConstants(node.value),
+              }
+            : node,
+        ),
+      )
+    : undefined;
+
   return precompileOptimisedScriptValue(
-    optimiseScriptValue(input),
+    resolvedInput?.type === "number"
+      ? resolvedInput
+      : optimiseScriptValue(input),
     localsLabel,
-    rpnOperations,
-    fetchOperations,
   );
 };
 
@@ -807,7 +823,7 @@ export const precompileOptimisedScriptValue = (
     }
   } else if (isValueOperation(input)) {
     if (input.valueA) {
-      precompileScriptValue(
+      precompileOptimisedScriptValue(
         input.valueA,
         localsLabel,
         rpnOperations,
@@ -815,7 +831,7 @@ export const precompileOptimisedScriptValue = (
       );
     }
     if (input.valueB) {
-      precompileScriptValue(
+      precompileOptimisedScriptValue(
         input.valueB,
         localsLabel,
         rpnOperations,
@@ -832,7 +848,7 @@ export const precompileOptimisedScriptValue = (
     });
   } else if (isUnaryOperation(input)) {
     if (input.value) {
-      precompileScriptValue(
+      precompileOptimisedScriptValue(
         input.value,
         localsLabel,
         rpnOperations,

@@ -1868,15 +1868,20 @@ abstract class ScriptBuilderBase {
     )}${textCodeSetSpeed(2)}${textCodeGotoRel(1, -1)}${textCodeSetFont(0)}`;
   };
 
-  _loadAndDisplayText = (inputText: string) => {
+  _loadAndDisplayText = (inputText: string, prependTokens: Token[] = []) => {
     let waitArgsRef = "";
     let lastWait = -1;
     // Split into chunks where wait frames code is found
     const chunks = chunkTextOnWaitCodes(inputText);
+
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
 
-      this._loadTokens(chunk.tokens);
+      const tokens =
+        i === 0 ? prependTokens.concat(chunk.tokens) : chunk.tokens;
+
+      this._loadTokens(tokens);
+
       this._displayText(i !== 0);
 
       if (chunk.action?.type === "wait") {
@@ -1922,6 +1927,34 @@ abstract class ScriptBuilderBase {
       usedVariableAliases.push(missingVariableAlias);
     };
 
+    const processVariableReference = (variableId: string) => {
+      const variable = this._isMissingVariableReference(variableId)
+        ? undefined
+        : this._resolveVariableRef(variableId);
+      if (!variable) {
+        addMissingVariableAlias();
+      } else if (this._isFunctionArg(variable)) {
+        if (this._isIndirectVariable(variable)) {
+          const localRef = this._declareLocal(
+            `text_arg${indirectVars.length}`,
+            1,
+            true,
+          );
+          indirectVars.unshift({
+            local: localRef,
+            arg: variable.symbol,
+          });
+          usedVariableAliases.push(this._rawOffsetStackAddr(localRef));
+        } else {
+          usedVariableAliases.push(this._rawOffsetStackAddr(variable.symbol));
+        }
+      } else {
+        usedVariableAliases.push(
+          this.getVariableAlias(normalizeVariableId(variable)),
+        );
+      }
+    };
+
     textTokens.forEach((token) => {
       if (token.type === "text") {
         text += encodeString(token.value, font?.mapping);
@@ -1938,31 +1971,8 @@ abstract class ScriptBuilderBase {
         token.type === "speedVariable" ||
         token.type === "fontVariable"
       ) {
-        const variable = this._isMissingVariableReference(token.variableId)
-          ? undefined
-          : this._resolveVariableRef(token.variableId);
-        if (!variable) {
-          addMissingVariableAlias();
-        } else if (this._isFunctionArg(variable)) {
-          if (this._isIndirectVariable(variable)) {
-            const localRef = this._declareLocal(
-              `text_arg${indirectVars.length}`,
-              1,
-              true,
-            );
-            indirectVars.unshift({
-              local: localRef,
-              arg: variable.symbol,
-            });
-            usedVariableAliases.push(this._rawOffsetStackAddr(localRef));
-          } else {
-            usedVariableAliases.push(this._rawOffsetStackAddr(variable.symbol));
-          }
-        } else {
-          usedVariableAliases.push(
-            this.getVariableAlias(normalizeVariableId(variable)),
-          );
-        }
+        processVariableReference(token.variableId);
+
         if (token.type === "variable" && token.fixedLength !== undefined) {
           text += `%D${token.fixedLength}`;
         } else if (token.type === "variable") {
@@ -1973,6 +1983,14 @@ abstract class ScriptBuilderBase {
           text += "%t";
         } else if (token.type === "fontVariable") {
           text += "%f";
+        }
+      } else if (token.type === "gotoxyVariable") {
+        processVariableReference(token.xVariableId);
+        processVariableReference(token.yVariableId);
+        if (token.relative) {
+          text += `\\004%c%c`;
+        } else {
+          text += `\\003%c%c`;
         }
       } else if (token.type === "speed") {
         text += textCodeSetSpeed(token.speed);
@@ -2152,6 +2170,46 @@ abstract class ScriptBuilderBase {
       );
     } else {
       this._addCmd("VM_DISPLAY_TEXT");
+    }
+  };
+
+  _drawText = (
+    inputText: string,
+    positionToken: Extract<Token, { type: "gotoxy" | "gotoxyVariable" }>,
+    location: "background" | "overlay",
+  ) => {
+    const { settings } = this.options;
+    const isColor = settings.colorMode !== "mono";
+
+    if (isColor) {
+      this._stackPushConst(0);
+      this._getMemUInt8(".ARG0", "overlay_priority");
+      this._setConstMemUInt8("overlay_priority", 0);
+    }
+
+    if (location === "background") {
+      this._setTextLayer(".TEXT_LAYER_BKG");
+    } else {
+      this._setTextLayer(".TEXT_LAYER_WIN");
+    }
+
+    this._loadAndDisplayText(inputText, [
+      positionToken,
+      {
+        type: "speed",
+        speed: 0,
+      },
+    ]);
+
+    this._overlayWait(false, [".UI_WAIT_TEXT"]);
+
+    if (location === "background") {
+      this._setTextLayer(".TEXT_LAYER_WIN");
+    }
+
+    if (isColor) {
+      this._setMemUInt8("overlay_priority", ".ARG0");
+      this._stackPop(1);
     }
   };
 

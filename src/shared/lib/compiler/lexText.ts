@@ -46,6 +46,12 @@ export type Token =
       relative?: boolean;
     }
   | {
+      type: "gotoxyVariable";
+      xVariableId: string;
+      yVariableId: string;
+      relative?: boolean;
+    }
+  | {
       type: "input";
       mask: number;
     }

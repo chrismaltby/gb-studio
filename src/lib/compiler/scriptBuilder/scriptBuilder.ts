@@ -40,6 +40,7 @@ import {
   shiftLeftScriptValueConst,
   clampScriptValueConst,
   subScriptValueConst,
+  maskScriptValueConst,
 } from "shared/lib/scriptValue/helpers";
 import { calculateAutoFadeEventId } from "shared/lib/scripts/eventHelpers";
 import keyBy from "lodash/keyBy";
@@ -1318,38 +1319,93 @@ class ScriptBuilder extends ScriptBuilderBase {
     y = 0,
     location: "background" | "overlay" = "background",
   ) => {
-    const { settings } = this.options;
-    const isColor = settings.colorMode !== "mono";
-    const drawX = decOct(1 + x);
-    const drawY = decOct(1 + y);
-
     this._addComment("Draw Text");
 
-    if (isColor) {
-      this._stackPushConst(0);
-      this._getMemUInt8(".ARG0", "overlay_priority");
-      this._setConstMemUInt8("overlay_priority", 0);
+    this._drawText(
+      inputText,
+      {
+        type: "gotoxy",
+        x: x + 1,
+        y: y + 1,
+      },
+      location,
+    );
+
+    this._addNL();
+  };
+
+  textDrawScriptValue = (
+    inputText = " ",
+    valueX: ScriptValue,
+    valueY: ScriptValue,
+    location: "background" | "overlay" = "background",
+  ) => {
+    this._addComment("Draw Text");
+
+    // x and y values need to be offset by 1
+    // we also mask the value to 31 to fit in the tile map coordinates
+    const drawValueX = maskScriptValueConst(addScriptValueConst(valueX, 1), 31);
+    const drawValueY = maskScriptValueConst(addScriptValueConst(valueY, 1), 31);
+
+    const [rpnOpsX, fetchOpsX] = precompileScriptValue(drawValueX, "x", {
+      resolveConstants: this.getConstantValue,
+    });
+    const [rpnOpsY, fetchOpsY] = precompileScriptValue(drawValueY, "y", {
+      resolveConstants: this.getConstantValue,
+    });
+
+    const xOp = rpnOpsX.length === 1 ? rpnOpsX[0] : undefined;
+    const yOp = rpnOpsY.length === 1 ? rpnOpsY[0] : undefined;
+
+    if (xOp?.type === "number" && yOp?.type === "number") {
+      this._drawText(
+        inputText,
+        {
+          type: "gotoxy",
+          x: xOp.value,
+          y: yOp.value,
+        },
+        location,
+      );
+      this._addNL();
+      return;
     }
 
-    if (location === "background") {
-      this._setTextLayer(".TEXT_LAYER_BKG");
-    } else {
-      this._setTextLayer(".TEXT_LAYER_WIN");
-    }
+    const stackPtr = this.stackPtr;
 
-    this._loadAndDisplayText(`\\003\\${drawX}\\${drawY}\\001\\001${inputText}`);
+    const localsLookup = this._performFetchOperations([
+      ...fetchOpsX,
+      ...fetchOpsY,
+    ]);
 
-    this._overlayWait(false, [".UI_WAIT_TEXT"]);
+    const drawX = this._declareLocal("draw_text_x", 1, true);
+    const drawY = this._declareLocal("draw_text_y", 1, true);
 
-    if (location === "background") {
-      this._setTextLayer(".TEXT_LAYER_WIN");
-    }
+    const rpn = this._rpn();
 
-    if (isColor) {
-      this._setMemUInt8("overlay_priority", ".ARG0");
-      this._stackPop(1);
-    }
+    this._addComment(`-- Calculate coordinate values`);
 
+    // X Value
+    this._performValueRPN(rpn, rpnOpsX, localsLookup);
+    rpn.refSet(this._localRef(drawX, 0));
+
+    // Y Value
+    this._performValueRPN(rpn, rpnOpsY, localsLookup);
+    rpn.refSet(this._localRef(drawY, 0));
+
+    rpn.stop();
+
+    this._drawText(
+      inputText,
+      {
+        type: "gotoxyVariable",
+        xVariableId: drawX,
+        yVariableId: drawY,
+      },
+      location,
+    );
+
+    this._assertStackNeutral(stackPtr);
     this._addNL();
   };
 
