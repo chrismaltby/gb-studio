@@ -478,7 +478,44 @@ export type PrecompiledValueRPNOperation =
       value: string;
     }
   | {
+      type: "asmExpression";
+      value: ASMStaticScriptValue;
+    }
+  | {
       type: ValueOperatorType | ValueUnaryOperatorType;
     };
 
 export const ensureScriptValue = ensureTypeGenerator(isScriptValue);
+
+export type ASMStaticScriptValue =
+  | {
+      type: "number";
+      value: number;
+    }
+  | {
+      type: "numberSymbol";
+      value: string;
+    }
+  | {
+      type: "constant";
+      value: string;
+    }
+  | {
+      type:
+        | "add"
+        | "sub"
+        | "mul"
+        | "div"
+        | "mod"
+        | "shl"
+        | "shr"
+        | "bAND"
+        | "bOR"
+        | "bXOR";
+      valueA: ASMStaticScriptValue;
+      valueB: ASMStaticScriptValue;
+    }
+  | {
+      type: "neg" | "bNOT";
+      value: ASMStaticScriptValue;
+    };

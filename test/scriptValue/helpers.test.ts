@@ -2567,6 +2567,386 @@ describe("expressions", () => {
   });
 });
 
+describe("precompileScriptValue ASM expressions", () => {
+  test("should continue folding numeric-only expressions to a number", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "number",
+        value: 2,
+      },
+      valueB: {
+        type: "number",
+        value: 3,
+      },
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "number",
+          value: 5,
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should not wrap a standalone constant in an ASM expression", () => {
+    const input: ScriptValue = {
+      type: "constant",
+      value: "engine::MY_CONST",
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "constant",
+          value: "engine::MY_CONST",
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should not wrap a standalone number symbol in an ASM expression", () => {
+    const input: ScriptValue = {
+      type: "numberSymbol",
+      value: "MY_SYMBOL",
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "numberSymbol",
+          value: "MY_SYMBOL",
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should precompile a static symbolic expression as one ASM expression", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "constant",
+        value: "engine::MY_CONST",
+      },
+      valueB: {
+        type: "number",
+        value: 1,
+      },
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "asmExpression",
+          value: input,
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should precompile number symbol expressions as one ASM expression", () => {
+    const input: ScriptValue = {
+      type: "bAND",
+      valueA: {
+        type: "numberSymbol",
+        value: "PLATFORM_CONST",
+      },
+      valueB: {
+        type: "number",
+        value: 31,
+      },
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "asmExpression",
+          value: input,
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should precompile nested static expressions as one ASM expression", () => {
+    const input: ScriptValue = {
+      type: "shl",
+      valueA: {
+        type: "shr",
+        valueA: {
+          type: "constant",
+          value: "engine::MY_CONST",
+        },
+        valueB: {
+          type: "number",
+          value: 2,
+        },
+      },
+      valueB: {
+        type: "number",
+        value: 2,
+      },
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "asmExpression",
+          value: input,
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should precompile a static subtree within a runtime expression", () => {
+    const staticValue: ScriptValue = {
+      type: "bAND",
+      valueA: {
+        type: "add",
+        valueA: {
+          type: "constant",
+          value: "engine::MY_CONST",
+        },
+        valueB: {
+          type: "number",
+          value: 1,
+        },
+      },
+      valueB: {
+        type: "number",
+        value: 31,
+      },
+    };
+
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "L0",
+      },
+      valueB: staticValue,
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "variable",
+          value: "L0",
+        },
+        {
+          type: "asmExpression",
+          value: staticValue,
+        },
+        {
+          type: "add",
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should keep unsupported static operators as RPN operations", () => {
+    const input: ScriptValue = {
+      type: "min",
+      valueA: {
+        type: "constant",
+        value: "engine::MY_CONST",
+      },
+      valueB: {
+        type: "number",
+        value: 10,
+      },
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "constant",
+          value: "engine::MY_CONST",
+        },
+        {
+          type: "number",
+          value: 10,
+        },
+        {
+          type: "min",
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should still precompile supported static subtrees below an unsupported operator", () => {
+    const staticValue: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "constant",
+        value: "engine::MY_CONST",
+      },
+      valueB: {
+        type: "number",
+        value: 1,
+      },
+    };
+
+    const input: ScriptValue = {
+      type: "min",
+      valueA: staticValue,
+      valueB: {
+        type: "number",
+        value: 10,
+      },
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "asmExpression",
+          value: staticValue,
+        },
+        {
+          type: "number",
+          value: 10,
+        },
+        {
+          type: "min",
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should keep supported operators using runtime operands as RPN operations", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "constant",
+        value: "engine::MY_CONST",
+      },
+      valueB: {
+        type: "variable",
+        value: "L0",
+      },
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "constant",
+          value: "engine::MY_CONST",
+        },
+        {
+          type: "variable",
+          value: "L0",
+        },
+        {
+          type: "add",
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should precompile supported unary static expressions", () => {
+    const input: ScriptValue = {
+      type: "bNOT",
+      value: {
+        type: "constant",
+        value: "engine::MY_CONST",
+      },
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "asmExpression",
+          value: input,
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should keep unsupported unary static expressions as RPN operations", () => {
+    const input: ScriptValue = {
+      type: "abs",
+      value: {
+        type: "constant",
+        value: "engine::MY_CONST",
+      },
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "constant",
+          value: "engine::MY_CONST",
+        },
+        {
+          type: "abs",
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should precompile static expression strings as ASM expressions", () => {
+    const input: ScriptValue = {
+      type: "expression",
+      value: "@engine::MY_CONST@ + 1",
+    };
+
+    expect(precompileScriptValue(input)).toEqual([
+      [
+        {
+          type: "asmExpression",
+          value: {
+            type: "add",
+            valueA: {
+              type: "constant",
+              value: "engine::MY_CONST",
+            },
+            valueB: {
+              type: "number",
+              value: 1,
+            },
+          },
+        },
+      ],
+      [],
+    ]);
+  });
+
+  test("should not precompile expressions containing fetched values as ASM expressions", () => {
+    const input: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "property",
+        target: "player",
+        property: "xpos",
+      },
+      valueB: {
+        type: "constant",
+        value: "engine::MY_CONST",
+      },
+    };
+
+    const [rpnOps, fetchOps] = precompileScriptValue(input);
+
+    expect(fetchOps).toHaveLength(1);
+    expect(rpnOps).not.toContainEqual(
+      expect.objectContaining({ type: "asmExpression" }),
+    );
+  });
+});
+
 describe("peepholeRPN", () => {
   test("should combine matching SHR N, ADD constant, SHL N", () => {
     expect(
