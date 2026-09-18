@@ -1237,7 +1237,6 @@
   "FIELD_SPRITE_MODE_OVERRIDE": "Override de modo de sprite",
   "FIELD_SET_SPRITE_MODE_OVERRIDE": "Establecer la anulación del modo de Sprite",
   "FIELD_OPEN_BUILD_FOLDER_ON_EXPORT": "Abrir carpeta de construcción al exportar",
-  "FIELD_SHOW_ROM_USAGE_AFTER_BUILD": "Mostrar uso de ROM después de la construcción",
   "FIELD_ROM_FILENAME": "Nombre del archivo ROM",
   "FIELD_4_WAY": "4 Vías",
   "FIELD_8_WAY": "8 Vías",

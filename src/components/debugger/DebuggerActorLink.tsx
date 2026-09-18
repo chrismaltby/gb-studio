@@ -19,13 +19,12 @@ const DebuggerActorLink = ({ id, sceneId }: DebuggerActorLinkProps) => {
 
   const onSelect = useCallback(() => {
     dispatch(
-      editorActions.selectActor({
+      editorActions.openEditorResourceById({
+        type: "actor",
         sceneId,
         actorId: id,
       }),
     );
-    dispatch(editorActions.editSearchTerm(""));
-    dispatch(editorActions.editSearchTerm(sceneId));
   }, [dispatch, id, sceneId]);
 
   if (!actor) {

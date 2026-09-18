@@ -140,6 +140,13 @@ import { toProjectileHash } from "./scriptBuilder/helpers";
 import { variableName } from "shared/lib/entities/entitiesHelpers";
 import { gbvmScriptChecksum } from "lib/compiler/gbvm/buildHelpers";
 
+export type CompiledScriptSource = {
+  sceneId: string;
+  entityId: string;
+  entityType: ScriptBuilderEntityType;
+  scriptKey: string;
+};
+
 type CompiledTilemapData = {
   symbol: string;
   data: number[] | Uint8Array;
@@ -1378,11 +1385,13 @@ const compile = async (
   files: Record<string, string>;
   sceneMap: Record<string, SceneMapData>;
   variableMap: Record<string, VariableMapData>;
+  scriptMap: Record<string, CompiledScriptSource[]>;
   usedSceneTypeIds: string[];
 }> => {
   const output: Record<string, string> = {};
   const symbols: Record<string, string> = {};
   const sceneMap: Record<string, SceneMapData> = {};
+  const scriptMap: Record<string, CompiledScriptSource[]> = {};
   const globalProjectiles: GlobalProjectiles[] = [];
 
   const projectData = applyPrefabs(
@@ -1523,10 +1532,10 @@ const compile = async (
     string,
     {
       symbol: string;
-      sceneId: string;
-      entityId: string;
-      entityType: ScriptBuilderEntityType;
-      scriptKey: string;
+      sceneId?: string;
+      entityId?: string;
+      entityType?: ScriptBuilderEntityType;
+      scriptKey?: string;
       compiledScript: string;
     }
   > = {};
@@ -1549,6 +1558,27 @@ const compile = async (
   const recursiveSymbolMap: Record<string, string> = {};
   const compiledAssetsCache: Record<string, string> = {};
 
+  const addScriptSource = (
+    symbol: string | null,
+    source: CompiledScriptSource,
+  ) => {
+    if (!symbol) {
+      return;
+    }
+    const sources = scriptMap[symbol] ?? [];
+    if (
+      !sources.some(
+        (existing) =>
+          existing.entityType === source.entityType &&
+          existing.entityId === source.entityId &&
+          existing.scriptKey === source.scriptKey,
+      )
+    ) {
+      sources.push(source);
+    }
+    scriptMap[symbol] = sources;
+  };
+
   const eventPtrs: PrecompiledSceneEventPtrs[] = precompiled.sceneData.map(
     (scene, sceneIndex) => {
       const compileScript = (
@@ -1559,6 +1589,7 @@ const compile = async (
         loop: boolean,
         lock: boolean,
         scriptKey: string,
+        explicitSources?: CompiledScriptSource[],
       ) => {
         let scriptTypeCode = "interact";
         let scriptName = "script";
@@ -1588,6 +1619,14 @@ const compile = async (
             scriptTypeCode;
         }
         scriptName = `${entity.symbol}_${scriptTypeCode}`;
+        const scriptSources = explicitSources ?? [
+          {
+            sceneId: scene.id,
+            entityId: entity.id,
+            entityType,
+            scriptKey,
+          },
+        ];
 
         if (
           isEmptyScript(script) &&
@@ -1649,6 +1688,9 @@ const compile = async (
           const scriptHash = gbvmScriptChecksum(compiledScript);
           const existingScriptName = entityScriptsCache[scriptHash];
           if (existingScriptName) {
+            scriptSources.forEach((source) =>
+              addScriptSource(existingScriptName, source),
+            );
             return existingScriptName;
           }
           entityScriptsCache[scriptHash] = scriptName;
@@ -1656,11 +1698,13 @@ const compile = async (
 
         output[`${scriptName}.s`] = compiledScript;
         output[`${scriptName}.h`] = compileScriptHeader(scriptName);
+        scriptSources.forEach((source) => addScriptSource(scriptName, source));
 
         return scriptName;
       };
 
       const bankSceneEvents = (scene: PrecompiledScene, sceneIndex: number) => {
+        const hasSceneScript = scene.script.length > 0;
         scene.script.unshift({
           id: "",
           command: "INTERNAL_SET_SPRITE_MODE",
@@ -1732,6 +1776,22 @@ const compile = async (
         }
 
         // Compile scene start script
+        const initSources: CompiledScriptSource[] = scene.actors
+          .filter((actor) => actor.startScript?.length)
+          .map((actor) => ({
+            sceneId: scene.id,
+            entityId: actor.id,
+            entityType: "actor",
+            scriptKey: "startScript",
+          }));
+        if (hasSceneScript) {
+          initSources.push({
+            sceneId: scene.id,
+            entityId: scene.id,
+            entityType: "scene",
+            scriptKey: "script",
+          });
+        }
         return compileScript(
           initScript,
           "scene",
@@ -1740,6 +1800,7 @@ const compile = async (
           false,
           true,
           "script",
+          initSources,
         );
       };
 
@@ -1793,6 +1854,20 @@ const compile = async (
           false,
           false,
           "playerHit1Script",
+          (
+            [
+              "playerHit1Script",
+              "playerHit2Script",
+              "playerHit3Script",
+            ] as const
+          )
+            .filter((scriptKey) => scene[scriptKey]?.length)
+            .map((scriptKey) => ({
+              sceneId: scene.id,
+              entityId: scene.id,
+              entityType: "scene",
+              scriptKey,
+            })),
         ),
         actorsMovement: scene.actors.map((entity, entityIndex) => {
           if (!entity["updateScript"] || entity["updateScript"].length === 0) {
@@ -1837,6 +1912,14 @@ const compile = async (
             false,
             false,
             "script",
+            (["script", "hit1Script", "hit2Script", "hit3Script"] as const)
+              .filter((scriptKey) => entity[scriptKey]?.length)
+              .map((scriptKey) => ({
+                sceneId: scene.id,
+                entityId: entity.id,
+                entityType: "actor",
+                scriptKey,
+              })),
           );
         }),
         triggers: scene.triggers.map((entity, entityIndex) => {
@@ -1856,6 +1939,14 @@ const compile = async (
             false,
             true,
             "script",
+            (["script", "leaveScript"] as const)
+              .filter((scriptKey) => entity[scriptKey]?.length)
+              .map((scriptKey) => ({
+                sceneId: scene.id,
+                entityId: entity.id,
+                entityType: "trigger",
+                scriptKey,
+              })),
           );
         }),
       };
@@ -1871,6 +1962,14 @@ const compile = async (
       recursiveSymbolMap,
     );
     output[`${additional.symbol}.h`] = compileScriptHeader(additional.symbol);
+    if (additional.entityId && additional.entityType && additional.scriptKey) {
+      addScriptSource(additional.symbol, {
+        sceneId: additional.sceneId ?? "",
+        entityId: additional.entityId,
+        entityType: additional.entityType,
+        scriptKey: additional.scriptKey,
+      });
+    }
   });
 
   (
@@ -2162,6 +2261,7 @@ const compile = async (
     files: output,
     sceneMap,
     variableMap,
+    scriptMap,
     usedSceneTypeIds,
   };
 };

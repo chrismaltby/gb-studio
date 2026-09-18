@@ -17,6 +17,7 @@ import { envWith } from "lib/helpers/cli/env";
 import { readEngineVersion } from "lib/project/engine";
 import { defaultEngineMetaPath } from "consts";
 import { clearAppCacheOlderThan } from "lib/helpers/cache";
+import type { BuildManifest } from "lib/compiler/buildManifest";
 
 const psTreeAsync = promisify(psTree);
 
@@ -27,6 +28,7 @@ type MakeOptions = {
   data: ProjectResources;
   buildType: "rom" | "web" | "pocket";
   debug: boolean;
+  manifest: BuildManifest;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
 };
@@ -42,6 +44,7 @@ const makeBuild = async ({
   data,
   debug = false,
   buildType = "rom",
+  manifest,
   progress = (_msg) => {},
   warnings = (_msg) => {},
 }: MakeOptions) => {
@@ -98,14 +101,13 @@ const makeBuild = async ({
   await fetchCachedObjData(buildRoot, tmpPath, env);
 
   // Compile Source Files
-  const makeCommands = await getBuildCommands(buildRoot, {
+  const makeCommands = await getBuildCommands(manifest, {
     colorEnabled,
     sgb: sgbEnabled,
     batteryless: batterylessEnabled,
     debug,
     platform: process.platform,
     targetPlatform,
-    cartType: settings.cartType,
     compilerPreset: settings.compilerPreset,
   });
 
@@ -159,7 +161,7 @@ const makeBuild = async ({
   }
 
   progress(`${l10n("COMPILER_LINKING")}...`);
-  const linkFile = await buildLinkFile(buildRoot);
+  const linkFile = buildLinkFile(manifest);
   const linkFilePath = `${buildRoot}/obj/linkfile.lk`;
   await fs.writeFile(linkFilePath, linkFile);
 

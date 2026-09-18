@@ -3,6 +3,7 @@ import {
   createSlice,
   PayloadAction,
   createAction,
+  current,
 } from "@reduxjs/toolkit";
 import {
   Song,
@@ -1173,7 +1174,7 @@ const trackerSlice = createSlice({
             return patternId;
           }
           const newPatternIndex = newPatterns.length;
-          newPatterns.push(cloneDeep(pattern));
+          newPatterns.push(cloneDeep(current(pattern)));
           return newPatternIndex;
         },
       ) as [number, number, number, number];

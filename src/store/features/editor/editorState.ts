@@ -190,6 +190,7 @@ export interface EditorState {
   lockScriptEditor: boolean;
   worldSidebarWidth: number;
   navigatorSidebarWidth: number;
+  debuggerPaneHeight: number;
   filesSidebarWidth: number;
   navigatorSplitSizes: number[];
   navigatorSplitSizesManuallyEdited: boolean;
@@ -271,6 +272,7 @@ export const initialState: EditorState = {
   lockScriptEditor: false,
   worldSidebarWidth: 300,
   navigatorSidebarWidth: 200,
+  debuggerPaneHeight: 400,
   filesSidebarWidth: 300,
   clipboardVariables: [],
   navigatorSplitSizes: [400, 30, 30, 30, 30],
@@ -916,6 +918,10 @@ const editorSlice = createSlice({
 
     resizeNavigatorSidebar: (state, action: PayloadAction<number>) => {
       state.navigatorSidebarWidth = action.payload;
+    },
+
+    resizeDebuggerPane: (state, action: PayloadAction<number>) => {
+      state.debuggerPaneHeight = action.payload;
     },
 
     resizeFilesSidebar: (state, action: PayloadAction<number>) => {

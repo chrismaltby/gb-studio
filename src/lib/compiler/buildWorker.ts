@@ -7,6 +7,8 @@ import ejectBuild from "./ejectBuild";
 import { validateEjectedBuild } from "./validate/validateEjectedBuild";
 import makeBuild, { cancelBuildCommandsInProgress } from "./makeBuild";
 import { EngineSchema } from "lib/project/loadEngineSchema";
+import { createBuildManifest, resolveBuildSources } from "./buildManifest";
+import type { BuildArtifacts, BuildWorkerResult } from "./buildResult";
 
 export type BuildType = "rom" | "web" | "pocket";
 
@@ -41,12 +43,10 @@ export type BuildTaskResponse =
   | {
       action: "complete";
       threadId: number;
-      payload: Awaited<ReturnType<typeof compileData>>;
+      payload: BuildWorkerResult;
     };
 
-let terminating = false;
-
-const buildProject = async ({
+export const buildProject = async ({
   project,
   projectRoot,
   engineSchema,
@@ -57,54 +57,81 @@ const buildProject = async ({
   make,
   debugEnabled,
   l10nData,
-}: BuildWorkerData) => {
-  // Initialise l10n
-  setL10NData(l10nData);
-
-  // Load script event handlers + plugins
-  const scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
-
-  const compiledData = await compileData(project, {
-    projectRoot,
-    engineSchema,
-    scriptEventHandlers,
-    tmpPath,
-    debugEnabled,
-    progress,
-    warnings,
-  });
-
-  await ejectBuild({
-    projectRoot,
-    tmpPath,
-    projectData: project,
-    engineSchema,
-    outputRoot,
-    compiledData,
-    progress,
-    warnings,
-  });
-
-  await validateEjectedBuild({
-    buildRoot: outputRoot,
-    progress,
-    warnings,
-  });
-
-  if (make) {
-    await makeBuild({
-      buildRoot: outputRoot,
-      romFilename,
+}: BuildWorkerData): Promise<BuildWorkerResult> => {
+  let artifacts: BuildArtifacts;
+  try {
+    setL10NData(l10nData);
+    const scriptEventHandlers = await loadAllScriptEventHandlers(projectRoot);
+    const compiledData = await compileData(project, {
+      projectRoot,
+      engineSchema,
+      scriptEventHandlers,
       tmpPath,
-      buildType,
-      data: project,
-      debug: project.settings.generateDebugFilesEnabled,
+      debugEnabled,
       progress,
       warnings,
     });
+    const { pluginAttribution } = await ejectBuild({
+      projectRoot,
+      tmpPath,
+      projectData: project,
+      engineSchema,
+      outputRoot,
+      compiledData,
+      progress,
+      warnings,
+    });
+    await validateEjectedBuild({
+      buildRoot: outputRoot,
+      progress,
+      warnings,
+    });
+    const buildSources = await resolveBuildSources(
+      outputRoot,
+      pluginAttribution,
+    );
+    const manifest = createBuildManifest({
+      buildRoot: outputRoot,
+      romFilename,
+      cartType: project.settings.cartType,
+      sources: buildSources,
+    });
+    artifacts = { compiledData, manifest };
+  } catch (error) {
+    return {
+      status: "failed",
+      stage: "prepare",
+      error: error instanceof Error ? error.toString() : String(error),
+    };
   }
 
-  return compiledData;
+  if (make) {
+    try {
+      await makeBuild({
+        buildRoot: outputRoot,
+        romFilename,
+        tmpPath,
+        buildType,
+        data: project,
+        debug: project.settings.generateDebugFilesEnabled,
+        progress,
+        warnings,
+        manifest: artifacts.manifest,
+      });
+    } catch (error) {
+      return {
+        status: "failed",
+        stage: "make",
+        error: error instanceof Error ? error.toString() : String(error),
+        ...artifacts,
+      };
+    }
+  }
+
+  return {
+    status: "success",
+    ...artifacts,
+  };
 };
 
 const progress = (message: string) => {
@@ -132,23 +159,13 @@ const send = (msg: BuildTaskResponse) => {
 };
 
 const run = async () => {
-  try {
-    const res = await buildProject(workerData);
-    send({ action: "complete", threadId, payload: res });
-    process.exit(0);
-  } catch (e) {
-    if (terminating) {
-      return;
-    }
-    warnings(String(e));
-    console.error("buildTask process terminated with error:", e);
-    process.exit(1);
-  }
+  const result = await buildProject(workerData);
+  send({ action: "complete", threadId, payload: result });
+  process.exit(0);
 };
 
 parentPort?.on("message", async (message: { action: string }) => {
   if (message.action === "terminate") {
-    terminating = true;
     await cancelBuildCommandsInProgress();
     process.exit(1);
   }

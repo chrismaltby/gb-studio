@@ -65,7 +65,7 @@ const darkTheme: ThemeInterface = {
       text: "#b7babb",
       border: "#111111",
       divider: "#333333",
-      boxShadow: "3px 3px 10px rgba(0, 0, 0, 1)",
+      boxShadow: "3px 3px 10px rgba(0, 0, 0, 0.3)",
     },
     sidebar: {
       background: "#222222",

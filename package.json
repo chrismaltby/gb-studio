@@ -177,7 +177,7 @@
     "react-refresh": "^0.18.0",
     "react-refresh-typescript": "^2.0.12",
     "storybook": "^10.5.8",
-    "ts-jest": "^29.4.11",
+    "ts-jest": "^29.4.12",
     "ts-loader": "^9.6.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths-webpack-plugin": "^4.1.0",

@@ -12,6 +12,7 @@ import buildGameActions from "store/features/buildGame/buildGameActions";
 import { Button } from "ui/buttons/Button";
 import l10n from "shared/lib/lang/l10n";
 import DebuggerBuildLog from "components/debugger/DebuggerBuildLog";
+import DebuggerRomUsage from "components/debugger/DebuggerRomUsage";
 
 const COL1_WIDTH = 290;
 const COL2_WIDTH = 350;
@@ -62,7 +63,7 @@ const DebuggerPanes = () => {
 
   const initialized = useAppSelector((state) => state.debug.initialized);
   const buildStatus = useAppSelector((state) => state.console.status);
-  const isLogOpen = useAppSelector((state) => state.debug.isLogOpen);
+  const activePane = useAppSelector((state) => state.debug.activePane);
 
   const running = buildStatus === "running";
 
@@ -84,10 +85,18 @@ const DebuggerPanes = () => {
         ? 2
         : 1;
 
-  if (isLogOpen) {
+  if (activePane === "buildLog") {
     return (
       <Wrapper ref={wrapperEl}>
         <DebuggerBuildLog />
+      </Wrapper>
+    );
+  }
+
+  if (activePane === "romUsage") {
+    return (
+      <Wrapper ref={wrapperEl}>
+        <DebuggerRomUsage />
       </Wrapper>
     );
   }

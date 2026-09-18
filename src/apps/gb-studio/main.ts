@@ -39,12 +39,15 @@ import confirmEnableColorDialog from "lib/electron/dialog/confirmEnableColorDial
 import confirmDeleteCustomEvent from "lib/electron/dialog/confirmDeleteCustomEvent";
 import type {
   BuildOptions,
+  DebuggerSymbols,
+  ProjectBuildResult,
   ProjectWindowMenuState,
   RecentProjectData,
 } from "renderer/lib/api/setup";
 import buildProject, {
   cancelCompileStepsInProgress,
 } from "lib/compiler/buildProject";
+import { collectBuildUsage } from "lib/compiler/buildUsage";
 import {
   ejectDefaultWebTemplate,
   listProjectWebTemplates,
@@ -138,7 +141,6 @@ import { loadProjectResourceChecksums } from "lib/project/loadResourceChecksums"
 import confirmDeletePrefab from "lib/electron/dialog/confirmDeletePrefab";
 import confirmUnpackPrefab from "lib/electron/dialog/confirmUnpackPrefab";
 import confirmReplacePrefab from "lib/electron/dialog/confirmReplacePrefab";
-import romUsage from "lib/compiler/romUsage";
 import { msToHumanTime } from "shared/lib/helpers/time";
 import confirmDeletePreset from "lib/electron/dialog/confirmDeletePreset";
 import confirmApplyPreset from "lib/electron/dialog/confirmApplyPreset";
@@ -1543,7 +1545,11 @@ ipcMain.handle(
 
 ipcMain.handle(
   "project:build",
-  async (event, project: ProjectResources, options: BuildOptions) => {
+  async (
+    event,
+    project: ProjectResources,
+    options: BuildOptions,
+  ): Promise<ProjectBuildResult> => {
     const { exportBuild, buildType } = options;
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
@@ -1552,9 +1558,7 @@ ipcMain.handle(
     const colorMode = project.settings.colorMode;
     const sgbEnabled =
       project.settings.sgbEnabled && project.settings.colorMode !== "color";
-    const debuggerEnabled =
-      !exportBuild &&
-      (options.debugEnabled || project.settings.debuggerEnabled);
+    const debugEnabled = !exportBuild && options.debugEnabled;
     const colorOnly = project.settings.colorMode === "color";
 
     if (firstBuild) {
@@ -1586,17 +1590,43 @@ ipcMain.handle(
       buildType,
     );
     try {
-      const compiledData = await buildProject(project, {
+      const buildResult = await buildProject(project, {
         ...options,
         projectRoot,
         outputRoot,
         romFilename,
         tmpPath,
-        debugEnabled: debuggerEnabled,
+        debugEnabled,
         useCustomWebTemplate: exportBuild,
         progress,
         warnings,
       });
+      const { status } = buildResult;
+      if (status === "cancelled") {
+        buildLog(l10n("BUILD_CANCELLED"));
+        return { status };
+      }
+      if (status === "failed") {
+        buildErr(buildResult.error);
+        if (buildResult.stage === "prepare") {
+          return { status, stage: buildResult.stage, error: buildResult.error };
+        }
+        const usage = await collectBuildUsage({
+          manifest: buildResult.manifest,
+          scriptMap: buildResult.compiledData.scriptMap,
+          mode: buildResult.stage === "make" ? "partial" : "complete",
+          tmpPath,
+          progress,
+          warnings,
+        });
+        return {
+          status,
+          stage: buildResult.stage,
+          error: buildResult.error,
+          usage,
+        };
+      }
+      const { compiledData, manifest } = buildResult;
 
       if (exportBuild) {
         await copy(
@@ -1620,15 +1650,16 @@ ipcMain.handle(
         );
       }
 
-      const usageData = await romUsage({
-        buildRoot: outputRoot,
-        romStem,
-        tmpPath: await getTmp(),
+      const usage = await collectBuildUsage({
+        manifest,
+        scriptMap: compiledData.scriptMap,
+        mode: "complete",
+        tmpPath,
         progress,
         warnings,
       });
 
-      sendToProjectWindow("debugger:romusage", usageData);
+      let debuggerSymbols: DebuggerSymbols | undefined = undefined;
 
       if (buildType === "web" && !exportBuild) {
         buildLog(`-`);
@@ -1643,7 +1674,7 @@ ipcMain.handle(
           : String((await settingsGet("emulatorPath")) || "");
         const romPath = Path.join(outputRoot, "build", "rom", romFilename);
 
-        if (debuggerEnabled && emulatorPath === "") {
+        if (debugEnabled && emulatorPath === "") {
           const { memoryMap, globalVariables } = await readDebuggerSymbols(
             outputRoot,
             romStem,
@@ -1663,11 +1694,11 @@ ipcMain.handle(
           const gbvmScripts = pickBy(compiledData.files, (_, key) =>
             key.endsWith(".s"),
           );
-          sendToProjectWindow("debugger:symbols", {
-            variableMap: compiledData.variableMap,
+          debuggerSymbols = {
+            variableDataBySymbol: compiledData.variableMap,
             sceneMap: compiledData.sceneMap,
             gbvmScripts,
-          });
+          };
         } else if (emulatorPath !== "") {
           if (playWindow) {
             playWindow.close();
@@ -1678,7 +1709,7 @@ ipcMain.handle(
           createPlay(
             `file://${outputRoot}/build/web/index.html`,
             sgbEnabled && colorMode === "mono",
-            debuggerEnabled,
+            debugEnabled,
           );
         } else if (emulatorPath === SYSTEM_DEFAULT_APP) {
           open(romPath);
@@ -1690,6 +1721,7 @@ ipcMain.handle(
 
       const buildTime = Date.now() - buildStartTime;
       buildLog(`${l10n("COMPILER_BUILD_TIME")}: ${msToHumanTime(buildTime)}`);
+      return { status, usage, debuggerSymbols };
     } catch (e) {
       if (typeof e === "string") {
         buildErr(e);
@@ -1776,7 +1808,7 @@ ipcMain.handle(
         colorOnly,
         "rom",
       );
-      await buildProject(project, {
+      const buildResult = await buildProject(project, {
         projectRoot,
         outputRoot,
         romFilename,
@@ -1788,6 +1820,12 @@ ipcMain.handle(
         progress,
         warnings,
       });
+      if (buildResult.status === "cancelled") {
+        throw new Error("BUILD_CANCELLED");
+      }
+      if (buildResult.status === "failed") {
+        throw new Error(buildResult.error);
+      }
 
       const exportRoot = Path.join(projectRoot, "build", "src");
 

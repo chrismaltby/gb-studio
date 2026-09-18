@@ -192,18 +192,22 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
 
   const onSelectScene = useCallback(
     (sceneId: string) => {
-      dispatch(editorActions.selectScene({ sceneId }));
-      dispatch(editorActions.editSearchTerm(""));
-      dispatch(editorActions.editSearchTerm(sceneId));
+      dispatch(
+        editorActions.openEditorResourceById({ type: "scene", sceneId }),
+      );
     },
     [dispatch],
   );
 
   const onSelectActor = useCallback(
     (actorId: string, sceneId: string) => {
-      dispatch(editorActions.selectActor({ sceneId, actorId }));
-      dispatch(editorActions.editSearchTerm(""));
-      dispatch(editorActions.editSearchTerm(sceneId));
+      dispatch(
+        editorActions.openEditorResourceById({
+          type: "actor",
+          sceneId,
+          actorId,
+        }),
+      );
     },
     [dispatch],
   );
@@ -211,13 +215,12 @@ const DebuggerVariablesPane = ({ collapsible }: DebuggerVariablesPaneProps) => {
   const onSelectTrigger = useCallback(
     (triggerId: string, sceneId: string) => {
       dispatch(
-        editorActions.selectTrigger({
+        editorActions.openEditorResourceById({
+          type: "trigger",
           sceneId,
           triggerId,
         }),
       );
-      dispatch(editorActions.editSearchTerm(""));
-      dispatch(editorActions.editSearchTerm(sceneId));
     },
     [dispatch],
   );

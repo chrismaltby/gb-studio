@@ -14,6 +14,7 @@ import {
   isScriptValueVariable,
   ScriptValueAtom,
   OptimisedScriptValue,
+  ASMStaticScriptValue,
 } from "./types";
 import { OperatorSymbol, RPNToken } from "shared/lib/rpn/types";
 import { subpxShiftForUnits } from "shared/lib/helpers/subpixels";
@@ -586,6 +587,42 @@ export const constantInScriptValue = (
   });
 };
 
+const isASMStaticScriptValue = (
+  value: ScriptValue,
+): value is ASMStaticScriptValue => {
+  if (
+    value.type === "number" ||
+    value.type === "numberSymbol" ||
+    value.type === "constant"
+  ) {
+    return true;
+  }
+
+  if (
+    value.type === "add" ||
+    value.type === "sub" ||
+    value.type === "mul" ||
+    value.type === "div" ||
+    value.type === "mod" ||
+    value.type === "shl" ||
+    value.type === "shr" ||
+    value.type === "bAND" ||
+    value.type === "bOR" ||
+    value.type === "bXOR"
+  ) {
+    return (
+      isASMStaticScriptValue(value.valueA) &&
+      isASMStaticScriptValue(value.valueB)
+    );
+  }
+
+  if (value.type === "neg" || value.type === "bNOT") {
+    return isASMStaticScriptValue(value.value);
+  }
+
+  return false;
+};
+
 export const precompileScriptValue = (
   input: ScriptValue,
   localsLabel = "",
@@ -606,6 +643,18 @@ export const precompileOptimisedScriptValue = (
   rpnOperations: PrecompiledValueRPNOperation[] = [],
   fetchOperations: PrecompiledValueFetch[] = [],
 ): [PrecompiledValueRPNOperation[], PrecompiledValueFetch[]] => {
+  if (
+    (isValueOperation(input) || isUnaryOperation(input)) &&
+    isASMStaticScriptValue(input)
+  ) {
+    rpnOperations.push({
+      type: "asmExpression",
+      value: input,
+    });
+
+    return [peepholeRPN(rpnOperations), fetchOperations];
+  }
+
   if (input.type === "property") {
     if (input.target === "camera") {
       const positionPropertiesX = ["xpos", "pxpos", "spxpos"];
@@ -995,7 +1044,7 @@ export const peepholeRPN = (
       }
     }
 
-    // SHR N followed by SHL N = noop
+    // SHR N followed by SHL N = clear lower N bits
     if (
       i + 3 < rpn.length &&
       rpn[i].type === "number" &&
@@ -1005,7 +1054,13 @@ export const peepholeRPN = (
     ) {
       const shrAmount = (rpn[i] as { value: number }).value;
       const shlAmount = (rpn[i + 2] as { value: number }).value;
+
       if (shrAmount === shlAmount) {
+        const mask = ~((1 << shlAmount) - 1) & 0xffff;
+
+        optimised.push({ type: "number", value: mask });
+        optimised.push({ type: "bAND" });
+
         i += 4;
         continue;
       }

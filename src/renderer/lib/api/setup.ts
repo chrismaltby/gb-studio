@@ -27,7 +27,7 @@ import type {
   DebuggerDataPacket,
 } from "shared/lib/debugger/types";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
-import type { UsageData } from "lib/compiler/romUsage";
+import type { UsageData } from "lib/compiler/buildUsage";
 import type { Asset, AssetType } from "shared/lib/helpers/assets";
 import type { Patrons } from "scripts/fetchPatrons";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
@@ -84,6 +84,33 @@ export type BuildOptions = {
   exportBuild: boolean;
   debugEnabled?: boolean;
 };
+
+export type DebuggerSymbols = {
+  variableDataBySymbol: Record<string, VariableMapData>;
+  sceneMap: Record<string, SceneMapData>;
+  gbvmScripts: Record<string, string>;
+};
+
+export type ProjectBuildResult =
+  | {
+      status: "success";
+      usage: UsageData;
+      debuggerSymbols?: DebuggerSymbols;
+    }
+  | {
+      status: "failed";
+      stage: "prepare";
+      error: string;
+    }
+  | {
+      status: "failed";
+      stage: "make" | "export";
+      error: string;
+      usage: UsageData;
+    }
+  | {
+      status: "cancelled";
+    };
 
 export type RecentProjectData = {
   name: string;
@@ -279,7 +306,10 @@ const APISetup = {
     updateProjectWindowMenu: (state: ProjectWindowMenuState) =>
       ipcRenderer.invoke("project:update-project-window-menu", state),
     close: () => ipcRenderer.invoke("close-project"),
-    build: (data: ProjectResources, options: BuildOptions) =>
+    build: (
+      data: ProjectResources,
+      options: BuildOptions,
+    ): Promise<ProjectBuildResult> =>
       ipcRenderer.invoke("project:build", data, options),
     buildCancel: () => ipcRenderer.invoke("project:build-cancel"),
     onBuildLog: (
@@ -578,23 +608,9 @@ const APISetup = {
       data: createSubscribeAPI<
         (event: IpcRendererEvent, data: DebuggerDataPacket) => void
       >("debugger:data"),
-      symbols: createSubscribeAPI<
-        (
-          event: IpcRendererEvent,
-          data: {
-            variableMap: Record<string, VariableMapData>;
-            sceneMap: Record<string, SceneMapData>;
-            gbvmScripts: Record<string, string>;
-          },
-        ) => void
-      >("debugger:symbols"),
       disconnected: createSubscribeAPI<(event: IpcRendererEvent) => void>(
         "debugger:disconnected",
       ),
-      romusage:
-        createSubscribeAPI<(event: IpcRendererEvent, data: UsageData) => void>(
-          "debugger:romusage",
-        ),
     },
     project: {
       saveProgress: createSubscribeAPI<

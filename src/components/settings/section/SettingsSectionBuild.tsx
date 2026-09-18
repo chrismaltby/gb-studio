@@ -42,9 +42,6 @@ export const SettingsSectionBuild = ({
   const openBuildFolderOnExport = useAppSelector(
     (state) => state.project.present.settings.openBuildFolderOnExport,
   );
-  const showRomUsageAfterBuild = useAppSelector(
-    (state) => state.project.present.settings.showRomUsageAfterBuild,
-  );
   const compilerPreset = useAppSelector(
     (state) => state.project.present.settings.compilerPreset,
   );
@@ -98,16 +95,6 @@ export const SettingsSectionBuild = ({
       dispatch(
         settingsActions.editSettings({
           openBuildFolderOnExport: castEventToBool(e),
-        }),
-      ),
-    [dispatch],
-  );
-
-  const onChangeShowRomUsageAfterBuild = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) =>
-      dispatch(
-        settingsActions.editSettings({
-          showRomUsageAfterBuild: castEventToBool(e),
         }),
       ),
     [dispatch],
@@ -211,23 +198,6 @@ export const SettingsSectionBuild = ({
             name="openBuildFolderOnExport"
             checked={openBuildFolderOnExport}
             onChange={onChangeOpenBuildFolderOnExport}
-          />
-        </SettingRowInput>
-      </SearchableSettingRow>
-
-      <SearchableSettingRow
-        searchTerm={searchTerm}
-        searchMatches={[l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")]}
-      >
-        <SettingRowLabel>
-          {l10n("FIELD_SHOW_ROM_USAGE_AFTER_BUILD")}
-        </SettingRowLabel>
-        <SettingRowInput>
-          <Checkbox
-            id="showRomUsageAfterBuild"
-            name="showRomUsageAfterBuild"
-            checked={showRomUsageAfterBuild}
-            onChange={onChangeShowRomUsageAfterBuild}
           />
         </SettingRowInput>
       </SearchableSettingRow>

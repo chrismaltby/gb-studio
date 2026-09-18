@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ScriptEditor from "components/script/ScriptEditor";
 import ScriptEditorDropdownButton from "components/script/menus/ScriptEditorDropdownButton";
 import { sceneSelectors } from "store/features/entities/entitiesSelectors";
@@ -76,6 +76,11 @@ export const TriggerScripts = ({ trigger, sceneId }: TriggerScriptsProps) => {
   const [scriptMode, setScriptMode] = useState<keyof ScriptHandlers>(
     initialTab as keyof ScriptHandlers,
   );
+
+  useEffect(() => {
+    if (tabs.includes(lastScriptTab) && lastScriptTab !== scriptMode)
+      setScriptMode(lastScriptTab as keyof ScriptHandlers);
+  }, [lastScriptTab, scriptMode, tabs]);
 
   const onChangeScriptMode = (mode: keyof ScriptHandlers) => {
     setScriptMode(mode);

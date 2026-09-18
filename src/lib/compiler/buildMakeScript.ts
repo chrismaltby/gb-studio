@@ -1,5 +1,5 @@
-import { glob } from "lib/helpers/glob";
 import { pathExists, readFile, writeFile } from "fs-extra";
+import type { BuildManifest } from "lib/compiler/buildManifest";
 import Path from "path";
 import l10n from "shared/lib/lang/l10n";
 
@@ -10,19 +10,11 @@ type BuildOptions = {
   platform: string;
   batteryless: boolean;
   targetPlatform: "gb" | "pocket";
-  cartType: "mbc3" | "mbc5";
   compilerPreset: number;
 };
 
-export const objectPathForSource = (buildRoot: string, filename: string) =>
-  Path.join(
-    buildRoot,
-    "obj",
-    `${Path.basename(filename, Path.extname(filename))}.o`,
-  );
-
 export const getBuildCommands = async (
-  buildRoot: string,
+  manifest: BuildManifest,
   {
     colorEnabled,
     sgb,
@@ -30,14 +22,9 @@ export const getBuildCommands = async (
     platform,
     batteryless,
     targetPlatform,
-    cartType,
     compilerPreset,
   }: BuildOptions,
 ) => {
-  const buildFiles = await glob("src/**/*.@(c|s)", {
-    cwd: buildRoot,
-    absolute: true,
-  });
   const output = [];
 
   const CC =
@@ -45,12 +32,11 @@ export const getBuildCommands = async (
       ? `..\\_gbstools\\gbdk\\bin\\lcc`
       : `../_gbstools/gbdk/bin/lcc`;
 
-  for (const file of buildFiles) {
-    if (file.indexOf("GBT_PLAYER") !== -1) {
-      continue;
-    }
+  const { sources, buildRoot, cartType } = manifest;
 
-    const objFile = objectPathForSource(buildRoot, file);
+  for (const source of sources) {
+    const file = Path.join(buildRoot, source.sourcePath);
+    const objFile = source.objectPath;
 
     if (!(await pathExists(objFile))) {
       const buildArgs = [
@@ -116,19 +102,8 @@ export const getBuildCommands = async (
   return output;
 };
 
-export const buildLinkFile = async (buildRoot: string) => {
-  const output = [];
-  const buildFiles = await glob("src/**/*.@(c|s)", {
-    cwd: buildRoot,
-    absolute: true,
-  });
-  for (const file of buildFiles) {
-    const objFile = objectPathForSource(buildRoot, file);
-
-    output.push(objFile);
-  }
-  return output.join("\n");
-};
+export const buildLinkFile = (manifest: BuildManifest) =>
+  manifest.sources.map((source) => source.objectPath).join("\n");
 
 export const buildLinkFlags = (
   linkFile: string,

@@ -14,7 +14,7 @@ export const LinkButton = styled.button`
   white-space: nowrap;
   text-overflow: ellipsis;
   max-width: 100%;
-  overflow: hidden;
+  overflow-x: clip;
   line-height: 11px;
 
   &:hover {

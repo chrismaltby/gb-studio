@@ -174,9 +174,9 @@ const AppToolbar: FC = () => {
   }, [dispatch]);
 
   const openBuildLog = useCallback(() => {
-    dispatch(settingsActions.editSettings({ debuggerEnabled: true }));
+    dispatch(settingsActions.editSettings({ buildAndDebugPaneEnabled: true }));
     dispatch(navigationActions.setSection("world"));
-    dispatch(debuggerActions.setIsLogOpen(true));
+    dispatch(debuggerActions.setActivePane("buildLog"));
   }, [dispatch]);
 
   // Handle focusing search when pressing "/"

@@ -9,6 +9,7 @@ import {
   PrecompiledValueFetch,
   PrecompiledValueRPNOperation,
   ScriptValue,
+  ASMStaticScriptValue,
   isUnaryOperation,
   isValueOperation,
 } from "shared/lib/scriptValue/types";
@@ -1029,6 +1030,58 @@ abstract class ScriptBuilderBase {
     }
   };
 
+  _scriptValueToASMExpression = (value: ASMStaticScriptValue): string => {
+    if (value.type === "number") {
+      return String(value.value);
+    }
+
+    if (value.type === "numberSymbol") {
+      return value.value;
+    }
+
+    if (value.type === "constant") {
+      return this.getConstantSymbol(value.value);
+    }
+
+    if (isValueOperation(value)) {
+      const valueA = this._scriptValueToASMExpression(value.valueA);
+      const valueB = this._scriptValueToASMExpression(value.valueB);
+
+      switch (value.type) {
+        case "add":
+          return `(${valueA} + ${valueB})`;
+        case "sub":
+          return `(${valueA} - ${valueB})`;
+        case "mul":
+          return `(${valueA} * ${valueB})`;
+        case "div":
+          return `(${valueA} / ${valueB})`;
+        case "mod":
+          return `(${valueA} % ${valueB})`;
+        case "shl":
+          return `(${valueA} << ${valueB})`;
+        case "shr":
+          return `(${valueA} >> ${valueB})`;
+        case "bAND":
+          return `(${valueA} & ${valueB})`;
+        case "bOR":
+          return `(${valueA} | ${valueB})`;
+        case "bXOR":
+          return `(${valueA} ^ ${valueB})`;
+      }
+    }
+
+    if (value.type === "neg") {
+      return `(-${this._scriptValueToASMExpression(value.value)})`;
+    }
+
+    if (value.type === "bNOT") {
+      return `(~${this._scriptValueToASMExpression(value.value)})`;
+    }
+
+    return assertUnreachable(value.type);
+  };
+
   _rpn = () => {
     const output: string[] = [];
     let rpnStackSize = 0;
@@ -1427,6 +1480,10 @@ abstract class ScriptBuilderBase {
         }
         case "memU8": {
           rpn.refMem(".MEM_U8", rpnOp.value);
+          break;
+        }
+        case "asmExpression": {
+          rpn.int16(`^/${this._scriptValueToASMExpression(rpnOp.value)}/`);
           break;
         }
         default: {
@@ -3403,6 +3460,11 @@ extern void __mute_mask_${symbol};
     this.options.additionalScripts[symbol] = {
       symbol,
       compiledScript: compiledSubScript,
+      sceneId: this.options.scene.id,
+      entityId:
+        options?.entity?.id ?? this.options.entity?.id ?? this.options.scene.id,
+      entityType: options?.entityType ?? this.options.entityType,
+      scriptKey: options?.entityScriptKey ?? this.options.entityScriptKey,
     };
 
     // Store generate symbols in cache

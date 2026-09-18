@@ -4,6 +4,7 @@ import { ProjectResources } from "shared/lib/resources/types";
 import { buildRunner } from "./buildRunner";
 import { EngineSchema } from "lib/project/loadEngineSchema";
 import { exportWebBuild } from "./webBuild";
+import type { BuildResult } from "./buildResult";
 
 type BuildOptions = {
   buildType: "rom" | "web" | "pocket";
@@ -19,7 +20,6 @@ type BuildOptions = {
   warnings: (msg: string) => void;
 };
 
-let cancelling = false;
 let cancelFunction: (() => void) | undefined;
 
 const buildProject = async (
@@ -37,9 +37,7 @@ const buildProject = async (
     progress = (_msg: string) => {},
     warnings = (_msg: string) => {},
   }: BuildOptions,
-) => {
-  cancelling = false;
-
+): Promise<BuildResult> => {
   const { result, kill } = buildRunner({
     project,
     buildType,
@@ -55,34 +53,46 @@ const buildProject = async (
   });
 
   cancelFunction = kill;
-  const compiledData = await result;
-
-  if (cancelling) {
-    throw new Error("BUILD_CANCELLED");
+  const buildResult = await result;
+  if (cancelFunction === kill) {
+    cancelFunction = undefined;
   }
 
-  if (buildType === "web") {
-    await exportWebBuild({
-      project,
-      projectRoot,
-      destination: `${outputRoot}/build/web`,
-      romFilename,
-      romPath: `${outputRoot}/build/rom/${romFilename}`,
-      webTemplate: useCustomWebTemplate ? project.settings.webTemplate : "",
-      warnings,
-    });
-  } else if (buildType === "pocket") {
-    await fs.mkdir(`${outputRoot}/build/pocket`);
-    await copy(
-      `${outputRoot}/build/rom/${romFilename}`,
-      `${outputRoot}/build/pocket/${romFilename}`,
-    );
+  if (buildResult.status !== "success") {
+    return buildResult;
   }
-  return compiledData;
+
+  try {
+    if (buildType === "web") {
+      await exportWebBuild({
+        project,
+        projectRoot,
+        destination: `${outputRoot}/build/web`,
+        romFilename,
+        romPath: `${outputRoot}/build/rom/${romFilename}`,
+        webTemplate: useCustomWebTemplate ? project.settings.webTemplate : "",
+        warnings,
+      });
+    } else if (buildType === "pocket") {
+      await fs.mkdir(`${outputRoot}/build/pocket`);
+      await copy(
+        `${outputRoot}/build/rom/${romFilename}`,
+        `${outputRoot}/build/pocket/${romFilename}`,
+      );
+    }
+  } catch (error) {
+    return {
+      status: "failed",
+      stage: "export",
+      error: error instanceof Error ? error.toString() : String(error),
+      compiledData: buildResult.compiledData,
+      manifest: buildResult.manifest,
+    };
+  }
+  return buildResult;
 };
 
 export const cancelCompileStepsInProgress = () => {
-  cancelling = true;
   if (cancelFunction) {
     cancelFunction();
   }

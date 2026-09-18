@@ -17,6 +17,7 @@ import {
 import { getTestScriptHandlers } from "../getTestScriptHandlers";
 import { Script, ScriptEvent } from "shared/lib/resources/types";
 import { DeprecatedAPI } from "lib/compiler/scriptBuilder/deprecatedAPI";
+import { ScriptValue } from "shared/lib/scriptValue/types";
 
 const createTestScriptBuilder = async (
   sceneOverrides: Record<string, unknown> = {},
@@ -6697,6 +6698,26 @@ describe("ScriptValue to RPN", () => {
       .split("\n")
       .map((l) => l.trim());
   };
+
+  const compileScriptValueToRPN = async (
+    scriptValue: ScriptValue,
+    optionsOverrides: Partial<ScriptBuilderOptions> = {},
+  ) => {
+    const { sb } = await createTestScriptBuilder({}, optionsOverrides);
+    const [rpnOps, fetchOps] = precompileScriptValue(scriptValue);
+    const rpn = sb._rpn();
+    const localsLookup = sb._performFetchOperations(fetchOps);
+
+    sb._performValueRPN(rpn, rpnOps, localsLookup);
+    rpn.stop();
+    sb._stackPop(1);
+
+    return {
+      output: extractRPN(sb.toScriptString("MY_SCRIPT", false)),
+      fetchOps,
+    };
+  };
+
   test("Should convert number values to RPN calls", async () => {
     const { sb } = await createTestScriptBuilder();
     const scriptValue = {
@@ -7123,6 +7144,342 @@ describe("ScriptValue to RPN", () => {
       ".R_OPERATOR .ADD",
     ]);
     expect(fetchOps).toBeEmpty();
+  });
+
+  const asmBinaryOperatorCases = [
+    ["add", "+"] as const,
+    ["sub", "-"] as const,
+    ["mul", "*"] as const,
+    ["div", "/"] as const,
+    ["mod", "%"] as const,
+    ["shl", "<<"] as const,
+    ["shr", ">>"] as const,
+    ["bAND", "&"] as const,
+    ["bOR", "|"] as const,
+    ["bXOR", "^"] as const,
+  ];
+
+  test.each(asmBinaryOperatorCases)(
+    "Should compile static %s expressions to a single ASM expression",
+    async (operator, asmOperator) => {
+      const scriptValue: ScriptValue = {
+        type: operator,
+        valueA: {
+          type: "constant",
+          value: "engine::MY_CONST",
+        },
+        valueB: {
+          type: "number",
+          value: 3,
+        },
+      };
+
+      const { output, fetchOps } = await compileScriptValueToRPN(scriptValue);
+
+      expect(output).toEqual([`.R_INT16    ^/(MY_CONST ${asmOperator} 3)/`]);
+      expect(fetchOps).toBeEmpty();
+    },
+  );
+
+  const asmUnaryOperatorCases = [
+    ["neg", "(-MY_CONST)"] as const,
+    ["bNOT", "(~MY_CONST)"] as const,
+  ];
+
+  test.each(asmUnaryOperatorCases)(
+    "Should compile static %s expressions to a single ASM expression",
+    async (operator, expected) => {
+      const scriptValue: ScriptValue = {
+        type: operator,
+        value: {
+          type: "constant",
+          value: "engine::MY_CONST",
+        },
+      };
+
+      const { output, fetchOps } = await compileScriptValueToRPN(scriptValue);
+
+      expect(output).toEqual([`.R_INT16    ^/${expected}/`]);
+      expect(fetchOps).toBeEmpty();
+    },
+  );
+
+  test("Should compile nested static expressions to a single ASM expression", async () => {
+    const scriptValue: ScriptValue = {
+      type: "shl",
+      valueA: {
+        type: "shr",
+        valueA: {
+          type: "constant",
+          value: "engine::MY_CONST",
+        },
+        valueB: {
+          type: "number",
+          value: 2,
+        },
+      },
+      valueB: {
+        type: "number",
+        value: 2,
+      },
+    };
+
+    const { output, fetchOps } = await compileScriptValueToRPN(scriptValue);
+
+    expect(output).toEqual([".R_INT16    ^/((MY_CONST >> 2) << 2)/"]);
+    expect(fetchOps).toBeEmpty();
+  });
+
+  test("Should preserve parentheses for nested static expressions", async () => {
+    const scriptValue: ScriptValue = {
+      type: "mul",
+      valueA: {
+        type: "add",
+        valueA: {
+          type: "constant",
+          value: "engine::MY_CONST",
+        },
+        valueB: {
+          type: "number",
+          value: 1,
+        },
+      },
+      valueB: {
+        type: "sub",
+        valueA: {
+          type: "numberSymbol",
+          value: "OTHER_CONST",
+        },
+        valueB: {
+          type: "number",
+          value: 2,
+        },
+      },
+    };
+
+    const { output } = await compileScriptValueToRPN(scriptValue);
+
+    expect(output).toEqual([
+      ".R_INT16    ^/((MY_CONST + 1) * (OTHER_CONST - 2))/",
+    ]);
+  });
+
+  test("Should use number symbols directly in ASM expressions", async () => {
+    const scriptValue: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "numberSymbol",
+        value: "PLATFORM_CONST",
+      },
+      valueB: {
+        type: "number",
+        value: 1,
+      },
+    };
+
+    const { output, fetchOps } = await compileScriptValueToRPN(scriptValue);
+
+    expect(output).toEqual([".R_INT16    ^/(PLATFORM_CONST + 1)/"]);
+    expect(fetchOps).toBeEmpty();
+  });
+
+  test("Should use user constant symbols in ASM expressions", async () => {
+    const constantId = "550e8400-e29b-41d4-a716-446655440000";
+
+    const scriptValue: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "constant",
+        value: constantId,
+      },
+      valueB: {
+        type: "number",
+        value: 1,
+      },
+    };
+
+    const { output } = await compileScriptValueToRPN(scriptValue, {
+      constantsLookup: {
+        [constantId]: {
+          id: constantId,
+          name: "My Constant",
+          symbol: "const_my_constant",
+          value: 12345,
+        },
+      },
+    });
+
+    expect(output).toEqual([".R_INT16    ^/(CONST_MY_CONSTANT + 1)/"]);
+  });
+
+  test("Should compile static expression strings to a single ASM expression", async () => {
+    const scriptValue: ScriptValue = {
+      type: "expression",
+      value: "@engine::MY_CONST@ + 1",
+    };
+
+    const { output } = await compileScriptValueToRPN(scriptValue);
+
+    expect(output).toEqual([".R_INT16    ^/(MY_CONST + 1)/"]);
+  });
+
+  test("Should continue constant folding numeric-only expressions", async () => {
+    const scriptValue: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "number",
+        value: 2,
+      },
+      valueB: {
+        type: "number",
+        value: 3,
+      },
+    };
+
+    const { output } = await compileScriptValueToRPN(scriptValue);
+
+    expect(output).toEqual([".R_INT16    5"]);
+  });
+
+  test("Should compile static subtrees within runtime expressions as ASM expressions", async () => {
+    const scriptValue: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "variable",
+        value: "0",
+      },
+      valueB: {
+        type: "bAND",
+        valueA: {
+          type: "add",
+          valueA: {
+            type: "constant",
+            value: "engine::BONUS_HEALTH",
+          },
+          valueB: {
+            type: "number",
+            value: 1,
+          },
+        },
+        valueB: {
+          type: "number",
+          value: 31,
+        },
+      },
+    };
+
+    const { output } = await compileScriptValueToRPN(scriptValue, {
+      variablesLookup: {
+        "0": {
+          id: "0",
+          name: "Health",
+          symbol: "var_health",
+          type: "number",
+        },
+      },
+    });
+
+    expect(output).toEqual([
+      ".R_REF      VAR_HEALTH",
+      ".R_INT16    ^/((BONUS_HEALTH + 1) & 31)/",
+      ".R_OPERATOR .ADD",
+    ]);
+  });
+
+  test("Should not compile expressions containing runtime values entirely as ASM expressions", async () => {
+    const scriptValue: ScriptValue = {
+      type: "add",
+      valueA: {
+        type: "constant",
+        value: "engine::BONUS_HEALTH",
+      },
+      valueB: {
+        type: "variable",
+        value: "0",
+      },
+    };
+
+    const { output } = await compileScriptValueToRPN(scriptValue, {
+      variablesLookup: {
+        "0": {
+          id: "0",
+          name: "Health",
+          symbol: "var_health",
+          type: "number",
+        },
+      },
+    });
+
+    expect(output).toEqual([
+      ".R_INT16    BONUS_HEALTH",
+      ".R_REF      VAR_HEALTH",
+      ".R_OPERATOR .ADD",
+    ]);
+  });
+
+  test("Should keep unsupported static binary operations as runtime RPN", async () => {
+    const scriptValue: ScriptValue = {
+      type: "min",
+      valueA: {
+        type: "constant",
+        value: "engine::MY_CONST",
+      },
+      valueB: {
+        type: "number",
+        value: 10,
+      },
+    };
+
+    const { output } = await compileScriptValueToRPN(scriptValue);
+
+    expect(output).toEqual([
+      ".R_INT16    MY_CONST",
+      ".R_INT16    10",
+      ".R_OPERATOR .MIN",
+    ]);
+  });
+
+  test("Should keep unsupported static unary operations as runtime RPN", async () => {
+    const scriptValue: ScriptValue = {
+      type: "abs",
+      value: {
+        type: "constant",
+        value: "engine::MY_CONST",
+      },
+    };
+
+    const { output } = await compileScriptValueToRPN(scriptValue);
+
+    expect(output).toEqual([".R_INT16    MY_CONST", ".R_OPERATOR .ABS"]);
+  });
+
+  test("Should compile supported static subtrees below unsupported operations", async () => {
+    const scriptValue: ScriptValue = {
+      type: "min",
+      valueA: {
+        type: "add",
+        valueA: {
+          type: "constant",
+          value: "engine::MY_CONST",
+        },
+        valueB: {
+          type: "number",
+          value: 1,
+        },
+      },
+      valueB: {
+        type: "number",
+        value: 10,
+      },
+    };
+
+    const { output } = await compileScriptValueToRPN(scriptValue);
+
+    expect(output).toEqual([
+      ".R_INT16    ^/(MY_CONST + 1)/",
+      ".R_INT16    10",
+      ".R_OPERATOR .MIN",
+    ]);
   });
 });
 

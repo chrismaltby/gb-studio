@@ -4,7 +4,6 @@ import {
   parseLinkedText,
 } from "shared/lib/helpers/resourceLinks";
 import editorActions from "store/features/editor/editorActions";
-import navigationActions from "store/features/navigation/navigationActions";
 import { useAppDispatch } from "store/hooks";
 import styled from "styled-components";
 
@@ -20,37 +19,28 @@ export const ResourceLinkedText = ({ text }: { text: string }) => {
 
   const handleClick = useCallback(
     (segment: Extract<ParsedResourceTextSegment, { type: "link" }>) => {
-      const focusScene = (sceneId: string | undefined) => {
-        if (!sceneId) return;
-        dispatch(navigationActions.setSection("world"));
-        setTimeout(() => {
-          dispatch(editorActions.editSearchTerm(""));
-          dispatch(editorActions.editSearchTerm(sceneId));
-        }, 1);
-      };
-
       switch (segment.entityType) {
         case "scene":
-          focusScene(segment.entityId);
           dispatch(
-            editorActions.selectScene({
+            editorActions.openEditorResourceById({
+              type: "scene",
               sceneId: segment.entityId,
             }),
           );
           break;
         case "actor":
-          focusScene(segment.sceneId);
           dispatch(
-            editorActions.selectActor({
+            editorActions.openEditorResourceById({
+              type: "actor",
               actorId: segment.entityId,
               sceneId: segment.sceneId || "",
             }),
           );
           break;
         case "trigger":
-          focusScene(segment.sceneId);
           dispatch(
-            editorActions.selectTrigger({
+            editorActions.openEditorResourceById({
+              type: "trigger",
               triggerId: segment.entityId,
               sceneId: segment.sceneId || "",
             }),
@@ -58,14 +48,19 @@ export const ResourceLinkedText = ({ text }: { text: string }) => {
           break;
         case "customEvent":
           dispatch(
-            editorActions.selectCustomEvent({
+            editorActions.openEditorResourceById({
+              type: "customEvent",
               customEventId: segment.entityId,
             }),
           );
           break;
         case "sprite":
-          dispatch(navigationActions.setSection("sprites"));
-          dispatch(editorActions.setSelectedSpriteSheetId(segment.entityId));
+          dispatch(
+            editorActions.openEditorResourceById({
+              type: "sprite",
+              spriteId: segment.entityId,
+            }),
+          );
           break;
       }
     },
