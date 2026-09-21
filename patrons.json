@@ -66,6 +66,13 @@
       }
     },
     {
+      "id": "204048643",
+      "type": "user",
+      "attributes": {
+        "full_name": "Gortyn Code"
+      }
+    },
+    {
       "id": "93658267",
       "type": "user",
       "attributes": {
@@ -150,13 +157,6 @@
       },
       "id": "2840872",
       "type": "user"
-    },
-    {
-      "id": "204048643",
-      "type": "user",
-      "attributes": {
-        "full_name": "Gortyn Code"
-      }
     },
     {
       "attributes": {
