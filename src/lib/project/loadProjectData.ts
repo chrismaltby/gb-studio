@@ -18,6 +18,8 @@ import {
   CompressedBackgroundResourceAsset,
   CompressedProjectResources,
   CompressedSceneResourceWithChildren,
+  CompressedTilesetResource,
+  CompressedTilesetResourceAsset,
   EngineFieldValuesResource,
   FontResource,
   FontResourceAsset,
@@ -30,16 +32,20 @@ import {
   VariablesResource,
   isProjectMetadataResource,
 } from "shared/lib/resources/types";
-import { defaultPalettes } from "consts";
+import { TILE_DEFAULT_UNSET, defaultPalettes } from "consts";
 import { migrateLegacyProject } from "./migration/legacy/migrateLegacyProject";
 import { loadProjectResources } from "./loadProjectResources";
 import { readJson } from "lib/helpers/fs/readJson";
 import type { ProjectData } from "store/features/project/projectActions";
 import { migrateProjectResources } from "./migration/migrateProjectResources";
 import { resizeTiles } from "shared/lib/helpers/tiles";
+import { resizeGrid } from "shared/lib/tiles/grid";
+import { isAutotileDefinitionWithinBounds } from "shared/lib/tiles/sceneTilemapData";
 import {
   compress8bitNumberArray,
+  compressNumberArray,
   decompress8bitNumberString,
+  decompressNumberString,
 } from "shared/lib/resources/compression";
 import { EngineSchema, loadEngineSchema } from "./loadEngineSchema";
 
@@ -315,11 +321,66 @@ const loadProject = async (projectPath: string): Promise<LoadProjectResult> => {
     "avatar",
   );
 
-  const tilesetResources = mergeAssetIdAndSymbolsWithResources(
-    tilesets,
-    resources.tilesets,
-    "tileset",
-  );
+  const tilesetResources = mergeAssetsWithResources<
+    CompressedTilesetResource,
+    CompressedTilesetResourceAsset
+  >(tilesets, resources.tilesets, (asset, resource) => {
+    if (resource) {
+      let tileColors = resource.tileColors ?? asset.tileColors;
+      let tileCollisions = resource.tileCollisions ?? asset.tileCollisions;
+      let autotiles = resource.autotiles ?? asset.autotiles;
+
+      if (resource.width !== asset.width || resource.height !== asset.height) {
+        tileColors = compressNumberArray(
+          resizeGrid(
+            decompressNumberString(tileColors ?? ""),
+            resource.width,
+            resource.height,
+            asset.width,
+            asset.height,
+            TILE_DEFAULT_UNSET,
+          ),
+        );
+        tileCollisions = compressNumberArray(
+          resizeGrid(
+            decompressNumberString(tileCollisions ?? ""),
+            resource.width,
+            resource.height,
+            asset.width,
+            asset.height,
+            TILE_DEFAULT_UNSET,
+          ),
+        );
+        autotiles =
+          resource.width > 0
+            ? (autotiles ?? [])
+                .map((definition) => {
+                  const x = definition.startTile % resource.width;
+                  const y = Math.floor(definition.startTile / resource.width);
+                  const startTile = y * asset.width + x;
+                  return isAutotileDefinitionWithinBounds(
+                    { ...definition, startTile },
+                    asset.width,
+                    asset.height,
+                  )
+                    ? { ...definition, startTile }
+                    : undefined;
+                })
+                .filter((value): value is NonNullable<typeof value> => !!value)
+            : [];
+      }
+
+      return {
+        ...asset,
+        id: resource.id,
+        symbol: resource?.symbol !== undefined ? resource.symbol : asset.symbol,
+        tileColors,
+        tileCollisions,
+        autotiles,
+      };
+    }
+    return asset;
+  });
 
   const soundResources = mergeAssetIdAndSymbolsWithResources(
     sounds,
