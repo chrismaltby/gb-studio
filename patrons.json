@@ -106,13 +106,6 @@
       "attributes": {
         "full_name": "MsRiaCayde"
       }
-    },
-    {
-      "id": "218959896",
-      "type": "user",
-      "attributes": {
-        "full_name": "Pulsar Pocket"
-      }
     }
   ],
   "pastPatrons": [
@@ -241,6 +234,13 @@
       },
       "id": "7243786",
       "type": "user"
+    },
+    {
+      "id": "218959896",
+      "type": "user",
+      "attributes": {
+        "full_name": "Pulsar Pocket"
+      }
     },
     {
       "attributes": {
