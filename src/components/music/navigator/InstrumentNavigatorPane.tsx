@@ -264,29 +264,28 @@ export const InstrumentNavigatorPane = ({
 
       if (!item.isGroup) {
         const instrumentId = parseInt(item.instrumentId, 10);
+        let instrumentChannel: 0 | 1 | 2 | 3 = 0;
+        switch (item.type) {
+          case "duty":
+            instrumentChannel = selectedChannel === 1 ? 1 : 0;
+            break;
+          case "wave":
+            instrumentChannel = 2;
+            break;
+          case "noise":
+            instrumentChannel = 3;
+            break;
+        }
         playPreview({
-          channelId: selectedChannel,
+          channelId: instrumentChannel,
           note: NOTE_C5,
           instrumentId,
         });
-      }
 
-      if (!item.isGroup && syncInstruments) {
-        let newSelectedChannel: 0 | 1 | 2 | 3 = 0;
-        switch (item.type) {
-          case "duty":
-            newSelectedChannel = selectedChannel === 1 ? 1 : 0;
-            break;
-          case "wave":
-            newSelectedChannel = 2;
-            break;
-          case "noise":
-            newSelectedChannel = 3;
-            break;
+        if (syncInstruments) {
+          dispatch(trackerActions.setSelectedChannel(instrumentChannel));
+          dispatch(trackerActions.setSelectedInstrumentId(instrumentId));
         }
-        dispatch(trackerActions.setSelectedChannel(newSelectedChannel));
-        const newDefaultInstrument = parseInt(item.instrumentId);
-        dispatch(trackerActions.setSelectedInstrumentId(newDefaultInstrument));
       }
     },
     [dispatch, playPreview, selectedChannel, syncInstruments],
