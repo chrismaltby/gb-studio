@@ -259,3 +259,65 @@ test("Should update all tilemap references for resized tilesets on load", () => 
   });
   expect(newState.scenes.entities.scene1?.tilemap?.autotiles).toEqual([]);
 });
+
+test("Should update scene tilemap references when tileset was resized while project was closed", () => {
+  const state: EntitiesState = { ...initialState };
+  const loadData: CompressedProjectResources = {
+    ...dummyCompressedProjectResources,
+    // Tileset dimensions have already been brought in sync with the image
+    // on disk while loading the project, but the scene is still storing the
+    // size the tileset had when it was last saved
+    tilesets: [
+      {
+        ...dummyCompressedTilesetResource,
+        id: "tiles1",
+        width: 3,
+        height: 2,
+        imageWidth: 24,
+        imageHeight: 16,
+      },
+    ],
+    scenes: [
+      {
+        ...dummyCompressedSceneResource,
+        id: "scene1",
+        tilemap: {
+          tilesets: [{ id: "tiles1", width: 2, height: 2 }],
+          layers: [
+            {
+              id: "layer",
+              name: "Layer",
+              visible: true,
+              tiles: compressNumberArray([
+                encodeSceneTileRef(0, 1),
+                encodeSceneTileRef(0, 3),
+              ]),
+            },
+          ],
+        },
+      },
+    ],
+  };
+
+  const action = projectActions.loadProject.fulfilled(
+    {
+      resources: loadData,
+      path: "project.gbsproj",
+      scriptEventDefs: {},
+      engineSchema: { fields: [], sceneTypes: [], consts: {} },
+      modifiedSpriteIds: [],
+      isMigrated: false,
+    },
+    "randomid",
+    "project.gbsproj",
+  );
+  const newState = reducer(state, action);
+
+  expect(newState.scenes.entities.scene1?.tilemap?.tilesets).toEqual([
+    { id: "tiles1", width: 3, height: 2 },
+  ]);
+  expect(newState.scenes.entities.scene1?.tilemap?.layers[0]?.tiles).toEqual([
+    encodeSceneTileRef(0, 1),
+    encodeSceneTileRef(0, 4),
+  ]);
+});

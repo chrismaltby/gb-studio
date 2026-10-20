@@ -90,7 +90,8 @@ export const updateTilemapReferencesForTilesets = (
   state: EntitiesState,
   tilesetIds: readonly string[],
 ) => {
-  const resizes = new Map<string, TilesetResize>();
+  // Current size of each tileset, once brought back in sync with its image
+  const tilesetSizes = new Map<string, TilesetResize>();
 
   for (const tilesetId of tilesetIds) {
     const tileset = localTilesetSelectById(state, tilesetId);
@@ -111,6 +112,8 @@ export const updateTilemapReferencesForTilesets = (
 
     const nextWidth = Math.min(detectedWidth, 255);
     const nextHeight = Math.min(detectedHeight, 255);
+    tilesetSizes.set(tileset.id, { width: nextWidth, height: nextHeight });
+
     if (nextWidth === tileset.width && nextHeight === tileset.height) {
       continue;
     }
@@ -160,10 +163,9 @@ export const updateTilemapReferencesForTilesets = (
         autotiles,
       },
     });
-    resizes.set(tileset.id, { width: nextWidth, height: nextHeight });
   }
 
-  if (resizes.size === 0) {
+  if (tilesetSizes.size === 0) {
     return;
   }
 
@@ -178,7 +180,23 @@ export const updateTilemapReferencesForTilesets = (
     const scene = localSceneSelectById(state, String(sceneId));
     const sceneTilemap = scene?.tilemap;
 
-    if (!scene || !sceneTilemap?.tilesets.some(({ id }) => resizes.has(id))) {
+    if (!scene || !sceneTilemap) {
+      return memo;
+    }
+
+    // Tilesets this scene has stored at a size they are no longer using
+    const resizes = new Map<string, TilesetResize>();
+    for (const snapshot of sceneTilemap.tilesets) {
+      const size = tilesetSizes.get(snapshot.id);
+      if (
+        size &&
+        (size.width !== snapshot.width || size.height !== snapshot.height)
+      ) {
+        resizes.set(snapshot.id, size);
+      }
+    }
+
+    if (resizes.size === 0) {
       return memo;
     }
 
