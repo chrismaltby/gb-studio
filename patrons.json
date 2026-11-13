@@ -52,13 +52,6 @@
       }
     },
     {
-      "id": "121315895",
-      "type": "user",
-      "attributes": {
-        "full_name": "Damien B."
-      }
-    },
-    {
       "id": "204048643",
       "type": "user",
       "attributes": {
@@ -114,6 +107,13 @@
       "type": "user",
       "attributes": {
         "full_name": "BMo"
+      }
+    },
+    {
+      "id": "121315895",
+      "type": "user",
+      "attributes": {
+        "full_name": "Damien B."
       }
     },
     {
