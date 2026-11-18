@@ -2,7 +2,7 @@
 
 To provide localisation of the user interface duplicate "en.json" in this folder and name it as a local as defined in:
 
-https://electronjs.org/docs/api/locales
+https://www.electronjs.org/docs/latest/api/app#appgetlocale
 
 e.g. ja.json for Japanese
 
