@@ -312,6 +312,7 @@ export interface ScriptEventFieldSchema {
   unitsField?: string;
   unitsDefault?: UnitType;
   unitsAllowed?: UnitType[];
+  unitsMax?: Partial<Record<UnitType, number>>;
   hideLabel?: boolean;
   description?: string;
   hasPostUpdateFn?: boolean;

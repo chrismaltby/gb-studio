@@ -68,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue where using Bitwise Right Shift followed by Left Shift could cause scripts to be incorrectly optimised
 - Fix issue where music editor could preview incorrect channel when sidebar instrument syncing mode was disabled [@pakyinwww](https://github.com/pakyinwww)
 - Fix issue where sprites were not being affected correctly by "Set Super GB Color Area" event in game preview [@pau-tomas](https://github.com/pau-tomas)
+- Fix issue where actor position events were limited to 255 when using pixel units, also limit camera position events to 255 when using tile units
 
 ## [4.3.2] - 2026-06-22
 
