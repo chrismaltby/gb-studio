@@ -36,6 +36,7 @@ const fields = [
         type: "value",
         min: 0,
         max: 255,
+        unitsMax: { pixels: 2047 },
         width: "50%",
         defaultValue: {
           type: "number",
@@ -52,6 +53,7 @@ const fields = [
         type: "value",
         min: 0,
         max: 255,
+        unitsMax: { pixels: 2047 },
         width: "50%",
         defaultValue: {
           type: "number",

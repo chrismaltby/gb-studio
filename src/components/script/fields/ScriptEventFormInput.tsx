@@ -428,6 +428,10 @@ const ScriptEventFormInput = ({
   } else if (type === "value") {
     const isValueScript = isScriptValue(value);
     const isDefaultScript = isScriptValue(defaultValue);
+    const units = (args[field.unitsField || ""] || field.unitsDefault) as
+      | UnitType
+      | undefined;
+    const max = (units && field.unitsMax?.[units]) ?? field.max;
 
     return (
       <ValueSelect
@@ -438,7 +442,7 @@ const ScriptEventFormInput = ({
         }
         onChange={onChangeField}
         min={field.min}
-        max={field.max}
+        max={max}
         step={field.step}
         placeholder={String(
           field.placeholder ||
